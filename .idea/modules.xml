@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/agent_dart.iml" filepath="$PROJECT_DIR$/agent_dart.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/agent_dart_android.iml" filepath="$PROJECT_DIR$/android/agent_dart_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/example/android/agent_dart_example_android.iml" filepath="$PROJECT_DIR$/example/android/agent_dart_example_android.iml" />
+    </modules>
+  </component>
+</project>
