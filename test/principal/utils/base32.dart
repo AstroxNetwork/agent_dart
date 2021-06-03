@@ -1,8 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:agent_dart/principal/utils/base32.dart';
-import 'package:agent_dart/principal/utils/u8a.dart';
+import 'package:agent_dart/utils/extension.dart';
 
 void main() {
   base32Test();
@@ -10,7 +8,7 @@ void main() {
 
 void base32Test() {
   test('base32Decode', () {
-    expect(decode('irswgzloorzgc3djpjssazlwmvzhs5dinfxgoijb').toUtf8String(),
+    expect(decode('irswgzloorzgc3djpjssazlwmvzhs5dinfxgoijb').u8aToString(),
         "Decentralize everything!!");
   });
 
