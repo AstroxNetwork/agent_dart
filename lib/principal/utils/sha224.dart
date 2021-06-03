@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:agent_dart/utils/number.dart';
 import 'package:crypto/crypto.dart';
 // ignore: implementation_imports
 import 'package:crypto/src/digest_sink.dart';
-
-import 'number.dart';
 
 Uint8List sha224Hash(ByteBuffer buf) {
   return SHA224().update(buf.asUint8List()).toU8a();

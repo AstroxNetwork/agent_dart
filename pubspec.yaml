@@ -11,8 +11,11 @@ dependencies:
   base_x: ^1.0.1
   convert: ^3.0.0
   crypto: ^3.0.1
+  ffi: ^1.1.1
   flutter:
     sdk: flutter
+  recase: ^4.0.0
+  validators: ^3.0.0
 
 dev_dependencies:
   flutter_test:
