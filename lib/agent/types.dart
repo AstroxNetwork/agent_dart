@@ -5,7 +5,7 @@ import 'package:agent_dart/utils/extension.dart';
 import 'utils/leb128.dart';
 
 // ignore: constant_identifier_names
-enum BlobType { binary, der, nonce }
+enum BlobType { binary, der, nonce, requestId }
 
 abstract class BaseBlob {
   late final Uint8List _buffer;
@@ -41,6 +41,13 @@ class Nonce extends BinaryBlob {
   Nonce(Uint8List buffer) : super(buffer) {
     blobName = "__nonce__";
     blobType = BlobType.nonce;
+  }
+}
+
+class RequestId extends BinaryBlob {
+  RequestId(Uint8List buffer) : super(buffer) {
+    blobName = "__requestId__";
+    blobType = BlobType.requestId;
   }
 }
 
