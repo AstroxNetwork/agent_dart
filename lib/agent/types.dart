@@ -24,6 +24,10 @@ class BinaryBlob extends BaseBlob {
 
   @override
   int get byteLength => buffer.lengthInBytes;
+
+  String toJson() {
+    return _buffer.toString();
+  }
 }
 
 class DerEncodedBlob extends BinaryBlob {

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:cbor/cbor.dart' as cbor;
@@ -15,11 +16,14 @@ class SelfDescribeEncoder extends cbor.Encoder {
   late final cbor.Output _out;
   final Set<ExtraEncoder> _encoders = {};
 
+  // late cbor.BuilderHook _builderHook;
+
   SelfDescribeEncoder(this._out) : super(_out) {
     var valBuff = Uint8Buffer();
     var hList = Uint8List.fromList([0xd9, 0xd9, 0xf7]);
     valBuff.addAll(hList);
     addBuilderOutput(valBuff);
+    // _builderHook = _hook;
   }
 
   addEncoder<T>(ExtraEncoder encoder) {
@@ -58,6 +62,8 @@ class SelfDescribeEncoder extends cbor.Encoder {
   }
 
   void serializeMap(Map map) {
+    // final builder = cbor.MapBuilder.builder();
+    writeTypeValue(cbor.majorTypeMap, map.length);
     final entries = map.entries;
     for (var entry in entries) {
       if (entry.key is String) {
@@ -92,6 +98,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
   }
 
   void serializeIterable(Iterable data) {
+    writeTypeValue(cbor.majorTypeArray, data.length);
     if (data is Uint8Buffer) {
       writeBuff(data);
     } else if (data is Uint8List) {
@@ -116,6 +123,54 @@ class SelfDescribeEncoder extends cbor.Encoder {
       return true;
     }
     return false;
+  }
+
+  void writeTypeValue(int majorType, int value) {
+    var type = majorType;
+    type <<= cbor.majorTypeShift;
+    if (value < cbor.ai24) {
+      // Value
+      _out.putByte(type | value);
+    } else if (value < cbor.two8) {
+      // Uint8
+      _out.putByte(type | cbor.ai24);
+      _out.putByte(value);
+    } else if (value < cbor.two16) {
+      // Uint16
+      _out.putByte(type | cbor.ai25);
+      final buff = Uint16Buffer(1);
+      buff[0] = value;
+      final ulist = Uint8List.view(buff.buffer);
+      final data = Uint8Buffer();
+      data.addAll(ulist.toList().reversed);
+      _out.putBytes(data);
+    } else if (value < cbor.two32) {
+      // Uint32
+      _out.putByte(type | cbor.ai26);
+      final buff = Uint32Buffer(1);
+      buff[0] = value;
+      final ulist = Uint8List.view(buff.buffer);
+      final data = Uint8Buffer();
+      data.addAll(ulist.toList().reversed);
+      _out.putBytes(data);
+    } else {
+      // Encode to a bignum, if the value can be represented as
+      // an integer it must be greater than 2*32 so encode as 64 bit.
+      final bignum = BigInt.from(value);
+      if (bignum.isValidInt) {
+        // Uint64
+        _out.putByte(type | cbor.ai27);
+        final buff = Uint64Buffer(1);
+        buff[0] = value;
+        final ulist = Uint8List.view(buff.buffer);
+        final data = Uint8Buffer();
+        data.addAll(ulist.toList().reversed);
+        _out.putBytes(data);
+      } else {
+        // Bignum - encoded as a tag value
+        writeBignum(BigInt.from(value));
+      }
+    }
   }
 }
 
@@ -190,4 +245,22 @@ SelfDescribeEncoder initCborSerializer() {
 BinaryBlob cborEncode(SelfDescribeEncoder serializer, dynamic value) {
   serializer.serialize(value);
   return blobFromBuffer(serializer._out.getData().buffer);
+}
+
+T cborDecode<T>(List<int> value) {
+  final buffer = value is Uint8Buffer ? value : Uint8Buffer()
+    ..addAll(value);
+  cbor.Input input = cbor.Input(buffer);
+  final cbor.Listener listener = cbor.ListenerStack();
+  final _decodeStack = cbor.DecodeStack();
+  listener.itemStack.clear();
+  cbor.Decoder decoder = cbor.Decoder.withListener(input, listener);
+  decoder.run();
+
+  List<dynamic>? getDecodedData() {
+    _decodeStack.build(listener.itemStack);
+    return _decodeStack.walk();
+  }
+
+  return getDecodedData()![0] as T;
 }
