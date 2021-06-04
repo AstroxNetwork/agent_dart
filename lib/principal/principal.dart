@@ -108,4 +108,8 @@ class Principal {
   String toString() {
     return toText();
   }
+
+  String toJson() {
+    return toText();
+  }
 }
