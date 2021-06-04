@@ -6,3 +6,4 @@
 
 build/
 rust/target
+_main.dart
