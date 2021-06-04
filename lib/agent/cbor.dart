@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:cbor/cbor.dart' as cbor;
@@ -248,19 +247,23 @@ BinaryBlob cborEncode(SelfDescribeEncoder serializer, dynamic value) {
 }
 
 T cborDecode<T>(List<int> value) {
-  final buffer = value is Uint8Buffer ? value : Uint8Buffer()
-    ..addAll(value);
-  cbor.Input input = cbor.Input(buffer);
-  final cbor.Listener listener = cbor.ListenerStack();
-  final _decodeStack = cbor.DecodeStack();
-  listener.itemStack.clear();
-  cbor.Decoder decoder = cbor.Decoder.withListener(input, listener);
-  decoder.run();
+  try {
+    final buffer = value is Uint8Buffer ? value : Uint8Buffer()
+      ..addAll(value);
+    cbor.Input input = cbor.Input(buffer);
+    final cbor.Listener listener = cbor.ListenerStack();
+    final _decodeStack = cbor.DecodeStack();
+    listener.itemStack.clear();
+    cbor.Decoder decoder = cbor.Decoder.withListener(input, listener);
+    decoder.run();
 
-  List<dynamic>? getDecodedData() {
-    _decodeStack.build(listener.itemStack);
-    return _decodeStack.walk();
+    List<dynamic>? getDecodedData() {
+      _decodeStack.build(listener.itemStack);
+      return _decodeStack.walk();
+    }
+
+    return getDecodedData()![0] as T;
+  } catch (e) {
+    throw "Can not decode with cbor :$e";
   }
-
-  return getDecodedData()![0] as T;
 }
