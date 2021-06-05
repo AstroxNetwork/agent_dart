@@ -77,6 +77,8 @@ class SelfDescribeEncoder extends cbor.Encoder {
   void serializeData(dynamic data) {
     if (writeExtra(data) == true) {
       return;
+    } else if (data is ToCBorable) {
+      data.write(this);
     } else if (data is Map) {
       serializeMap(data);
     } else if (data is Iterable) {
@@ -226,6 +228,10 @@ class BigIntEncoder extends ExtraEncoder<BigInt> {
   void write(cbor.Encoder encoder, BigInt value) {
     encoder.writeBignum(value);
   }
+}
+
+abstract class ToCBorable {
+  void write(cbor.Encoder encoder);
 }
 
 SelfDescribeEncoder initCborSerializer() {
