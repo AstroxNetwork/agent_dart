@@ -1,6 +1,6 @@
 import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/principal/principal.dart';
-
+import 'package:agent_dart/utils/extension.dart';
 import 'transform.dart';
 
 class ReadRequestType {
@@ -30,14 +30,24 @@ abstract class WithToJson {
 
 abstract class BaseRequest with WithToJson {}
 
-abstract class ReadStateRequest extends BaseRequest {
+class ReadStateRequest extends BaseRequest {
   // ignore: non_constant_identifier_names
-  final String request_type = ReadRequestType.ReadState;
+  String request_type = ReadRequestType.ReadState;
   // ignore: non_constant_identifier_names
   late List<List<BinaryBlob>> paths;
   dynamic sender; //: Uint8Array | Principal;
   // ignore: non_constant_identifier_names
   late Expiry ingress_expiry;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      "request_type": request_type,
+      "paths": paths,
+      "sender": sender,
+      "ingress_expiry": ingress_expiry,
+    };
+  }
 }
 
 class CallRequest extends ReadStateRequest {
@@ -61,7 +71,7 @@ class CallRequest extends ReadStateRequest {
       "request_type": request_type,
       "canister_id": canister_id,
       "method_name": method_name,
-      "arg": arg,
+      "arg": arg.buffer,
       "sender": sender,
       "ingress_expiry": ingress_expiry,
       "nonce": nonce
@@ -88,7 +98,7 @@ class QueryRequest extends BaseRequest {
       "request_type": request_type,
       "canister_id": canister_id,
       "method_name": method_name,
-      "arg": arg,
+      "arg": arg.buffer,
       "sender": sender,
       "ingress_expiry": ingress_expiry,
     };
@@ -106,7 +116,7 @@ abstract class HttpAgentBaseRequest<T extends WithToJson> extends BaseRequest {
 abstract class HttpAgentSubmitRequest extends HttpAgentBaseRequest<CallRequest> {
   @override
   // ignore: overridden_fields
-  final String endpoint = Endpoint.Call;
+  String? endpoint = Endpoint.Call;
   @override
   late CallRequest body; // CallRequest
 }
@@ -114,7 +124,7 @@ abstract class HttpAgentSubmitRequest extends HttpAgentBaseRequest<CallRequest> 
 abstract class HttpAgentQueryRequest extends HttpAgentBaseRequest<ReadRequest> {
   @override
   // ignore: overridden_fields
-  final String endpoint = Endpoint.Query;
+  String? endpoint = Endpoint.Query;
   @override
   late ReadRequest body; // ReadRequest
 }
@@ -137,10 +147,10 @@ typedef Envelope<T> = UnSigned<T>;
 
 typedef HttpAgentRequest = HttpAgentBaseRequest;
 
-// abstract class HttpAgentRequestTransformFn {
-//   // ignore: non_constant_identifier_names
-//   Future<HttpAgentRequest?> call(HttpAgentRequest args);
-//   int? priority;
-// }
+abstract class HttpAgentRequestTransformFn {
+  // ignore: non_constant_identifier_names
+  late HttpAgentRequestTransformFnCall call;
+  int? priority;
+}
 
-typedef HttpAgentRequestTransformFn = Future<HttpAgentRequest?> Function(HttpAgentRequest args);
+typedef HttpAgentRequestTransformFnCall = Future<HttpAgentRequest?> Function(HttpAgentRequest args);
