@@ -37,6 +37,7 @@ class Ed25519PublicKey implements auth.PublicKey {
   }
 
   // The length of Ed25519 public keys is always 32 bytes.
+  // ignore: non_constant_identifier_names
   static int RAW_KEY_LENGTH = 32;
 
   // Adding this prefix to a raw public key is sufficient to DER-encode it.
@@ -55,7 +56,7 @@ class Ed25519PublicKey implements auth.PublicKey {
   static DerEncodedBlob derEncode(BinaryBlob publicKey) {
     if (publicKey.byteLength != Ed25519PublicKey.RAW_KEY_LENGTH) {
       final bl = publicKey.byteLength;
-      throw "ed25519 public key must be ${Ed25519PublicKey.RAW_KEY_LENGTH} bytes long (is ${bl})";
+      throw "ed25519 public key must be ${Ed25519PublicKey.RAW_KEY_LENGTH} bytes long (is $bl)";
     }
 
     // https://github.com/dfinity/agent-js/issues/42#issuecomment-716356288
@@ -76,8 +77,7 @@ class Ed25519PublicKey implements auth.PublicKey {
 
     final rawKey = blobFromUint8Array(key.buffer.sublist(Ed25519PublicKey.DER_PREFIX.length));
     if (!u8aEq((Ed25519PublicKey.derEncode(rawKey)).buffer, key.buffer)) {
-      throw 'Ed25519 DER-encoded public key is invalid. A valid Ed25519 DER-encoded public key ' +
-          "must have the following prefix: ${Ed25519PublicKey.DER_PREFIX}";
+      throw "Ed25519 DER-encoded public key is invalid. A valid Ed25519 DER-encoded public key must have the following prefix: ${Ed25519PublicKey.DER_PREFIX}";
     }
 
     return rawKey;
@@ -202,10 +202,11 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
 
   /// Signs a blob of data, with this identity's private key.
   /// @param challenge - challenge to sign with this identity's secretKey, producing a signature
+  @override
   Future<BinaryBlob> sign(dynamic challenge) {
     final blob = challenge is BinaryBlob
         ? blobFromBuffer(challenge.buffer.buffer)
         : blobFromUint8Array(challenge as Uint8List);
-    return Future.value(blobFromUint8Array(_sk.sign(blob.buffer).asTypedList));
+    return Future.value(blobFromUint8Array(_sk.sign(blob.buffer).signature.asTypedList));
   }
 }
