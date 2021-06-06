@@ -106,11 +106,13 @@ class SelfDescribeEncoder extends cbor.Encoder {
       writeBytes(Uint8Buffer()..addAll(data));
     } else if (data is List) {
       for (final byte in data) {
-        if (byte is Map) {
+        if (getEncoderFor(byte) != null) {
+          writeExtra(byte);
+        } else if (byte is Map) {
           serializeMap(byte);
         } else if (byte is Iterable) {
           serializeIterable(byte);
-        } else if (writeExtra(byte) == false) {
+        } else {
           _out.putByte(byte);
         }
       }

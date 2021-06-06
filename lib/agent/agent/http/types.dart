@@ -147,7 +147,7 @@ typedef Envelope<T> = UnSigned<T>;
 
 typedef HttpAgentRequest = HttpAgentBaseRequest;
 
-abstract class HttpAgentRequestTransformFn {
+class HttpAgentRequestTransformFn {
   // ignore: non_constant_identifier_names
   late HttpAgentRequestTransformFnCall call;
   int? priority;

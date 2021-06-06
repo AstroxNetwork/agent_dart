@@ -1,11 +1,16 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
+// ignore: library_prefixes
 import 'hex.dart' as hexUtil;
+// ignore: library_prefixes
 import 'string.dart' as stringUtil;
 
+// ignore: library_prefixes
 import 'u8a.dart' as u8aUtil;
+// ignore: library_prefixes
 import 'bn.dart' as bnUtil;
+// ignore: library_prefixes
 import 'is.dart' as isUtil;
 
 extension StringExtension on String {

@@ -33,7 +33,8 @@ class Expiry extends ToCBorable {
 
   @override
   void write(cbor.Encoder encoder) {
-    encoder.writeBignum(_value);
+    // encoder.writeBignum(_value);
+    encoder.writeInt(_value.toInt());
   }
 }
 
