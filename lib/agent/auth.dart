@@ -10,7 +10,7 @@ import 'package:agent_dart/utils/extension.dart';
 import './agent/http/types.dart';
 import 'types.dart';
 
-final domainSeparator = Uint8List.fromList(utf8.encode('\x0Aic-request'));
+final domainSeparator = '\x0Aic-request'.plainToU8a();
 
 /// A Key Pair, containing a secret and public key.
 abstract class KeyPair {
@@ -65,7 +65,7 @@ abstract class SignIdentity implements Identity {
     return {
       ...request.toJson(),
       "body": {
-        "content": (request as HttpAgentQueryRequest).body,
+        "content": (request as HttpAgentQueryRequest).body.toJson(),
         "sender_pubkey": getPublicKey().toDer(),
         "sender_sig":
             await sign(blobFromBuffer(u8aConcat([domainSeparator, requestId.buffer]).buffer)),
