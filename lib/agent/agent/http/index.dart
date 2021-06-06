@@ -48,7 +48,7 @@ abstract class Credentials {
   late String? password;
 }
 
-abstract class HttpAgentOptions {
+class HttpAgentOptions {
   // Another HttpAgent to inherit configuration (pipeline and fetch) of. This
   // is only used at construction.
   HttpAgent? source;
@@ -140,7 +140,11 @@ class HttpAgent implements Agent {
         var name = options.credentials?.name ?? '';
         var password = options.credentials?.password;
         setCredentials("$name${password != null ? ':' + password : ''}");
+      } else {
+        setCredentials("");
       }
+
+      _baseHeaders = _createBaseHeaders();
     } else {
       setIdentity(Future.value(AnonymousIdentity()));
       setHost(defaultProtocol + '://$defaultHost$deaultPort');
@@ -246,8 +250,8 @@ class HttpAgent implements Agent {
     //   ..ingress_expiry = newTransformed["body"]["content"]["ingress_expiry"];
 
     // transformedRequest.request = newTransformed["request"];
-
     var body = cbor.cborEncode(cbor.initCborSerializer(), newTransformed["body"]);
+    // print((cbor.cborDecode<Map>(body.buffer)["sender_pubkey"] as Uint8Buffer).length);
 
     final response = await _fetch!(
         endpoint: "/api/v2/canister/$canister/read_state",
@@ -264,7 +268,8 @@ class HttpAgent implements Agent {
     final buffer = response["arrayBuffer"] as Uint8List;
 
     return ReadStateResponseResult()
-      ..certificate = cbor.cborDecode<Map<String, dynamic>>(buffer)["certificate"];
+      ..certificate =
+          blobFromBuffer(((cbor.cborDecode<Map>(buffer)["certificate"]) as Uint8Buffer).buffer);
   }
 
   @override
@@ -323,10 +328,11 @@ class HttpAgent implements Agent {
         var postResponse = await client.post(
           Uri.parse(host ?? "$_host$endpoint"),
           headers: {
-            ...?headers,
             ..._baseHeaders,
+            ...?headers,
           },
           body: body,
+          // encoding: Encoding.getByName('utf8')
         );
 
         return {
