@@ -4,6 +4,8 @@ import 'utils/base32.dart';
 import 'utils/get_crc.dart';
 import 'utils/sha224.dart';
 
+export 'utils/utils.dart';
+
 // ignore: constant_identifier_names
 const SELF_AUTHENTICATING_SUFFIX = 2;
 // ignore: constant_identifier_names

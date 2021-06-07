@@ -5,6 +5,9 @@ import 'package:agent_dart/utils/extension.dart';
 import 'ffi_base.dart';
 import 'ffi_helper.dart';
 
+export 'ffi_base.dart';
+export 'ffi_helper.dart';
+
 Future<bool> blsInit() async {
   // ignore: unnecessary_null_comparison
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
