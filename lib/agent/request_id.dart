@@ -1,13 +1,12 @@
 import 'dart:typed_data';
+import 'package:crypto/crypto.dart';
+import 'package:typed_data/typed_buffers.dart';
 
-import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/principal/principal.dart';
-
 import 'package:agent_dart/utils/u8a.dart';
 import 'package:agent_dart/utils/extension.dart';
 
-import 'package:crypto/crypto.dart';
-import 'package:typed_data/typed_buffers.dart';
+import 'agent/index.dart';
 import 'types.dart';
 import 'utils/leb128.dart';
 
@@ -15,7 +14,7 @@ abstract class ToHashable {
   Function toHash();
 }
 
-String toHex(RequestId requestId) {
+String requestIdToHex(RequestId requestId) {
   return blobToHex(requestId);
 }
 
