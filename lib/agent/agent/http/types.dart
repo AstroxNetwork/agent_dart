@@ -53,6 +53,7 @@ class ReadStateRequest extends BaseRequest {
 class CallRequest extends ReadStateRequest {
   // ignore: non_constant_identifier_names
 
+  @override
   final String request_type = SubmitRequestType.Call;
   // ignore: non_constant_identifier_names
   late Principal canister_id;

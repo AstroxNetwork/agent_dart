@@ -527,7 +527,7 @@ class IntClass extends PrimitiveType {
   String valueToString(x) => x.toString();
 }
 
-class NatClass extends PrimitiveType<BigInt> {
+class NatClass extends PrimitiveType {
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
     return v.visitNat(this, d);
@@ -550,7 +550,7 @@ class NatClass extends PrimitiveType<BigInt> {
   }
 
   @override
-  Uint8List encodeValue(BigInt x) {
+  Uint8List encodeValue(x) {
     return lebEncode(x);
   }
 
@@ -558,7 +558,7 @@ class NatClass extends PrimitiveType<BigInt> {
   get name => 'nat';
 
   @override
-  String valueToString(BigInt x) => x.toString();
+  String valueToString(x) => x.toString();
 }
 
 class FloatClass extends PrimitiveType<num> {
@@ -742,12 +742,11 @@ class VecClass<T> extends ConstructType<List<T>> {
   }
 
   @override
-  Uint8List encodeValue(List<T> x) {
+  Uint8List encodeValue(x) {
     var len = lebEncode(x.length);
     if (_blobOptimization) {
       return u8aConcat([len, Uint8List.fromList(x as List<int>)]);
     }
-
     return u8aConcat([len, ...x.map((d) => _type.encodeValue(d))]);
   }
 
@@ -772,7 +771,7 @@ class VecClass<T> extends ConstructType<List<T>> {
       }
       var rets = <T>[];
       for (var i = 0; i < len; i++) {
-        rets.add(_type.decodeValue(x, (vec as VecClass).type));
+        rets.add(_type.decodeValue(x, (vec).type));
       }
       return rets;
     }
@@ -899,7 +898,7 @@ class RecordClass extends ConstructType<Map> {
           var t = entry.value;
 
           if (!x.containsKey(k)) {
-            throw "ecord is missing key '$k'.";
+            throw "Record is missing key '$k'.";
           }
           return t.covariant(x[k]);
         }));
@@ -1197,7 +1196,7 @@ class RecClass<T> extends ConstructType<T> {
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
-    assert(_type != null, 'Recursive type uninitialized');
+    _checkType();
     return v.visitRec(this, _type!, d);
   }
 
@@ -1216,13 +1215,13 @@ class RecClass<T> extends ConstructType<T> {
 
   @override
   encodeValue(T x) {
-    assert(_type != null, 'Recursive type uninitialized');
+    _checkType();
     return _type!.encodeValue(x);
   }
 
   @override
   _buildTypeTableImpl(TypeTable typeTable) {
-    assert(_type != null, 'Recursive type uninitialized');
+    _checkType();
     typeTable.add(this, Uint8List.fromList([]));
     _type!.buildTypeTable(typeTable);
     typeTable.merge(this, _type!.name);
@@ -1230,7 +1229,7 @@ class RecClass<T> extends ConstructType<T> {
 
   @override
   decodeValue(Pipe x, CType t) {
-    assert(_type != null, 'Recursive type uninitialized');
+    _checkType();
     return _type!.decodeValue(x, t);
   }
 
@@ -1239,14 +1238,20 @@ class RecClass<T> extends ConstructType<T> {
 
   @override
   display() {
-    assert(_type != null, 'Recursive type uninitialized');
+    _checkType();
     return "μ$name.${_type!.name}";
   }
 
   @override
   valueToString(T x) {
-    assert(_type != null, 'Recursive type uninitialized');
+    _checkType();
     return _type!.valueToString(x);
+  }
+
+  _checkType() {
+    if (_type == null) {
+      throw 'Recursive type uninitialized';
+    }
   }
 }
 
@@ -1325,7 +1330,7 @@ class FuncClass extends ConstructType<List> {
 
   @override
   bool covariant(x) {
-    return ((x is List) && x.length == 2 && x[0] && x[0] is PrincipalId && x[1] is String);
+    return ((x is List) && x.length == 2 && x[0] != null && x[0] is PrincipalId && x[1] is String);
   }
 
   @override
@@ -1425,7 +1430,7 @@ class ServiceClass extends ConstructType<PrincipalId> {
   List<MapEntry<String, FuncClass>> get fields => _fields;
 
   ServiceClass(Map<String, FuncClass> fields) : super() {
-    var _fields = (fields.entries).toList();
+    _fields = (fields.entries).toList();
     _fields.sort(
         (a, b) => idlLabelToId(a.key.toString()).toInt() - idlLabelToId(b.key.toString()).toInt());
   }

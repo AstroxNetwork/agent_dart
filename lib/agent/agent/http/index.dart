@@ -257,7 +257,7 @@ class HttpAgent implements Agent {
         endpoint: "/api/v2/canister/$canister/read_state",
         method: "POST",
         headers: newTransformed["request"]["headers"],
-        body: body.buffer);
+        body: body);
 
     if (!(response["ok"] as bool)) {
       throw 'Server returned an error:\n' +

@@ -102,7 +102,7 @@ class Certificate {
 
   Agent _agent;
   Certificate(ReadStateResponse response, this._agent) {
-    cert = cborDecode(response.certificate.buffer);
+    cert = cborDecode(response.certificate);
   }
 
   Uint8List? lookupEx(List path) {
@@ -137,12 +137,12 @@ class Certificate {
       if (_rootKey != null) {
         if (_agent.rootKey != null) {
           _rootKey = _agent.rootKey;
-          return Future.value(_rootKey?.buffer);
+          return Future.value(_rootKey);
         }
 
         throw "Agent does not have a rootKey. Do you need to call 'fetchRootKey'?";
       }
-      return Future.value(_rootKey?.buffer);
+      return Future.value(_rootKey);
     }
     final Certificate cert = Certificate(d, _agent);
     if (!(await cert.verify())) {
@@ -177,7 +177,7 @@ Uint8List extractDER(Uint8List buf) {
 Future<Uint8List> reconstruct(List t) async {
   switch (t[0] as int) {
     case NodeId.Empty:
-      return Future.value(hash(domainSep('ic-hashtree-empty')).buffer);
+      return Future.value(hash(domainSep('ic-hashtree-empty')));
     case NodeId.Pruned:
       return (t[1] as Uint8Buffer).buffer.asUint8List();
     case NodeId.Leaf:
@@ -186,19 +186,19 @@ Future<Uint8List> reconstruct(List t) async {
           domainSep('ic-hashtree-leaf'),
           (t[1] as Uint8Buffer).buffer.asUint8List(),
         ]),
-      ).buffer);
+      ));
     case NodeId.Labeled:
       return Future.value(hash(u8aConcat([
         domainSep('ic-hashtree-labeled'),
         (t[1] as Uint8Buffer).buffer.asUint8List(),
         (await reconstruct(t[2] as List)),
-      ])).buffer);
+      ])));
     case NodeId.Fork:
       return Future.value(hash(u8aConcat([
         domainSep('ic-hashtree-fork'),
         (await reconstruct(t[1] as List)),
         (await reconstruct(t[2] as List)),
-      ])).buffer);
+      ])));
     default:
       throw 'unreachable';
   }
