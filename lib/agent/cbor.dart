@@ -249,7 +249,8 @@ SelfDescribeEncoder initCborSerializer() {
     ..addEncoder(bufferEncoder);
 }
 
-BinaryBlob cborEncode(SelfDescribeEncoder serializer, dynamic value) {
+BinaryBlob cborEncode(dynamic value, {SelfDescribeEncoder? withSerializer}) {
+  var serializer = withSerializer ?? initCborSerializer();
   serializer.serialize(value);
   return blobFromBuffer(serializer._out.getData().buffer);
 }

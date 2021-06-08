@@ -9,6 +9,9 @@ export 'authentication/authentication.dart';
 // identity
 export 'identity/identity.dart';
 
+// candid
+export 'candid/index.dart';
+
 // utils
 export 'utils/array.dart';
 export 'utils/base64.dart';

@@ -8,12 +8,12 @@ void main() {
 
 void base32Test() {
   test('base32Decode', () {
-    expect(decode('irswgzloorzgc3djpjssazlwmvzhs5dinfxgoijb').u8aToString(),
+    expect(base32Decode('irswgzloorzgc3djpjssazlwmvzhs5dinfxgoijb').u8aToString(),
         "Decentralize everything!!");
   });
 
   test('base32Encode', () {
-    expect(encode('Decentralize everything!!'.plainToU8a(useDartEncode: true)),
+    expect(base32Encode('Decentralize everything!!'.plainToU8a(useDartEncode: true)),
         'irswgzloorzgc3djpjssazlwmvzhs5dinfxgoijb');
   });
 }
