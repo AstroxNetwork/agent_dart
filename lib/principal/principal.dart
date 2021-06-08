@@ -49,7 +49,7 @@ class Principal {
     try {
       final canisterIdNoDash = text.toLowerCase().replaceAll('-', '');
 
-      var arr = decode(canisterIdNoDash);
+      var arr = base32Decode(canisterIdNoDash);
       arr = arr.sublist(4, arr.length);
 
       final principal = Principal(arr);
@@ -96,7 +96,7 @@ class Principal {
     final bytes = Uint8List.fromList(_arr);
     final array = Uint8List.fromList([...checksum, ...bytes]);
 
-    final result = encode(array);
+    final result = base32Encode(array);
     var reg = RegExp(r".{1,5}");
     final matches = reg.allMatches(result);
     if (matches.isEmpty) {

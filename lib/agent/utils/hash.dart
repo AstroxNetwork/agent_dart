@@ -2,9 +2,7 @@ import 'dart:convert';
 
 import 'dart:math';
 
-import 'package:agent_dart/utils/hex.dart';
 import 'package:agent_dart/utils/is.dart';
-import 'package:agent_dart/utils/number.dart';
 
 num idlHash(String s) {
   final arr = utf8.encode(s);

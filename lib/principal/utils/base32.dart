@@ -6,7 +6,7 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz234567';
 /// @param input The input array to encode.
 /// @returns A Base32 string encoding the input.
 
-String encode(Uint8List input) {
+String base32Encode(Uint8List input) {
   // How many bits will we skip from the first byte.
   int skip = 0;
   // 5 high bits, carry from one byte to the next.
@@ -47,7 +47,7 @@ String encode(Uint8List input) {
 }
 
 /// @param input The base32 encoded string to decode.
-Uint8List decode(String input) {
+Uint8List base32Decode(String input) {
   try {
     // how many bits we have from the previous character.
     int skip = 0;
