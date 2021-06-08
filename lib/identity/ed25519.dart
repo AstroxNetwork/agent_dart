@@ -16,10 +16,7 @@ class Ed25519KeyPair implements auth.KeyPair {
   Ed25519KeyPair(this.publicKey, this.secretKey);
 
   toJson() {
-    return [
-      publicKey.toDer().buffer.toHex(include0x: false),
-      secretKey.buffer.toHex(include0x: false)
-    ];
+    return [publicKey.toDer().toHex(include0x: false), secretKey.toHex(include0x: false)];
   }
 }
 
@@ -62,7 +59,7 @@ class Ed25519PublicKey implements auth.PublicKey {
     // https://github.com/dfinity/agent-js/issues/42#issuecomment-716356288
     final derPublicKey = Uint8List.fromList([
       ...Ed25519PublicKey.DER_PREFIX,
-      ...publicKey.buffer,
+      ...publicKey,
     ]);
 
     return derBlobFromBlob(blobFromUint8Array(derPublicKey));
@@ -75,8 +72,8 @@ class Ed25519PublicKey implements auth.PublicKey {
       throw "Ed25519 DER-encoded public key must be $expectedLength bytes long (is $bl)";
     }
 
-    final rawKey = blobFromUint8Array(key.buffer.sublist(Ed25519PublicKey.DER_PREFIX.length));
-    if (!u8aEq((Ed25519PublicKey.derEncode(rawKey)).buffer, key.buffer)) {
+    final rawKey = blobFromUint8Array(key.sublist(Ed25519PublicKey.DER_PREFIX.length));
+    if (!u8aEq((Ed25519PublicKey.derEncode(rawKey)), key)) {
       throw "Ed25519 DER-encoded public key is invalid. A valid Ed25519 DER-encoded public key must have the following prefix: ${Ed25519PublicKey.DER_PREFIX}";
     }
 
@@ -181,7 +178,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
   // `fromRaw` and `fromDer` should be used for instantiation, not this constructor.
   Ed25519KeyIdentity(auth.PublicKey publicKey, this._privateKey) : super() {
     _publicKey = Ed25519PublicKey.from(publicKey);
-    _sk = SigningKey.fromValidBytes(_privateKey.buffer);
+    _sk = SigningKey.fromValidBytes(_privateKey);
   }
 
   /// Serialize this key to JSON.
@@ -191,7 +188,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
 
   /// Return a copy of the key pair.
   auth.KeyPair getKeyPair() {
-    return Ed25519KeyPair(_publicKey, blobFromUint8Array(_privateKey.buffer));
+    return Ed25519KeyPair(_publicKey, blobFromUint8Array(_privateKey));
   }
 
   /// Return the public key.
@@ -205,8 +202,8 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
   @override
   Future<BinaryBlob> sign(dynamic challenge) {
     final blob = challenge is BinaryBlob
-        ? blobFromBuffer(challenge.buffer.buffer)
+        ? blobFromBuffer(challenge.buffer)
         : blobFromUint8Array(challenge as Uint8List);
-    return Future.value(blobFromUint8Array(_sk.sign(blob.buffer).signature.asTypedList));
+    return Future.value(blobFromUint8Array(_sk.sign(blob).signature.asTypedList));
   }
 }

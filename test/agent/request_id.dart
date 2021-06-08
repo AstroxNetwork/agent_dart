@@ -14,14 +14,14 @@ void main() {
 void hashTest() {
   test('IDL label', () async {
     testHashOfBlob(BinaryBlob input, String expected) async {
-      final hashed = hash(input.buffer);
+      final hashed = hash(input);
       final hex = blobToHex(hashed);
       expect(hex, expected);
     }
 
     testHashOfString(String input, String expected) async {
       final encoded = utf8.encode(input);
-      testHashOfBlob(BinaryBlob(Uint8List.fromList(encoded)), expected);
+      testHashOfBlob(BinaryBlob.fromList(encoded), expected);
     }
 
     await testHashOfString(
@@ -41,7 +41,7 @@ void hashTest() {
       '0a3eb2ba16702a387e6321066dd952db7a31f9b5cc92981e0a92dd56802d3df9',
     );
     await testHashOfBlob(
-      BinaryBlob(Uint8List.fromList([0, 0, 0, 0, 0, 0, 4, 210])),
+      BinaryBlob.fromList([0, 0, 0, 0, 0, 0, 4, 210]),
       '4d8c47c3c1c837964011441882d745f7e92d10a40cef0520447c63029eafe396',
     );
     await testHashOfString(
@@ -55,7 +55,7 @@ void hashTest() {
     await testHashOfString(
         'arg', 'b25f03dedd69be07f356a06fe35c1b0ddc0de77dcd9066c4be0c6bbde14b23ff');
     await testHashOfBlob(
-      BinaryBlob(Uint8List.fromList([68, 73, 68, 76, 0, 253, 42])),
+      BinaryBlob.fromList([68, 73, 68, 76, 0, 253, 42]),
       '6c0b2ae49718f6995c02ac5700c9c789d7b7862a0d53e6d40a73f1fcd2f70189',
     );
   });
@@ -68,12 +68,12 @@ void hashTest() {
       // 0x00000000000004D2
       // \x00\x00\x00\x00\x00\x00\x04\xD2
       // 0   0   0   0   0   0   4   210
-      "canister_id": BinaryBlob(Uint8List.fromList([0, 0, 0, 0, 0, 0, 4, 210])),
+      "canister_id": BinaryBlob.fromList([0, 0, 0, 0, 0, 0, 4, 210]),
 
       // DIDL\x00\xFD*
       // D   I   D   L   \x00  \253  *
       // 68  73  68  76  0     253   42
-      "arg": BinaryBlob(Uint8List.fromList([68, 73, 68, 76, 0, 253, 42])),
+      "arg": BinaryBlob.fromList([68, 73, 68, 76, 0, 253, 42]),
     };
 
     final requestId = requestIdOf(request);
