@@ -37,14 +37,14 @@ BinaryBlob hashValue(dynamic value) {
   } else if (value is num) {
     return hash(lebEncode(value));
   } else if (value is Uint8List) {
-    return hash(blobFromUint8Array(value).buffer);
+    return hash(blobFromUint8Array(value));
   } else if (value is Uint8Buffer) {
-    return hash(blobFromUint8Array(Uint8List.fromList(value)).buffer);
+    return hash(blobFromUint8Array(Uint8List.fromList(value)));
   } else if (value is List && (value is! Uint8List)) {
     final vals = value.map(hashValue).toList();
-    return hash(concat(vals).buffer);
+    return hash(concat(vals));
   } else if (value is Principal) {
-    return hash(blobFromUint8Array(value.toUint8Array()).buffer);
+    return hash(blobFromUint8Array(value.toUint8Array()));
   } else if (value is Map && (value as ToHashable).toHash is Function) {
     return hashValue((value as ToHashable).toHash());
     // ignore: todo
@@ -105,8 +105,8 @@ extension CompareListComparableExtension<T extends Comparable<T>> on List<T> {
 RequestId requestIdOf(Map<String, dynamic> request) {
   final hashed = request.entries.where((element) => element.value != null).map((e) {
     final hashedKey = hashString(e.key);
-    final hashedValue = hashValue(e.value is BinaryBlob ? e.value.buffer : e.value);
-    return [hashedKey.buffer, hashedValue.buffer];
+    final hashedValue = hashValue(e.value);
+    return [hashedKey, hashedValue];
   }).toList();
 
   hashed.sort((k1, k2) {
@@ -114,5 +114,5 @@ RequestId requestIdOf(Map<String, dynamic> request) {
   });
 
   var concatenated = u8aConcat(hashed.map((d) => u8aConcat(d)).toList());
-  return RequestId(hash(concatenated).buffer);
+  return RequestId.fromList(hash(concatenated));
 }
