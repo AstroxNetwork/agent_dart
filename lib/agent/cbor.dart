@@ -210,7 +210,7 @@ class BufferEncoder extends ExtraEncoder<BinaryBlob> {
   @override
   void write(cbor.Encoder encoder, BinaryBlob value) {
     var valBuff = Uint8Buffer();
-    valBuff.addAll(value.buffer);
+    valBuff.addAll(value);
     encoder.writeBytes(valBuff);
   }
 }

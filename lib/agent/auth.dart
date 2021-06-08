@@ -48,7 +48,7 @@ abstract class SignIdentity implements Identity {
   /// `Principal.selfAuthenticating()`.
   @override
   Principal getPrincipal() {
-    _principal ??= Principal.selfAuthenticating(getPublicKey().toDer().buffer);
+    _principal ??= Principal.selfAuthenticating(getPublicKey().toDer());
     return _principal!;
   }
 
@@ -131,7 +131,7 @@ IdentityDescriptor createIdentityDescriptor(
   final identityIndicator = identity is SignIdentity
       ? {
           "type": 'PublicKeyIdentity',
-          "publicKey": identity.getPublicKey().toDer().buffer.toHex(include0x: false)
+          "publicKey": identity.getPublicKey().toDer().toHex(include0x: false)
         }
       : {"type": 'AnonymousIdentity'};
   return IdentityDescriptor.fromJson(identityIndicator);

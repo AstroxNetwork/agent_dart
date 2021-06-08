@@ -114,4 +114,14 @@ class Principal {
   String toJson() {
     return toText();
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is Principal ? toHex() == other.toHex() : false;
+  }
+
+  @override
+  // TODO: implement hashCode
+  // ignore: unnecessary_overrides
+  int get hashCode => super.hashCode;
 }
