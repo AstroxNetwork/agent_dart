@@ -250,7 +250,7 @@ class HttpAgent implements Agent {
     //   ..ingress_expiry = newTransformed["body"]["content"]["ingress_expiry"];
 
     // transformedRequest.request = newTransformed["request"];
-    var body = cbor.cborEncode(cbor.initCborSerializer(), newTransformed["body"]);
+    var body = cbor.cborEncode(newTransformed["body"]);
     // print((cbor.cborDecode<Map>(body.buffer)["sender_pubkey"] as Uint8Buffer).length);
 
     final response = await _fetch!(

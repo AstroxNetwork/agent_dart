@@ -31,7 +31,7 @@ extension StringExtension on String {
 
 extension U8aExtension on Uint8List {
   Uint8List toU8a() => u8aUtil.u8aToU8a(this);
-  String toHex({bool include0x = true}) => u8aUtil.u8aToHex(this, include0x: include0x);
+  String toHex({bool include0x = false}) => u8aUtil.u8aToHex(this, include0x: include0x);
   String u8aToString({bool useDartEncode = true}) =>
       u8aUtil.u8aToString(this, useDartEncode: useDartEncode);
   bool eq(Uint8List other) => u8aUtil.u8aEq(this, other);
