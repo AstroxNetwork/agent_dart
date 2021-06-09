@@ -57,10 +57,10 @@ BinaryBlob hashValue(dynamic value) {
     // type-safe.
     // So we want to try all the high-assurance type guards before this 'probable' one.
     return hash(lebEncode(value));
-  } else if (value is BinaryBlob) {
-    return hashValue(value.buffer);
   } else if (value is Expiry) {
     return hashValue(value.toHash());
+  } else if (value is ByteBuffer) {
+    return hashValue(value.asUint8List());
   }
   throw 'Attempt to hash a value of unsupported type: $value';
 }

@@ -65,7 +65,7 @@ abstract class SignIdentity implements Identity {
     return {
       ...request.toJson(),
       "body": {
-        "content": (request as HttpAgentQueryRequest).body.toJson(),
+        "content": (request).body.toJson(),
         "sender_pubkey": getPublicKey().toDer(),
         "sender_sig":
             await sign(blobFromBuffer(u8aConcat([domainSeparator, requestId.buffer]).buffer)),

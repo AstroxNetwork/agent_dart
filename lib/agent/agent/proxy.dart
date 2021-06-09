@@ -254,7 +254,7 @@ class ProxyStubAgent {
         });
         break;
       case ProxyMessageKind.Query:
-        _agent.query(msg.args?[0], msg.args?[1]).then((response) {
+        _agent.query(msg.args?[0], msg.args?[1], msg.args?[2]).then((response) {
           _frontend(ProxyMessageQueryResponse.fromJson({
             "id": msg.id,
             "type": ProxyMessageKind.QueryResponse,
@@ -263,7 +263,7 @@ class ProxyStubAgent {
         });
         break;
       case ProxyMessageKind.Call:
-        _agent.call(msg.args?[0], msg.args?[1]).then((response) {
+        _agent.call(msg.args?[0], msg.args?[1], msg.args?[2]).then((response) {
           _frontend(ProxyMessageCallResponse.fromJson({
             "id": msg.id,
             "type": ProxyMessageKind.CallResponse,
@@ -353,7 +353,7 @@ class ProxyAgent implements Agent {
     }));
   }
 
-  Future<SubmitResponse> call(Principal canisterId, CallOptions fields) {
+  Future<SubmitResponse> call(Principal canisterId, CallOptions fields, Identity? identity) {
     return _sendAndWait(ProxyMessageCallResponse.fromJson({
       "id": _nextId++,
       "type": ProxyMessageKind.Call,
@@ -369,7 +369,7 @@ class ProxyAgent implements Agent {
     }));
   }
 
-  Future<QueryResponse> query(Principal canisterId, QueryFields fields) {
+  Future<QueryResponse> query(Principal canisterId, QueryFields fields, Identity? identity) {
     return _sendAndWait(ProxyMessageQueryResponse.fromJson({
       "id": _nextId++,
       "type": ProxyMessageKind.Query,

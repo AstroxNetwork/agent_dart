@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/utils/extension.dart';
+import 'package:typed_data/typed_buffers.dart';
+import '../api.dart';
 import 'transform.dart';
 
 class ReadRequestType {
@@ -12,7 +17,7 @@ class ReadRequestType {
 
 class SubmitRequestType {
   // ignore: constant_identifier_names
-  static const Call = 'Call';
+  static const Call = 'call';
 }
 
 class Endpoint {
@@ -61,8 +66,10 @@ class CallRequest extends ReadStateRequest {
   late String method_name;
   late BinaryBlob arg;
 
+  @override
   dynamic sender; //: Uint8Array | Principal;
   // ignore: non_constant_identifier_names
+  @override
   late Expiry ingress_expiry;
   late dynamic nonce;
 
@@ -81,7 +88,7 @@ class CallRequest extends ReadStateRequest {
 }
 
 class QueryRequest extends BaseRequest {
-  final String request_type = ReadRequestType.TypeQuery;
+  late String request_type = ReadRequestType.TypeQuery;
   // ignore: non_constant_identifier_names
   late Principal canister_id;
   // ignore: non_constant_identifier_names
@@ -122,12 +129,22 @@ abstract class HttpAgentSubmitRequest extends HttpAgentBaseRequest<CallRequest> 
   late CallRequest body; // CallRequest
 }
 
-abstract class HttpAgentQueryRequest extends HttpAgentBaseRequest<ReadRequest> {
+class HttpAgentQueryRequest extends HttpAgentBaseRequest<BaseRequest> {
   @override
   // ignore: overridden_fields
   String? endpoint = Endpoint.Query;
   @override
-  late ReadRequest body; // ReadRequest
+  late BaseRequest body;
+
+  @override
+  Map<String, dynamic> toJson() {
+    // TODO: implement toJson
+    return {
+      "endpoint": endpoint,
+      "body": body.toJson(),
+      "request": {...request as Map<String, dynamic>}
+    };
+  } // ReadRequest
 }
 
 abstract class UnSigned<T> {
@@ -155,3 +172,103 @@ class HttpAgentRequestTransformFn {
 }
 
 typedef HttpAgentRequestTransformFnCall = Future<HttpAgentRequest?> Function(HttpAgentRequest args);
+
+class HttpResponseBody extends ResponseBody {
+  @override
+  late bool? ok;
+  @override
+  late int? status;
+  @override
+  late String? statusText;
+  late String? body;
+  late Uint8List? arrayBuffer;
+  HttpResponseBody({this.ok, this.status, this.statusText, this.body, this.arrayBuffer}) : super();
+
+  factory HttpResponseBody.fromJson(Map<String, dynamic> map) {
+    return HttpResponseBody(
+        arrayBuffer: map["arrayBuffer"],
+        ok: map["ok"],
+        status: map["status"],
+        statusText: map["statusText"],
+        body: map["body"]);
+  }
+  @override
+  String toString() {
+    // TODO: implement toString
+    return jsonEncode(toJson());
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "ok": ok,
+      "status": status,
+      "statusText": statusText,
+      "body": body,
+      "arrayBuffer": arrayBuffer
+    };
+  }
+}
+
+class CallResponseBody extends SubmitResponse {
+  @override
+  RequestId? requestId;
+  CallResponseBody(
+      {bool? ok,
+      int? status,
+      String? statusText,
+      String? body,
+      Uint8List? arrayBuffer,
+      this.requestId})
+      : super() {
+    response = HttpResponseBody(
+        arrayBuffer: arrayBuffer, status: status, statusText: statusText, body: body, ok: ok);
+  }
+  factory CallResponseBody.fromJson(Map<String, dynamic> map) {
+    return CallResponseBody(
+        arrayBuffer: map["arrayBuffer"],
+        ok: map["ok"],
+        status: map["status"] ?? map["statusCode"],
+        statusText: map["statusText"],
+        body: map["body"],
+        requestId: map["requestId"]);
+  }
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      "ok": response?.ok,
+      "status": response?.status,
+      "statusCode": response?.status,
+      "statusText": response?.statusText,
+      "body": (response as HttpResponseBody).body,
+      "arrayBuffer": (response as HttpResponseBody).arrayBuffer,
+      "requestId": requestId
+    };
+  }
+}
+
+class QueryResponseWithStatus extends QueryResponse {
+  QueryResponseWithStatus();
+  factory QueryResponseWithStatus.fromMap(Map map) {
+    Reply? reply = Reply();
+    if (map["reply"] != null) {
+      reply.arg = (map["reply"]["arg"] as Uint8Buffer).buffer.asUint8List();
+    } else {
+      reply = null;
+    }
+    return QueryResponseWithStatus()
+      ..status = map["status"]
+      ..reject_code = map["reject_code"]
+      ..reject_message = map["reject_message"]
+      ..reply = reply;
+  }
+  toJson() {
+    return {
+      "status": status,
+      "reply": {
+        "arg": reply?.arg,
+      },
+      "rejected_code": reject_code,
+      "rejected_message": reject_message
+    };
+  }
+}

@@ -5,6 +5,7 @@ import 'package:agent_dart/agent/agent/api.dart';
 import 'package:agent_dart/agent/agent/http/transform.dart';
 import 'package:agent_dart/agent/auth.dart';
 import 'package:agent_dart/agent/cbor.dart' as cbor;
+import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/utils/base64.dart' show base64Encode;
@@ -184,9 +185,58 @@ class HttpAgent implements Agent {
   }
 
   @override
-  Future<SubmitResponse> call(Principal canisterId, CallOptions fields) {
-    // TODO: implement call
-    throw UnimplementedError();
+  Future<SubmitResponse> call(Principal canisterId, CallOptions fields, Identity? identity) async {
+    final id = (identity ?? await _identity);
+
+    final canister = Principal.from(canisterId);
+
+    final ecid =
+        fields.effectiveCanisterId != null ? Principal.from(fields.effectiveCanisterId) : canister;
+
+    // ignore: unnecessary_null_comparison
+    final sender = id != null ? id.getPrincipal() : Principal.anonymous();
+
+    CallRequest submit = CallRequest()
+      ..request_type = SubmitRequestType.Call
+      ..canister_id = canister
+      ..method_name = fields.methodName
+      ..arg = fields.arg
+      ..sender = sender
+      ..ingress_expiry = Expiry(DEFAULT_INGRESS_EXPIRY_DELTA_IN_MSECS);
+
+    var rsRequest = HttpAgentCallRequest()
+      ..endpoint = Endpoint.Call
+      ..body = submit
+      ..request = {
+        "method": "POST",
+        "headers": {
+          'Content-Type': 'application/cbor',
+          ..._baseHeaders,
+        },
+      };
+    var transformedRequest = await _transform(rsRequest);
+    Map<String, dynamic> newTransformed = await id!.transformRequest(transformedRequest);
+    var body = cbor.cborEncode(newTransformed["body"]);
+
+    var list = await Future.wait([
+      _fetch!(
+          endpoint: "/api/v2/canister/${ecid.toText()}/call",
+          method: "POST",
+          headers: newTransformed["request"]["headers"],
+          body: body),
+      Future.value(requestIdOf(submit.toJson()))
+    ]);
+
+    var response = list[0] as Map<String, dynamic>;
+    var requestId = list[1] as Uint8List;
+
+    if (!(response["ok"] as bool)) {
+      throw 'Server returned an error:\n' +
+          '  Code: ${response["statusCode"]} (${response["statusText"]})\n' +
+          '  Body: ${response["body"]}\n';
+    }
+
+    return CallResponseBody.fromJson({...response, "requestId": requestId});
   }
 
   @override
@@ -210,9 +260,49 @@ class HttpAgent implements Agent {
   }
 
   @override
-  Future<QueryResponse> query(Principal canisterId, QueryFields options) {
-    // TODO: implement query
-    throw UnimplementedError();
+  Future<QueryResponse> query(Principal canisterId, QueryFields options, Identity? identity) async {
+    final canister = canisterId is String ? Principal.fromText(canisterId as String) : canisterId;
+    final id = (identity ?? await _identity);
+    final sender = id?.getPrincipal() ?? Principal.anonymous();
+
+    var requestBody = QueryRequest()
+      ..request_type = ReadRequestType.TypeQuery
+      ..canister_id = canister
+      ..method_name = options.methodName
+      ..arg = options.arg!
+      ..sender = sender
+      ..ingress_expiry = Expiry(DEFAULT_INGRESS_EXPIRY_DELTA_IN_MSECS);
+
+    var rsRequest = HttpAgentQueryRequest()
+      ..endpoint = Endpoint.Query
+      ..body = requestBody
+      ..request = {
+        "method": "POST",
+        "headers": {
+          'Content-Type': 'application/cbor',
+          ..._baseHeaders,
+        },
+      };
+
+    var transformedRequest = await _transform(rsRequest);
+    Map<String, dynamic> newTransformed = await id!.transformRequest(transformedRequest);
+
+    var body = cbor.cborEncode(newTransformed["body"]);
+    final response = await _fetch!(
+        endpoint: "/api/v2/canister/${canister.toText()}/query",
+        method: "POST",
+        headers: newTransformed["request"]["headers"],
+        body: body);
+
+    if (!(response["ok"] as bool)) {
+      throw 'Server returned an error:\n' +
+          '  Code: ${response["statusCode"]} (${response["statusText"]})\n' +
+          '  Body: ${response["body"]}\n';
+    }
+
+    final buffer = response["arrayBuffer"] as Uint8List;
+
+    return QueryResponseWithStatus.fromMap(cbor.cborDecode<Map>(buffer));
   }
 
   @override
@@ -243,15 +333,7 @@ class HttpAgent implements Agent {
 
     Map<String, dynamic> newTransformed = await id!.transformRequest(transformedRequest);
 
-    // transformedRequest.body = ReadStateRequest()
-    //   ..request_type = newTransformed["body"]["content"]["request_type"]
-    //   ..paths = newTransformed["body"]["content"]["paths"]
-    //   ..sender = newTransformed["body"]["content"]["sender"]
-    //   ..ingress_expiry = newTransformed["body"]["content"]["ingress_expiry"];
-
-    // transformedRequest.request = newTransformed["request"];
     var body = cbor.cborEncode(newTransformed["body"]);
-    // print((cbor.cborDecode<Map>(body.buffer)["sender_pubkey"] as Uint8Buffer).length);
 
     final response = await _fetch!(
         endpoint: "/api/v2/canister/$canister/read_state",
@@ -319,7 +401,7 @@ class HttpAgent implements Agent {
 
         return {
           "body": getResponse.body,
-          "ok": getResponse.statusCode == 200,
+          "ok": getResponse.statusCode >= 200 && getResponse.statusCode < 300,
           "statusCode": getResponse.statusCode,
           "statusText": getResponse.reasonPhrase ?? '',
           "arrayBuffer": getResponse.bodyBytes,
@@ -337,7 +419,7 @@ class HttpAgent implements Agent {
 
         return {
           "body": postResponse.body,
-          "ok": postResponse.statusCode == 200,
+          "ok": postResponse.statusCode >= 200 && postResponse.statusCode < 300,
           "statusCode": postResponse.statusCode,
           "statusText": postResponse.reasonPhrase ?? '',
           "arrayBuffer": postResponse.bodyBytes,
@@ -364,6 +446,18 @@ class HttpAgentReadStateRequest extends HttpAgentQueryRequest {
   @override
   Map<String, dynamic> toJson() {
     // TODO: implement toJson
+    return {
+      "endpoint": endpoint,
+      "body": body.toJson(),
+      "request": {...request as Map<String, dynamic>}
+    };
+  }
+}
+
+class HttpAgentCallRequest extends HttpAgentSubmitRequest {
+  HttpAgentCallRequest() : super();
+  @override
+  Map<String, dynamic> toJson() {
     return {
       "endpoint": endpoint,
       "body": body.toJson(),
