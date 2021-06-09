@@ -1,6 +1,9 @@
 export 'strategy.dart';
 
+import 'dart:typed_data';
+
 import 'package:agent_dart/agent/agent.dart';
+import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/principal/principal.dart';
 
 Future<BinaryBlob> pollForResponse(
@@ -23,7 +26,7 @@ Future<BinaryBlob> pollForResponse(
     // Missing requestId means we need to wait
     status = RequestStatusResponseStatus.Unknown;
   } else {
-    status = maybeBuf.toString();
+    status = maybeBuf.u8aToString();
   }
 
   switch (status) {

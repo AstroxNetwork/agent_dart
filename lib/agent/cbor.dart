@@ -215,6 +215,25 @@ class BufferEncoder extends ExtraEncoder<BinaryBlob> {
   }
 }
 
+class ByteBufferEncoder extends ExtraEncoder<ByteBuffer> {
+  @override
+  String get name => 'ByteBuffer';
+
+  ByteBufferEncoder() : super();
+
+  @override
+  bool match(dynamic value) {
+    return value is ByteBuffer;
+  }
+
+  @override
+  void write(cbor.Encoder encoder, ByteBuffer value) {
+    var valBuff = Uint8Buffer();
+    valBuff.addAll(value.asUint8List());
+    encoder.writeBytes(valBuff);
+  }
+}
+
 class BigIntEncoder extends ExtraEncoder<BigInt> {
   @override
   String get name => 'BigInt';
@@ -242,11 +261,13 @@ SelfDescribeEncoder initCborSerializer() {
   final principalEncoder = PrincipalEncoder();
   final bigIntEncoder = BigIntEncoder();
   final bufferEncoder = BufferEncoder();
+  final byteBufferEncoder = ByteBufferEncoder();
 
   return SelfDescribeEncoder(output)
     ..addEncoder(principalEncoder)
     ..addEncoder(bigIntEncoder)
-    ..addEncoder(bufferEncoder);
+    ..addEncoder(bufferEncoder)
+    ..addEncoder(byteBufferEncoder);
 }
 
 BinaryBlob cborEncode(dynamic value, {SelfDescribeEncoder? withSerializer}) {
