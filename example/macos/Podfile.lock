@@ -1,0 +1,22 @@
+PODS:
+  - agent_dart (0.0.1):
+    - FlutterMacOS
+  - FlutterMacOS (1.0.0)
+
+DEPENDENCIES:
+  - agent_dart (from `Flutter/ephemeral/.symlinks/plugins/agent_dart/macos`)
+  - FlutterMacOS (from `Flutter/ephemeral`)
+
+EXTERNAL SOURCES:
+  agent_dart:
+    :path: Flutter/ephemeral/.symlinks/plugins/agent_dart/macos
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+
+SPEC CHECKSUMS:
+  agent_dart: 6bb575f5016dfccfae6a48da293b7855514cb7de
+  FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
+
+PODFILE CHECKSUM: 6eac6b3292e5142cfc23bdeb71848a40ec51c14c
+
+COCOAPODS: 1.10.0.rc.1
