@@ -1,7 +1,9 @@
+import 'dart:ffi';
 import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:agent_dart/utils/extension.dart';
+import 'package:ffi/ffi.dart';
 import 'ffi_base.dart';
 import 'ffi_helper.dart';
 
@@ -37,8 +39,10 @@ void _isolateBlsInit(SendPort initialReplyTo) {
 
   port.listen((message) async {
     try {
+      Pointer<Utf8> result = rustBlsInit();
       final send = message.last as SendPort;
-      send.send(rustBlsInit() == 1);
+      send.send(result.cast<Utf8>().toDartString() == "true");
+      freeCString(result);
     } catch (e) {
       message.last.send(e);
     }
@@ -90,7 +94,9 @@ void _isolateBlsVerify(SendPort initialReplyTo) {
       final msg = message[1] as String;
       final pk = message[2] as String;
       final send = message.last as SendPort;
-      send.send(rustBlsVerify(sig.toUtf8(), msg.toUtf8(), pk.toUtf8()) == 1);
+      Pointer<Utf8> result = rustBlsVerify(sig.toUtf8(), msg.toUtf8(), pk.toUtf8());
+      send.send(result.cast<Utf8>().toDartString() == "true");
+      freeCString(result);
     } catch (e) {
       message.last.send(e);
     }
