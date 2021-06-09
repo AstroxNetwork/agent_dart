@@ -13,7 +13,7 @@ cp "./target/universal/release/lib${LIB_NAME}.a" "../ios/lib${LIB_NAME}.a"
 
 echo "#import <Flutter/Flutter.h>
 
-@interface PolkadotDartPlugin : NSObject<FlutterPlugin>
-@end" > ../ios/Classes/PolkadotDartPlugin.h
+@interface AgentDartPlugin : NSObject<FlutterPlugin>
+@end" > ../ios/Classes/AgentDartPlugin.h
 
-cat ./target/bindings.h >> ../ios/Classes/PolkadotDartPlugin.h
+cat ./target/bindings.h >> ../ios/Classes/AgentDartPlugin.h
