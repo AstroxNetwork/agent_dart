@@ -4,11 +4,10 @@ import 'package:agent_dart/agent/agent.dart';
 import 'package:agent_dart/principal/principal.dart';
 
 typedef PollStrategy = Future<void> Function(
-    Principal canisterId, RequestId requestId, RequestStatusResponseStatus status);
+    Principal canisterId, RequestId requestId, String status);
 typedef PollStrategyFactory = PollStrategy Function();
 
-typedef Predicate<T> = Future<T> Function(
-    Principal canisterId, RequestId requestId, RequestStatusResponseStatus status);
+typedef Predicate<T> = Future<T> Function(Principal canisterId, RequestId requestId, String status);
 
 // ignore: constant_identifier_names
 const FIVE_MINUTES_IN_MSEC = 5 * 60 * 1000;
@@ -19,7 +18,7 @@ PollStrategy defaultStrategy() {
 
 Predicate<bool> once() {
   var first = true;
-  return (Principal canisterId, RequestId requestId, RequestStatusResponseStatus status) async {
+  return (Principal canisterId, RequestId requestId, String status) async {
     if (first) {
       first = false;
       return true;
@@ -32,7 +31,7 @@ PollStrategy conditionalDelay(Predicate<bool> condition, int timeInMsec) {
   return (
     Principal canisterId,
     RequestId requestId,
-    RequestStatusResponseStatus status,
+    String status,
   ) async {
     if (await condition(canisterId, requestId, status)) {
       var c = Completer();
@@ -47,7 +46,7 @@ PollStrategy maxAttempts(int count) {
   return (
     Principal canisterId,
     RequestId requestId,
-    RequestStatusResponseStatus status,
+    String status,
   ) async {
     if (--attempts <= 0) {
       throw "Failed to retrieve a reply for request after $count attempts:\n" +
@@ -60,7 +59,7 @@ PollStrategy maxAttempts(int count) {
 /// Throttle polling.
 /// @param throttleInMsec Amount in millisecond to wait between each polling.
 PollStrategy throttle(int throttleInMsec) {
-  return (Principal canisterId, RequestId requestId, RequestStatusResponseStatus status) async {
+  return (Principal canisterId, RequestId requestId, String status) async {
     var c = Completer();
     Future.delayed(Duration(milliseconds: throttleInMsec), c.complete);
     return c.future;
@@ -72,7 +71,7 @@ PollStrategy timeout(int timeInMsec) {
   return (
     Principal canisterId,
     RequestId requestId,
-    RequestStatusResponseStatus status,
+    String status,
   ) async {
     if (DateTime.now().millisecondsSinceEpoch > end) {
       throw "Request timed out after $timeInMsec msec:\n" +
@@ -85,7 +84,7 @@ PollStrategy timeout(int timeInMsec) {
 PollStrategy backoff(num startingThrottleInMsec, num backoffFactor) {
   num currentThrottling = startingThrottleInMsec;
 
-  return (Principal canisterId, RequestId requestId, RequestStatusResponseStatus status) {
+  return (Principal canisterId, RequestId requestId, String status) {
     var c = Completer();
     Future.delayed(Duration(milliseconds: (currentThrottling).toInt()), () {
       currentThrottling *= backoffFactor;
@@ -99,7 +98,7 @@ PollStrategy chain(List<PollStrategy> strategies) {
   return (
     Principal canisterId,
     RequestId requestId,
-    RequestStatusResponseStatus status,
+    String status,
   ) async {
     for (var a in strategies) {
       await a(canisterId, requestId, status);

@@ -39,6 +39,25 @@ class Cert {
   List? tree;
   Uint8List? signature;
   Delegation? delegation;
+
+  Cert({this.tree, this.signature, this.delegation});
+  factory Cert.fromJson(Map json) {
+    return Cert(
+        delegation: json["delegation"] != null
+            ? Delegation.fromJson(Map<String, dynamic>.from(json["delegation"]))
+            : null,
+        signature: json["signature"] != null
+            ? (json["signature"] as Uint8Buffer).buffer.asUint8List()
+            : null,
+        tree: json["tree"]);
+  }
+  toJson() {
+    return {
+      "tree": tree,
+      "signature": signature,
+      "delegation": delegation != null ? delegation!.toJson() : {}
+    };
+  }
 }
 
 /// Make a human readable string out of a hash tree.
@@ -88,7 +107,7 @@ class Delegation implements ReadStateResponse {
         json["subnet_id"],
         json["certificate"] is Uint8List
             ? blobFromUint8Array(json["certificate"])
-            : json["certificate"] as BinaryBlob);
+            : Uint8List.fromList([]));
   }
   toJson() {
     return {"subnet_id": subnet_id, "certificate": certificate};
@@ -102,7 +121,7 @@ class Certificate {
 
   Agent _agent;
   Certificate(ReadStateResponse response, this._agent) {
-    cert = cborDecode(response.certificate);
+    cert = Cert.fromJson(cborDecode(response.certificate));
   }
 
   Uint8List? lookupEx(List path) {
@@ -134,7 +153,7 @@ class Certificate {
 
   Future<Uint8List> _checkDelegation(Delegation? d) async {
     if (d == null) {
-      if (_rootKey != null) {
+      if (_rootKey == null) {
         if (_agent.rootKey != null) {
           _rootKey = _agent.rootKey;
           return Future.value(_rootKey);
@@ -236,7 +255,7 @@ Uint8List? lookupPath(List path, List tree) {
     switch (tree[0]) {
       case NodeId.Leaf:
         {
-          return (tree[1] as Uint8List);
+          return (tree[1] as Uint8Buffer).buffer.asUint8List();
         }
       default:
         {
@@ -244,7 +263,8 @@ Uint8List? lookupPath(List path, List tree) {
         }
     }
   }
-  final t = findLabel(path[0], flattenForks(tree));
+  final t = findLabel(
+      path[0] is ByteBuffer ? (path[0] as ByteBuffer).asUint8List() : path[0], flattenForks(tree));
   if (t != null) {
     return lookupPath(path.sublist(1), t);
   }
@@ -269,7 +289,7 @@ List? findLabel(Uint8List l, List<List> trees) {
   }
   for (var t in trees) {
     if (t[0] == NodeId.Labeled) {
-      var p = (t[1] as Uint8List);
+      var p = (t[1] as Uint8Buffer).buffer.asUint8List();
       if (u8aEq(l, p)) {
         return t[2] as List;
       }

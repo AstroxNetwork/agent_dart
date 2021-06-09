@@ -36,6 +36,8 @@ class Principal {
       return Principal.fromText(other);
     } else if (other is Map<String, dynamic> && other['_isPrincipal'] == true) {
       return Principal(other['_arr']);
+    } else if (other is Principal) {
+      return Principal(other._arr);
     }
 
     throw 'Impossible to convert ${jsonEncode(other)} to Principal.';

@@ -44,18 +44,18 @@ abstract class QueryResponse extends QueryResponseBase {
   String? reject_message;
 }
 
-abstract class Reply {
+class Reply {
   BinaryBlob? arg;
 }
 
-abstract class QueryResponseReplied extends QueryResponseBase {
+class QueryResponseReplied extends QueryResponseBase {
   @override
   // ignore: overridden_fields
   final String status = QueryResponseStatus.Replied;
   Reply? reply;
 }
 
-abstract class QueryResponseRejected extends QueryResponseBase {
+class QueryResponseRejected extends QueryResponseBase {
   @override
   // ignore: overridden_fields
   final String status = QueryResponseStatus.Rejected;
@@ -66,7 +66,7 @@ abstract class QueryResponseRejected extends QueryResponseBase {
 }
 
 /// Options when doing a {@link Agent.query} call.
-abstract class QueryFields {
+class QueryFields {
   /// The method name to call.
   late String methodName;
 
@@ -75,7 +75,7 @@ abstract class QueryFields {
 }
 
 /// Options when doing a {@link Agent.call} call.
-abstract class CallOptions {
+class CallOptions {
   /// The method name to call.
   late String methodName;
 
@@ -119,7 +119,7 @@ abstract class Agent {
   Future<ReadStateResponse> readState(
       Principal effectiveCanisterId, ReadStateOptions options, Identity? identity);
 
-  Future<SubmitResponse> call(Principal canisterId, CallOptions fields);
+  Future<SubmitResponse> call(Principal canisterId, CallOptions fields, Identity? identity);
 
   /// Query the status endpoint of the replica. This normally has a few fields that
   /// corresponds to the version of the replica, its root public key, and any other
@@ -136,7 +136,7 @@ abstract class Agent {
   /// @returns The response from the replica. The Promise will only reject when the communication
   ///     failed. If the query itself failed but no protocol errors happened, the response will
   ///     be of type QueryResponseRejected.
-  Future<QueryResponse> query(Principal canisterId, QueryFields options);
+  Future<QueryResponse> query(Principal canisterId, QueryFields options, Identity? identity);
 
   /// By default, the agent is configured to talk to the main Internet Computer,
   /// and verifies responses using a hard-coded public key.
