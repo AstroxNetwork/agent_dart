@@ -353,6 +353,7 @@ class ProxyAgent implements Agent {
     }));
   }
 
+  @override
   Future<SubmitResponse> call(Principal canisterId, CallOptions fields, Identity? identity) {
     return _sendAndWait(ProxyMessageCallResponse.fromJson({
       "id": _nextId++,

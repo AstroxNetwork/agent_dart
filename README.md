@@ -28,5 +28,17 @@ TBD
 - All rust method have to be written inside `SwiftAgentDartPlugin.swift`, to avoid tree shaking of latest release build by XCode.
 - The `agent_dart_podspec` should change accordingly when this repo goes 1.0.0
 
+### macos
+
+- open Xcode and build
+
+[macOS] SocketException: Connection failed (OS Error: Operation not permitted, errno = 1)
+Add
+```
+<key>com.apple.security.network.client</key>
+<true/>
+```
+To file `DebugProfile.entitlements` and `ReleaseProfile.entitlements` under directory macos/Runner/
+
 ### Example
 TBD
