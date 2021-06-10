@@ -245,3 +245,68 @@ class DelegationChain {
     };
   }
 }
+
+/// An Identity that adds delegation to a request. Everywhere in this class, the name
+/// innerKey refers to the SignIdentity that is being used to sign the requests, while
+/// originalKey is the identity that is being borrowed. More identities can be used
+/// in the middle to delegate.
+class DelegationIdentity extends SignIdentity {
+  /// Create a delegation without having access to delegateKey.
+  ///
+  /// @param key The key used to sign the reqyests.
+  /// @param delegation A delegation object created using `createDelegation`.
+  static DelegationIdentity fromDelegation(
+    SignIdentity key,
+    DelegationChain delegation,
+  ) {
+    return DelegationIdentity(key, delegation);
+  }
+
+  final SignIdentity _inner;
+  final DelegationChain _delegation;
+
+  DelegationIdentity(
+    this._inner,
+    this._delegation,
+  ) : super();
+
+  DelegationChain getDelegation() {
+    return _delegation;
+  }
+
+  @override
+  PublicKey getPublicKey() {
+    return DelegationIdentityPublicKey(_delegation.publicKey);
+  }
+
+  @override
+  Future<BinaryBlob> sign(BinaryBlob blob) => _inner.sign(blob);
+
+  @override
+  Future<dynamic> transformRequest(HttpAgentRequest request) async {
+    var body = request.body.toJson();
+    var fields = request.toJson();
+    final requestId = requestIdOf(body);
+    return {
+      ...fields,
+      body: {
+        "content": body,
+        "sender_sig": await sign(
+          blobFromUint8Array(u8aConcat([requestDomainSeparator, requestId])),
+        ),
+        "sender_delegation": _delegation.delegations,
+        "sender_pubkey": _delegation.publicKey,
+      },
+    };
+  }
+}
+
+class DelegationIdentityPublicKey extends PublicKey {
+  final DerEncodedBlob _result;
+  DelegationIdentityPublicKey(this._result);
+
+  @override
+  DerEncodedBlob toDer() {
+    return _result;
+  }
+}
