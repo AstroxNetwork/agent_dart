@@ -26,9 +26,6 @@
 		33CC10F32044A3C60003C045 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F22044A3C60003C045 /* Assets.xcassets */; };
 		33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F42044A3C60003C045 /* MainMenu.xib */; };
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
-		4ABE4CB726708A8500E6B76B /* libagent_dart.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ABE4CB626708A8500E6B76B /* libagent_dart.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
-		4ABE4CBC26708D4100E6B76B /* libagent_dart.dylib in Resources */ = {isa = PBXBuildFile; fileRef = 4ABE4CB626708A8500E6B76B /* libagent_dart.dylib */; };
-		4ABE4CBD26708D4D00E6B76B /* libagent_dart.dylib in Bundle Framework */ = {isa = PBXBuildFile; fileRef = 4ABE4CB626708A8500E6B76B /* libagent_dart.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4ECB37ABA2C7142440B343AD /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FFC04AC2037C7396F8D9D58 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
@@ -45,11 +42,10 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		33CC110E2044A8840003C045 /* Bundle Framework */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				4ABE4CBD26708D4D00E6B76B /* libagent_dart.dylib in Bundle Framework */,
 			);
 			name = "Bundle Framework";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -86,7 +82,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4ECB37ABA2C7142440B343AD /* Pods_Runner.framework in Frameworks */,
-				4ABE4CB726708A8500E6B76B /* libagent_dart.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,7 +248,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				33CC10F32044A3C60003C045 /* Assets.xcassets in Resources */,
-				4ABE4CBC26708D4100E6B76B /* libagent_dart.dylib in Resources */,
 				33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

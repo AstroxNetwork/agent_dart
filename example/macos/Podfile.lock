@@ -14,7 +14,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral
 
 SPEC CHECKSUMS:
-  agent_dart: 6bb575f5016dfccfae6a48da293b7855514cb7de
+  agent_dart: bc1e2332674efbbf626746efa6a0b0169fbdab2b
   FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
 
 PODFILE CHECKSUM: 6eac6b3292e5142cfc23bdeb71848a40ec51c14c

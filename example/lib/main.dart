@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
-import 'package:agent_dart/agent_dart.dart';
+import 'counter.dart';
+import 'init.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,56 +14,32 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  HttpAgent? _agent;
-  CanisterActor? _actor;
   int _count = 0;
   bool _loading = false;
+  late Counter _counter;
 
   @override
   void initState() {
     super.initState();
-    initAgent();
+    initCounter();
+    loading(true);
+    readCount();
   }
 
-  void initAgent() async {
-    var id = Ed25519KeyIdentity.generate(null);
-    _agent = HttpAgent(
-        defaultProtocol: 'http',
-        defaultHost: '192.168.2.216',
-        deaultPort: ':60916',
-        options: HttpAgentOptions()..identity = id);
-    if (_agent != null) {
-      await _agent?.fetchRootKey();
-      loading(true);
-      _agent?.addTransform(HttpAgentRequestTransformFn()..call = makeNonceTransform());
-      createActor(_agent!);
-      readCount();
-    }
+  void initCounter() {
+    _counter = AgentFactory.create(
+            canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai", url: "http://192.168.3.11:60916", idl: idl)
+        .hook(Counter());
   }
 
-  loading(bool state) {
+  void loading(bool state) {
     setState(() {
       _loading = state;
     });
   }
 
-  createActor(HttpAgent agent) {
-    var canisterId = Principal.fromText("ryjl3-tyaaa-aaaaa-aaaba-cai");
-    // var canisterId = await Actor.createCanister(CallConfig.fromMap({"agent": agent}));
-    // Actor.install(FieldOptions.fromMap({"module": blobFromUint8Array(wasm)}),
-    //     ActorConfig.fromMap({"canisterId": canisterId, "agent": agent}));
-
-    var idl = IDL.Service({
-      'getValue': IDL.Func([], [IDL.Nat], ['query']),
-      'increment': IDL.Func([], [], []),
-    });
-
-    _actor =
-        Actor.createActor(idl, ActorConfig.fromMap({"canisterId": canisterId, "agent": agent}));
-  }
-
   void readCount() async {
-    var c = (await _actor?.getFunc("getValue")?.call([]) as BigInt).toInt();
+    int c = await _counter.count();
     loading(false);
     setState(() {
       _count = c;
@@ -74,7 +48,7 @@ class _MyAppState extends State<MyApp> {
 
   void increase() async {
     loading(true);
-    await _actor?.getFunc("increment")?.call([]);
+    await _counter.add();
     readCount();
   }
 
@@ -90,7 +64,7 @@ class _MyAppState extends State<MyApp> {
         ),
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
-          onPressed: () {
+          onPressed: () async {
             increase();
           },
         ),
