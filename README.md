@@ -6,11 +6,7 @@ This repo is built for Internet Computer, using Dart-lang as its agent client wh
 
 1. git clone
 2. install latest flutter and rust env
-3. 
-   ```
-   cd example && flutter run
-
-   ```
+3. Follow instructions written in `README.md` under `example` folder
 
 
 ## Motivation
