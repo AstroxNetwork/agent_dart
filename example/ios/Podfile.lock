@@ -2,20 +2,26 @@ PODS:
   - agent_dart (0.0.1):
     - Flutter
   - Flutter (1.0.0)
+  - flutter_web_auth (0.3.0):
+    - Flutter
 
 DEPENDENCIES:
   - agent_dart (from `.symlinks/plugins/agent_dart/ios`)
   - Flutter (from `Flutter`)
+  - flutter_web_auth (from `.symlinks/plugins/flutter_web_auth/ios`)
 
 EXTERNAL SOURCES:
   agent_dart:
     :path: ".symlinks/plugins/agent_dart/ios"
   Flutter:
     :path: Flutter
+  flutter_web_auth:
+    :path: ".symlinks/plugins/flutter_web_auth/ios"
 
 SPEC CHECKSUMS:
   agent_dart: 8eb7e60941a45d1fd6a861bde1ce208e41956a0d
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  flutter_web_auth: ede89bf8107b021cf16e769756d267d84d24e88b
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
 
