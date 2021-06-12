@@ -55,22 +55,22 @@ class _MyAppState extends State<MyApp> {
     readCount();
   }
 
-  void authenticate() async {
-    const url = 'http://rkp4c-7iaaa-aaaaa-aaaca-cai.localhost:8000/#authorize';
-    const callbackUrlScheme = 'identity';
+  // void authenticate() async {
+  //   const url = 'http://rkp4c-7iaaa-aaaaa-aaaca-cai.localhost:8000/#authorize';
+  //   const callbackUrlScheme = 'identity';
 
-    try {
-      final result =
-          await FlutterWebAuth.authenticate(url: url, callbackUrlScheme: callbackUrlScheme);
-      setState(() {
-        _status = 'Got result: $result';
-      });
-    } on PlatformException catch (e) {
-      setState(() {
-        _status = 'Got error: $e';
-      });
-    }
-  }
+  //   try {
+  //     final result =
+  //         await FlutterWebAuth.authenticate(url: url, callbackUrlScheme: callbackUrlScheme);
+  //     setState(() {
+  //       _status = 'Got result: $result';
+  //     });
+  //   } on PlatformException catch (e) {
+  //     setState(() {
+  //       _status = 'Got error: $e';
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -85,11 +85,11 @@ class _MyAppState extends State<MyApp> {
             Container(
               height: 30,
             ),
-            ElevatedButton(
-                onPressed: () {
-                  authenticate();
-                },
-                child: const Text("Authroize"))
+            // ElevatedButton(
+            //     onPressed: () {
+            //       authenticate();
+            //     },
+            //     child: const Text("Authroize"))
           ]),
         ),
         floatingActionButton: FloatingActionButton(

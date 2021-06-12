@@ -1,16 +1,57 @@
 # agent_dart_example
 
-Demonstrates how to use the agent_dart plugin.
+## how to run example
 
-## Getting Started
+1. use [create-ic-app](https://github.com/MioQuispe/create-ic-app) to do this
+2. dfx port is running randomly. You should be seeing that after you run:
+    ```
+    dfx start --background
+    ```
+    Usually, it is 5 digits integer. like `60916`
 
-This project is a starting point for a Flutter application.
+3. write down the counter(*NOT* front end assets) canister id:
 
-A few resources to get you started if this is your first Flutter project:
+    eg:
+    ```bash
+    Installing canisters...
+    Creating UI canister on the local network.
+    The UI canister on the "local" network is "r7inp-6aaaa-aaaaa-aaabq-cai" # <<< !NOT! this one
+    Installing code for canister assets, with canister_id rrkah-fqaaa-aaaaa-aaaaq-cai # <<< !NOT! this one
+    ...
+    ...
+    Installing code for canister counter, with canister_id ryjl3-tyaaa-aaaaa-aaaba-cai # <<< THIS IS CORRECT !!
+    Deployed canisters.
+    ```
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+4. change `lib/main.dart` 
+   
+   ```dart
+    void initCounter() {
+    _counter = AgentFactory.create(
+            canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai", url: "http://localhost:60916", idl: idl)
+        .hook(Counter());
+  }
+   ```
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+5. run flutter
+
+   use android emulator or ios emulator to run
+
+    ```bash
+    flutter run
+    ```
+
+   if you want to run flutter on macos, please do the following:
+
+   A) first `flutter run -d macos`, it will build and run first.
+   B) Then you will came up with an error:
+      ```
+      SocketException: Connection failed (OS Error: Operation not permitted, errno = 1)
+      ```
+   
+    Go to  file `DebugProfile.entitlements` and `ReleaseProfile.entitlements` under directory macos/Runner/, add the following:
+    ```
+    <key>com.apple.security.network.client</key>
+    <true/>
+    ```
+    
