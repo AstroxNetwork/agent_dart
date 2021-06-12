@@ -2,7 +2,13 @@
 
 ## how to run example
 
-1. use [create-ic-app](https://github.com/MioQuispe/create-ic-app) to do this
+1. use [create-ic-app](https://github.com/MioQuispe/create-ic-app) to bootstrap a local canister project
+   
+   Follow instructions here:
+   [https://github.com/MioQuispe/create-ic-app#get-started](https://github.com/MioQuispe/create-ic-app#get-started)
+
+   It will runs a example `counter` canister on your machine. 
+
 2. dfx port is running randomly. You should be seeing that after you run:
     ```
     dfx start --background
@@ -23,7 +29,7 @@
     Deployed canisters.
     ```
 
-4. change `lib/main.dart` 
+4. go back to `agent_example`, change `lib/main.dart` 
    
     ```dart
         void initCounter() {
@@ -46,15 +52,15 @@
 
    if you want to run flutter on macos, please do the following:
 
-   A) first `flutter run -d macos`, it will build and run first.
-   B) Then you will came up with an error:
-      ```
-      SocketException: Connection failed (OS Error: Operation not permitted, errno = 1)
-      ```
+    - first `flutter run -d macos`, it will build and run first.
+    - Then you will came up with an error:
+        ```
+        SocketException: Connection failed (OS Error: Operation not permitted, errno = 1)
+        ```
    
-    Go to  file `DebugProfile.entitlements` and `ReleaseProfile.entitlements` under directory macos/Runner/, add the following:
-    ```
-    <key>com.apple.security.network.client</key>
-    <true/>
-    ```
+    - Go to  file `DebugProfile.entitlements` and `ReleaseProfile.entitlements` under directory macos/Runner/, add the following:
+        ```
+        <key>com.apple.security.network.client</key>
+        <true/>
+        ```
     
