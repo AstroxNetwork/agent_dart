@@ -25,13 +25,16 @@
 
 4. change `lib/main.dart` 
    
-   ```dart
-    void initCounter() {
-    _counter = AgentFactory.create(
-            canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai", url: "http://localhost:60916", idl: idl)
-        .hook(Counter());
-  }
-   ```
+    ```dart
+        void initCounter() {
+        _counter = AgentFactory.create(
+                canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai", // << change this
+                url: "http://localhost:60916", //<< change the port
+                idl: idl
+                )
+            .hook(Counter());
+        }
+    ```
 
 5. run flutter
 
