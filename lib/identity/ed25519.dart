@@ -202,8 +202,8 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
   @override
   Future<BinaryBlob> sign(dynamic challenge) {
     final blob = challenge is BinaryBlob
-        ? blobFromBuffer(challenge.buffer)
-        : blobFromUint8Array(challenge as Uint8List);
+        ? blobFromUint8Array(challenge)
+        : blobFromBuffer(challenge as ByteBuffer);
     return Future.value(blobFromUint8Array(_sk.sign(blob).signature.asTypedList));
   }
 }

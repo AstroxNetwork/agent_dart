@@ -23,7 +23,7 @@ class Counter extends ActorHook {
 
   Future<int> count() async {
     try {
-      var res = await actor.getFunc(CounterMethod.count)?.call([]);
+      var res = await actor.getFunc(CounterMethod.count)!([]);
       if (res != null) {
         return (res as BigInt).toInt();
       }
@@ -35,7 +35,7 @@ class Counter extends ActorHook {
 
   Future<void> add() async {
     try {
-      await actor.getFunc(CounterMethod.add)?.call([]);
+      await actor.getFunc(CounterMethod.add)!([]);
     } catch (e) {
       rethrow;
     }
