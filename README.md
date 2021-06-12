@@ -2,6 +2,17 @@
 
 This repo is built for Internet Computer, using Dart-lang as its agent client which allows dart/flutter apps can interact with Dfinity's blockchain directly.
 
+# Quick start
+
+1. git clone
+2. install latest flutter and rust env
+3. 
+   ```
+   cd example && flutter run
+
+   ```
+
+
 ## Motivation
 
 The Internet Computer is powered by blockchain and its major impact is to bring WebApp to be truly decentralized. However, we are in the mobile internet era, even we can use Safari or Chrome on our cell phones. But most average people, not crypto enthusiasts, are likely to use native mobile apps, major users are there. 
