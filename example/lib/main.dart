@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'counter.dart';
 import 'init.dart';
 
@@ -16,6 +18,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _count = 0;
   bool _loading = false;
+  String _status = "No Status";
   late Counter _counter;
 
   @override
@@ -28,7 +31,7 @@ class _MyAppState extends State<MyApp> {
 
   void initCounter() {
     _counter = AgentFactory.create(
-            canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai", url: "http://192.168.3.11:60916", idl: idl)
+            canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai", url: "http://localhost:60916", idl: idl)
         .hook(Counter());
   }
 
@@ -52,6 +55,23 @@ class _MyAppState extends State<MyApp> {
     readCount();
   }
 
+  void authenticate() async {
+    const url = 'http://rkp4c-7iaaa-aaaaa-aaaca-cai.localhost:8000/#authorize';
+    const callbackUrlScheme = 'identity';
+
+    try {
+      final result =
+          await FlutterWebAuth.authenticate(url: url, callbackUrlScheme: callbackUrlScheme);
+      setState(() {
+        _status = 'Got result: $result';
+      });
+    } on PlatformException catch (e) {
+      setState(() {
+        _status = 'Got error: $e';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -60,7 +80,17 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Dfinity flutter Dapp'),
         ),
         body: Center(
-          child: Text(_loading ? 'loading contract count' : '$_count'),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text(_loading ? 'loading contract count' : '$_count'),
+            Container(
+              height: 30,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  authenticate();
+                },
+                child: const Text("Authroize"))
+          ]),
         ),
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
