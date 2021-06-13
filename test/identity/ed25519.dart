@@ -103,6 +103,7 @@ void ed25519Test() {
       "publicKey":
           blobFromHex('3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29').buffer,
       "secretKey": blobFromHex(
+        // ignore: prefer_adjacent_string_concatenation
         '0000000000000000000000000000000000000000000000000000000000000000' +
             '3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29',
       ).buffer,
