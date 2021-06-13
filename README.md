@@ -4,7 +4,7 @@ An agent library built for Internet Computer, a plugin package for dart and flut
 
 ---
 
-## Table of content
+## 📃 Table of content
 
    1. [Table of content](#table-of-content)
    2. [Prerequisites](#prerequisites)
@@ -18,7 +18,7 @@ An agent library built for Internet Computer, a plugin package for dart and flut
    
 ---
 
-## Prerequisites
+## 🚦 Prerequisites
 * [Flutter](https://flutter.dev/docs/get-started/install) version in the `agent_dart/pubspec.yaml`
 * [CMake](https://cmake.org/) v3.2.0 or later
 * [Xcode](https://developer.apple.com/xcode/) (10.12) or later (Running on macOS or iOS)
@@ -27,7 +27,7 @@ An agent library built for Internet Computer, a plugin package for dart and flut
 * [Node.js](https://nodejs.org/) v15.0 or later, TBD
 
 ---
-## Quick start 
+## ⚡️ Quick start 
 1. git clone
 2. install [Prerequisites](#prerequisites), make sure you run
 3.  
@@ -43,7 +43,7 @@ An agent library built for Internet Computer, a plugin package for dart and flut
    ```
 ---
 
-## Motivation
+## 🧘‍♂️ Motivation
 
 The Internet Computer is powered by blockchain and its major impact is to bring WebApp to be truly decentralized. However, we are in the mobile internet era, even we can use Safari or Chrome on our cell phones. But most average people, not crypto enthusiasts, are likely to use native mobile apps, major users are there. 
 
@@ -54,17 +54,17 @@ It's important to attract these people to use Dapps of Internet Computer, by pro
 We have tried our best to migrate most interface styles just like Javascript version, but there are limitations and differences between different programming languages, we will document them as much as possible.
 
 ---
-## Milestones
+## 🏆 Milestones
 [Milestones Tracker](https://github.com/AstroxNetwork/agent_dart/milestones)
 
 ---
-## Documentation
+## 📘 Documentation
 (*TBD*) Reference on pub.dev
 
 [Plan for docs site](https://github.com/AstroxNetwork/agent_dart/milestone/2)
 
 ---
-## Contribution guideline
+## 👨‍💻 Contribution guideline
 
 By contributing to agent_dart, you agree that your contributions will be licensed under its MIT License.
 
@@ -100,7 +100,7 @@ By contributing to agent_dart, you agree that your contributions will be license
 
 ---
 
-## Reference and related projects
+## 🔗 Reference and related projects
 
 * Official libraries from Dfinity's team:
   - [agent-rs](https://github.com/dfinity/agent-rs)
@@ -109,7 +109,7 @@ By contributing to agent_dart, you agree that your contributions will be license
 
 ---
 
-## FAQ
+## ⚠️ FAQ
 
 ### Build rust libraries for iOS/macOS
 - All rust method have to be written inside `SwiftAgentDartPlugin.swift`, to avoid tree shaking of latest release build by XCode.
