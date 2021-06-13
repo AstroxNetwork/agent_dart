@@ -1,6 +1,11 @@
+// import 'package:agent_dart/agent/cbor.dart';
+import 'package:agent_dart/identity/ed25519.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
+import 'package:agent_dart/utils/extension.dart';
+// import 'package:url_launcher/link.dart';
+// import 'package:url_launcher/url_launcher.dart';
 import 'counter.dart';
 import 'init.dart';
 
@@ -19,6 +24,7 @@ class _MyAppState extends State<MyApp> {
   int _count = 0;
   bool _loading = false;
   String _status = "No Status";
+  String _pub = "";
   late Counter _counter;
 
   @override
@@ -30,9 +36,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   void initCounter() {
-    _counter = AgentFactory.create(
-            canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai", url: "http://localhost:60916", idl: idl)
-        .hook(Counter());
+    var agent = AgentFactory.create(
+        canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai", url: "http://localhost:60916", idl: idl);
+
+    _counter = agent.hook(Counter());
+    _pub =
+        (agent.identity as Ed25519KeyIdentity).getPublicKey().toDer().buffer.asUint8List().toHex();
   }
 
   void loading(bool state) {
@@ -55,22 +64,33 @@ class _MyAppState extends State<MyApp> {
     readCount();
   }
 
-  // void authenticate() async {
-  //   const url = 'http://rkp4c-7iaaa-aaaaa-aaaca-cai.localhost:8000/#authorize';
-  //   const callbackUrlScheme = 'identity';
+  void authenticate() async {
+    final url =
+        'http://rkp4c-7iaaa-aaaaa-aaaca-cai.localhost:8000/#authorize?callback_uri=identity://auth&&sessionPublicKey=$_pub';
+    const callbackUrlScheme = 'identity';
 
-  //   try {
-  //     final result =
-  //         await FlutterWebAuth.authenticate(url: url, callbackUrlScheme: callbackUrlScheme);
-  //     setState(() {
-  //       _status = 'Got result: $result';
-  //     });
-  //   } on PlatformException catch (e) {
-  //     setState(() {
-  //       _status = 'Got error: $e';
-  //     });
-  //   }
-  // }
+    try {
+      final result =
+          await FlutterWebAuth.authenticate(url: url, callbackUrlScheme: callbackUrlScheme);
+
+      // var resultUri = Uri.parse(result);
+
+      // if (resultUri.queryParameters["success"] == "true") {
+      //   var payload = resultUri.queryParameters["payload"];
+      //   var decoded = cborDecode<Map<String, dynamic>>((payload as String).toU8a());
+      // }
+
+      setState(() {
+        _status = 'Got result: $result';
+      });
+
+      // await canLaunch(url) ? await launch(url) : throw 'Could not launch $url';
+    } on PlatformException catch (e) {
+      setState(() {
+        _status = 'Got error: $e';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,11 +105,11 @@ class _MyAppState extends State<MyApp> {
             Container(
               height: 30,
             ),
-            // ElevatedButton(
-            //     onPressed: () {
-            //       authenticate();
-            //     },
-            //     child: const Text("Authroize"))
+            ElevatedButton(
+                onPressed: () {
+                  authenticate();
+                },
+                child: const Text("Authroize"))
           ]),
         ),
         floatingActionButton: FloatingActionButton(

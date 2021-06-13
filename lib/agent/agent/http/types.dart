@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/principal/principal.dart';
-import 'package:agent_dart/utils/extension.dart';
 import 'package:typed_data/typed_buffers.dart';
 import '../api.dart';
 import 'transform.dart';
@@ -59,6 +58,7 @@ class CallRequest extends ReadStateRequest {
   // ignore: non_constant_identifier_names
 
   @override
+  // ignore: non_constant_identifier_names
   final String request_type = SubmitRequestType.Call;
   // ignore: non_constant_identifier_names
   late Principal canister_id;
