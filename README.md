@@ -2,8 +2,10 @@
 
 An agent library built for Internet Computer, a plugin package for dart and flutter apps. Developers can build ones to interact with Dfinity's blockchain directly.
 
+---
 
-1. [agent_dart](#agent_dart)
+## Table of content
+
    1. [Quick start](#quick-start)
    2. [Motivation](#motivation)
       1. [Milestones](#milestones)
@@ -14,6 +16,9 @@ An agent library built for Internet Computer, a plugin package for dart and flut
       1. [dart](#dart)
       2. [Build rust libraries for iOS/macOS](#build-rust-libraries-for-iosmacos)
       3. [Network problem in iOS and macOS](#network-problem-in-ios-and-macos)
+
+---
+
 ## Quick start 
 
 1. git clone
@@ -23,6 +28,7 @@ An agent library built for Internet Computer, a plugin package for dart and flut
    ```
    flutter test
    ```
+---
 
 ## Motivation
 
@@ -43,16 +49,17 @@ TBD
 TBD
 
 
-## Reference
 
-Official libraries from Dfinity's team:
-- [agent-rs](https://github.com/dfinity/agent-rs)
-- [agent-js](https://github.com/dfinity/agent-js)
+## Reference and related projects
 
+* Official libraries from Dfinity's team:
+  - [agent-rs](https://github.com/dfinity/agent-rs)
+  - [agent-js](https://github.com/dfinity/agent-js)
+* other projects here
 
-## Other worth mentioning
-### dart
-TBD
+---
+
+## FAQ
 
 ### Build rust libraries for iOS/macOS
 - All rust method have to be written inside `SwiftAgentDartPlugin.swift`, to avoid tree shaking of latest release build by XCode.
