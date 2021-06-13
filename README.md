@@ -2,13 +2,27 @@
 
 An agent library built for Internet Computer, a plugin package for dart and flutter apps. Developers can build ones to interact with Dfinity's blockchain directly.
 
-# Quick start
+
+1. [agent_dart](#agent_dart)
+   1. [Quick start](#quick-start)
+   2. [Motivation](#motivation)
+      1. [Milestones](#milestones)
+      2. [Documentation](#documentation)
+      3. [Contribution guideline](#contribution-guideline)
+   3. [Reference](#reference)
+   4. [Other worth mentioning](#other-worth-mentioning)
+      1. [dart](#dart)
+      2. [Build rust libraries for iOS/macOS](#build-rust-libraries-for-iosmacos)
+      3. [Network problem in iOS and macOS](#network-problem-in-ios-and-macos)
+## Quick start 
 
 1. git clone
 2. install latest flutter and rust env
 3. To run example, follow [instructions](example/README.md) under `example` folder
-4. To run tests
-
+4. To run tests:
+   ```
+   flutter test
+   ```
 
 ## Motivation
 
@@ -21,32 +35,43 @@ It's important to attract these people to use Dapps of Internet Computer, by pro
 We have tried our best to migrate most interface styles just like Javascript version, but there are limitations and differences between different programming languages, we will document them as much as possible.
 
 
-## Related materials
+### Milestones
+TBD
+### Documentation
+TBD
+### Contribution guideline
+TBD
+
+
+## Reference
 
 Official libraries from Dfinity's team:
 - [agent-rs](https://github.com/dfinity/agent-rs)
 - [agent-js](https://github.com/dfinity/agent-js)
 
-## Hackable memos
 
+## Other worth mentioning
 ### dart
 TBD
 
-### iOS
+### Build rust libraries for iOS/macOS
 - All rust method have to be written inside `SwiftAgentDartPlugin.swift`, to avoid tree shaking of latest release build by XCode.
 - The `agent_dart_podspec` should change accordingly when this repo goes 1.0.0
 
-### macos
+### Network problem in iOS and macOS
 
-- open Xcode and build
-
+- If you run example or build a flutter app, you may come up with this:
+  
+```bash
 [macOS] SocketException: Connection failed (OS Error: Operation not permitted, errno = 1)
-Add
+```
+
+- Go to `macos/Runner/` of macOS and `ios/Runner`
+- Edit  `DebugProfile.entitlements` and `ReleaseProfile.entitlements`,
+Add following: 
+
 ```
 <key>com.apple.security.network.client</key>
 <true/>
 ```
-To file `DebugProfile.entitlements` and `ReleaseProfile.entitlements` under directory macos/Runner/
 
-### Example
-TBD
