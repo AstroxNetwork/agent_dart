@@ -255,7 +255,7 @@ Uint8List? lookupPath(List path, List tree) {
     switch (tree[0]) {
       case NodeId.Leaf:
         {
-          return (tree[1] as Uint8Buffer).buffer.asUint8List();
+          return tree[1] is Uint8List ? tree[1] : (tree[1] as Uint8Buffer).buffer.asUint8List();
         }
       default:
         {
@@ -289,7 +289,7 @@ List? findLabel(Uint8List l, List<List> trees) {
   }
   for (var t in trees) {
     if (t[0] == NodeId.Labeled) {
-      var p = (t[1] as Uint8Buffer).buffer.asUint8List();
+      var p = t[1] is Uint8List ? t[1] : (t[1] as Uint8Buffer).buffer.asUint8List();
       if (u8aEq(l, p)) {
         return t[2] as List;
       }

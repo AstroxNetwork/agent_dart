@@ -1,12 +1,13 @@
 # agent_dart
 
-This repo is built for Internet Computer, using Dart-lang as its agent client which allows dart/flutter apps can interact with Dfinity's blockchain directly.
+An agent library built for Internet Computer, a plugin package for dart and flutter apps. Developers can build ones to interact with Dfinity's blockchain directly.
 
 # Quick start
 
 1. git clone
 2. install latest flutter and rust env
-3. Follow instructions written in `README.md` under `example` folder
+3. To run example, follow [instructions](example/README.md) under `example` folder
+4. To run tests
 
 
 ## Motivation
@@ -19,18 +20,18 @@ It's important to attract these people to use Dapps of Internet Computer, by pro
 
 We have tried our best to migrate most interface styles just like Javascript version, but there are limitations and differences between different programming languages, we will document them as much as possible.
 
-## Related material
 
-Other libraries in other programming languages:
+## Related materials
+
+Official libraries from Dfinity's team:
 - [agent-rs](https://github.com/dfinity/agent-rs)
 - [agent-js](https://github.com/dfinity/agent-js)
 
-
-
-## Appendix
+## Hackable memos
 
 ### dart
 TBD
+
 ### iOS
 - All rust method have to be written inside `SwiftAgentDartPlugin.swift`, to avoid tree shaking of latest release build by XCode.
 - The `agent_dart_podspec` should change accordingly when this repo goes 1.0.0
