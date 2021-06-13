@@ -64,7 +64,7 @@ We have tried our best to migrate most interface styles just like Javascript ver
 [Plan for docs site](https://github.com/AstroxNetwork/agent_dart/milestone/2)
 
 ---
-## 👨‍💻 Contribution guideline
+## 👨‍💻 Contributing
 
 By contributing to agent_dart, you agree that your contributions will be licensed under its MIT License.
 
