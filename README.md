@@ -5,15 +5,17 @@ An agent library built for Internet Computer, a plugin package for dart and flut
 ---
 
 ## Table of content
-   1. [Quick start](#quick-start)
-   2. [Motivation](#motivation)
-      1. [Milestones](#milestones)
-      2. [Documentation](#documentation)
-      3. [Contribution guideline](#contribution-guideline)
-   3. [Reference and related projects](#reference-and-related-projects)
-   4. [FAQ](#faq)
-      1. [Build rust libraries for iOS/macOS](#build-rust-libraries-for-iosmacos)
-      2. [Network problem in iOS and macOS](#network-problem-in-ios-and-macos)
+
+   1. [Table of content](#table-of-content)
+   2. [Prerequisites](#prerequisites)
+   3. [Quick start](#quick-start)
+   4. [Motivation](#motivation)
+   5. [Milestones](#milestones)
+   6. [Documentation](#documentation)
+   7. [Contribution guideline](#contribution-guideline)
+   8. [Reference and related projects](#reference-and-related-projects)
+   9. [FAQ](#faq)
+   
 ---
 
 ## Prerequisites
@@ -24,6 +26,7 @@ An agent library built for Internet Computer, a plugin package for dart and flut
 * [Rust](https://www.rust-lang.org/) version 1.51
 * [Node.js](https://nodejs.org/) v15.0 or later, TBD
 
+---
 ## Quick start 
 1. git clone
 2. install [Prerequisites](#prerequisites), make sure you run
@@ -50,14 +53,14 @@ It's important to attract these people to use Dapps of Internet Computer, by pro
 
 We have tried our best to migrate most interface styles just like Javascript version, but there are limitations and differences between different programming languages, we will document them as much as possible.
 
-
-### Milestones
+---
+## Milestones
 [Milestones Tracker](https://github.com/AstroxNetwork/agent_dart/milestones)
-### Documentation
+## Documentation
 (*TBD*) Reference on pub.dev
 
 [Plan for docs site](https://github.com/AstroxNetwork/agent_dart/milestone/2)
-### Contribution guideline
+## Contribution guideline
 
 By contributing to agent_dart, you agree that your contributions will be licensed under its MIT License.
 
@@ -66,10 +69,8 @@ By contributing to agent_dart, you agree that your contributions will be license
     ```
     {github_id}/{feat|fix|test|dep}-{detail}
     ```
-1. Install Prerequisites
+1. Install [Prerequisites](#Prerequisites)
     
-    See [Prerequisites](#Prerequisites)
-
 
 2. Build rust dependencies for all supported platform (macOS, iOS, Android, windows, linux)
 
@@ -93,6 +94,7 @@ By contributing to agent_dart, you agree that your contributions will be license
 
 5. Commit and make a pull request, process is TBD for now. We will use CI to automate
 
+---
 
 ## Reference and related projects
 
