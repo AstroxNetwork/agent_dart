@@ -6,6 +6,7 @@ class AgentFactory {
   late HttpAgent _agent;
   late final bool _debug;
   late CanisterActor _actor;
+  Identity get identity => _identity;
   late Service _idl;
 
   CanisterActor get actor => _actor;
