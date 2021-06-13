@@ -16,10 +16,23 @@ An agent library built for Internet Computer, a plugin package for dart and flut
       2. [Network problem in iOS and macOS](#network-problem-in-ios-and-macos)
 ---
 
-## Quick start 
+## Prerequisites
+* [Flutter](https://flutter.dev/docs/get-started/install) version in the `agent_dart/pubspec.yaml`
+* [CMake](https://cmake.org/) v3.2.0 or later
+* [Xcode](https://developer.apple.com/xcode/) (10.12) or later (Running on macOS or iOS)
+* [Android NDK](https://developer.android.com/studio/projects/install-ndk) version `21.4.7075529` (Running on Android)
+* [Rust](https://www.rust-lang.org/) version 1.51
+* [Node.js](https://nodejs.org/) v15.0 or later, TBD
 
+## Quick start 
 1. git clone
-2. install latest flutter and rust env
+2. install [Prerequisites](#prerequisites), make sure you run
+3.  
+   ```
+   flutter doctor -v
+   ```
+   Without errors
+
 3. To run example, follow [instructions](example/README.md) under `example` folder
 4. To run tests:
    ```
@@ -42,9 +55,43 @@ We have tried our best to migrate most interface styles just like Javascript ver
 [Milestones Tracker](https://github.com/AstroxNetwork/agent_dart/milestones)
 ### Documentation
 (*TBD*) Reference on pub.dev
+
 [Plan for docs site](https://github.com/AstroxNetwork/agent_dart/milestone/2)
 ### Contribution guideline
-TBD
+
+By contributing to agent_dart, you agree that your contributions will be licensed under its MIT License.
+
+0. Fork this library and add your own branch.
+   like this:
+    ```
+    {github_id}/{feat|fix|test|dep}-{detail}
+    ```
+1. Install Prerequisites
+    
+    See [Prerequisites](#Prerequisites)
+
+
+2. Build rust dependencies for all supported platform (macOS, iOS, Android, windows, linux)
+
+    ```shell
+    $ sh ./scripts/clean && ./scripts/init.sh && ./scripts/build.sh
+    ```
+
+3. Start example
+   
+   Read instruction first, then run
+
+    ```shell
+    $ cd example
+    $ flutter run
+    ```
+
+4. Test (Unit Test and Integration Test)
+    ```shell
+    $ flutter test
+    ```
+
+5. Commit and make a pull request, process is TBD for now. We will use CI to automate
 
 
 ## Reference and related projects
