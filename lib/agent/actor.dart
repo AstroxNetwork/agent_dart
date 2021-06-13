@@ -6,7 +6,6 @@ import 'package:agent_dart/agent/canisters/management.dart';
 import 'package:agent_dart/agent/polling/index.dart';
 import 'package:agent_dart/agent/polling/strategy.dart';
 import 'package:agent_dart/candid/idl.dart';
-import 'package:agent_dart/utils/extension.dart';
 
 import 'package:agent_dart/principal/principal.dart';
 import 'errors.dart';
@@ -136,6 +135,7 @@ class ActorConfig extends CallConfig {
   }
 }
 
+// ignore: todo
 // // TODO: move this to proper typing when Candid support TypeScript.
 // /**
 //  * A subclass of an actor. Actor class itself is meant to be a based class.
@@ -151,8 +151,11 @@ class ActorConfig extends CallConfig {
 // }
 
 class CanisterInstallMode {
+  // ignore: constant_identifier_names
   static const Install = 'install';
+  // ignore: constant_identifier_names
   static const Reinstall = 'reinstall';
+  // ignore: constant_identifier_names
   static const Upgrade = 'upgrade';
 }
 
@@ -431,6 +434,7 @@ class ActorMethod {
     return caller!(CallConfig(), args ?? []);
   }
 
+  // ignore: non_constant_identifier_names
   Future<dynamic> WithOptions(CallConfig withOptions, List<dynamic>? args) async =>
       caller!(withOptions, args ?? []);
 }

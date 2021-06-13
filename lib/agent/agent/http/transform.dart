@@ -4,7 +4,6 @@ import 'package:agent_dart/agent/cbor.dart';
 import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/agent/utils/leb128.dart';
 import 'package:cbor/cbor.dart' as cbor;
-import 'package:typed_data/typed_data.dart';
 
 import 'types.dart';
 
