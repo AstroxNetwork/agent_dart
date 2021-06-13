@@ -12,7 +12,7 @@ An agent library built for Internet Computer, a plugin package for dart and flut
    4. [Motivation](#motivation)
    5. [Milestones](#milestones)
    6. [Documentation](#documentation)
-   7. [Contribution guideline](#contribution-guideline)
+   7. [Contributing](#contributing)
    8. [Reference and related projects](#reference-and-related-projects)
    9. [FAQ](#faq)
    
