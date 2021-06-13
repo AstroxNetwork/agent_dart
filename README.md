@@ -30,7 +30,6 @@ An agent library built for Internet Computer, a plugin package for dart and flut
 ## ⚡️ Quick start 
 1. git clone
 2. install [Prerequisites](#prerequisites), make sure you run
-3.  
    ```
    flutter doctor -v
    ```
