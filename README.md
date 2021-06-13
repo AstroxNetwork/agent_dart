@@ -39,12 +39,12 @@ We have tried our best to migrate most interface styles just like Javascript ver
 
 
 ### Milestones
-TBD
+[Milestones Tracker](https://github.com/AstroxNetwork/agent_dart/milestones)
 ### Documentation
-TBD
+(*TBD*) Reference on pub.dev
+[Plan for docs site](https://github.com/AstroxNetwork/agent_dart/milestone/2)
 ### Contribution guideline
 TBD
-
 
 
 ## Reference and related projects
