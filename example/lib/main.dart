@@ -1,4 +1,7 @@
 // import 'package:agent_dart/agent/cbor.dart';
+import 'package:agent_dart/agent/auth.dart';
+import 'package:agent_dart/agent/cbor.dart';
+import 'package:agent_dart/auth_client/auth_client.dart';
 import 'package:agent_dart/identity/ed25519.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,8 +26,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _count = 0;
   bool _loading = false;
-  String _status = "No Status";
+  String _status = "";
   String _pub = "";
+  Identity? _identity;
   late Counter _counter;
 
   @override
@@ -38,7 +42,7 @@ class _MyAppState extends State<MyApp> {
   void initCounter() {
     var agent = AgentFactory.create(
         canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai", url: "http://localhost:60916", idl: idl);
-
+    _identity = agent.identity;
     _counter = agent.hook(Counter());
     _pub =
         (agent.identity as Ed25519KeyIdentity).getPublicKey().toDer().buffer.asUint8List().toHex();
@@ -65,23 +69,25 @@ class _MyAppState extends State<MyApp> {
   }
 
   void authenticate() async {
-    final url =
-        'http://rkp4c-7iaaa-aaaaa-aaaca-cai.localhost:8000/#authorize?callback_uri=identity://auth&&sessionPublicKey=$_pub';
-    const callbackUrlScheme = 'identity';
-
     try {
-      final result =
-          await FlutterWebAuth.authenticate(url: url, callbackUrlScheme: callbackUrlScheme);
+      Future<String> flutterWebAuth(AuthPayload payload) async {
+        return await FlutterWebAuth.authenticate(
+            url: payload.url, callbackUrlScheme: payload.scheme);
+      }
 
-      // var resultUri = Uri.parse(result);
+      var authClient = AuthClient(
+        identity: _identity!,
+        scheme: "identity",
+        path: 'auth',
+        authUri: Uri.parse('http://rkp4c-7iaaa-aaaaa-aaaca-cai.localhost:8000/#authorize'),
+        authFunction: flutterWebAuth,
+      );
 
-      // if (resultUri.queryParameters["success"] == "true") {
-      //   var payload = resultUri.queryParameters["payload"];
-      //   var decoded = cborDecode<Map<String, dynamic>>((payload as String).toU8a());
-      // }
+      await authClient.login();
 
+      var loginResult = await authClient.isAuthenticated();
       setState(() {
-        _status = 'Got result: $result';
+        _status = 'Got result: $loginResult';
       });
 
       // await canLaunch(url) ? await launch(url) : throw 'Could not launch $url';
@@ -109,7 +115,11 @@ class _MyAppState extends State<MyApp> {
                 onPressed: () {
                   authenticate();
                 },
-                child: const Text("Authroize"))
+                child: const Text("Authroize")),
+            Container(
+              height: 30,
+            ),
+            Text(_status.isEmpty ? "Awaits Authorize" : _status)
           ]),
         ),
         floatingActionButton: FloatingActionButton(
