@@ -1,14 +1,10 @@
-// import 'package:agent_dart/agent/cbor.dart';
 import 'package:agent_dart/agent/auth.dart';
-import 'package:agent_dart/agent/cbor.dart';
 import 'package:agent_dart/auth_client/auth_client.dart';
 import 'package:agent_dart/identity/ed25519.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:agent_dart/utils/extension.dart';
-// import 'package:url_launcher/link.dart';
-// import 'package:url_launcher/url_launcher.dart';
 import 'counter.dart';
 import 'init.dart';
 
@@ -41,8 +37,10 @@ class _MyAppState extends State<MyApp> {
 
   void initCounter() {
     var agent = AgentFactory.create(
-        canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai", url: "http://localhost:60916", idl: idl);
-    _identity = agent.identity;
+        canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai",
+        url: "http://localhost:60916",
+        idl: idl,
+        identity: _identity);
     _counter = agent.hook(Counter());
     _pub =
         (agent.identity as Ed25519KeyIdentity).getPublicKey().toDer().buffer.asUint8List().toHex();
@@ -70,27 +68,23 @@ class _MyAppState extends State<MyApp> {
 
   void authenticate() async {
     try {
-      Future<String> flutterWebAuth(AuthPayload payload) async {
-        return await FlutterWebAuth.authenticate(
-            url: payload.url, callbackUrlScheme: payload.scheme);
-      }
-
       var authClient = AuthClient(
-        identity: _identity!,
         scheme: "identity",
         path: 'auth',
         authUri: Uri.parse('http://rkp4c-7iaaa-aaaaa-aaaca-cai.localhost:8000/#authorize'),
-        authFunction: flutterWebAuth,
+        authFunction: (AuthPayload payload) async {
+          return await FlutterWebAuth.authenticate(
+              url: payload.url, callbackUrlScheme: payload.scheme);
+        },
       );
 
       await authClient.login();
-
       var loginResult = await authClient.isAuthenticated();
+
+      _identity = authClient.getIdentity();
       setState(() {
         _status = 'Got result: $loginResult';
       });
-
-      // await canLaunch(url) ? await launch(url) : throw 'Could not launch $url';
     } on PlatformException catch (e) {
       setState(() {
         _status = 'Got error: $e';
@@ -119,14 +113,20 @@ class _MyAppState extends State<MyApp> {
             Container(
               height: 30,
             ),
-            Text(_status.isEmpty ? "Awaits Authorize" : _status)
+            Text(_status.isEmpty ? "Awaits Authorize" : _status),
+            Container(
+              height: 30,
+            ),
+            Text(_status.isEmpty ? "" : "Principal is ${_identity?.getPrincipal().toText()}"),
           ]),
         ),
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
-          onPressed: () async {
-            increase();
-          },
+          onPressed: _identity != null
+              ? () async {
+                  increase();
+                }
+              : null,
         ),
       ),
     );
