@@ -7,3 +7,6 @@
 build/
 rust/target
 _main.dart
+
+.idea/
+.vscode/
