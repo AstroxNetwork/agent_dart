@@ -1,14 +1,25 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:agent_dart/agent/auth.dart';
+import 'package:agent_dart/agent/cbor.dart';
+import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/identity/delegation.dart';
+import 'package:agent_dart/identity/identity.dart';
+import 'package:agent_dart/utils/extension.dart';
+
+// ignore: constant_identifier_names
+const KEY_LOCALSTORAGE_KEY = 'identity';
+// ignore: constant_identifier_names
+const KEY_LOCALSTORAGE_DELEGATION = 'delegation';
+// ignore: constant_identifier_names
+const IDENTITY_PROVIDER_DEFAULT = 'https://identity.ic0.app';
+// ignore: constant_identifier_names
+const IDENTITY_PROVIDER_ENDPOINT = '#authorize';
 
 class AuthClientCreateOptions {
   /// An identity to use as the base
   SignIdentity? identity;
-
-  /// Optional storage with get, set, and remove. Uses LocalStorage by default
-  // AuthClientStorage? storage;
 }
 
 class AuthClientLoginOptions {
@@ -29,6 +40,12 @@ class InternetIdentityAuthRequest {
   final String kind = 'authorize-client';
   late Uint8List sessionPublicKey;
   BigInt? maxTimeToLive;
+}
+
+class AuthPayload {
+  final String url;
+  final String scheme;
+  AuthPayload(this.url, this.scheme);
 }
 
 class DelegationWithSignature {
@@ -52,6 +69,8 @@ class AuthResponseFailure extends AuthResponse {
   final String kind = 'authorize-client-failure';
   late String text;
 }
+
+typedef AuthFunction = Future<String> Function(AuthPayload paylod);
 
 class AuthClient {
   // public static async create(options: AuthClientCreateOptions = {}): Promise<AuthClient> {
@@ -101,156 +120,115 @@ class AuthClient {
   //   return new this(identity, key, chain, storage);
   // }
 
-  late Identity identity;
+  Identity? identity;
   SignIdentity? key;
   DelegationChain? chain;
-  // AuthClientStorage   _storage,
   // A handle on the IdP window.
-  String? authUri;
+  Uri? authUri;
+  String scheme;
+  String path = "";
   // The event handler for processing events from the IdP.
+  AuthFunction authFunction;
 
-  AuthClient({required this.identity, this.key, this.chain, this.authUri});
+  AuthClient(
+      {required this.scheme,
+      required this.authFunction,
+      this.identity,
+      this.path = "",
+      this.key,
+      this.chain,
+      this.authUri});
 
-  //  _handleSuccess(message: InternetIdentityAuthResponseSuccess, onSuccess?: () => void) {
-  //   const delegations = message.delegations.map(signedDelegation => {
-  //     return {
-  //       delegation: new Delegation(
-  //         blobFromUint8Array(signedDelegation.delegation.pubkey),
-  //         signedDelegation.delegation.expiration,
-  //         signedDelegation.delegation.targets,
-  //       ),
-  //       signature: blobFromUint8Array(signedDelegation.signature),
-  //     };
-  //   });
+  void _handleSuccess(AuthResponseSuccess message, void Function()? onSuccess) {
+    var delegations = message.delegations.map((signedDelegation) {
+      return SignedDelegation.fromMap({
+        "delegation": Delegation(
+          blobFromUint8Array(signedDelegation.delegation.pubkey),
+          signedDelegation.delegation.expiration,
+          signedDelegation.delegation.targets,
+        ),
+        "signature": blobFromUint8Array(signedDelegation.signature),
+      });
+    }).toList();
 
-  //   const delegationChain = DelegationChain.fromDelegations(
-  //     delegations,
-  //     derBlobFromBlob(blobFromUint8Array(message.userPublicKey)),
-  //   );
+    final delegationChain = DelegationChain.fromDelegations(
+      delegations,
+      derBlobFromBlob(blobFromUint8Array(message.userPublicKey)),
+    );
 
-  //   const key = this._key;
-  //   if (!key) {
-  //     return;
-  //   }
+    if (key == null) {
+      return;
+    }
 
-  //   this._chain = delegationChain;
-  //   this._identity = DelegationIdentity.fromDelegation(key, this._chain);
+    chain = delegationChain;
+    identity = DelegationIdentity.fromDelegation(key!, chain!);
+    onSuccess?.call();
+  }
 
-  //   this._idpWindow?.close();
-  //   onSuccess?.();
-  //   this._removeEventListener();
-  // }
+  void _handleFailure(String? errorMessage, void Function(String? error)? onError) {
+    onError?.call(errorMessage);
+  }
 
-  // public getIdentity(): Identity {
-  //   return this._identity;
-  // }
+  Identity? getIdentity() {
+    return identity;
+  }
 
-  // public async isAuthenticated(): Promise<boolean> {
-  //   return !this.getIdentity().getPrincipal().isAnonymous() && this._chain !== null;
-  // }
+  Future<bool> isAuthenticated() async {
+    return getIdentity() != null && !getIdentity()!.getPrincipal().isAnonymous() && chain != null;
+  }
 
-  // public async login(options?: AuthClientLoginOptions): Promise<void> {
-  //   let key = this._key;
-  //   if (!key) {
-  //     // Create a new key (whether or not one was in storage).
-  //     key = Ed25519KeyIdentity.generate();
-  //     this._key = key;
-  //     await this._storage.set(KEY_LOCALSTORAGE_KEY, JSON.stringify(key));
-  //   }
+  Future<void> login([AuthClientLoginOptions? options]) async {
+    key ??= Ed25519KeyIdentity.generate(null);
 
-  //   // Create the URL of the IDP. (e.g. https://XXXX/#authorize)
-  //   const identityProviderUrl = new URL(
-  //     options?.identityProvider?.toString() || IDENTITY_PROVIDER_DEFAULT,
-  //   );
-  //   // Set the correct hash if it isn't already set.
-  //   identityProviderUrl.hash = IDENTITY_PROVIDER_ENDPOINT;
+    // Create the URL of the IDP. (e.g. https://XXXX/#authorize)
+    var payload = _createAuthPayload(options);
 
-  //   // If `login` has been called previously, then close/remove any previous windows
-  //   // and event listeners.
-  //   this._idpWindow?.close();
-  //   this._removeEventListener();
+    var result = await authFunction(payload);
 
-  //   // Add an event listener to handle responses.
-  //   this._eventHandler = this._getEventHandler(identityProviderUrl, options);
-  //   window.addEventListener('message', this._eventHandler);
+    var parsedResult = Uri.parse(result);
 
-  //   // Open a new window with the IDP provider.
-  //   this._idpWindow = window.open(identityProviderUrl.toString(), 'idpWindow') ?? undefined;
-  // }
+    if ((parsedResult.queryParameters["success"] is String &&
+            parsedResult.queryParameters["success"] == "false") ||
+        parsedResult.queryParameters["success"] == null) {
+      var data = parsedResult.queryParameters["data"];
+      var decoded = cborDecode<Map>((data as String).toU8a());
 
-  // private _getEventHandler(identityProviderUrl: URL, options?: AuthClientLoginOptions) {
-  //   return async (event: MessageEvent) => {
-  //     if (event.origin !== identityProviderUrl.origin) {
-  //       return;
-  //     }
+      _handleFailure(jsonEncode(decoded), options?.onError);
+    } else {
+      var data = parsedResult.queryParameters["data"];
+      var decoded = cborDecode<Map>((data as String).toU8a());
+      var message = Map<String, dynamic>.from(decoded);
+      var delegations = message["delegations"] as List;
 
-  //     const message = event.data as IdentityServiceResponseMessage;
+      var delegationList = delegations.map((e) {
+        return DelegationWithSignature()
+          ..delegation = Delegation.fromMap(e["delegation"])
+          ..signature = Uint8List.fromList(e["signature"]);
+      }).toList();
+      var userPublicKey = Uint8List.fromList(message["userPublicKey"]);
+      var response = AuthResponseSuccess()
+        ..delegations = delegationList
+        ..userPublicKey = userPublicKey;
 
-  //     switch (message.kind) {
-  //       case 'authorize-ready': {
-  //         // IDP is ready. Send a message to request authorization.
-  //         const request: InternetIdentityAuthRequest = {
-  //           kind: 'authorize-client',
-  //           sessionPublicKey: this._key?.getPublicKey().toDer() as Uint8Array,
-  //           maxTimeToLive: options?.maxTimeToLive,
-  //         };
-  //         this._idpWindow?.postMessage(request, identityProviderUrl.origin);
-  //         break;
-  //       }
-  //       case 'authorize-client-success':
-  //         // Create the delegation chain and store it.
-  //         try {
-  //           this._handleSuccess(message, options?.onSuccess);
+      _handleSuccess(response, options?.onSuccess);
+    }
+  }
 
-  //           // Setting the storage is moved out of _handleSuccess to make
-  //           // it a sync function. Having _handleSuccess as an async function
-  //           // messes up the jest tests for some reason.
-  //           if (this._chain) {
-  //             await this._storage.set(
-  //               KEY_LOCALSTORAGE_DELEGATION,
-  //               JSON.stringify(this._chain.toJSON()),
-  //             );
-  //           }
-  //         } catch (err) {
-  //           this._handleFailure(err.message, options?.onError);
-  //         }
-  //         break;
-  //       case 'authorize-client-failure':
-  //         this._handleFailure(message.text, options?.onError);
-  //         break;
-  //       default:
-  //         break;
-  //     }
-  //   };
-  // }
+  AuthPayload _createAuthPayload(AuthClientLoginOptions? options) {
+    var defaultUri = Uri.parse(IDENTITY_PROVIDER_DEFAULT + IDENTITY_PROVIDER_ENDPOINT);
+    var callbackScheme = scheme + "://" + path;
+    var identityProviderUrl = Uri(
+        host: options?.identityProvider?.host ?? authUri?.host ?? defaultUri.host,
+        scheme: options?.identityProvider?.scheme ?? authUri?.scheme ?? defaultUri.scheme,
+        port: options?.identityProvider?.port ?? authUri?.port ?? defaultUri.port,
+        fragment: options?.identityProvider?.fragment ?? authUri?.fragment ?? defaultUri.fragment,
+        queryParameters: {
+          "callback_uri": callbackScheme,
+          "sessionPublicKey": identity != null
+              ? (identity as Ed25519KeyIdentity).getPublicKey().toDer().buffer.asUint8List().toHex()
+              : null
+        });
 
-  // private _handleFailure(errorMessage?: string, onError?: (error?: string) => void): void {
-  //   this._idpWindow?.close();
-  //   onError?.(errorMessage);
-  //   this._removeEventListener();
-  // }
-
-  // private _removeEventListener() {
-  //   if (this._eventHandler) {
-  //     window.removeEventListener('message', this._eventHandler);
-  //   }
-  //   this._eventHandler = undefined;
-  // }
-
-  // public async logout(options: { returnTo?: string } = {}): Promise<void> {
-  //   _deleteStorage(this._storage);
-
-  //   // Reset this auth client to a non-authenticated state.
-  //   this._identity = new AnonymousIdentity();
-  //   this._key = null;
-  //   this._chain = null;
-
-  //   if (options.returnTo) {
-  //     try {
-  //       window.history.pushState({}, '', options.returnTo);
-  //     } catch (e) {
-  //       window.location.href = options.returnTo;
-  //     }
-  //   }
-  // }
+    return AuthPayload(identityProviderUrl.toString(), scheme);
+  }
 }
