@@ -74,8 +74,10 @@ class Delegation extends ToCBorable {
 
   factory Delegation.fromMap(Map map) {
     return Delegation(
-        map["pubkey"] is String ? (map["pubkey"] as String).toU8a() : map["pubkey"],
-        (map["expiration"] as String).hexToBn(),
+        map["pubkey"] is String
+            ? (map["pubkey"] as String).toU8a()
+            : Uint8List.fromList(map["pubkey"]),
+        map["expiration"] is BigInt ? map["expiration"] : (map["expiration"] as String).hexToBn(),
         map["targets"] != null
             ? (map["targets"] as List).map((e) => Principal.fromHex(e)).toList()
             : null);
@@ -91,8 +93,9 @@ class SignedDelegation {
         delegation: map["delegation"] is Delegation
             ? map["delegation"]
             : Delegation.fromMap(map["delegation"]),
-        signature:
-            map['signature'] is String ? (map["signature"] as String).toU8a() : map["signature"]);
+        signature: map['signature'] is String
+            ? (map["signature"] as String).toU8a()
+            : Uint8List.fromList(map["signature"]));
   }
   toJson() {
     return {"delegation": delegation?.toJSON(), "signature": signature?.toHex()};
