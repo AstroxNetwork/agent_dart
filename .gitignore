@@ -6,7 +6,10 @@
 
 build/
 rust/target
+rust/Cargo.lock
+
 _main.dart
 
 .idea/
 .vscode/
+

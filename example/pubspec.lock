@@ -22,13 +22,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.6.1"
-  base_x:
-    dependency: transitive
-    description:
-      name: base_x
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   boolean_selector:
     dependency: transitive
     description:
