@@ -9,8 +9,8 @@ environment:
 
 dependencies:
   args: ^2.1.1
-  base_x: ^1.0.1
   cbor: ^4.0.2
+  collection: ^1.15.0
   convert: ^3.0.0
   crypto: ^3.0.1
   ffi: ^1.1.1
