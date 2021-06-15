@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:agent_dart/agent/auth.dart';
 import 'package:agent_dart/agent/cbor.dart';
 import 'package:agent_dart/agent/types.dart';
+import 'package:agent_dart/authentication/authentication.dart';
 import 'package:agent_dart/identity/delegation.dart';
 import 'package:agent_dart/identity/identity.dart';
 import 'package:agent_dart/utils/extension.dart';
@@ -73,53 +74,6 @@ class AuthResponseFailure extends AuthResponse {
 typedef AuthFunction = Future<String> Function(AuthPayload paylod);
 
 class AuthClient {
-  // public static async create(options: AuthClientCreateOptions = {}): Promise<AuthClient> {
-  //   const storage = options.storage ?? new LocalStorage('ic-');
-
-  //   let key: null | SignIdentity = null;
-  //   if (options.identity) {
-  //     key = options.identity;
-  //   } else {
-  //     const maybeIdentityStorage = await storage.get(KEY_LOCALSTORAGE_KEY);
-  //     if (maybeIdentityStorage) {
-  //       try {
-  //         key = Ed25519KeyIdentity.fromJSON(maybeIdentityStorage);
-  //       } catch (e) {
-  //         // Ignore this, this means that the localStorage value isn't a valid Ed25519KeyIdentity
-  //         // serialization.
-  //       }
-  //     }
-  //   }
-
-  //   let identity = new AnonymousIdentity();
-  //   let chain: null | DelegationChain = null;
-
-  //   if (key) {
-  //     try {
-  //       const chainStorage = await storage.get(KEY_LOCALSTORAGE_DELEGATION);
-
-  //       if (chainStorage) {
-  //         chain = DelegationChain.fromJSON(chainStorage);
-
-  //         // Verify that the delegation isn't expired.
-  //         if (!isDelegationValid(chain)) {
-  //           await _deleteStorage(storage);
-  //           key = null;
-  //         } else {
-  //           identity = DelegationIdentity.fromDelegation(key, chain);
-  //         }
-  //       }
-  //     } catch (e) {
-  //       console.error(e);
-  //       // If there was a problem loading the chain, delete the key.
-  //       await _deleteStorage(storage);
-  //       key = null;
-  //     }
-  //   }
-
-  //   return new this(identity, key, chain, storage);
-  // }
-
   Identity? identity;
   SignIdentity? key;
   DelegationChain? chain;
@@ -138,6 +92,32 @@ class AuthClient {
       this.key,
       this.chain,
       this.authUri});
+
+  factory AuthClient.fromMap(
+      String scheme, AuthFunction authFunction, Map<String, dynamic> map, Uri? authUri) {
+    var identityString = map[KEY_LOCALSTORAGE_KEY] as String?;
+    var delegationString = map[KEY_LOCALSTORAGE_DELEGATION] as String?;
+
+    SignIdentity? key = identityString != null ? Ed25519KeyIdentity.fromJSON(identityString) : null;
+    DelegationChain? chain =
+        delegationString != null ? DelegationChain.fromJSON(delegationString) : null;
+
+    var identity = AnonymousIdentity();
+
+    if (chain != null && !isDelegationValid(chain, null)) {
+      key = null;
+    } else {
+      identity = DelegationIdentity.fromDelegation(key!, chain!) as AnonymousIdentity;
+    }
+
+    return AuthClient(
+        scheme: scheme,
+        authFunction: authFunction,
+        identity: identity,
+        key: key,
+        chain: chain,
+        authUri: authUri);
+  }
 
   void _handleSuccess(AuthResponseSuccess message, void Function()? onSuccess) {
     var delegations = message.delegations.map((signedDelegation) {
@@ -230,5 +210,13 @@ class AuthClient {
         });
 
     return AuthPayload(identityProviderUrl.toString(), scheme);
+  }
+
+  String toStorage() {
+    return jsonEncode({
+      KEY_LOCALSTORAGE_KEY:
+          identity != null ? jsonEncode((identity as Ed25519KeyIdentity).toJSON()) : null,
+      KEY_LOCALSTORAGE_DELEGATION: chain != null ? jsonEncode(chain!.toJSON()) : null,
+    });
   }
 }
