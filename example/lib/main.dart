@@ -1,14 +1,8 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:agent_dart/agent/auth.dart';
-import 'package:agent_dart/auth_client/auth_client.dart';
 import 'package:agent_dart/auth_client/webauth_provider.dart';
-import 'package:agent_dart/identity/ed25519.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:agent_dart/utils/extension.dart';
 import 'counter.dart';
 import 'init.dart';
 
@@ -27,9 +21,9 @@ class _MyAppState extends State<MyApp> {
   int _count = 0;
   bool _loading = false;
   String _status = "";
-  String _pub = "";
   Identity? _identity;
   late Counter _counter;
+  var _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -41,14 +35,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   void initCounter() {
-    var agent = AgentFactory.create(
-        canisterId: "rdmx6-jaaaa-aaaaa-aaadq-cai",
-        url: "http://192.168.3.11:57229",
-        idl: idl,
-        identity: _identity);
-    _counter = agent.hook(Counter());
-    var bf = (agent.identity as Ed25519KeyIdentity).getPublicKey().toDer().buffer.asUint8List();
-    _pub = bf.toHex();
+    _counter = AgentFactory.create(
+            canisterId: "rdmx6-jaaaa-aaaaa-aaadq-cai",
+            url: "http://192.168.3.11:57229",
+            idl: idl,
+            identity: _identity)
+        .hook(Counter());
   }
 
   void loading(bool state) {
@@ -73,25 +65,12 @@ class _MyAppState extends State<MyApp> {
 
   void authenticate() async {
     try {
-      // var authClient = AuthClient(
-      //   scheme: "identity",
-      //   path: 'auth',
-      //   authUri: Uri.parse(
-      //       'http://localtest.me:43823/?canisterId=rwlgt-iiaaa-aaaaa-aaaaa-cai#authorize'),
-      //   // Uri.parse('http://localhost:8000/?canisterId=rwlgt-iiaaa-aaaaa-aaaaa-cai#authorize'),
-      //   authFunction: (AuthPayload payload) async {
-      //     return await FlutterWebAuth.authenticate(
-      //         url: payload.url, callbackUrlScheme: payload.scheme);
-      //   },
-      // );
-
       var authClient = WebAuthProvider(
-          scheme: "identity",
-          path: 'auth',
-          authUri: Uri.parse('https://identity.ic0.app/#authorize'),
-          useLocalPage: true
-          // Uri.parse('http://localhost:8000/?canisterId=rwlgt-iiaaa-aaaaa-aaaaa-cai#authorize'),
-          );
+        scheme: "identity",
+        path: 'auth',
+        // authUri: Uri.parse('https://identity.ic0.app/#authorize'),
+        // useLocalPage: true
+      );
 
       await authClient.login(
           // AuthClientLoginOptions()..canisterId = "rwlgt-iiaaa-aaaaa-aaaaa-cai"
@@ -114,6 +93,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: const Text('Dfinity flutter Dapp'),
         ),
@@ -127,11 +107,11 @@ class _MyAppState extends State<MyApp> {
                 onPressed: () {
                   authenticate();
                 },
-                child: const Text("Authroize")),
+                child: const Text("Click here to Login")),
             Container(
               height: 30,
             ),
-            Text(_status.isEmpty ? "Awaits Authorize" : _status),
+            Text(_status.isEmpty ? "Please Login 👆" : _status),
             Container(
               height: 30,
             ),
@@ -144,9 +124,33 @@ class _MyAppState extends State<MyApp> {
               ? () async {
                   increase();
                 }
-              : null,
+              : () {
+                  _showDialog();
+                },
         ),
       ),
+    );
+  }
+
+  void _showDialog() {
+    // flutter defined function
+    showDialog(
+      context: _scaffoldKey.currentContext!,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: const Text("Please login first 🙇‍♂️"),
+          content: const Text("Then try here again, "),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close me!'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      },
     );
   }
 }
