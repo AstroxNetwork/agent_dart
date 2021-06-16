@@ -26,7 +26,7 @@ class WebAuthProvider extends AuthClient {
       DelegationChain? chain,
       Uri? authUri,
       AuthFunction authFunction = webAuth,
-      this.useLocalPage = false,
+      this.useLocalPage = true,
       this.port = 32768})
       : super(
             scheme: scheme,
@@ -129,7 +129,7 @@ String generateHtml(
 <body>
   <main>
     <div id="icon">&#x1F3C7;</div>
-    <div id="text">You are about to redirected to </div> 
+    <div id="text">You are being redirected to</div> 
     <div class="text">`$withHash`...</div>
     <div id="button" onclick="getValue()"><a>Click To Continue</a></div>
   </main>
