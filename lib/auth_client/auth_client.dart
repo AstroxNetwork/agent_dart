@@ -30,6 +30,9 @@ class AuthClientLoginOptions {
   /// Experiation of the authentication
   BigInt? maxTimeToLive;
 
+  ///
+  String? canisterId;
+
   /// Callback once login has completed
   void Function()? onSuccess;
 
@@ -84,14 +87,15 @@ class AuthClient {
   // The event handler for processing events from the IdP.
   AuthFunction authFunction;
 
-  AuthClient(
-      {required this.scheme,
-      required this.authFunction,
-      this.identity,
-      this.path = "",
-      this.key,
-      this.chain,
-      this.authUri});
+  AuthClient({
+    required this.scheme,
+    required this.authFunction,
+    this.identity,
+    this.path = "",
+    this.key,
+    this.chain,
+    this.authUri,
+  });
 
   factory AuthClient.fromMap(
       String scheme, AuthFunction authFunction, Map<String, dynamic> map, Uri? authUri) {
@@ -119,7 +123,7 @@ class AuthClient {
         authUri: authUri);
   }
 
-  void _handleSuccess(AuthResponseSuccess message, void Function()? onSuccess) {
+  void handleSuccess(AuthResponseSuccess message, void Function()? onSuccess) {
     var delegations = message.delegations.map((signedDelegation) {
       return SignedDelegation.fromMap({
         "delegation": Delegation(
@@ -145,7 +149,7 @@ class AuthClient {
     onSuccess?.call();
   }
 
-  void _handleFailure(String? errorMessage, void Function(String? error)? onError) {
+  void handleFailure(String? errorMessage, void Function(String? error)? onError) {
     onError?.call(errorMessage);
   }
 
@@ -170,11 +174,14 @@ class AuthClient {
     if ((parsedResult.queryParameters["success"] is String &&
             parsedResult.queryParameters["success"] == "false") ||
         parsedResult.queryParameters["success"] == null) {
-      var data = parsedResult.queryParameters["data"];
-      var decoded = cborDecode<Map>((data as String).toU8a());
-
-      _handleFailure(jsonEncode(decoded), options?.onError);
-    } else {
+      if (parsedResult.queryParameters["json"] == null) {
+        var data = parsedResult.queryParameters["data"];
+        var decoded = cborDecode<Map>((data as String).toU8a());
+        handleFailure(jsonEncode(decoded), options?.onError);
+      } else {
+        handleFailure(jsonEncode(parsedResult.queryParameters["json"]), options?.onError);
+      }
+    } else if (parsedResult.queryParameters["json"] == null) {
       var data = parsedResult.queryParameters["data"];
       var decoded = cborDecode<Map>((data as String).toU8a());
       var message = Map<String, dynamic>.from(decoded);
@@ -190,12 +197,33 @@ class AuthClient {
         ..delegations = delegationList
         ..userPublicKey = userPublicKey;
 
-      _handleSuccess(response, options?.onSuccess);
+      handleSuccess(response, options?.onSuccess);
+    } else {
+      var data = parsedResult.queryParameters["json"];
+      var message = Map<String, dynamic>.from(jsonDecode(data as String));
+      var delegations = message["delegations"] as List;
+      var delegationList = delegations.map((e) {
+        var pubkey = e["delegation"]["pubkey"] is String
+            ? parseStringToU8a(e["delegation"]["pubkey"])
+            : e["delegation"]["pubkey"];
+        return DelegationWithSignature()
+          ..delegation = Delegation.fromMap({...e["delegation"], "pubkey": pubkey})
+          ..signature = Uint8List.fromList(
+              e["signature"] is String ? parseStringToU8a(e["signature"]) : e["signature"]);
+      }).toList();
+      var userPublicKey = Uint8List.fromList(message["userPublicKey"] is String
+          ? parseStringToU8a(message["userPublicKey"])
+          : message["userPublicKey"]);
+      var response = AuthResponseSuccess()
+        ..delegations = delegationList
+        ..userPublicKey = userPublicKey;
+
+      handleSuccess(response, options?.onSuccess);
     }
   }
 
   AuthPayload _createAuthPayload(AuthClientLoginOptions? options) {
-    var defaultUri = Uri.parse(IDENTITY_PROVIDER_DEFAULT + IDENTITY_PROVIDER_ENDPOINT);
+    var defaultUri = Uri.parse(IDENTITY_PROVIDER_DEFAULT + '/' + IDENTITY_PROVIDER_ENDPOINT);
     var callbackScheme = scheme + "://" + path;
     var identityProviderUrl = Uri(
         host: options?.identityProvider?.host ?? authUri?.host ?? defaultUri.host,
@@ -206,7 +234,8 @@ class AuthClient {
           "callback_uri": callbackScheme,
           "sessionPublicKey": identity != null
               ? (identity as Ed25519KeyIdentity).getPublicKey().toDer().buffer.asUint8List().toHex()
-              : null
+              : null,
+          "canisterId": options?.canisterId
         });
 
     return AuthPayload(identityProviderUrl.toString(), scheme);
@@ -219,4 +248,11 @@ class AuthClient {
       KEY_LOCALSTORAGE_DELEGATION: chain != null ? jsonEncode(chain!.toJSON()) : null,
     });
   }
+}
+
+Uint8List parseStringToU8a(String str) {
+  var s1 = str.replaceAll("[", "");
+  var s2 = s1.replaceAll("]", "");
+  var newList = s2.split(",");
+  return Uint8List.fromList(newList.map((e) => int.parse(e)).toList());
 }

@@ -16,6 +16,7 @@ dependencies:
   ffi: ^1.1.1
   flutter:
     sdk: flutter
+  flutter_web_auth: ^0.3.0
   http: ^0.13.3
   pinenacl: ^0.3.1
   recase: ^4.0.0
