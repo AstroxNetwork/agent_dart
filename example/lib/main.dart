@@ -1,9 +1,13 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:agent_dart/agent/auth.dart';
 import 'package:agent_dart/auth_client/auth_client.dart';
+import 'package:agent_dart/auth_client/webauth_provider.dart';
 import 'package:agent_dart/identity/ed25519.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_web_auth/flutter_web_auth.dart';
+
 import 'package:agent_dart/utils/extension.dart';
 import 'counter.dart';
 import 'init.dart';
@@ -30,6 +34,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+
     initCounter();
     loading(true);
     readCount();
@@ -37,13 +42,13 @@ class _MyAppState extends State<MyApp> {
 
   void initCounter() {
     var agent = AgentFactory.create(
-        canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai",
-        url: "http://localhost:60916",
+        canisterId: "rdmx6-jaaaa-aaaaa-aaadq-cai",
+        url: "http://192.168.3.11:57229",
         idl: idl,
         identity: _identity);
     _counter = agent.hook(Counter());
-    _pub =
-        (agent.identity as Ed25519KeyIdentity).getPublicKey().toDer().buffer.asUint8List().toHex();
+    var bf = (agent.identity as Ed25519KeyIdentity).getPublicKey().toDer().buffer.asUint8List();
+    _pub = bf.toHex();
   }
 
   void loading(bool state) {
@@ -68,20 +73,33 @@ class _MyAppState extends State<MyApp> {
 
   void authenticate() async {
     try {
-      var authClient = AuthClient(
-        scheme: "identity",
-        path: 'auth',
-        authUri: Uri.parse('http://rkp4c-7iaaa-aaaaa-aaaca-cai.localhost:8000/#authorize'),
-        authFunction: (AuthPayload payload) async {
-          return await FlutterWebAuth.authenticate(
-              url: payload.url, callbackUrlScheme: payload.scheme);
-        },
-      );
+      // var authClient = AuthClient(
+      //   scheme: "identity",
+      //   path: 'auth',
+      //   authUri: Uri.parse(
+      //       'http://localtest.me:43823/?canisterId=rwlgt-iiaaa-aaaaa-aaaaa-cai#authorize'),
+      //   // Uri.parse('http://localhost:8000/?canisterId=rwlgt-iiaaa-aaaaa-aaaaa-cai#authorize'),
+      //   authFunction: (AuthPayload payload) async {
+      //     return await FlutterWebAuth.authenticate(
+      //         url: payload.url, callbackUrlScheme: payload.scheme);
+      //   },
+      // );
 
-      await authClient.login();
+      var authClient = WebAuthProvider(
+          scheme: "identity",
+          path: 'auth',
+          authUri: Uri.parse('https://identity.ic0.app/#authorize'),
+          useLocalPage: true
+          // Uri.parse('http://localhost:8000/?canisterId=rwlgt-iiaaa-aaaaa-aaaaa-cai#authorize'),
+          );
+
+      await authClient.login(
+          // AuthClientLoginOptions()..canisterId = "rwlgt-iiaaa-aaaaa-aaaaa-cai"
+          );
       var loginResult = await authClient.isAuthenticated();
 
       _identity = authClient.getIdentity();
+
       setState(() {
         _status = 'Got result: $loginResult';
       });
