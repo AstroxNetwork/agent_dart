@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:agent_dart/agent/agent/api.dart';
+import 'package:agent_dart/agent/agent/http/fetch.dart';
 import 'package:agent_dart/agent/agent/http/transform.dart';
 import 'package:agent_dart/agent/auth.dart';
 import 'package:agent_dart/agent/cbor.dart' as cbor;
@@ -234,7 +235,7 @@ class HttpAgent implements Agent {
       // ignore: prefer_adjacent_string_concatenation
       throw 'Server returned an error:\n' +
           '  Code: ${response["statusCode"]} (${response["statusText"]})\n' +
-          '  Body: ${response["body"]}\n';
+          '  Body: ${response["body"] is Uint8List ? (response["body"] as Uint8List).u8aToString() : response["body"]}\n';
     }
 
     return CallResponseBody.fromJson({...response, "requestId": requestId});
@@ -387,51 +388,14 @@ class HttpAgent implements Agent {
       String method = "POST",
       Map<String, dynamic>? headers,
       dynamic body}) async {
-    final client = http.Client();
-    FetchMethod fetchMethod = FetchMethod.post;
-
-    if (method == "Get" || method == "get" || method == "GET") {
-      fetchMethod = FetchMethod.get;
-    } else {
-      fetchMethod = FetchMethod.post;
-    }
-
-    try {
-      if (fetchMethod == FetchMethod.get) {
-        var getResponse = await client.get(Uri.parse(host ?? "$_host$endpoint"), headers: {
-          ..._baseHeaders,
-          ...?headers,
-        });
-
-        return {
-          "body": getResponse.body,
-          "ok": getResponse.statusCode >= 200 && getResponse.statusCode < 300,
-          "statusCode": getResponse.statusCode,
-          "statusText": getResponse.reasonPhrase ?? '',
-          "arrayBuffer": getResponse.bodyBytes,
-        };
-      } else {
-        var postResponse = await client.post(
-          Uri.parse(host ?? "$_host$endpoint"),
-          headers: {
-            ..._baseHeaders,
-            ...?headers,
-          },
-          body: body,
-          // encoding: Encoding.getByName('utf8')
-        );
-
-        return {
-          "body": postResponse.body,
-          "ok": postResponse.statusCode >= 200 && postResponse.statusCode < 300,
-          "statusCode": postResponse.statusCode,
-          "statusText": postResponse.reasonPhrase ?? '',
-          "arrayBuffer": postResponse.bodyBytes,
-        };
-      }
-    } catch (e) {
-      throw "http request failed because $e";
-    }
+    return defaultFetch(
+        endpoint: endpoint,
+        host: host,
+        defaultHost: _host,
+        method: method,
+        headers: headers,
+        baseHeaders: _baseHeaders,
+        body: body);
   }
 
   Future<HttpAgentRequest> _transform(HttpAgentRequest request) {

@@ -6,20 +6,20 @@ import 'package:crypto/crypto.dart';
 // ignore: implementation_imports
 import 'package:crypto/src/digest_sink.dart';
 
-Uint8List sha224Hash(ByteBuffer buf) {
-  return SHA224().update(buf.asUint8List()).toU8a();
+Uint8List sha256Hash(ByteBuffer buf) {
+  return SHA256().update(buf.asUint8List()).toU8a();
 }
 
-class SHA224 {
+class SHA256 {
   late DigestSink ds;
   late ByteConversionSink sha;
 
-  SHA224() {
+  SHA256() {
     ds = DigestSink();
-    sha = sha224.startChunkedConversion(ds);
+    sha = sha256.startChunkedConversion(ds);
   }
 
-  SHA224 update(List<int> bytes) {
+  SHA256 update(List<int> bytes) {
     sha.add(bytes);
     return this;
   }
