@@ -73,10 +73,13 @@ List<Uint8List> u8aSorted(List<Uint8List> u8as) {
   u8as.sort((a, b) {
     var i = 0;
     while (true) {
+      // ignore: unnecessary_null_comparison
       if (a[i] == null && b[i] == null) {
         return 0;
+        // ignore: unnecessary_null_comparison
       } else if (a[i] == null) {
         return -1;
+        // ignore: unnecessary_null_comparison
       } else if (b[i] == null) {
         return 1;
       }

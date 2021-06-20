@@ -1,5 +1,6 @@
 # agent_dart
 [![pub package](https://img.shields.io/pub/v/agent_dart?color=42a012&include_prereleases&label=dev&logo=dart&style=flat-square)](https://pub.dev/packages/agent_dart)
+
 [![GitHub license](https://img.shields.io/github/license/AstroxNetwork/agent_dart?style=flat-square)](https://github.com/AstroxNetwork/agent_dart/blob/master/LICENSE)
 
 
@@ -20,6 +21,7 @@ An agent library built for Internet Computer, a plugin package for dart and flut
    9. [FAQ](#faq)
    
 ---
+
 
 ## 🚦 Prerequisites
 * [Flutter](https://flutter.dev/docs/get-started/install) version in the `agent_dart/pubspec.yaml`
