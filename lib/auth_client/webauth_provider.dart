@@ -48,7 +48,7 @@ class WebAuthProvider extends AuthClient {
           callbackScheme: scheme,
           authUri: originUrl);
       server = await startServer(page, port);
-      authUri = Uri.parse('http://localtest.me:$port/');
+      authUri = Uri.parse('http://localtest.me:32768');
       try {
         await super.login(options);
       } catch (e) {
@@ -138,7 +138,6 @@ String generateHtml(
     
     function getValue() {
       idpWindow = window.open(`$withHash`, 'idpWindow');
-
       if (idpWindow != undefined) {
         var listener = window.addEventListener('message', function (event) {
           var message = event.data;
@@ -150,6 +149,7 @@ String generateHtml(
                 sessionPublicKey: $sessionPublicKey,
                 maxTimeToLive: undefined,
               };
+              // console.log(idpWindow.origin);
               idpWindow.postMessage(request, `$withHash`);
               break;
             }

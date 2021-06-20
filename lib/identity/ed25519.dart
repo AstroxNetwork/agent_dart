@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:agent_dart/principal/principal.dart';
+import 'package:agent_dart/principal/utils/sha224.dart';
 import 'package:pinenacl/ed25519.dart';
 import 'package:agent_dart/agent/auth.dart' as auth;
 import 'package:agent_dart/agent/types.dart';
@@ -166,7 +168,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     final keyPair = SigningKey.fromValidBytes(secretKey);
     final identity = Ed25519KeyIdentity.fromKeyPair(
       blobFromUint8Array(keyPair.publicKey.asTypedList),
-      blobFromUint8Array(keyPair.verifyKey.asTypedList),
+      secretKey,
     );
     return identity;
   }
@@ -193,7 +195,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
 
   /// Return the public key.
   @override
-  auth.PublicKey getPublicKey() {
+  Ed25519PublicKey getPublicKey() {
     return _publicKey;
   }
 
@@ -205,5 +207,23 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
         ? blobFromUint8Array(challenge)
         : blobFromBuffer(challenge as ByteBuffer);
     return Future.value(blobFromUint8Array(_sk.sign(blob).signature.asTypedList));
+  }
+
+  Uint8List get accountId => getAccountId();
+  Uint8List getAccountId() {
+    final der = getPublicKey().toDer();
+    final hash = SHA224();
+    hash.update(('\x0Aaccount-id').plainToU8a());
+    hash.update(Principal.selfAuthenticating(der).toBlob());
+    hash.update(Uint8List(32));
+    final data = hash.digest();
+    // without checksum?
+    return Uint8List.fromList(data);
+
+    // final view = ByteData(4);
+    // view.setUint32(0, getCrc32(data.buffer));
+    // final checksum = view.buffer.asUint8List();
+    // final bytes = Uint8List.fromList(data);
+    // return Uint8List.fromList([...checksum, ...bytes]);
   }
 }
