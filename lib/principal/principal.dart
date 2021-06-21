@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:convert';
+import 'package:agent_dart/agent/types.dart';
 import 'utils/base32.dart';
 import 'utils/get_crc.dart';
 import 'utils/sha224.dart';
@@ -66,6 +67,10 @@ class Principal {
     }
   }
 
+  static Principal fromBlob(BinaryBlob arr) {
+    return Principal.fromUint8Array(arr);
+  }
+
   static Principal fromUint8Array(Uint8List arr) {
     return Principal(arr);
   }
@@ -82,6 +87,10 @@ class Principal {
 
   Uint8List toUint8Array() {
     return _arr;
+  }
+
+  Uint8List toBlob() {
+    return toUint8Array();
   }
 
   String toHex() {
