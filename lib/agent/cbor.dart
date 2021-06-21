@@ -24,6 +24,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
     addBuilderOutput(valBuff);
     // _builderHook = _hook;
   }
+  SelfDescribeEncoder.noHead(this._out) : super(_out);
 
   addEncoder<T>(ExtraEncoder encoder) {
     _encoders.add(encoder);
@@ -99,12 +100,14 @@ class SelfDescribeEncoder extends cbor.Encoder {
   }
 
   void serializeIterable(Iterable data) {
-    writeTypeValue(cbor.majorTypeArray, data.length);
     if (data is Uint8Buffer) {
-      writeBuff(data);
+      writeBuff(data, false);
     } else if (data is Uint8List) {
       writeBytes(Uint8Buffer()..addAll(data));
+    } else if (data.every((element) => element is int)) {
+      writeBytes(Uint8Buffer()..addAll(data as List<int>));
     } else if (data is List) {
+      writeTypeValue(cbor.majorTypeArray, data.length);
       for (final byte in data) {
         if (getEncoderFor(byte) != null) {
           writeExtra(byte);
@@ -270,10 +273,25 @@ SelfDescribeEncoder initCborSerializer() {
     ..addEncoder(byteBufferEncoder);
 }
 
+SelfDescribeEncoder initCborSerializerNoHead() {
+  cbor.init();
+  final output = cbor.OutputStandard();
+  final principalEncoder = PrincipalEncoder();
+  final bigIntEncoder = BigIntEncoder();
+  final bufferEncoder = BufferEncoder();
+  final byteBufferEncoder = ByteBufferEncoder();
+
+  return SelfDescribeEncoder.noHead(output)
+    ..addEncoder(principalEncoder)
+    ..addEncoder(bigIntEncoder)
+    ..addEncoder(bufferEncoder)
+    ..addEncoder(byteBufferEncoder);
+}
+
 BinaryBlob cborEncode(dynamic value, {SelfDescribeEncoder? withSerializer}) {
   var serializer = withSerializer ?? initCborSerializer();
   serializer.serialize(value);
-  return blobFromBuffer(serializer._out.getData().buffer);
+  return Uint8List.fromList(serializer._out.getData());
 }
 
 T cborDecode<T>(List<int> value) {
@@ -288,9 +306,15 @@ T cborDecode<T>(List<int> value) {
     decoder.run();
 
     List<dynamic>? getDecodedData() {
-      _decodeStack.build(listener.itemStack);
-      return _decodeStack.walk();
+      try {
+        _decodeStack.build(listener.itemStack);
+        return _decodeStack.walk();
+      } catch (e) {
+        rethrow;
+      }
     }
+
+    // print(getDecodedData());
 
     return getDecodedData()![0] as T;
   } catch (e) {

@@ -36,11 +36,11 @@ class _MyAppState extends State<MyApp> {
 
   void initCounter() {
     _counter = AgentFactory.create(
-            canisterId: "rdmx6-jaaaa-aaaaa-aaadq-cai",
-            url: "http://192.168.3.11:57229",
-            idl: idl,
-            identity: _identity)
-        .hook(Counter());
+      canisterId: "rdmx6-jaaaa-aaaaa-aaadq-cai",
+      url: "http://192.168.3.11:54474", // For Android emulator, please use 10.0.2.2 as endpoint
+      idl: idl,
+      identity: _identity,
+    ).hook(Counter());
   }
 
   void loading(bool state) {
@@ -66,11 +66,10 @@ class _MyAppState extends State<MyApp> {
   void authenticate() async {
     try {
       var authClient = WebAuthProvider(
-        scheme: "identity",
-        path: 'auth',
-        // authUri: Uri.parse('https://identity.ic0.app/#authorize'),
-        // useLocalPage: true
-      );
+          scheme: "identity",
+          path: 'auth',
+          authUri: Uri.parse('https://identity.ic0.app/#authorize'),
+          useLocalPage: true);
 
       await authClient.login(
           // AuthClientLoginOptions()..canisterId = "rwlgt-iiaaa-aaaaa-aaaaa-cai"
