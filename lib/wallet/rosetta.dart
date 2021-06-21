@@ -366,6 +366,17 @@ class RosettaApi {
     return rosetta.SearchTransactionsResponse.fromMap(result);
   }
 
+  /// Return the /search/transactions response for transactions (only one) with the specified hash.
+  /// @param {string} transactionHash The hash of the transaction to return.
+  /// @returns {Promise<any>} The response body that was provided by the server.
+  /// @private
+  Future<rosetta.SearchTransactionsResponse> transactions(
+      rosetta.SearchTransactionsRequest req) async {
+    assert(networkIdentifier != null, "Cannot get networkIdentifier");
+    var result = await request('/search/transactions', req.toJson());
+    return rosetta.SearchTransactionsResponse.fromMap(result);
+  }
+
   Future<rosetta.TransactionIdentifierResponse> submit(
       rosetta.ConstructionSubmitRequest req) async {
     var result = await request("/construction/submit", req.toJson());
@@ -450,6 +461,7 @@ Future<CombineSignedTransactionResult> transferCombine(
   var signatures = [];
   for (var p in payloadsRes.payloads) {
     var hexBytes = blobToHex(await identity.sign(blobFromHex(p.hex_bytes)));
+
     var signedPayload = {
       "signing_payload": p.toJson(),
       "public_key": {
@@ -474,9 +486,6 @@ CombineSignedTransactionResult combine(rosetta.ConstructionCombineRequestPart re
   }
 
   var unsignedTransaction = cborDecode<Map>(req.unsigned_transaction.toU8a());
-  print("\n---------");
-  print(unsignedTransaction);
-  print("---------\n");
 
   assert(req.signatures.length == unsignedTransaction["ingress_expiries"]?.length * 2);
   assert(unsignedTransaction["update"] != null);
@@ -487,7 +496,7 @@ CombineSignedTransactionResult combine(rosetta.ConstructionCombineRequestPart re
   var requestEnvelopes = [];
 
   for (var ingressExpiry in unsignedTransaction["ingress_expiries"]) {
-    update["ingress_expiry"] = BigInt.from(ingressExpiry);
+    update["ingress_expiry"] = BigInt.from(ingressExpiry).toInt();
 
     var readState = make_read_state_from_update(update);
 
@@ -498,7 +507,10 @@ CombineSignedTransactionResult combine(rosetta.ConstructionCombineRequestPart re
         blobToHex(make_sig_data(HttpReadState_representation_independent_hash(readState)))];
 
     var envelope = {
-      "content": {"request_type": "call", ...update},
+      "content": {
+        "request_type": "call",
+        ...update,
+      },
       "sender_pubkey":
           Ed25519PublicKey.fromRaw(blobFromHex(transactionSignature!.public_key.hex_bytes)).toDer(),
       "sender_sig": blobFromHex(transactionSignature.hex_bytes),
@@ -508,7 +520,10 @@ CombineSignedTransactionResult combine(rosetta.ConstructionCombineRequestPart re
     // envelope.content.encodeCBOR = cbor.Encoder.encodeIndefinite;
 
     var readStateEnvelope = {
-      "content": {"request_type": "read_state", ...readState},
+      "content": {
+        "request_type": "read_state",
+        ...readState,
+      },
       "sender_pubkey":
           Ed25519PublicKey.fromRaw(blobFromHex(readStateSignature!.public_key.hex_bytes)).toDer(),
       "sender_sig": blobFromHex(readStateSignature.hex_bytes),
@@ -517,10 +532,8 @@ CombineSignedTransactionResult combine(rosetta.ConstructionCombineRequestPart re
 
     // readStateEnvelope.content.encodeCBOR = cbor.Encoder.encodeIndefinite;
 
-    requestEnvelopes.add({
-      "update": envelope,
-      "read_state": readStateEnvelope,
-    });
+    requestEnvelopes.add(envelope);
+    requestEnvelopes.add(readStateEnvelope);
   }
   envelopes.add(requestEnvelopes);
 
@@ -535,14 +548,19 @@ class CombineSignedTransactionResult {
   CombineSignedTransactionResult(this.signedTransaction);
 }
 
+const tweetNaclSignedPubLength = 32;
+
 Map<String, dynamic> transactionDecoder(String txnHash) {
   final envelopes = cborDecode(blobFromHex(txnHash));
   assert(envelopes.length == 1);
-  var envelope = envelopes[0][0]["update"];
+
+  var envelope = envelopes[0][0];
   assert(envelope["content"]["request_type"] == "call");
   assert(envelope["content"]["method_name"] == "send_pb");
-  var sendArgs = SendRequest.fromBuffer(envelope["content"]["arg"]);
-  var senderAddress = Principal.fromBlob(Uint8List.fromList(envelope["content"]["sender"]));
+  var content = envelope["content"] as Map;
+  var senderPubkey = envelope["sender_pubkey"];
+  var sendArgs = SendRequest.fromBuffer(content["arg"]);
+  var senderAddress = Principal.fromBlob(Uint8List.fromList(content["sender"]));
   final hash = SHA224()
     ..update(('\x0Aaccount-id').plainToU8a())
     ..update(senderAddress.toBlob())
@@ -552,28 +570,7 @@ Map<String, dynamic> transactionDecoder(String txnHash) {
     "to": Uint8List.fromList(sendArgs.to.hash.sublist(4)),
     "amount": BigInt.parse(sendArgs.payment.receiverGets.e8s.toRadixString(10)),
     "fee": BigInt.parse(sendArgs.maxFee.e8s.toRadixString(10)),
-    "sender_pubkey": Uint8List.fromList(envelope["sender_pubkey"])
-        .sublist((Uint8List.fromList(envelope["sender_pubkey"])).byteLength - 32),
+    "sender_pubkey": Uint8List.fromList(senderPubkey)
+        .sublist((Uint8List.fromList(senderPubkey)).byteLength - tweetNaclSignedPubLength),
   };
 }
-
-
-
-// class UnsignedTransaction {
-//   CallRequest update;
-//   List<Expiry> ingress_expiries;
-//   UnsignedTransaction(this.update, this.ingress_expiries);
-//   factory UnsignedTransaction.fromMap(Map<String, dynamic> map) {
-//     var update = map["update"];
-//     var ingress_expiries = map["ingress_expiries"];
-//     return UnsignedTransaction(
-//         CallRequest()
-//           ..canister_id = update["canister_id"]
-//           ..method_name = update["method_name"]
-//           ..arg = update["arg"]
-//           ..sender = update["sender"]
-//           ..ingress_expiry = update["ingress_expiry"]
-//           ..nonce = null,
-//         (ingress_expiries as List).map((e) => Expiry(BigInt.parse(e).toInt())).toList());
-//   }
-// }
