@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
   void initCounter() {
     _counter = AgentFactory.create(
       canisterId: "rdmx6-jaaaa-aaaaa-aaadq-cai",
-      url: "http://192.168.3.11:53727",
+      url: "http://192.168.3.11:54474",
       idl: idl,
       identity: _identity,
     ).hook(Counter());

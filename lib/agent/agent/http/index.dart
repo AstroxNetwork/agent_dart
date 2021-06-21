@@ -99,7 +99,7 @@ class HttpAgent implements Agent {
 
   late String defaultProtocol;
   late String defaultHost;
-  late String deaultPort;
+  late String defaultPort;
 
   late FetchFunc<Map<String, dynamic>>? _fetch;
 
@@ -115,7 +115,7 @@ class HttpAgent implements Agent {
       {HttpAgentOptions? options,
       this.defaultProtocol = 'https',
       this.defaultHost = 'localhost',
-      this.deaultPort = ':8000'}) {
+      this.defaultPort = ':8000'}) {
     if (options != null) {
       if (options.source is HttpAgent && options.source != null) {
         setPipeline(options.source!._pipeline);
@@ -131,7 +131,7 @@ class HttpAgent implements Agent {
       if (options.host != null) {
         setHost(defaultProtocol + '://${options.host}');
       } else {
-        setHost(defaultProtocol + '://$defaultHost$deaultPort');
+        setHost(defaultProtocol + '://$defaultHost$defaultPort');
       }
 
       /// setIdentity
@@ -149,7 +149,7 @@ class HttpAgent implements Agent {
       _baseHeaders = _createBaseHeaders();
     } else {
       setIdentity(Future.value(AnonymousIdentity()));
-      setHost(defaultProtocol + '://$defaultHost$deaultPort');
+      setHost(defaultProtocol + '://$defaultHost$defaultPort');
       setFetch(_defaultFetch);
       setCredentials("");
       // run default headers
