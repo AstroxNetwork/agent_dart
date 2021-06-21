@@ -56,7 +56,7 @@ class AgentFactory {
     _agent = HttpAgent(
         defaultProtocol: protocol,
         defaultHost: host,
-        deaultPort: port,
+        defaultPort: port,
         options: HttpAgentOptions()..identity = _identity);
     if (_debug) {
       await _agent.fetchRootKey();
