@@ -22,6 +22,7 @@ Uint8List sha256Chunks(List<dynamic> chunks) {
 ///
 /// @param {object} update
 /// @returns {object}
+// ignore: non_constant_identifier_names
 Map<String, dynamic> make_read_state_from_update(Map update) {
   return {
     "sender": update["sender"],
@@ -35,6 +36,7 @@ Map<String, dynamic> make_read_state_from_update(Map update) {
 ///
 /// @param {object} read_state
 /// @returns {Buffer}
+// ignore: non_constant_identifier_names
 Uint8List HttpReadState_representation_independent_hash(Map readState) {
   return hash_of_map({
     "request_type": "read_state",
@@ -50,6 +52,7 @@ final DOMAIN_IC_REQUEST = ("\x0Aic-request").plainToU8a();
 ///
 /// @param {Buffer} message_id
 /// @returns {Buffer}
+// ignore: non_constant_identifier_names
 Uint8List make_sig_data(Uint8List messageId) {
   return u8aConcat([DOMAIN_IC_REQUEST, messageId]);
 }
@@ -57,6 +60,7 @@ Uint8List make_sig_data(Uint8List messageId) {
 ///
 /// @param {object} update
 /// @returns {Buffer}
+// ignore: non_constant_identifier_names
 Uint8List HttpCanisterUpdate_id(Map update) {
   return HttpCanisterUpdate_representation_independent_hash(update);
 }
@@ -64,6 +68,7 @@ Uint8List HttpCanisterUpdate_id(Map update) {
 ///
 /// @param {object} update
 /// @returns {Buffer}
+// ignore: non_constant_identifier_names
 Uint8List HttpCanisterUpdate_representation_independent_hash(Map update) {
   return hash_of_map({
     "request_type": "call",
@@ -78,6 +83,7 @@ Uint8List HttpCanisterUpdate_representation_independent_hash(Map update) {
 ///
 /// @param {object} map
 /// @returns {Buffer}
+// ignore: non_constant_identifier_names
 Uint8List hash_of_map(Map map) {
   var hashes = <Uint8List>[];
 
@@ -92,6 +98,7 @@ Uint8List hash_of_map(Map map) {
 /// @param {string} key
 /// @param {string|Buffer|BigInt} val
 /// @returns {Buffer}
+// ignore: non_constant_identifier_names
 Uint8List hash_key_val(dynamic key, dynamic val) {
   return u8aConcat([hash_string(key.toString()), hash_val(val)]);
 }
@@ -99,6 +106,7 @@ Uint8List hash_key_val(dynamic key, dynamic val) {
 ///
 /// @param {string|Buffer|BigInt} val
 /// @returns {Buffer}
+// ignore: non_constant_identifier_names
 Uint8List hash_val(dynamic val) {
   if (val is String) {
     return hash_string(val);
@@ -124,6 +132,7 @@ Uint8List hash_val(dynamic val) {
 ///
 /// @param {string} value
 /// @returns {Buffer}
+// ignore: non_constant_identifier_names
 Uint8List hash_string(String value) {
   return sha256Chunks([value.plainToU8a().buffer]);
 }
@@ -131,6 +140,7 @@ Uint8List hash_string(String value) {
 ///
 /// @param {Buffer} value
 /// @returns {Buffer}
+// ignore: non_constant_identifier_names
 Uint8List hash_bytes(Uint8List value) {
   return sha256Chunks([value.buffer]);
 }
@@ -138,6 +148,7 @@ Uint8List hash_bytes(Uint8List value) {
 ///
 /// @param {BigInt} n
 /// @returns {Buffer}
+// ignore: non_constant_identifier_names
 Uint8List hash_U64(BigInt n) {
   // const buf = Buffer.allocUnsafe(10);
   var buf = Uint8List(10);
@@ -159,6 +170,7 @@ Uint8List hash_U64(BigInt n) {
 ///
 /// @param {Array<any>} elements
 /// @returns {Buffer}
+// ignore: non_constant_identifier_names
 Uint8List hash_array(List elements) {
   return sha256Chunks(elements.map(hash_val).toList());
 }
@@ -170,7 +182,7 @@ Uint8List hash_array(List elements) {
 Uint8List crc32Del(Uint8List buf) {
   final res = buf.sublist(4);
   final view = ByteData(4);
-  print(getCrc32(res.buffer) == view.getUint32(0));
+  assert(getCrc32(res.buffer) == view.getUint32(0));
   return res;
 }
 
