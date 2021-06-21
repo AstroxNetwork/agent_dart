@@ -17,6 +17,7 @@ void main() {
 ///
 /// first go checkout: https://github.com/AstroxNetwork/local-ledger-wasm
 /// then run the test
+/// this test is not complete yet
 void rosettaTest() {
   test('encodes properly', () async {
     /// create signer
