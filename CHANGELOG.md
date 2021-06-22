@@ -6,3 +6,7 @@
 
 * Added `webauth_provider`
 
+## 0.0.3
+
+* Added `Signer` to `Wallet`
+
