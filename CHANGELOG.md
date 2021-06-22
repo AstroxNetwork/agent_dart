@@ -9,4 +9,6 @@
 ## 0.0.3
 
 * Added `Signer` to `Wallet`
+* Added `Lock` and `unlock` to Wallet
+
 

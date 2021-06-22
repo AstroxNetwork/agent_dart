@@ -11,7 +11,9 @@ export 'types.dart';
 export 'agent/index.dart';
 
 // bls
-export 'bls/bls.dart';
+export 'crypto/bls.dart';
+export 'crypto/pbkdf2.dart';
+export 'crypto/random.dart';
 
 // canisters
 export 'canisters/canisters.dart';

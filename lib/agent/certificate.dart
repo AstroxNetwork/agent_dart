@@ -9,7 +9,7 @@ import 'package:agent_dart/utils/u8a.dart';
 import 'package:typed_data/typed_data.dart';
 
 import 'agent/api.dart';
-import 'bls/bls.dart';
+import 'crypto/bls.dart';
 import 'errors.dart';
 
 /// A certificate needs to be verified (using {@link Certificate.prototype.verify})
