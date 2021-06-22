@@ -1,3 +1,4 @@
+import 'package:agent_dart/agent/crypto/data.dart';
 import 'package:agent_dart/identity/identity.dart';
 import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/utils/is.dart';
@@ -13,7 +14,7 @@ enum SignType { ecdsa, ed25519 }
 
 abstract class Signer<T extends SignablePayload, R> {
   bool? get isLocked;
-  Future<void>? unlock(String? passphrase);
+  Future<void>? unlock(String passphrase, {String? keystore});
   Future<void>? lock(String? passphrase);
   Future<R> sign(T payload, {SignType? signType = SignType.ed25519, SigningCallback? callback});
 }
@@ -35,8 +36,7 @@ class ICPAccount extends BaseAccount {
   ECKeys? _ecKeys;
   Ed25519KeyIdentity? get identity => _identity;
   ECKeys? get ecKeys => _ecKeys;
-  ECKeys? _lockedEcKeys;
-  Ed25519KeyIdentity? _lockedIdentity;
+  String? _keystore;
 
   static ICPAccount fromPhrase(String phrase, {String passphase = "", int index = 0}) {
     ECKeys keys = getECKeys(phrase, passphase: passphase, index: index);
@@ -86,27 +86,31 @@ class ICPAccount extends BaseAccount {
   /// TODO: implement pbkf2
 
   Future<void> lock(String? passphrase) async {
-    if (_ecKeys != null) {
-      _lockedEcKeys = _ecKeys;
-    }
-    if (_identity != null) {
-      _lockedIdentity = _identity;
-    }
+    _keystore = await encryptData(ecKeys!.ecPrivateKey!.toHex(), passphrase ?? "");
     _ecKeys = null;
     _identity = null;
     isLocked = true;
   }
 
-  Future<void> unlock(String? passphrase) async {
-    if (_lockedEcKeys != null) {
-      _ecKeys = _lockedEcKeys;
+  Future<void> unlock(String passphrase, {String? keystore}) async {
+    try {
+      if ((_keystore == null)) {
+        if (keystore != null) {
+          _keystore = keystore;
+        } else {
+          throw "keystore file is not found";
+        }
+      }
+      final decryptedPrv = await decryptData(_keystore!, passphrase);
+      var newIcp = ICPAccount.fromPrivateKey(decryptedPrv);
+      _ecKeys = newIcp._ecKeys;
+      _identity = newIcp._identity;
+      newIcp._ecKeys = null;
+      newIcp._identity = null;
+      isLocked = false;
+    } catch (e) {
+      throw "Cannot unlock account with password $passphrase and keystore $_keystore";
     }
-    if (_lockedIdentity != null) {
-      _identity = _lockedIdentity;
-    }
-    _lockedEcKeys = null;
-    _lockedIdentity = null;
-    isLocked = false;
   }
 }
 
@@ -149,9 +153,9 @@ class ICPSigner
   }
 
   @override
-  Future<void>? unlock(String? passphrase) async {
+  Future<void>? unlock(String passphrase, {String? keystore}) async {
     // TODO: implement unlock
-    await _acc.unlock(passphrase);
+    await _acc.unlock(passphrase, keystore: keystore);
   }
 
   @override

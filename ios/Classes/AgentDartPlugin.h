@@ -200,6 +200,12 @@ typedef int64_t Chunk;
 
 #define MCONST 140737475470229501
 
+char *rust_pbkdf2(const char *data, const char *salt, uint32_t rounds);
+
+char *encrypt_data(const char *data, const char *password);
+
+char *decrypt_data(const char *data, const char *password);
+
 char *bls_init(void);
 
 char *bls_verify(const char *sig, const char *m, const char *w);
