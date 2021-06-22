@@ -1,8 +1,6 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart/agent/cbor.dart';
-import 'package:agent_dart/identity/identity.dart';
-import 'package:agent_dart/wallet/hashing.dart';
 import 'package:agent_dart/wallet/signer.dart';
 import 'package:agent_dart/wallet/types.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -34,18 +32,19 @@ void rosettaTest() {
 
     /// create payload
     final amount = BigInt.one;
-    var unsignedTRansaction = await rose.transferPreCombine(
+    var unsignedTransaction = await rose.transferPreCombine(
         signer.idPublicKey!.toU8a(), receiver.idAddress!.toU8a(), amount, null, null);
 
     print("\n ------ payload ------");
-    print("from Identity: ${signer.account.getIdentity()?.getPrincipal().toText()}");
-    print("from :${signer.idAddress}");
-    print("to :${receiver.idAddress}");
-    print("sender_pubkey :${signer.idPublicKey}");
+    print("\n from Identity: ${signer.account.getIdentity()?.getPrincipal().toText()}");
+    print("\n from :${signer.idAddress}");
+    print("\n to :${receiver.idAddress}");
+    print("\n unsignedTransaction :${jsonEncode(unsignedTransaction.toJson())}");
+    print("\n sender_pubkey :${signer.idPublicKey}");
     print(" ------ payload ------ \n");
 
     /// sign transaction, offline signer we assume
-    var signedTransaction = await transferCombine(signer.account.identity!, unsignedTRansaction);
+    var signedTransaction = await transferCombine(signer.account.identity!, unsignedTransaction);
 
     /// send transaction after
     var txn = await rose.transfer_post_combine(signedTransaction);

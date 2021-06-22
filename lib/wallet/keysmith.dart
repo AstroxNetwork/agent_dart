@@ -173,7 +173,7 @@ class Secp256k1PublicKey implements PublicKey {
     }
     final rawKey = blobFromUint8Array(key.sublist(Secp256k1PublicKey.DER_PREFIX.length));
     if (!derEncode(rawKey).equals(key)) {
-      throw 'secp256k1 DER-encoded public key is invalid. A valid secp256k1 DER-encoded public key ' +
+      throw 'secp256k1 DER-encoded public key is invalid. A valid secp256k1 DER-encoded public key '
           "must have the following prefix: ${Secp256k1PublicKey.DER_PREFIX}";
     }
     return rawKey;
