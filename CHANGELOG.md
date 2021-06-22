@@ -11,4 +11,7 @@
 * Added `Signer` to `Wallet`
 * Added `Lock` and `unlock` to Wallet
 
+## 0.0.4
+revamp
+
 
