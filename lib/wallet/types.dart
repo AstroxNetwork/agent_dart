@@ -73,6 +73,7 @@ class OperationIdentifier {
   int index;
 
   /// Some blockchains specify an operation index that is essential for client use. For example, Bitcoin uses a network_index to identify which UTXO was used in a transaction. network_index should not be populated if there is no notion of an operation index in a blockchain (typically most account-based blockchains).
+  // ignore: non_constant_identifier_names
   int? network_index;
 
   OperationIdentifier(this.index, this.network_index);
@@ -86,6 +87,7 @@ class OperationIdentifier {
 class AccountIdentifier {
   /// The address may be a cryptographic public key (or some encoding of it) or a provided username.
   String address;
+  // ignore: non_constant_identifier_names
   SubAccountIdentifier? sub_account;
 
   /// Blockchains that utilize a username model (where the address is not a derivative of a cryptographic public key) should specify the public key(s) owned by the address in metadata.
@@ -118,7 +120,9 @@ class SubAccountIdentifier {
 
 /// Blocks contain an array of Transactions that occurred at a particular BlockIdentifier. A hard requirement for blocks returned by Rosetta implementations is that they MUST be _inalterable_: once a client has requested and received a block identified by a specific BlockIndentifier, all future calls for that same BlockIdentifier must return the same block contents.
 class Block {
+  // ignore: non_constant_identifier_names
   BlockIdentifier block_identifier;
+  // ignore: non_constant_identifier_names
   BlockIdentifier parent_block_identifier;
   Timestamp timestamp;
   List<Transaction> transactions;
@@ -144,6 +148,7 @@ class Block {
 
 /// Transactions contain an array of Operations that are attributable to the same TransactionIdentifier.
 class Transaction {
+  // ignore: non_constant_identifier_names
   TransactionIdentifier transaction_identifier;
   List<Operation> operations;
 
@@ -166,15 +171,18 @@ class Transaction {
 class Operation {
   /// Type is the network-specific type of the operation. Ensure that any type that can be returned here is also specified in the NetworkOptionsResponse. This can be very useful to downstream consumers that parse all block data.
   String type;
+  // ignore: non_constant_identifier_names
   OperationIdentifier operation_identifier;
 
   /// Restrict referenced related_operations to identifier indexes < the current operation_identifier.index. This ensures there exists a clear DAG-structure of relations. Since operations are one-sided, one could imagine relating operations in a single transfer or linking operations in a call tree.
+  // ignore: non_constant_identifier_names
   List<OperationIdentifier>? related_operations;
 
   /// Status is the network-specific status of the operation. Status is not defined on the transaction object because blockchains with smart contracts may have transactions that partially apply (some operations are successful and some are not). Blockchains with atomic transactions (all operations succeed or all operations fail) will have the same status for each operation. On-chain operations (operations retrieved in the `/block` and `/block/transaction` endpoints) MUST have a populated status field (anything on-chain must have succeeded or failed). However, operations provided during transaction construction (often times called "intent" in the documentation) MUST NOT have a populated status field (operations yet to be included on-chain have not yet succeeded or failed).
   String? status;
   AccountIdentifier? account;
   Amount? amount;
+  // ignore: non_constant_identifier_names
   CoinChange? coin_change;
   Map<String, dynamic>? metadata;
   Operation(this.type, this.operation_identifier, this.related_operations, this.status,
@@ -246,9 +254,11 @@ class Currency {
 /// SyncStatus is used to provide additional context about an implementation's sync status. It is often used to indicate that an implementation is healthy when it cannot be queried  until some sync phase occurs. If an implementation is immediately queryable, this model is often not populated.
 class SyncStatus {
   /// CurrentIndex is the index of the last synced block in the current stage.
+  // ignore: non_constant_identifier_names
   int current_index;
 
   /// TargetIndex is the index of the block that the implementation is attempting to sync to in the current stage.
+  // ignore: non_constant_identifier_names
   int? target_index;
 
   /// Stage is the phase of the sync process.
@@ -265,6 +275,7 @@ class SyncStatus {
 
 /// A Peer is a representation of a node's peer.
 class Peer {
+  // ignore: non_constant_identifier_names
   String peer_id;
   Map<String, dynamic>? metadata;
   Peer(this.peer_id, this.metadata);
@@ -276,12 +287,15 @@ class Peer {
 /// The Version object is utilized to inform the client of the versions of different components of the Rosetta implementation.
 class Version {
   /// The rosetta_version is the version of the Rosetta interface the implementation adheres to. This can be useful for clients looking to reliably parse responses.
+  // ignore: non_constant_identifier_names
   String rosetta_version;
 
   /// The node_version is the canonical version of the node runtime. This can help clients manage deployments.
+  // ignore: non_constant_identifier_names
   String node_version;
 
   /// When a middleware server is used to adhere to the Rosetta interface, it should return its version here. This can help clients manage deployments.
+  // ignore: non_constant_identifier_names
   String? middleware_version;
 
   /// Any other information that may be useful about versioning of dependent services should be returned here.
@@ -300,6 +314,7 @@ class Version {
 /// Allow specifies supported Operation status, Operation types, and all possible error statuses. This Allow object is used by clients to validate the correctness of a Rosetta Server implementation. It is expected that these clients will error if they receive some response that contains any of the above information that is not specified here.
 class Allow {
   /// All Operation.Status this implementation supports. Any status that is returned during parsing that is not listed here will cause client validation to error.
+  // ignore: non_constant_identifier_names
   List<OperationStatus> operation_statuses;
 
   /// All Operation.Type this implementation supports. Any type that is returned during parsing that is not listed here will cause client validation to error.
@@ -387,9 +402,12 @@ class PublicKey {
 /// SigningPayload is signed by the client with the keypair associated with an AccountIdentifier using the specified SignatureType. SignatureType can be optionally populated if there is a restriction on the signature scheme that can be used to sign the payload.
 class SigningPayload {
   /// [DEPRECATED by `account_identifier` in `v1.4.4`] The network-specific address of the account that should sign the payload.
+  // ignore: non_constant_identifier_names
   String hex_bytes;
   String? address;
+  // ignore: non_constant_identifier_names
   AccountIdentifier? account_identifier;
+  // ignore: non_constant_identifier_names
   String? signature_type;
 
   SigningPayload(this.hex_bytes, this.address, this.account_identifier, this.signature_type);
@@ -496,11 +514,8 @@ class BalanceExemption {
       }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
 }
 
-/**
- * ExemptionType is used to indicate if the live balance for an account subject to a BalanceExemption could increase above, decrease below, or equal the computed balance. * greater_or_equal: The live balance may increase above or equal the computed balance. This typically   occurs with staking rewards that accrue on each block. * less_or_equal: The live balance may decrease below or equal the computed balance. This typically   occurs as balance moves from locked to spendable on a vesting account. * dynamic: The live balance may increase above, decrease below, or equal the computed balance. This   typically occurs with tokens that have a dynamic supply.
- */
-// export type ExemptionType = "greater_or_equal" | "less_or_equal" | "dynamic";
-
+/// ExemptionType is used to indicate if the live balance for an account subject to a BalanceExemption could increase above, decrease below, or equal the computed balance. * greater_or_equal: The live balance may increase above or equal the computed balance. This typically   occurs with staking rewards that accrue on each block. * less_or_equal: The live balance may decrease below or equal the computed balance. This typically   occurs as balance moves from locked to spendable on a vesting account. * dynamic: The live balance may increase above, decrease below, or equal the computed balance. This   typically occurs with tokens that have a dynamic supply.
+/// export type ExemptionType = "greater_or_equal" | "less_or_equal" | "dynamic";
 /// BlockEvent represents the addition or removal of a BlockIdentifier from storage. Streaming BlockEvents allows lightweight clients to update their own state without needing to implement their own syncing logic.
 class BlockEvent {
   /// sequence is the unique identifier of a BlockEvent within the context of a NetworkIdentifier.
@@ -897,6 +912,7 @@ class ConstructionDeriveRequest {
 class ConstructionDeriveResponse {
   /// [DEPRECATED by `account_identifier` in `v1.4.4`] Address in network-specific format.
   String? address;
+  // ignore: non_constant_identifier_names
   AccountIdentifier? account_identifier;
   Map<String, dynamic>? metadata;
 
@@ -986,12 +1002,17 @@ class ConstructionPayloadsRequest {
       }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
 }
 
-/// ConstructionTransactionResponse is returned by `/construction/payloads`. It contains an unsigned transaction blob (that is usually needed to construct the a network transaction from a collection of signatures) and an array of payloads that must be signed by the caller.
-class ConstructionPayloadsResponse {
-  String unsigned_transaction;
-  List<SigningPayload> payloads;
+abstract class SignablePayload {
+  final String unsigned_transaction;
+  final List<SigningPayload> payloads;
+  SignablePayload(this.unsigned_transaction, this.payloads);
+  Map<String, dynamic> toJson();
+}
 
-  ConstructionPayloadsResponse(this.unsigned_transaction, this.payloads);
+/// ConstructionTransactionResponse is returned by `/construction/payloads`. It contains an unsigned transaction blob (that is usually needed to construct the a network transaction from a collection of signatures) and an array of payloads that must be signed by the caller.
+class ConstructionPayloadsResponse extends SignablePayload {
+  ConstructionPayloadsResponse(String unsigned_transaction, List<SigningPayload> payloads)
+      : super(unsigned_transaction, payloads);
   factory ConstructionPayloadsResponse.fromMap(Map<String, dynamic> map) {
     return ConstructionPayloadsResponse(map["unsigned_transaction"],
         (map["payloads"] as List).map((e) => SigningPayload.fromMap(e)).toList());

@@ -2,6 +2,7 @@ import 'package:agent_dart/identity/identity.dart';
 import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/utils/is.dart';
 import 'package:agent_dart/wallet/keysmith.dart';
+import 'package:agent_dart/wallet/rosetta.dart';
 import 'package:agent_dart/wallet/types.dart';
 
 import 'hashing.dart';
@@ -10,15 +11,15 @@ typedef SigningCallback = void Function([dynamic data]);
 
 enum SignType { ecdsa, ed25519 }
 
-abstract class Signer {
+abstract class Signer<T extends SignablePayload, R> {
   bool? get isLocked;
-  Future<void>? unlock();
-  Future<void>? lock();
-  Future<R> sign<T, R>(T payload,
-      {SignType? signType = SignType.ed25519, SigningCallback? callback});
+  Future<void>? unlock(String? passphrase);
+  Future<void>? lock(String? passphrase);
+  Future<R> sign(T payload, {SignType? signType = SignType.ed25519, SigningCallback? callback});
 }
 
-abstract class BaseSigner<T extends BaseAccount> extends Signer {}
+abstract class BaseSigner<T extends BaseAccount, R extends SignablePayload, E>
+    extends Signer<R, E> {}
 
 // class ICPWallet with Signer {}
 
@@ -82,7 +83,9 @@ class ICPAccount extends BaseAccount {
     return _ecKeys;
   }
 
-  lock() {
+  /// TODO: implement pbkf2
+
+  Future<void> lock(String? passphrase) async {
     if (_ecKeys != null) {
       _lockedEcKeys = _ecKeys;
     }
@@ -94,7 +97,7 @@ class ICPAccount extends BaseAccount {
     isLocked = true;
   }
 
-  unlock() {
+  Future<void> unlock(String? passphrase) async {
     if (_lockedEcKeys != null) {
       _ecKeys = _lockedEcKeys;
     }
@@ -107,7 +110,8 @@ class ICPAccount extends BaseAccount {
   }
 }
 
-class ICPSigner implements BaseSigner<ICPAccount> {
+class ICPSigner
+    extends BaseSigner<ICPAccount, ConstructionPayloadsResponse, CombineSignedTransactionResult> {
   String? _phrase;
   int? _index;
   ICPAccount get account => _acc;
@@ -140,23 +144,28 @@ class ICPSigner implements BaseSigner<ICPAccount> {
   bool? get isLocked => _acc.isLocked;
 
   @override
-  Future<void>? lock() async {
-    _acc.lock();
+  Future<void>? lock(String? passphrase) async {
+    await _acc.lock(passphrase);
   }
 
   @override
-  Future<void>? unlock() async {
+  Future<void>? unlock(String? passphrase) async {
     // TODO: implement unlock
-    _acc.unlock();
+    await _acc.unlock(passphrase);
   }
 
   @override
-  Future<ConstructionCombineResponse>
-      sign<ConstructionPayloadsResponse, ConstructionCombineResponse>(
-          ConstructionPayloadsResponse payload,
-          {SignType? signType = SignType.ed25519,
-          SigningCallback? callback}) {
-    // TODO: implement sign
-    throw UnimplementedError();
+  Future<CombineSignedTransactionResult> sign(ConstructionPayloadsResponse payload,
+      {SignType? signType = SignType.ed25519, SigningCallback? callback}) async {
+    try {
+      if (signType == SignType.ed25519) {
+        var res = await transferCombine(account.identity!, payload);
+        return res;
+      } else {
+        throw "Signtype $signType is not supported";
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 }
