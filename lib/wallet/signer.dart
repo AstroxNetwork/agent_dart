@@ -1,4 +1,6 @@
-import 'package:agent_dart/agent/crypto/data.dart';
+import 'dart:convert';
+
+import 'package:agent_dart/agent/crypto/keystore/api.dart';
 import 'package:agent_dart/identity/identity.dart';
 import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/utils/is.dart';
@@ -86,7 +88,7 @@ class ICPAccount extends BaseAccount {
   /// TODO: implement pbkf2
 
   Future<void> lock(String? passphrase) async {
-    _keystore = await encryptData(ecKeys!.ecPrivateKey!.toHex(), passphrase ?? "");
+    _keystore = await encrypt(ecKeys!.ecPrivateKey!.toHex(), passphrase ?? "");
     _ecKeys = null;
     _identity = null;
     isLocked = true;
@@ -101,7 +103,7 @@ class ICPAccount extends BaseAccount {
           throw "keystore file is not found";
         }
       }
-      final decryptedPrv = await decryptData(_keystore!, passphrase);
+      final decryptedPrv = await decrypt(jsonDecode(_keystore!), passphrase);
       var newIcp = ICPAccount.fromPrivateKey(decryptedPrv);
       _ecKeys = newIcp._ecKeys;
       _identity = newIcp._identity;
