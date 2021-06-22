@@ -55,7 +55,7 @@ BigInt bitnot(BigInt bn, {int? bitLength}) {
     bin = '0' + bin;
   }
 
-  if ('1' == bin[0] && -1 != bin.substring(1).indexOf('1')) {
+  if ('1' == bin[0] && bin.substring(1).contains('1')) {
     prefix = '1' * 8;
   }
 

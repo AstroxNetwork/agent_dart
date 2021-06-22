@@ -298,7 +298,7 @@ class ProxyStubAgent {
 
 class ProxyAgent implements Agent {
   int _nextId = 0;
-  final Map<int, Promise> _pendingCalls = Map<int, Promise>();
+  final Map<int, Promise> _pendingCalls = <int, Promise>{};
   @override
   BinaryBlob? rootKey;
 
@@ -370,6 +370,7 @@ class ProxyAgent implements Agent {
     }));
   }
 
+  @override
   Future<QueryResponse> query(Principal canisterId, QueryFields fields, Identity? identity) {
     return _sendAndWait(ProxyMessageQueryResponse.fromJson({
       "id": _nextId++,
