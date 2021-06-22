@@ -49,8 +49,7 @@ PollStrategy maxAttempts(int count) {
     String status,
   ) async {
     if (--attempts <= 0) {
-      throw "Failed to retrieve a reply for request after $count attempts:\n" +
-          "  Request ID: ${requestIdToHex(requestId)}\n" +
+      throw "Failed to retrieve a reply for request after $count attempts:\n" "  Request ID: ${requestIdToHex(requestId)}\n" +
           "  Request status: $status\n";
     }
   };
@@ -74,8 +73,7 @@ PollStrategy timeout(int timeInMsec) {
     String status,
   ) async {
     if (DateTime.now().millisecondsSinceEpoch > end) {
-      throw "Request timed out after $timeInMsec msec:\n" +
-          "  Request ID: ${requestIdToHex(requestId)}\n" +
+      throw "Request timed out after $timeInMsec msec:\n" "  Request ID: ${requestIdToHex(requestId)}\n" +
           "  Request status: $status\n";
     }
   };

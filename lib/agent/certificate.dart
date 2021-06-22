@@ -119,7 +119,7 @@ class Certificate {
   bool verified = false;
   BinaryBlob? _rootKey;
 
-  Agent _agent;
+  final Agent _agent;
   Certificate(ReadStateResponse response, this._agent) {
     cert = Cert.fromJson(cborDecode(response.certificate));
   }

@@ -16,7 +16,7 @@ import 'types.dart' as rosetta;
 
 /// Types of Rosetta API errors.
 
-enum RosettaErrorType {
+enum TransactionErrorType {
   // ignore: constant_identifier_names
   NotFound,
   // ignore: constant_identifier_names
@@ -26,22 +26,22 @@ enum RosettaErrorType {
 }
 
 /// Describes the cause of a Rosetta API error.
-class RosettaError extends TypeError {
-  /// Create a RosettaError.
+class TransactionError extends TypeError {
+  /// Create a TransactionError.
   /// @param {String} message An error message describing the error.
   /// @param {Number} status number The HTTP response status.
-  late RosettaErrorType errorType;
+  late TransactionErrorType errorType;
 
-  RosettaError(dynamic message, int status, {Map? detail}) : super() {
+  TransactionError(dynamic message, int status, {Map? detail}) : super() {
     switch (status) {
       case 408:
-        errorType = RosettaErrorType.Timeout;
+        errorType = TransactionErrorType.Timeout;
         break;
       case 500:
-        errorType = RosettaErrorType.NotFound;
+        errorType = TransactionErrorType.NotFound;
         break;
       default:
-        errorType = RosettaErrorType.NetworkError;
+        errorType = TransactionErrorType.NetworkError;
         break;
     }
     throw {"message": Error.safeToString(message), "status": errorType, "detail": detail};
@@ -49,7 +49,7 @@ class RosettaError extends TypeError {
 }
 
 /// Contains information about a transaction.
-class Transaction extends rosetta.Transaction {
+class RosettaTransaction extends rosetta.Transaction {
   /// Create a Transaction.
   /// @param {Any} rosettaTransaction The Rosetta Transaction object of the transaction.
   /// @param {Number} blockIndex The index of the block containing the transaction.
@@ -65,7 +65,7 @@ class Transaction extends rosetta.Transaction {
   late BigInt? memo;
   late DateTime? timestamp;
 
-  Transaction(rosetta.Transaction rosettaTransaction, this.blockIndex)
+  RosettaTransaction(rosetta.Transaction rosettaTransaction, this.blockIndex)
       : super(rosettaTransaction.transaction_identifier, rosettaTransaction.operations,
             rosettaTransaction.metadata) {
     hash = rosettaTransaction.transaction_identifier.hash;
@@ -131,8 +131,8 @@ class RosettaApi {
 
   /// Return the ICP account balance of the specified account.
   /// @param {string} accountAddress The account address to get the ICP balance of.
-  /// @returns {Promise<BigNumber|RosettaError>} The ICP account balance of the specified account, or
-  /// a RosettaError for error.
+  /// @returns {Promise<BigNumber|TransactionError>} The ICP account balance of the specified account, or
+  /// a TransactionError for error.
   Future<BigInt> getAccountBalance(accountAddress) async {
     try {
       final response = await accountBalanceByAddress(accountAddress);
@@ -143,7 +143,7 @@ class RosettaApi {
   }
 
   /// Return the latest block index.
-  /// @returns {Promise<number>} The latest block index, or a RosettaError for error.
+  /// @returns {Promise<number>} The latest block index, or a TransactionError for error.
   Future<int> getLastBlockIndex() async {
     try {
       final response = await networkStatus();
@@ -170,16 +170,16 @@ class RosettaApi {
 
   /// Return the Transaction object with the specified hash.
   /// @param {string} transactionHash The hash of the transaction to return.
-  /// @returns {Transaction|null} The Transaction object with the specified hash, or a RosettaError
+  /// @returns {Transaction|null} The Transaction object with the specified hash, or a TransactionError
   /// for error.
-  Future<Transaction> getTransaction(String transactionHash) async {
+  Future<RosettaTransaction> getTransaction(String transactionHash) async {
     try {
       final responseTransactions = await transactionsByHash(transactionHash);
       if (responseTransactions.transactions.isEmpty) {
-        throw RosettaError('Transaction not found.', 500);
+        throw TransactionError('Transaction not found.', 500);
       }
 
-      return Transaction(responseTransactions.transactions[0].transaction,
+      return RosettaTransaction(responseTransactions.transactions[0].transaction,
           responseTransactions.transactions[0].block_identifier.index);
     } catch (error) {
       //console.log(error);
@@ -193,9 +193,9 @@ class RosettaApi {
   /// @param maxBlockIndex {number} The block index to start at. If not specified, start at current
   /// block.
   /// @param offset {number} The offset from maxBlockIndex to start returning transactions.
-  /// @returns {Promise<Array<Transaction>|null>} An array of Transaction objects, or a RosettaError
+  /// @returns {Promise<Array<Transaction>|null>} An array of Transaction objects, or a TransactionError
   /// for error.
-  Future<List<Transaction>> getTransactions(int limit, int maxBlockIndex, int offset) async {
+  Future<List<RosettaTransaction>> getTransactions(int limit, int maxBlockIndex, int offset) async {
     try {
       // This function can be simplified once /search/transactions supports using the properties
       // max_block, offset, and limit.
@@ -212,7 +212,7 @@ class RosettaApi {
       }
 
       final transactionCount = min(limit, blockIndex + 1);
-      final transactions = <Transaction>[];
+      final transactions = <RosettaTransaction>[];
       for (var i = 0; i < transactionCount; i++) {
         transactions.add(await getTransactionByBlock(blockIndex - i));
       }
@@ -226,20 +226,21 @@ class RosettaApi {
   /// Return an array of Transaction objects based on the specified parameters, or an empty array if
   /// none found.
   /// @param {string} accountAddress The account address to get the transactions of.
-  /// @returns {Promise<Array<Transaction>|null>} An array of Transaction objects, or a RosettaError
+  /// @returns {Promise<Array<Transaction>|null>} An array of Transaction objects, or a TransactionError
   /// for error.
-  Future<List<Transaction>> getTransactionsByAccount(accountAddress) async {
+  Future<List<RosettaTransaction>> getTransactionsByAccount(accountAddress) async {
     try {
       final response = await transactionsByAccount(accountAddress);
       final transactions = response.transactions.map((rosetta.BlockTransaction blockTransaction) {
-        return Transaction(blockTransaction.transaction, blockTransaction.block_identifier.index);
+        return RosettaTransaction(
+            blockTransaction.transaction, blockTransaction.block_identifier.index);
       }).toList();
 
       return transactions.reversed.toList();
     } catch (error) {
       //console.log(error);
       rethrow;
-      // return RosettaError(
+      // return TransactionError(
       //     error.message, axios.isAxiosError(error) ? error?.response?.status : undefined);
     }
   }
@@ -248,13 +249,13 @@ class RosettaApi {
   // /// @param {number} blockIndex The index of the block to return the Transaction for.
   // /// @returns {Promise<Transaction>} The Transaction corresponding to the specified block index.
   // /// @private
-  Future<Transaction> getTransactionByBlock(int blockIndex) async {
+  Future<RosettaTransaction> getTransactionByBlock(int blockIndex) async {
     var response = await blockByIndex(blockIndex);
     var block = response.block;
     if (block != null) {
-      return Transaction(block.transactions[0], blockIndex);
+      return RosettaTransaction(block.transactions[0], blockIndex);
     } else {
-      throw RosettaError("Block is not found $blockIndex", 500);
+      throw TransactionError("Block is not found $blockIndex", 500);
     }
   }
 
@@ -274,7 +275,7 @@ class RosettaApi {
     if (response.ok) {
       return jsonDecode(response.body);
     } else {
-      throw RosettaError(response.statusText, response.statusCode,
+      throw TransactionError(response.statusText, response.statusCode,
           detail: response.body.isNotEmpty ? jsonDecode(response.body) : response.body);
     }
   }
@@ -457,7 +458,7 @@ class RosettaApi {
 }
 
 Future<CombineSignedTransactionResult> transferCombine(
-    Ed25519KeyIdentity identity, rosetta.ConstructionPayloadsResponse payloadsRes) async {
+    Ed25519KeyIdentity identity, rosetta.SignablePayload payloadsRes) async {
   var signatures = [];
   for (var p in payloadsRes.payloads) {
     var hexBytes = blobToHex(await identity.sign(blobFromHex(p.hex_bytes)));

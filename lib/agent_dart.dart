@@ -12,6 +12,9 @@ export 'identity/identity.dart';
 // candid
 export 'candid/index.dart';
 
+// wallet
+export 'wallet/wallet.dart';
+
 // utils
 export 'utils/array.dart';
 export 'utils/base64.dart';

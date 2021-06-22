@@ -60,9 +60,9 @@ List<TR> zipWith<TX, TY, TR>(List<TX> xs, List<TY> ys, TR Function(TX a, TY b) f
 /// An IDL Type Table, which precedes the data in the stream.
 class TypeTable {
   // List of types. Needs to be an array as the index needs to be stable.
-  List<Uint8List> _typs = [];
+  final List<Uint8List> _typs = [];
 
-  Map<String, int> _idx = <String, int>{};
+  final Map<String, int> _idx = <String, int>{};
 
   bool has(CType obj) {
     return _idx.containsKey(obj.name);
