@@ -30,3 +30,11 @@ List<int> _encryptPrivateKey(
   var aes = _initCipher(true, aesKey, _iv);
   return aes.process((privateKey).toU8a());
 }
+
+List<int> _encryptPhrase(
+    _KeyDerivator _derivator, Uint8List _password, Uint8List _iv, String phrase) {
+  var derived = _derivator.deriveKey(_password);
+  var aesKey = derived.sublist(0, 16);
+  var aes = _initCipher(true, aesKey, _iv);
+  return aes.process(phrase.plainToU8a());
+}
