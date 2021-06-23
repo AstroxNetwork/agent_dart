@@ -2,6 +2,7 @@ library key_store;
 
 import 'dart:core';
 import 'dart:convert';
+import 'dart:isolate';
 import 'dart:typed_data';
 import 'dart:async';
 import 'package:agent_dart/agent_dart.dart';
