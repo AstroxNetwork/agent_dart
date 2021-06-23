@@ -88,7 +88,7 @@ class ICPAccount extends BaseAccount {
   /// TODO: implement pbkf2
 
   Future<void> lock(String? passphrase) async {
-    _keystore = await encrypt(ecKeys!.ecPrivateKey!.toHex(), passphrase ?? "");
+    _keystore = await encodePrivateKey(ecKeys!.ecPrivateKey!.toHex(), passphrase ?? "");
     _ecKeys = null;
     _identity = null;
     isLocked = true;
@@ -103,7 +103,7 @@ class ICPAccount extends BaseAccount {
           throw "keystore file is not found";
         }
       }
-      final decryptedPrv = await decrypt(jsonDecode(_keystore!), passphrase);
+      final decryptedPrv = await decodePrivateKey(jsonDecode(_keystore!), passphrase);
       var newIcp = ICPAccount.fromPrivateKey(decryptedPrv);
       _ecKeys = newIcp._ecKeys;
       _identity = newIcp._identity;
@@ -156,7 +156,6 @@ class ICPSigner
 
   @override
   Future<void>? unlock(String passphrase, {String? keystore}) async {
-    // TODO: implement unlock
     await _acc.unlock(passphrase, keystore: keystore);
   }
 
