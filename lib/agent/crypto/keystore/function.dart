@@ -293,7 +293,8 @@ void _encodePhrase(SendPort initialReplyTo) {
       final psw = message[1] as String;
       final options = message[2] != null ? message[2] as Map<String, dynamic> : null;
       final send = message.last as SendPort;
-      final encrypted = await encrypt(prvKey, psw, options);
+      final encrypted = await encryptPhrase(prvKey, psw, options);
+
       send.send(encrypted);
     } catch (e) {
       rethrow;
@@ -340,7 +341,8 @@ void _decodePhrase(SendPort initialReplyTo) {
       final keyStore = message[0] as Map<String, dynamic>;
       final psw = message[1] as String;
 
-      var decrypted = await decrypt(keyStore, psw);
+      var decrypted = await decryptPhrase(keyStore, psw);
+
       send.send(decrypted);
     } catch (e) {
       rethrow;

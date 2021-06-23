@@ -35,8 +35,8 @@ void signerTest() {
     expect(acc2.account.ecKeys?.accountId!.toHex(),
         "02f2326544f2040d3985e31db5e7021402c541d3cde911cd20e951852ee4da47");
 
-    var encryptedPhrase = await encryptPhrase(mne2, "123");
-    var decryptedPhrase = await decryptPhrase(jsonDecode(encryptedPhrase), "123");
+    var encryptedPhrase = await encodePhrase(mne2, "123");
+    var decryptedPhrase = await decodePhrase(jsonDecode(encryptedPhrase), "123");
     expect(decryptedPhrase, mne2);
   });
 }
