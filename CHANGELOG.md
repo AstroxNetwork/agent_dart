@@ -20,3 +20,5 @@ revamp
 ## 0.0.6
 * fix encode/decode
 
+## 0.0.7
+* added `static Ed25519KeyIdentityRecoveredFromII Ed25519KeyIdentity.recoverFromIISeedPhrase(String s)`
