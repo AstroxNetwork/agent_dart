@@ -15,14 +15,13 @@ class _PBDKDF2KeyDerivator extends _KeyDerivator {
 
   /// The docs (https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition)
   /// say that HMAC with SHA-256 is the only mac supported at the moment
-  static final Mac mac = new HMac(new SHA256Digest(), 64);
+  static final Mac mac = HMac(SHA256Digest(), 64);
 
   _PBDKDF2KeyDerivator(this.iterations, this.salt, this.dklen);
 
   @override
   Uint8List deriveKey(List<int> password) {
-    var impl = new pbkdf2.PBKDF2KeyDerivator(mac)
-      ..init(new Pbkdf2Parameters(salt, iterations, dklen));
+    var impl = pbkdf2.PBKDF2KeyDerivator(mac)..init(Pbkdf2Parameters(salt, iterations, dklen));
 
     return impl.process(Uint8List.fromList(password));
   }
@@ -49,8 +48,7 @@ class _ScryptKeyDerivator extends _KeyDerivator {
 
   @override
   Uint8List deriveKey(List<int> password) {
-    var impl = new scrypt.Scrypt()
-      ..init(new ScryptParameters(n, r, p, dklen, Uint8List.fromList(salt)));
+    var impl = scrypt.Scrypt()..init(ScryptParameters(n, r, p, dklen, Uint8List.fromList(salt)));
 
     return impl.process(Uint8List.fromList(password));
   }
