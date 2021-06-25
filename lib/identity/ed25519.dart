@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/principal/utils/sha224.dart';
+import 'package:agent_dart/wallet/keysmith.dart';
+import 'package:crypto/crypto.dart';
 import 'package:pinenacl/ed25519.dart';
 import 'package:agent_dart/agent/auth.dart' as auth;
 import 'package:agent_dart/agent/types.dart';
@@ -173,6 +175,17 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     return identity;
   }
 
+  static Ed25519KeyIdentityRecoveredFromII recoverFromIISeedPhrase(String phrase) {
+    try {
+      var userNumber = extractUserNumber(phrase);
+      var mne = dropLeadingUserNumber(phrase);
+      var identity = fromMnemonicWithoutValidation(mne, IC_DERIVATION_PATH);
+      return Ed25519KeyIdentityRecoveredFromII(userNumber: userNumber, identity: identity);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   late final Ed25519PublicKey _publicKey;
   late final BinaryBlob _privateKey;
   late final SigningKey _sk;
@@ -225,5 +238,127 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     // final checksum = view.buffer.asUint8List();
     // final bytes = Uint8List.fromList(data);
     // return Uint8List.fromList([...checksum, ...bytes]);
+  }
+}
+
+class Ed25519KeyIdentityRecoveredFromII {
+  final BigInt? userNumber;
+  final Ed25519KeyIdentity identity;
+  Ed25519KeyIdentityRecoveredFromII({required this.identity, this.userNumber});
+}
+
+///
+/// The following part is ported from InternetIdentity service. It's main purpose is to `recover` an identity that registered.
+/// These truths are covered.
+/// - It generates masterseed using Bip39 and sha512
+/// - Then use derivationPath matches to m/44'/223’/0’/0’/0'
+/// - Then use Ed25519KeyIdentity.to generate a new identity.
+/// - Internet Identity service then use the generated identity as a binding to originial identity.
+/// - So the phrases that generated can be saved to a new location, then combined with a device number to recover
+
+// ignore: constant_identifier_names
+const HARDENED = 0x80000000;
+// ignore: constant_identifier_names
+const IC_DERIVATION_PATH = [44, 223, 0, 0, 0];
+
+/// Create an Ed25519 based on a mnemonic phrase according to SLIP 0010:
+/// https://github.com/satoshilabs/slips/blob/master/slip-0010.md
+///
+/// NOTE: This method derives an identity even if the mnemonic is invalid. It's
+/// the responsibility of the caller to validate the mnemonic before calling this method.
+///
+/// @param mnemonic A BIP-39 mnemonic.
+/// @param derivationPath an array that is always interpreted as a hardened path.
+/// e.g. to generate m/44'/223’/0’/0’/0' the derivation path should be [44, 223, 0, 0, 0]
+/// @param skipValidation if true, validation checks on the mnemonics are skipped.
+Ed25519KeyIdentity fromMnemonicWithoutValidation(String mnemonic, List<int>? derivationPath) {
+  derivationPath ??= [];
+  final seed = mnemonicToSeed(mnemonic);
+  return fromSeedWithSlip0010(seed, derivationPath);
+}
+
+/// Create an Ed25519 according to SLIP 0010:
+/// https://github.com/satoshilabs/slips/blob/master/slip-0010.md
+///
+/// The derivation path is an array that is always interpreted as a hardened path.
+/// e.g. to generate m/44'/223’/0’/0’/0' the derivation path should be [44, 223, 0, 0, 0]
+Ed25519KeyIdentity fromSeedWithSlip0010(Uint8List masterSeed, List<int>? derivationPath) {
+  var chainSet = generateMasterKey(masterSeed);
+  var slipSeed = chainSet.first;
+  var chainCode = chainSet.last;
+
+  derivationPath ??= [];
+
+  for (var i = 0; i < derivationPath.length; i++) {
+    var newSet = derive(slipSeed, chainCode, derivationPath[i] | HARDENED);
+    slipSeed = newSet.first;
+    chainCode = newSet.last;
+  }
+
+  return Ed25519KeyIdentity.generate(slipSeed);
+}
+
+Set<Uint8List> generateMasterKey(Uint8List seed) {
+  var hmacSha512 = Hmac(sha512, 'ed25519 seed'.plainToU8a(useDartEncode: true)); // HMAC-SHA512
+  var h = hmacSha512.convert(seed);
+  final slipSeed = Uint8List.fromList(h.bytes.sublist(0, 32));
+  final chainCode = Uint8List.fromList(h.bytes.sublist(32));
+  return {slipSeed, chainCode};
+}
+
+Set<Uint8List> derive(Uint8List parentKey, Uint8List parentChaincode, int i) {
+  // From the spec: Data = 0x00 || ser256(kpar) || ser32(i)
+  final data = Uint8List.fromList([0, ...parentKey, ...toBigEndianArray(i)]);
+
+  final hmacSha512 = Hmac(sha512, parentChaincode);
+
+  final h = hmacSha512.convert(data);
+
+  final slipSeed = Uint8List.fromList(h.bytes.sublist(0, 32));
+  final chainCode = Uint8List.fromList(h.bytes.sublist(32));
+
+  return {slipSeed, chainCode};
+}
+
+// Converts a 32-bit unsigned integer to a big endian byte array.
+Uint8List toBigEndianArray(int n) {
+  final byteArray = Uint8List.fromList([0, 0, 0, 0]);
+  for (var i = byteArray.length - 1; i >= 0; i--) {
+    final byte = n & 0xff;
+    byteArray[i] = byte;
+    n = ((n - byte) ~/ 256).toInt();
+  }
+  return byteArray;
+}
+
+String dropLeadingUserNumber(String s) {
+  final i = s.indexOf(" ");
+  if (i != -1 && parseUserNumber(s.substring(0, i)) != null) {
+    return s.substring(i + 1);
+  } else {
+    return s;
+  }
+}
+
+// BigInt parses various things we do not want to allow, like:
+// - BigInt(whitespace) == 0
+// - Hex/Octal formatted numbers
+// - Scientific notation
+// So we check that the user has entered a sequence of digits only,
+// before attempting to parse
+BigInt? parseUserNumber(String s) {
+  try {
+    return BigInt.tryParse(s, radix: 10);
+  } catch (e) {
+    return null;
+  }
+}
+
+BigInt? extractUserNumber(String s) {
+  final i = s.indexOf(" ");
+  if (i != -1 && parseUserNumber(s.substring(0, i)) != null) {
+    return parseUserNumber(s.substring(0, i));
+  } else {
+    return null;
   }
 }
