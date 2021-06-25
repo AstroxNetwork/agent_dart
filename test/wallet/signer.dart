@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:agent_dart/agent/crypto/keystore/api.dart';
+import 'package:agent_dart/identity/ed25519.dart';
+import 'package:agent_dart/protobuf/ic_ledger/pb/v1/types.pb.dart' hide Hash;
 import 'package:agent_dart/wallet/keysmith.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:agent_dart/wallet/signer.dart';
 import 'package:agent_dart/utils/extension.dart';
