@@ -50,6 +50,10 @@ Uint8List getAccountIdFromRawPublicKey(Uint8List publicKey) {
 
 Uint8List getAccountIdFromEd25519PublicKey(Uint8List publicKey) {
   final der = Ed25519PublicKey.fromRaw(publicKey).toDer();
+  return getAccountIdFromDerKey(der);
+}
+
+Uint8List getAccountIdFromDerKey(Uint8List der) {
   final hash = SHA224();
   hash.update(('\x0Aaccount-id').plainToU8a());
   hash.update(Principal.selfAuthenticating(der).toBlob());
