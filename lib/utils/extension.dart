@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
+import 'package:typed_data/typed_data.dart';
 // ignore: library_prefixes
 import 'hex.dart' as hexUtil;
 // ignore: library_prefixes
@@ -36,6 +37,15 @@ extension U8aExtension on Uint8List {
       u8aUtil.u8aToString(this, useDartEncode: useDartEncode);
   bool eq(Uint8List other) => u8aUtil.u8aEq(this, other);
   BigInt toBn({Endian endian = Endian.little}) => u8aUtil.u8aToBn(this, endian: endian);
+}
+
+extension U8aBufferExtension on Uint8Buffer {
+  Uint8List toU8a() => Uint8List.fromList(this);
+  String toHex({bool include0x = false}) => u8aUtil.u8aToHex(toU8a(), include0x: include0x);
+  String u8aToString({bool useDartEncode = true}) =>
+      u8aUtil.u8aToString(toU8a(), useDartEncode: useDartEncode);
+  bool eq(Uint8List other) => u8aUtil.u8aEq(toU8a(), other);
+  BigInt toBn({Endian endian = Endian.little}) => u8aUtil.u8aToBn(toU8a(), endian: endian);
 }
 
 extension BnExtension on BigInt {
