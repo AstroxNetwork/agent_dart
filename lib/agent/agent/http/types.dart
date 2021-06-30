@@ -79,10 +79,10 @@ class CallRequest extends ReadStateRequest {
       "request_type": request_type,
       "canister_id": canister_id,
       "method_name": method_name,
-      "arg": arg.buffer,
+      "arg": arg,
+      "nonce": nonce,
       "sender": sender,
       "ingress_expiry": ingress_expiry,
-      "nonce": nonce
     };
   }
 }
@@ -106,7 +106,7 @@ class QueryRequest extends BaseRequest {
       "request_type": request_type,
       "canister_id": canister_id,
       "method_name": method_name,
-      "arg": arg.buffer,
+      "arg": arg,
       "sender": sender,
       "ingress_expiry": ingress_expiry,
     };
