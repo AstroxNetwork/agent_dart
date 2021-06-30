@@ -76,7 +76,6 @@ class ICPAccount extends BaseAccount {
 
   @override
   Map<String, dynamic> toJson() {
-    // TODO: implement toJson
     throw UnimplementedError();
   }
 
@@ -84,8 +83,6 @@ class ICPAccount extends BaseAccount {
   ECKeys? getEcKeys() {
     return _ecKeys;
   }
-
-  /// TODO: implement pbkf2
 
   Future<void> lock(String? passphrase) async {
     _keystore = await encodePrivateKey(ecKeys!.ecPrivateKey!.toHex(), passphrase ?? "");

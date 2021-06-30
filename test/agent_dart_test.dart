@@ -1,4 +1,4 @@
-import 'package:agent_dart/agent_dart.dart';
+// ignore: unused_import
 import 'package:flutter_test/flutter_test.dart';
 import './agent/agent.dart' as agent;
 import './authentication/authentication.dart' as auth;

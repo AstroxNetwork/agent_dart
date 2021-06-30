@@ -4,6 +4,7 @@ import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/agent/auth.dart';
 import 'package:agent_dart/principal/principal.dart';
 
+// ignore: constant_identifier_names
 const DEFAULT_IDENTITY_PROVIDER_URL = 'https://auth.ic0.app/authorize';
 
 _getDefaultLocation() {

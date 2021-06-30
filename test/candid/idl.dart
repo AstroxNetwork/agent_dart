@@ -23,6 +23,7 @@ test_(CType typ, dynamic val, String hex, String _str) {
   testDecode(typ, val, hex, _str);
 }
 
+// ignore: non_constant_identifier_names
 test_args(List<CType> typs, List vals, String hex, String _str) {
   expect(IDL.encode(typs, vals), hex.toU8a());
   expect(IDL.decode(typs, hex.toU8a()), vals);
@@ -388,6 +389,7 @@ void idlTest() {
 
   test('IDL encoding (variants)', () {
     // Variants
+    // ignore: non_constant_identifier_names
     final Result = IDL.Variant({"ok": IDL.Text, "err": IDL.Text});
     test_(Result, {"ok": 'good'}, '4449444c016b029cc20171e58eb4027101000004676f6f64', 'Result ok');
     test_(
@@ -497,6 +499,7 @@ void idlTest() {
   });
 
   test('IDL encoding (multiple arguments)', () {
+    // ignore: non_constant_identifier_names
     final Result = IDL.Variant({"ok": IDL.Text, "err": IDL.Text});
 
     // Test for multiple arguments
