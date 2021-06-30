@@ -8,6 +8,7 @@ import 'package:agent_dart/utils/u8a.dart';
 
 // import 'package:laksadart/laksadart.dart';
 
+// ignore: constant_identifier_names
 const DEFAULT_LENGTH = 32;
 
 final bn53 = BigInt.parse('11111111111111111111111111111111111111111111111111111', radix: 2);

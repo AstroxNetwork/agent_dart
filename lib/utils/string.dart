@@ -96,10 +96,12 @@ String stringCamelCase(String value) {
 }
 
 String stringLowerFirst(String value) {
+  // ignore: unnecessary_null_comparison
   return value != null ? value[0].toLowerCase() + value.substring(1) : '';
 }
 
 String stringUpperFirst(String value) {
+  // ignore: unnecessary_null_comparison
   return value != null ? value[0].toUpperCase() + value.substring(1) : '';
 }
 

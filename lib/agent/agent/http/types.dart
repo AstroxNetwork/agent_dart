@@ -88,6 +88,7 @@ class CallRequest extends ReadStateRequest {
 }
 
 class QueryRequest extends BaseRequest {
+  // ignore: non_constant_identifier_names
   late String request_type = ReadRequestType.TypeQuery;
   // ignore: non_constant_identifier_names
   late Principal canister_id;
@@ -101,7 +102,6 @@ class QueryRequest extends BaseRequest {
 
   @override
   Map<String, dynamic> toJson() {
-    // TODO: implement toJson
     return {
       "request_type": request_type,
       "canister_id": canister_id,
@@ -138,7 +138,6 @@ class HttpAgentQueryRequest extends HttpAgentBaseRequest<BaseRequest> {
 
   @override
   Map<String, dynamic> toJson() {
-    // TODO: implement toJson
     return {
       "endpoint": endpoint,
       "body": body.toJson(),
@@ -194,7 +193,6 @@ class HttpResponseBody extends ResponseBody {
   }
   @override
   String toString() {
-    // TODO: implement toString
     return jsonEncode(toJson());
   }
 

@@ -8,6 +8,7 @@
 import 'dart:core' as $core;
 import 'dart:convert' as $convert;
 import 'dart:typed_data' as $typed_data;
+
 @$core.Deprecated('Use principalIdDescriptor instead')
 const PrincipalId$json = const {
   '1': 'PrincipalId',
@@ -18,4 +19,5 @@ const PrincipalId$json = const {
 };
 
 /// Descriptor for `PrincipalId`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List principalIdDescriptor = $convert.base64Decode('CgtQcmluY2lwYWxJZBIpCg1zZXJpYWxpemVkX2lkGAEgASgMQgSI4gkBUgxzZXJpYWxpemVkSWQ6BIDiCQE=');
+final $typed_data.Uint8List principalIdDescriptor = $convert.base64Decode(
+    'CgtQcmluY2lwYWxJZBIpCg1zZXJpYWxpemVkX2lkGAEgASgMQgSI4gkBUgxzZXJpYWxpemVkSWQ6BIDiCQE=');

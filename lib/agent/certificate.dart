@@ -28,10 +28,15 @@ class UnverifiedCertificateError extends AgentError {
 //   | [4, ArrayBuffer];
 
 class NodeId {
+  // ignore: constant_identifier_names
   static const Empty = 0;
+  // ignore: constant_identifier_names
   static const Fork = 1;
+  // ignore: constant_identifier_names
   static const Labeled = 2;
+  // ignore: constant_identifier_names
   static const Leaf = 3;
+  // ignore: constant_identifier_names
   static const Pruned = 4;
 }
 
@@ -179,6 +184,7 @@ class Certificate {
 // ignore: non_constant_identifier_names
 final DER_PREFIX =
     '308182301d060d2b0601040182dc7c0503010201060c2b0601040182dc7c05030201036100'.toU8a();
+// ignore: constant_identifier_names
 const KEY_LENGTH = 96;
 
 Uint8List extractDER(Uint8List buf) {

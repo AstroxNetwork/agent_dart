@@ -23,7 +23,7 @@ class _MyAppState extends State<MyApp> {
   String _status = "";
   Identity? _identity;
   late Counter _counter;
-  var _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {

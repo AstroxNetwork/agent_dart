@@ -318,24 +318,30 @@ class Allow {
   List<OperationStatus> operation_statuses;
 
   /// All Operation.Type this implementation supports. Any type that is returned during parsing that is not listed here will cause client validation to error.
+  // ignore: non_constant_identifier_names
   List<String> operation_types;
 
   /// All Errors that this implementation could return. Any error that is returned during parsing that is not listed here will cause client validation to error.
   List<RosettaError> errors;
 
   /// Any Rosetta implementation that supports querying the balance of an account at any height in the past should set this to true.
+  // ignore: non_constant_identifier_names
   bool historical_balance_lookup;
 
   /// If populated, `timestamp_start_index` indicates the first block index where block timestamps are considered valid (i.e. all blocks less than `timestamp_start_index` could have invalid timestamps). This is useful when the genesis block (or blocks) of a network have timestamp 0. If not populated, block timestamps are assumed to be valid for all available blocks.
+  // ignore: non_constant_identifier_names
   int? timestamp_start_index;
 
   /// All methods that are supported by the /call endpoint. Communicating which parameters should be provided to /call is the responsibility of the implementer (this is en lieu of defining an entire type system and requiring the implementer to define that in Allow).
+  // ignore: non_constant_identifier_names
   List<String> call_methods;
 
   /// BalanceExemptions is an array of BalanceExemption indicating which account balances could change without a corresponding Operation. BalanceExemptions should be used sparingly as they may introduce significant complexity for integrators that attempt to reconcile all account balance changes. If your implementation relies on any BalanceExemptions, you MUST implement historical balance lookup (the ability to query an account balance at any BlockIdentifier).
+  // ignore: non_constant_identifier_names
   List<BalanceExemption> balance_exemptions;
 
   /// Any Rosetta implementation that can update an AccountIdentifier's unspent coins based on the contents of the mempool should poputhis field as true. If false, requests to `/account/coins` that set `include_mempool` as true will be automatically rejected.
+  // ignore: non_constant_identifier_names
   bool mempool_coins;
 
   Allow(this.operation_statuses, this.operation_types, this.errors, this.historical_balance_lookup,
@@ -385,7 +391,9 @@ typedef Timestamp = int;
 /// PublicKey contains a public key byte array for a particular CurveType encoded in hex. Note that there is no PrivateKey struct as this is NEVER the concern of an implementation.
 class PublicKey {
   /// Hex-encoded public key bytes in the format specified by the CurveType.
+  // ignore: non_constant_identifier_names
   String hex_bytes;
+  // ignore: non_constant_identifier_names
   String curve_type; // "secp256k1" | "secp256r1" | "edwards25519" | "tweedle";
 
   PublicKey(this.hex_bytes, this.curve_type);
@@ -430,7 +438,9 @@ class SigningPayload {
 
 /// Signature contains the payload that was signed, the public keys of the keypairs used to produce the signature, the signature (encoded in hex), and the SignatureType. PublicKey is often times not known during construction of the signing payloads but may be needed to combine signatures properly.
 class Signature {
+  // ignore: non_constant_identifier_names
   SigningPayload signing_payload;
+  // ignore: non_constant_identifier_names
   PublicKey public_key;
 
   /// export type SignatureType =
@@ -439,7 +449,9 @@ class Signature {
   ///   | "ed25519"
   ///   | "schnorr_1"
   ///   | "schnorr_poseidon";
+  // ignore: non_constant_identifier_names
   String signature_type;
+  // ignore: non_constant_identifier_names
   String hex_bytes;
 
   Signature(this.signing_payload, this.public_key, this.signature_type, this.hex_bytes);
@@ -471,7 +483,9 @@ class CoinIdentifier {
 
 /// CoinChange is used to represent a change in state of a some coin identified by a coin_identifier. This object is part of the Operation model and must be populated for UTXO-based blockchains. Coincidentally, this abstraction of UTXOs allows for supporting both account-based transfers and UTXO-based transfers on the same blockchain (when a transfer is account-based, don't poputhis model).
 class CoinChange {
+  // ignore: non_constant_identifier_names
   CoinIdentifier coin_identifier;
+  // ignore: non_constant_identifier_names
   String coin_action; // "coin_created" | "coin_spent";
   CoinChange(this.coin_action, this.coin_identifier);
   factory CoinChange.fromMap(Map<String, dynamic> map) =>
@@ -484,6 +498,7 @@ class CoinChange {
 
 /// Coin contains its unique identifier and the amount it represents.
 class Coin {
+  // ignore: non_constant_identifier_names
   CoinIdentifier coin_identifier;
   Amount amount;
   Coin(this.amount, this.coin_identifier);
@@ -498,8 +513,10 @@ class Coin {
 /// BalanceExemption indicates that the balance for an exempt account could change without a corresponding Operation. This typically occurs with staking rewards, vesting balances, and Currencies with a dynamic supply. Currently, it is possible to exempt an account from strict reconciliation by SubAccountIdentifier.Address or by Currency. This means that any account with SubAccountIdentifier.Address would be exempt or any balance of a particular Currency would be exempt, respectively. BalanceExemptions should be used sparingly as they may introduce significant complexity for integrators that attempt to reconcile all account balance changes. If your implementation relies on any BalanceExemptions, you MUST implement historical balance lookup (the ability to query an account balance at any BlockIdentifier).
 class BalanceExemption {
   /// SubAccountAddress is the SubAccountIdentifier.Address that the BalanceExemption applies to (regardless of the value of SubAccountIdentifier.Metadata).
+  // ignore: non_constant_identifier_names
   String? sub_account_address;
   Currency? currency;
+  // ignore: non_constant_identifier_names
   String? exemption_type; // "greater_or_equal" | "less_or_equal" | "dynamic";
 
   BalanceExemption(this.sub_account_address, this.currency, this.exemption_type);
@@ -520,6 +537,7 @@ class BalanceExemption {
 class BlockEvent {
   /// sequence is the unique identifier of a BlockEvent within the context of a NetworkIdentifier.
   int sequence;
+  // ignore: non_constant_identifier_names
   BlockIdentifier block_identifier;
   String type; // "block_added" | "block_removed"
 
@@ -548,6 +566,7 @@ class BlockEvent {
 
 /// BlockTransaction contains a populated Transaction and the BlockIdentifier that contains it.
 class BlockTransaction {
+  // ignore: non_constant_identifier_names
   BlockIdentifier block_identifier;
   Transaction transaction;
   BlockTransaction(this.block_identifier, this.transaction);
@@ -563,8 +582,11 @@ class BlockTransaction {
 
 /// An AccountBalanceRequest is utilized to make a balance request on the /account/balance endpoint. If the block_identifier is populated, a historical balance query should be performed.
 class AccountBalanceRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
+  // ignore: non_constant_identifier_names
   AccountIdentifier account_identifier;
+  // ignore: non_constant_identifier_names
   PartialBlockIdentifier? block_identifier;
 
   /// In some cases, the caller may not want to retrieve all available balances for an AccountIdentifier. If the currencies field is populated, only balances for the specified currencies will be returned. If not populated, all available balances will be returned.
@@ -592,6 +614,7 @@ class AccountBalanceRequest {
 
 /// An AccountBalanceResponse is returned on the /account/balance endpoint. If an account has a balance for each AccountIdentifier describing it (ex: an ERC-20 token balance on a few smart contracts), an account balance request must be made with each AccountIdentifier. The `coins` field was removed and replaced by by `/account/coins` in `v1.4.7`.
 class AccountBalanceResponse {
+  // ignore: non_constant_identifier_names
   BlockIdentifier block_identifier;
 
   /// A single account may have a balance in multiple currencies.
@@ -615,10 +638,13 @@ class AccountBalanceResponse {
 
 /// AccountCoinsRequest is utilized to make a request on the /account/coins endpoint.
 class AccountCoinsRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
+  // ignore: non_constant_identifier_names
   AccountIdentifier account_identifier;
 
   /// Include state from the mempool when looking up an account's unspent coins. Note, using this functionality breaks any guarantee of idempotency.
+  // ignore: non_constant_identifier_names
   bool include_mempool;
 
   /// In some cases, the caller may not want to retrieve coins for all currencies for an AccountIdentifier. If the currencies field is populated, only coins for the specified currencies will be returned. If not populated, all unspent coins will be returned.
@@ -646,6 +672,7 @@ class AccountCoinsRequest {
 
 /// AccountCoinsResponse is returned on the /account/coins endpoint and includes all unspent Coins owned by an AccountIdentifier.
 class AccountCoinsResponse {
+  // ignore: non_constant_identifier_names
   BlockIdentifier block_identifier;
 
   /// If a blockchain is UTXO-based, all unspent Coins owned by an account_identifier should be returned alongside the balance. It is highly recommended to poputhis field so that users of the Rosetta API implementation don't need to maintain their own indexer to track their UTXOs.
@@ -668,7 +695,9 @@ class AccountCoinsResponse {
 
 /// A BlockRequest is utilized to make a block request on the /block endpoint.
 class BlockRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
+  // ignore: non_constant_identifier_names
   PartialBlockIdentifier block_identifier;
 
   BlockRequest(this.network_identifier, this.block_identifier);
@@ -687,6 +716,7 @@ class BlockResponse {
   Block? block;
 
   /// Some blockchains may require additional transactions to be fetched that weren't returned in the block response (ex: block only returns transaction hashes). For blockchains with a lot of transactions in each block, this can be very useful as consumers can concurrently fetch all transactions returned.
+  // ignore: non_constant_identifier_names
   List<TransactionIdentifier>? other_transactions;
 
   BlockResponse(this.block, this.other_transactions);
@@ -708,8 +738,11 @@ class BlockResponse {
 
 /// A BlockTransactionRequest is used to fetch a Transaction included in a block that is not returned in a BlockResponse.
 class BlockTransactionRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
+  // ignore: non_constant_identifier_names
   BlockIdentifier block_identifier;
+  // ignore: non_constant_identifier_names
   TransactionIdentifier transaction_identifier;
 
   BlockTransactionRequest(
@@ -737,6 +770,7 @@ class BlockTransactionResponse {
 
 /// A MempoolResponse contains all transaction identifiers in the mempool for a particular network_identifier.
 class MempoolResponse {
+  // ignore: non_constant_identifier_names
   List<TransactionIdentifier> transaction_identifiers;
   MempoolResponse(this.transaction_identifiers);
   factory MempoolResponse.fromMap(Map<String, dynamic> map) =>
@@ -750,7 +784,9 @@ class MempoolResponse {
 
 /// A MempoolTransactionRequest is utilized to retrieve a transaction from the mempool.
 class MempoolTransactionRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
+  // ignore: non_constant_identifier_names
   TransactionIdentifier transaction_identifier;
   MempoolTransactionRequest(this.network_identifier, this.transaction_identifier);
   factory MempoolTransactionRequest.fromMap(Map<String, dynamic> map) => MempoolTransactionRequest(
@@ -784,6 +820,7 @@ class MetadataRequest {
 
 /// A NetworkListResponse contains all NetworkIdentifiers that the node can serve information for.
 class NetworkListResponse {
+  // ignore: non_constant_identifier_names
   List<NetworkIdentifier> network_identifiers;
   NetworkListResponse(this.network_identifiers);
   factory NetworkListResponse.fromMap(Map<String, dynamic> map) => NetworkListResponse(
@@ -795,6 +832,7 @@ class NetworkListResponse {
 
 /// A NetworkRequest is utilized to retrieve some data specific exclusively to a NetworkIdentifier.
 class NetworkRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
   Map<String, dynamic>? metadata;
   NetworkRequest(this.network_identifier, this.metadata);
@@ -808,10 +846,15 @@ class NetworkRequest {
 
 /// NetworkStatusResponse contains basic information about the node's view of a blockchain network. It is assumed that any BlockIdentifier.Index less than or equal to CurrentBlockIdentifier.Index can be queried. If a Rosetta implementation prunes historical state, it should poputhe optional `oldest_block_identifier` field with the oldest block available to query. If this is not populated, it is assumed that the `genesis_block_identifier` is the oldest queryable block. If a Rosetta implementation performs some pre-sync before it is possible to query blocks, sync_status should be populated so that clients can still monitor healthiness. Without this field, it may appear that the implementation is stuck syncing and needs to be terminated.
 class NetworkStatusResponse {
+  // ignore: non_constant_identifier_names
   BlockIdentifier current_block_identifier;
+  // ignore: non_constant_identifier_names
   Timestamp current_block_timestamp;
+  // ignore: non_constant_identifier_names
   BlockIdentifier genesis_block_identifier;
+  // ignore: non_constant_identifier_names
   BlockIdentifier? oldest_block_identifier;
+  // ignore: non_constant_identifier_names
   SyncStatus? sync_status;
   List<Peer> peers;
 
@@ -852,10 +895,12 @@ class NetworkOptionsResponse {
 
 /// A ConstructionMetadataRequest is utilized to get information required to construct a transaction. The Options object used to specify which metadata to return is left purposely unstructured to allow flexibility for implementers. Options is not required in the case that there is network-wide metadata of interest. Optionally, the request can also include an array of PublicKeys associated with the AccountIdentifiers returned in ConstructionPreprocessResponse.
 class ConstructionMetadataRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
 
   /// Some blockchains require different metadata for different types of transaction construction (ex: delegation versus a transfer). Instead of requiring a blockchain node to return all possible types of metadata for construction (which may require multiple node fetches), the client can popuan options object to limit the metadata returned to only the subset required.
   Map<String, dynamic>? options;
+  // ignore: non_constant_identifier_names
   List<PublicKey>? public_keys;
   ConstructionMetadataRequest(this.network_identifier, this.options, this.public_keys);
   factory ConstructionMetadataRequest.fromMap(Map<String, dynamic> map) {
@@ -876,6 +921,7 @@ class ConstructionMetadataRequest {
 /// The ConstructionMetadataResponse returns network-specific metadata used for transaction construction. Optionally, the implementer can return the suggested fee associated with the transaction being constructed. The caller may use this info to adjust the intent of the transaction or to create a transaction with a different account that can pay the suggested fee. Suggested fee is an array in case fee payment must occur in multiple currencies.
 class ConstructionMetadataResponse {
   Map<String, dynamic> metadata;
+  // ignore: non_constant_identifier_names
   List<Amount>? suggested_fee;
   ConstructionMetadataResponse(this.metadata, this.suggested_fee);
   factory ConstructionMetadataResponse.fromMap(Map<String, dynamic> map) {
@@ -893,7 +939,9 @@ class ConstructionMetadataResponse {
 
 /// ConstructionDeriveRequest is passed to the `/construction/derive` endpoint. Network is provided in the request because some blockchains have different address formats for different networks. Metadata is provided in the request because some blockchains allow for multiple address types (i.e. different address for validators vs normal accounts).
 class ConstructionDeriveRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
+  // ignore: non_constant_identifier_names
   PublicKey public_key;
   Map<String, dynamic>? metadata;
   ConstructionDeriveRequest(this.network_identifier, this.public_key, this.metadata);
@@ -930,10 +978,13 @@ class ConstructionDeriveResponse {
 
 /// ConstructionPreprocessRequest is passed to the `/construction/preprocess` endpoint so that a Rosetta implementation can determine which metadata it needs to request for construction. Metadata provided in this object should NEVER be a product of live data (i.e. the caller must follow some network-specific data fetching strategy outside of the Construction API to popurequired Metadata). If live data is required for construction, it MUST be fetched in the call to `/construction/metadata`. The caller can provide a max fee they are willing to pay for a transaction. This is an array in the case fees must be paid in multiple currencies. The caller can also provide a suggested fee multiplier to indicate that the suggested fee should be scaled. This may be used to set higher fees for urgent transactions or to pay lower fees when there is less urgency. It is assumed that providing a very low multiplier (like 0.0001) will never lead to a transaction being created with a fee less than the minimum network fee (if applicable). In the case that the caller provides both a max fee and a suggested fee multiplier, the max fee will set an upper bound on the suggested fee (regardless of the multiplier provided).
 class ConstructionPreprocessRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
   List<Operation> operations;
   Map<String, dynamic>? metadata;
+  // ignore: non_constant_identifier_names
   List<Amount>? max_fee;
+  // ignore: non_constant_identifier_names
   int? suggested_fee_multiplier;
 
   ConstructionPreprocessRequest(this.network_identifier, this.operations, this.metadata,
@@ -962,6 +1013,7 @@ class ConstructionPreprocessRequest {
 class ConstructionPreprocessResponse {
   /// The options that will be sent directly to `/construction/metadata` by the caller.
   Map<String, dynamic>? options;
+  // ignore: non_constant_identifier_names
   List<AccountIdentifier>? required_public_keys;
 
   ConstructionPreprocessResponse(this.options, this.required_public_keys);
@@ -978,9 +1030,11 @@ class ConstructionPreprocessResponse {
 
 /// ConstructionPayloadsRequest is the request to `/construction/payloads`. It contains the network, a slice of operations, and arbitrary metadata that was returned by the call to `/construction/metadata`. Optionally, the request can also include an array of PublicKeys associated with the AccountIdentifiers returned in ConstructionPreprocessResponse.
 class ConstructionPayloadsRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
   List<Operation> operations;
   Map<String, dynamic>? metadata;
+  // ignore: non_constant_identifier_names
   List<PublicKey>? public_keys;
   ConstructionPayloadsRequest(
       this.network_identifier, this.operations, this.metadata, this.public_keys);
@@ -1003,6 +1057,7 @@ class ConstructionPayloadsRequest {
 }
 
 abstract class SignablePayload {
+  // ignore: non_constant_identifier_names
   final String unsigned_transaction;
   final List<SigningPayload> payloads;
   SignablePayload(this.unsigned_transaction, this.payloads);
@@ -1011,12 +1066,14 @@ abstract class SignablePayload {
 
 /// ConstructionTransactionResponse is returned by `/construction/payloads`. It contains an unsigned transaction blob (that is usually needed to construct the a network transaction from a collection of signatures) and an array of payloads that must be signed by the caller.
 class ConstructionPayloadsResponse extends SignablePayload {
+  // ignore: non_constant_identifier_names
   ConstructionPayloadsResponse(String unsigned_transaction, List<SigningPayload> payloads)
       : super(unsigned_transaction, payloads);
   factory ConstructionPayloadsResponse.fromMap(Map<String, dynamic> map) {
     return ConstructionPayloadsResponse(map["unsigned_transaction"],
         (map["payloads"] as List).map((e) => SigningPayload.fromMap(e)).toList());
   }
+  @override
   Map<String, dynamic> toJson() => {
         "unsigned_transaction": unsigned_transaction,
         "payloads": payloads.map((e) => e.toJson()).toList()
@@ -1025,7 +1082,9 @@ class ConstructionPayloadsResponse extends SignablePayload {
 
 /// ConstructionCombineRequest is the input to the `/construction/combine` endpoint. It contains the unsigned transaction blob returned by `/construction/payloads` and all required signatures to create a network transaction.
 class ConstructionCombineRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
+  // ignore: non_constant_identifier_names
   String unsigned_transaction;
   List<Signature> signatures;
 
@@ -1044,7 +1103,9 @@ class ConstructionCombineRequest {
 }
 
 class ConstructionCombineRequestPart {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier? network_identifier;
+  // ignore: non_constant_identifier_names
   String unsigned_transaction;
   List<Signature> signatures;
 
@@ -1067,6 +1128,7 @@ class ConstructionCombineRequestPart {
 
 /// ConstructionCombineResponse is returned by `/construction/combine`. The network payload will be sent directly to the `construction/submit` endpoint.
 class ConstructionCombineResponse {
+  // ignore: non_constant_identifier_names
   String signed_transaction;
   ConstructionCombineResponse(this.signed_transaction);
   factory ConstructionCombineResponse.fromMap(Map<String, dynamic> map) {
@@ -1079,6 +1141,7 @@ class ConstructionCombineResponse {
 
 /// ConstructionParseRequest is the input to the `/construction/parse` endpoint. It allows the caller to parse either an unsigned or signed transaction.
 class ConstructionParseRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
 
   /// Signed is a boolean indicating whether the transaction is signed.
@@ -1106,6 +1169,7 @@ class ConstructionParseResponse {
 
   /// [DEPRECATED by `account_identifier_signers` in `v1.4.4`] All signers (addresses) of a particular transaction. If the transaction is unsigned, it should be empty.
   List<String>? signers;
+  // ignore: non_constant_identifier_names
   List<AccountIdentifier>? account_identifier_signers;
   Map<String, dynamic>? metadata;
 
@@ -1132,7 +1196,9 @@ class ConstructionParseResponse {
 
 /// ConstructionHashRequest is the input to the `/construction/hash` endpoint.
 class ConstructionHashRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
+  // ignore: non_constant_identifier_names
   String signed_transaction;
   ConstructionHashRequest(this.network_identifier, this.signed_transaction);
   factory ConstructionHashRequest.fromMap(Map<String, dynamic> map) {
@@ -1147,7 +1213,9 @@ class ConstructionHashRequest {
 
 /// The transaction submission request includes a signed transaction.
 class ConstructionSubmitRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
+  // ignore: non_constant_identifier_names
   String signed_transaction;
   ConstructionSubmitRequest(this.network_identifier, this.signed_transaction);
   factory ConstructionSubmitRequest.fromMap(Map<String, dynamic> map) {
@@ -1163,6 +1231,7 @@ class ConstructionSubmitRequest {
 
 /// TransactionIdentifierResponse contains the transaction_identifier of a transaction that was submitted to either `/construction/hash` or `/construction/submit`.
 class TransactionIdentifierResponse {
+  // ignore: non_constant_identifier_names
   TransactionIdentifier transaction_identifier;
   Map<String, dynamic>? metadata;
 
@@ -1180,6 +1249,7 @@ class TransactionIdentifierResponse {
 
 /// CallRequest is the input to the `/call` endpoint.
 class CallRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
 
   /// Method is some network-specific procedure call. This method could map to a network-specific RPC endpoint, a method in an SDK generated from a smart contract, or some hybrid of the two. The implementation must define all available methods in the Allow object. However, it is up to the caller to determine which parameters to provide when invoking `/call`.
@@ -1218,6 +1288,7 @@ class CallResponse {
 
 /// EventsBlocksRequest is utilized to fetch a sequence of BlockEvents indicating which blocks were added and removed from storage to reach the current state.
 class EventsBlocksRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
 
   /// offset is the offset into the event stream to sync events from. If this field is not populated, we return the limit events backwards from tip. If this is set to 0, we start from the beginning.
@@ -1240,6 +1311,7 @@ class EventsBlocksRequest {
 /// EventsBlocksResponse contains an ordered collection of BlockEvents and the max retrievable sequence.
 class EventsBlocksResponse {
   /// max_sequence is the maximum available sequence number to fetch.
+  // ignore: non_constant_identifier_names
   int max_sequence;
 
   /// events is an array of BlockEvents indicating the order to add and remove blocks to maintain a canonical view of blockchain state. Lightweight clients can use this event stream to update state without implementing their own block syncing logic.
@@ -1259,9 +1331,11 @@ class EventsBlocksResponse {
 
 /// SearchTransactionsRequest is used to search for transactions matching a set of provided conditions in canonical blocks.
 class SearchTransactionsRequest {
+  // ignore: non_constant_identifier_names
   NetworkIdentifier network_identifier;
   String? operator; // "or" | "and";
   /// max_block is the largest block index to consider when searching for transactions. If this field is not populated, the current block is considered the max_block. If you do not specify a max_block, it is possible a newly synced block will interfere with paginated transaction queries (as the offset could become invalid with newly added rows).
+  // ignore: non_constant_identifier_names
   int? max_block;
 
   /// offset is the offset into the query result to start returning transactions. If any search conditions are changed, the query offset will change and you must restart your search iteration.
@@ -1269,8 +1343,11 @@ class SearchTransactionsRequest {
 
   /// limit is the maximum number of transactions to return in one call. The implementation may return <= limit transactions.
   int? limit;
+  // ignore: non_constant_identifier_names
   TransactionIdentifier? transaction_identifier;
+  // ignore: non_constant_identifier_names
   AccountIdentifier? account_identifier;
+  // ignore: non_constant_identifier_names
   CoinIdentifier? coin_identifier;
   Currency? currency;
 
@@ -1342,6 +1419,7 @@ class SearchTransactionsRequest {
 /// SearchTransactionsResponse contains an ordered collection of BlockTransactions that match the query in SearchTransactionsRequest. These BlockTransactions are sorted from most recent block to oldest block.
 class SearchTransactionsResponse {
   /// next_offset is the next offset to use when paginating through transaction results. If this field is not populated, there are no more transactions to query.
+  // ignore: non_constant_identifier_names
   int? next_offset;
 
   /// transactions is an array of BlockTransactions sorted by most recent BlockIdentifier (meaning that transactions in recent blocks appear first). If there are many transactions for a particular search, transactions may not contain all matching transactions. It is up to the caller to paginate these transactions using the max_block field.

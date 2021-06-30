@@ -100,6 +100,7 @@ abstract class ResponseBody {
 abstract class SubmitResponse {
   RequestId? requestId;
   ResponseBody? response;
+  Map<String, dynamic> toJson();
 }
 
 /// An Agent able to make calls and queries to a Replica.

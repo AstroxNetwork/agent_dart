@@ -19,7 +19,7 @@ void httpTest() {
 
       agent.addTransform(HttpAgentRequestTransformFn()..call = makeNonceTransform(() => nonce));
 
-      final methodName = 'greet';
+      const methodName = 'greet';
       final arg = Uint8List.fromList([]);
 
       agent.setFetch(({body, endpoint = "https://localhost:8000", headers, host, method = 'POST'}) {
@@ -32,6 +32,7 @@ void httpTest() {
         });
       });
 
+      // ignore: unused_local_variable
       var res = await agent.call(
           canisterId,
           CallOptions()
