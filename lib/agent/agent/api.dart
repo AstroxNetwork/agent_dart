@@ -84,7 +84,7 @@ class CallOptions {
 
   /// An effective canister ID, used for routing. This should only be mentioned if
   /// it's different from the canister ID.
-  late Principal? effectiveCanisterId;
+  Principal? effectiveCanisterId;
 }
 
 abstract class ReadStateResponse {
