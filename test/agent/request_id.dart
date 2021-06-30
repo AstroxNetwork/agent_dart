@@ -1,11 +1,8 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:agent_dart/agent/request_id.dart';
 import 'package:agent_dart/agent/types.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:agent_dart/agent/utils/hash.dart';
-import 'package:agent_dart/utils/extension.dart';
 
 void main() {
   hashTest();

@@ -1,12 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:agent_dart/agent/auth.dart';
-import 'package:agent_dart/agent/cbor.dart';
-import 'package:agent_dart/agent/certificate.dart';
 import 'package:agent_dart/authentication/authentication.dart';
 import 'package:agent_dart/identity/delegation.dart';
 import 'package:agent_dart/identity/identity.dart';
-import 'package:agent_dart/utils/extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 SignIdentity createIdentity(int seed) {

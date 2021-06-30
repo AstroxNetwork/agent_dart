@@ -446,6 +446,7 @@ class RosettaApi {
     return await payloads(_payloads);
   }
 
+  // ignore: non_constant_identifier_names
   Future<rosetta.TransactionIdentifierResponse> transfer_post_combine(
       CombineSignedTransactionResult combineRes) async {
     assert(networkIdentifier != null, "Cannot get networkIdentifier");

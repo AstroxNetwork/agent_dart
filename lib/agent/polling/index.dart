@@ -1,7 +1,5 @@
 export 'strategy.dart';
 
-import 'dart:typed_data';
-
 import 'package:agent_dart/agent/agent.dart';
 import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/principal/principal.dart';
@@ -46,6 +44,7 @@ Future<BinaryBlob> pollForResponse(
       {
         final rejectCode = cert.lookup([...path, blobFromText('reject_code')])!.toString();
         final rejectMessage = cert.lookup([...path, blobFromText('reject_message')])!.toString();
+        // ignore: prefer_adjacent_string_concatenation
         throw "Call was rejected:\n" "  Request ID: ${requestIdToHex(requestId)}\n" +
             "  Reject code: $rejectCode\n" +
             "  Reject text: $rejectMessage\n";
@@ -54,7 +53,8 @@ Future<BinaryBlob> pollForResponse(
     case RequestStatusResponseStatus.Done:
       // This is _technically_ not an error, but we still didn't see the `Replied` status so
       // we don't know the result and cannot decode it.
-      throw "Call was marked as done but we never saw the reply:\n" "  Request ID: ${requestIdToHex(requestId)}\n";
+      throw "Call was marked as done but we never saw the reply:\n"
+          "  Request ID: ${requestIdToHex(requestId)}\n";
   }
   throw 'unreachable';
 }

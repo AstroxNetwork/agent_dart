@@ -95,6 +95,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
     } else if (data == null) {
       writeNull();
     } else {
+      // ignore: avoid_print
       print('writeMapImpl::Non Iterable RT is ${data.runtimeType.toString()}');
     }
   }

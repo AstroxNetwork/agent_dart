@@ -6,7 +6,6 @@ import 'package:agent_dart/wallet/types.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/wallet/rosetta.dart';
-import '../test_utils.dart';
 
 void main() {
   rosettaTest();
@@ -35,12 +34,19 @@ void rosettaTest() {
     var unsignedTransaction = await rose.transferPreCombine(
         signer.idPublicKey!.toU8a(), receiver.idAddress!.toU8a(), amount, null, null);
 
+    // ignore: avoid_print
     print("\n ------ payload ------");
+    // ignore: avoid_print
     print("\n from Identity: ${signer.account.getIdentity()?.getPrincipal().toText()}");
+    // ignore: avoid_print
     print("\n from :${signer.idAddress}");
+    // ignore: avoid_print
     print("\n to :${receiver.idAddress}");
+    // ignore: avoid_print
     print("\n unsignedTransaction :${jsonEncode(unsignedTransaction.toJson())}");
+    // ignore: avoid_print
     print("\n sender_pubkey :${signer.idPublicKey}");
+    // ignore: avoid_print
     print(" ------ payload ------ \n");
 
     /// sign transaction, offline signer we assume
@@ -57,8 +63,11 @@ void rosettaTest() {
       }));
     });
 
+    // ignore: avoid_print
     print("\n ------ transaction confirm ------");
+    // ignore: avoid_print
     print(txRes.toJson());
+    // ignore: avoid_print
     print(" ------ transaction confirm ------ \n");
   });
 }
