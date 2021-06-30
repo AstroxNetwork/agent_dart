@@ -277,30 +277,26 @@ class ConstructType<T> extends CType<T> {
 
   @override
   void _buildTypeTableImpl(TypeTable typeTable) {
-    // TODO: implement _buildTypeTableImpl
+    throw UnimplementedError();
   }
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
-    // TODO: implement accept
     throw UnimplementedError();
   }
 
   @override
   bool covariant(x) {
-    // TODO: implement covariant
     throw UnimplementedError();
   }
 
   @override
   T decodeValue(Pipe x, CType t) {
-    // TODO: implement decodeValue
     throw UnimplementedError();
   }
 
   @override
   Uint8List encodeValue(T x) {
-    // TODO: implement encodeValue
     throw UnimplementedError();
   }
 }
@@ -1567,6 +1563,7 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
           {
             var fields = List.from([]);
             var objectLength = lebDecode(pipe).toInt();
+            // ignore: prefer_typing_uninitialized_variables
             var prevHash;
             while (objectLength-- > 0) {
               var hash = lebDecode(pipe).toInt();

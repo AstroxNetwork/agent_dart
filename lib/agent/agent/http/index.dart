@@ -9,7 +9,6 @@ import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/utils/base64.dart' show base64Encode;
-import 'package:http/http.dart' as http;
 import 'package:typed_data/typed_data.dart';
 
 import 'types.dart';
@@ -414,7 +413,6 @@ class HttpAgentReadStateRequest extends HttpAgentQueryRequest {
 
   @override
   Map<String, dynamic> toJson() {
-    // TODO: implement toJson
     return {
       "endpoint": endpoint,
       "body": body.toJson(),
