@@ -59,13 +59,24 @@ We have tried our best to migrate most interface styles just like Javascript ver
 
 ---
 ## 🏆 Milestones
-[Milestones Tracker](https://github.com/AstroxNetwork/agent_dart/milestones)
+### Milestone 1: Core features/libraries migrating.
+- `agent`, core library, with crypto and encoding/decoding methods , http call/query encapsulated, for interacting with canister.
+- `auth_client`, a popup window for flutter, used for getting authentication from Identity provider(eg, Internet Identity).
+- `authentication`, a library supports `auth_client`
+- `candid`, candid library, used for encoding/decoding candid data types, and used them in dart-lang.
+- `principal`, principal library, used for generate principal for many usage cases.
+- `protobuf`, protobuf library, used for interacting with `rosetta-node` in submit/query transaction
+- `utils`, common utils, including useful helpers like extension methods in dart.
+- `wallet`, wallet library, signer, rosetta, key-smith all-in-one library.
+  
+### Milestone 2: Enhanced built tool and more example apps
+### Milestone 3: Documentation and community driven development
 
 ---
 ## 📘 Documentation
-(*TBD*) Reference on pub.dev
-
-[Plan for docs site](https://github.com/AstroxNetwork/agent_dart/milestone/2)
+[Reference on pub.dev](https://pub.dev/documentation/agent_dart/latest/)
+### Plan for docs site
+A stand-alone docs site with guides for Dfinity Dapps made in Flutter/Dart
 
 ---
 ## 👨‍💻 Contributing
