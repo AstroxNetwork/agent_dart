@@ -22,3 +22,6 @@ revamp
 
 ## 0.0.7
 * added `static Ed25519KeyIdentityRecoveredFromII Ed25519KeyIdentity.recoverFromIISeedPhrase(String s)`
+
+## 0.1.0
+* linting and first milestone finished
