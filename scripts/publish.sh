@@ -1,1 +1,1 @@
-flutter clean && flutter packages get && flutter packages pub publish --server=https://pub.dartlang.org
+flutter packages pub publish --server=https://pub.dartlang.org
