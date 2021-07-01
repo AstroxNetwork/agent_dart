@@ -77,6 +77,7 @@ void hashTest() {
   });
   test('pruned hash tree', () async {
     final cborEncode =
+        // ignore: prefer_adjacent_string_concatenation
         ('83018301830241618301820458201b4feff9bef8131788b0c9dc6dbad6e81e524249c879e9f1' +
                 '0f71ce3749f5a63883024179820345776f726c6483024162820458207b32ac0c6ba8ce35ac' +
                 '82c255fc7906f7fc130dab2a090f80fe12f9c2cae83ba6830182045820ec8324b8a1f1ac16' +
