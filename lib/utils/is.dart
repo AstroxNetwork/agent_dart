@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'u8a.dart';
 
+// ignore: constant_identifier_names
 const FORMAT = [9, 10, 13];
 
 bool isAscii(dynamic value) {
