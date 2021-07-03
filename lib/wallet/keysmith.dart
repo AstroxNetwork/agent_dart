@@ -36,16 +36,7 @@ String getPrincipalFromECPublicKey(Uint8List publicKey) {
 
 Uint8List getAccountIdFromRawPublicKey(Uint8List publicKey) {
   final der = Secp256k1PublicKey.fromRaw(publicKey).toDer();
-  final hash = SHA224();
-  hash.update(('\x0Aaccount-id').plainToU8a());
-  hash.update(Principal.selfAuthenticating(der).toBlob());
-  hash.update(Uint8List(32));
-  final data = hash.digest();
-  final view = ByteData(4);
-  view.setUint32(0, getCrc32(data.buffer));
-  final checksum = view.buffer.asUint8List();
-  final bytes = Uint8List.fromList(data);
-  return Uint8List.fromList([...checksum, ...bytes]);
+  return getAccountIdFromDerKey(der);
 }
 
 Uint8List getAccountIdFromEd25519PublicKey(Uint8List publicKey) {

@@ -941,6 +941,7 @@ class RecordClass extends ConstructType<Map> {
           continue;
         }
         var expectedEntry = _fields[idx];
+
         var expectKey = expectedEntry.key, expectType = expectedEntry.value;
         r[expectKey] = expectType.decodeValue(x, type);
         idx++;
