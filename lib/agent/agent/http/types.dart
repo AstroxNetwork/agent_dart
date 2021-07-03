@@ -38,10 +38,10 @@ class ReadStateRequest extends BaseRequest {
   // ignore: non_constant_identifier_names
   String request_type = ReadRequestType.ReadState;
   // ignore: non_constant_identifier_names
-  late List<List<BinaryBlob>> paths;
+  List<List<BinaryBlob>>? paths;
   dynamic sender; //: Uint8Array | Principal;
   // ignore: non_constant_identifier_names
-  late Expiry ingress_expiry;
+  Expiry? ingress_expiry;
 
   @override
   Map<String, dynamic> toJson() {
@@ -66,12 +66,7 @@ class CallRequest extends ReadStateRequest {
   late String method_name;
   late BinaryBlob arg;
 
-  @override
-  dynamic sender; //: Uint8Array | Principal;
-  // ignore: non_constant_identifier_names
-  @override
-  late Expiry ingress_expiry;
-  late dynamic nonce;
+  dynamic nonce;
 
   @override
   Map<String, dynamic> toJson() {
