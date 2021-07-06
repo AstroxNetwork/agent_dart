@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:agent_dart/identity/der.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/principal/utils/sha224.dart';
 import 'package:agent_dart/wallet/keysmith.dart';
@@ -55,33 +56,40 @@ class Ed25519PublicKey implements auth.PublicKey {
   ]);
 
   static DerEncodedBlob derEncode(BinaryBlob publicKey) {
-    if (publicKey.byteLength != Ed25519PublicKey.RAW_KEY_LENGTH) {
-      final bl = publicKey.byteLength;
-      throw "ed25519 public key must be ${Ed25519PublicKey.RAW_KEY_LENGTH} bytes long (is $bl)";
-    }
+    // if (publicKey.byteLength != Ed25519PublicKey.RAW_KEY_LENGTH) {
+    //   final bl = publicKey.byteLength;
+    //   throw "ed25519 public key must be ${Ed25519PublicKey.RAW_KEY_LENGTH} bytes long (is $bl)";
+    // }
 
-    // https://github.com/dfinity/agent-js/issues/42#issuecomment-716356288
-    final derPublicKey = Uint8List.fromList([
-      ...Ed25519PublicKey.DER_PREFIX,
-      ...publicKey,
-    ]);
+    // // https://github.com/dfinity/agent-js/issues/42#issuecomment-716356288
+    // final derPublicKey = Uint8List.fromList([
+    //   ...Ed25519PublicKey.DER_PREFIX,
+    //   ...publicKey,
+    // ]);
 
-    return derBlobFromBlob(blobFromUint8Array(derPublicKey));
+    // return derBlobFromBlob(blobFromUint8Array(derPublicKey));
+
+    return derBlobFromBlob(blobFromUint8Array(wrapDER(publicKey.buffer, ED25519_OID)));
   }
 
   static BinaryBlob derDecode(BinaryBlob key) {
-    final expectedLength = Ed25519PublicKey.DER_PREFIX.length + Ed25519PublicKey.RAW_KEY_LENGTH;
-    if (key.byteLength != expectedLength) {
-      final bl = key.byteLength;
-      throw "Ed25519 DER-encoded public key must be $expectedLength bytes long (is $bl)";
+    // final expectedLength = Ed25519PublicKey.DER_PREFIX.length + Ed25519PublicKey.RAW_KEY_LENGTH;
+    // if (key.byteLength != expectedLength) {
+    //   final bl = key.byteLength;
+    //   throw "Ed25519 DER-encoded public key must be $expectedLength bytes long (is $bl)";
+    // }
+
+    // final rawKey = blobFromUint8Array(key.sublist(Ed25519PublicKey.DER_PREFIX.length));
+    // if (!u8aEq((Ed25519PublicKey.derEncode(rawKey)), key)) {
+    //   throw "Ed25519 DER-encoded public key is invalid. A valid Ed25519 DER-encoded public key must have the following prefix: ${Ed25519PublicKey.DER_PREFIX}";
+    // }
+
+    final unwrapped = unwrapDER(key.buffer, ED25519_OID);
+    if (unwrapped.length != RAW_KEY_LENGTH) {
+      throw 'An Ed25519 public key must be exactly 32bytes long';
     }
 
-    final rawKey = blobFromUint8Array(key.sublist(Ed25519PublicKey.DER_PREFIX.length));
-    if (!u8aEq((Ed25519PublicKey.derEncode(rawKey)), key)) {
-      throw "Ed25519 DER-encoded public key is invalid. A valid Ed25519 DER-encoded public key must have the following prefix: ${Ed25519PublicKey.DER_PREFIX}";
-    }
-
-    return rawKey;
+    return blobFromUint8Array(unwrapped);
   }
 
   late BinaryBlob rawKey;
