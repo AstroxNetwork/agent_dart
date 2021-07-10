@@ -42,8 +42,8 @@ Future<BinaryBlob> pollForResponse(
 
     case RequestStatusResponseStatus.Rejected:
       {
-        final rejectCode = cert.lookup([...path, blobFromText('reject_code')])!.toString();
-        final rejectMessage = cert.lookup([...path, blobFromText('reject_message')])!.toString();
+        final rejectCode = cert.lookup([...path, blobFromText('reject_code')])!.u8aToString();
+        final rejectMessage = cert.lookup([...path, blobFromText('reject_message')])!.u8aToString();
         // ignore: prefer_adjacent_string_concatenation
         throw "Call was rejected:\n" "  Request ID: ${requestIdToHex(requestId)}\n" +
             "  Reject code: $rejectCode\n" +
