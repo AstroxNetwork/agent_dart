@@ -25,3 +25,8 @@ revamp
 
 ## 0.1.0
 * linting and first milestone finished
+
+## 0.1.1
+* fix error decoding
+* follow `agent-js` latest features
+* fix readme
