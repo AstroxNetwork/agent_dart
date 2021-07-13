@@ -215,8 +215,8 @@ class HttpAgent implements Agent {
         },
       };
     var transformedRequest = await _transform(rsRequest);
-    Map<String, dynamic> newTransformed = await id!.transformRequest(transformedRequest);
 
+    var newTransformed = await id!.transformRequest(transformedRequest);
     var body = cbor.cborEncode(newTransformed["body"]);
 
     var list = await Future.wait([
