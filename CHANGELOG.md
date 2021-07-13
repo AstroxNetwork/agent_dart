@@ -30,3 +30,6 @@ revamp
 * fix error decoding
 * follow `agent-js` latest features
 * fix readme
+
+## 0.1.2
+* fix delegation chain transformRequest
