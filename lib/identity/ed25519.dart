@@ -230,6 +230,11 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     return Future.value(blobFromUint8Array(_sk.sign(blob).signature.asTypedList));
   }
 
+  bool verify(Uint8List signature, Uint8List message) {
+    return _sk.verifyKey.verify(
+        signature: SignedMessage.fromList(signedMessage: signature).signature, message: message);
+  }
+
   Uint8List get accountId => getAccountId();
   Uint8List getAccountId() {
     final der = getPublicKey().toDer();

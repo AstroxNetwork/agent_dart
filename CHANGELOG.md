@@ -33,3 +33,6 @@ revamp
 
 ## 0.1.2
 * fix delegation chain transformRequest
+
+## 0.1.3
+* fix delegation request sign and request_id

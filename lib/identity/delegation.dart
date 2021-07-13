@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:agent_dart/identity/ed25519.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/agent/agent.dart';
 import 'package:agent_dart/utils/u8a.dart';
 import 'package:cbor/cbor.dart';
+import 'package:typed_data/typed_buffers.dart';
 
-final domainSeparator = ('\x1Aic-request-auth-delegation').plainToU8a(useDartEncode: true);
-final requestDomainSeparator = ('\x0Aic-request').plainToU8a(useDartEncode: true);
+final authDelegationDomainSeparator = ('\x1Aic-request-auth-delegation').plainToU8a();
+final requestDomainSeparator = ('\x0Aic-request').plainToU8a();
 
 class Delegation extends ToCBorable {
   final BinaryBlob pubkey;
@@ -22,55 +24,25 @@ class Delegation extends ToCBorable {
 
   @override
   void write(Encoder encoder) {
-    var pub = cborEncode(pubkey);
-    var exp = cborEncode(expiration.toInt());
     var targetLists = targets?.map((e) => e.toUint8Array()).toList() ?? [];
 
-    List<Uint8List> newList = List<Uint8List>.from([], growable: true);
-    for (var i = 0; i < targetLists.length; i += 1) {
-      newList.add(cborEncode(targetLists[i]));
-    }
-    var _targets = targets != null ? {"targets": newList} : {};
-    encoder.writeMap({"pubkey": pub, "expiration": exp, ..._targets});
+    var _targets = targets != null ? {"targets": targetLists} : {};
+    var res = {"pubkey": pubkey, "expiration": expiration.toInt(), ..._targets};
+
+    encoder.writeMap(res);
   }
 
-  Map<String, dynamic> toJSON() {
-    // every string should be hex and once-de-hexed,
-    // discoverable what it is (e.g. de-hex to get JSON with a 'type' property, or de-hex to DER with an OID)
-    // After de-hex, if it's not obvious what it is, it's an ArrayBuffer.
-    // var _targets = targets != null ? {"target": targets?.map((e) => e.toHex())} : null;
-    if (targets != null) {
-      return {
-        "expiration": expiration.toHex().hexStripPrefix(),
+  Map<String, dynamic> toJSON() => {
+        "expiration": expiration.toHex(endian: Endian.little).hexStripPrefix(),
         "pubkey": pubkey.toHex(),
         "targets": targets?.map((e) => e.toHex()).toList(),
-      };
-    } else {
-      return {
-        "expiration": expiration.toHex().hexStripPrefix(),
-        "pubkey": pubkey.toHex(),
-      };
-    }
-  }
+      }..removeWhere((key, value) => value == null);
 
-  Map<String, dynamic> toMap() {
-    // every string should be hex and once-de-hexed,
-    // discoverable what it is (e.g. de-hex to get JSON with a 'type' property, or de-hex to DER with an OID)
-    // After de-hex, if it's not obvious what it is, it's an ArrayBuffer.
-    // var _targets = targets != null ? {"target": targets?.map((e) => e.toHex())} : null;
-    if (targets != null) {
-      return {
+  Map<String, dynamic> toMap() => {
         "expiration": expiration,
         "pubkey": pubkey,
-        "targets": targets?.map((e) => e.toHex()).toList(),
-      };
-    } else {
-      return {
-        "expiration": expiration,
-        "pubkey": pubkey,
-      };
-    }
-  }
+        "targets": targets,
+      }..removeWhere((key, value) => value == null);
 
   factory Delegation.fromMap(Map map) {
     return Delegation(
@@ -97,8 +69,20 @@ class SignedDelegation {
             ? (map["signature"] as String).toU8a()
             : Uint8List.fromList(map["signature"]));
   }
+  Map<String, dynamic> toMap() {
+    return {
+      //
+      "delegation": delegation,
+      "signature": signature
+    };
+  }
+
   Map<String, dynamic> toJson() {
-    return {"delegation": delegation?.toJSON(), "signature": signature?.toHex()};
+    return {
+      //
+      "delegation": delegation?.toJSON(),
+      "signature": signature?.toHex()
+    };
   }
 }
 
@@ -120,8 +104,16 @@ Future<SignedDelegation> _createSingleDelegation(
   // besides the actualy webauthn functionality (such as `sign`). Safari will de-register
   // a user gesture if you await an async call thats not fetch, xhr, or setTimeout.
 
-  final challenge = u8aConcat([domainSeparator, requestIdOf(delegation.toMap())]);
-  final signature = await from.sign(blobFromUint8Array(challenge));
+  final challenge = u8aConcat([authDelegationDomainSeparator, requestIdOf(delegation.toMap())]);
+
+  final signature = await from.sign(challenge);
+
+  // print("\n=========");
+  // print((from as Ed25519KeyIdentity).toJSON());
+  // print(from.getPublicKey().toDer().toHex());
+  // print(signature.toHex());
+  // print("verifiable?: ${(from as Ed25519KeyIdentity).verify(signature, challenge)}");
+  // print("=========");
 
   return SignedDelegation.fromMap({
     "delegation": delegation,
@@ -213,7 +205,7 @@ class DelegationChain {
           expiration!, // expiration in JSON is an hexa string (See toJSON() below).
           targets,
         ),
-        "signature": (signature),
+        "signature": signature,
       });
     }).toList();
 
@@ -287,17 +279,20 @@ class DelegationIdentity extends SignIdentity {
 
   @override
   Future<dynamic> transformRequest(HttpAgentRequest request) async {
-    var body = request.body.toJson();
-    var fields = request.toJson();
-    final requestId = requestIdOf(body);
+    var body = request.body;
+    var requestId = requestIdOf(body.toJson());
+
+    // print("\n>>>>>>>>>>>");
+
+    // print(_inner.getPublicKey().toDer().toHex());
+    // print(_delegation.publicKey.toHex());
+
     return {
-      ...fields,
-      body: {
-        "content": body,
-        "sender_sig": await sign(
-          u8aConcat([requestDomainSeparator, requestId]),
-        ),
-        "sender_delegation": _delegation.delegations.map((e) => e.toJson()).toList(),
+      ...request.toJson(),
+      "body": {
+        "content": request.body.toJson(),
+        "sender_sig": await sign(u8aConcat([requestDomainSeparator, requestId.buffer])),
+        "sender_delegation": _delegation.delegations.map((e) => e.toMap()).toList(),
         "sender_pubkey": _delegation.publicKey,
       },
     };
