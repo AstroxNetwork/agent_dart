@@ -34,7 +34,7 @@ class Delegation extends ToCBorable {
     encoder.writeMap({"pubkey": pub, "expiration": exp, ..._targets});
   }
 
-  toJSON() {
+  Map<String, dynamic> toJSON() {
     // every string should be hex and once-de-hexed,
     // discoverable what it is (e.g. de-hex to get JSON with a 'type' property, or de-hex to DER with an OID)
     // After de-hex, if it's not obvious what it is, it's an ArrayBuffer.
@@ -53,7 +53,7 @@ class Delegation extends ToCBorable {
     }
   }
 
-  toMap() {
+  Map<String, dynamic> toMap() {
     // every string should be hex and once-de-hexed,
     // discoverable what it is (e.g. de-hex to get JSON with a 'type' property, or de-hex to DER with an OID)
     // After de-hex, if it's not obvious what it is, it's an ArrayBuffer.
@@ -97,7 +97,7 @@ class SignedDelegation {
             ? (map["signature"] as String).toU8a()
             : Uint8List.fromList(map["signature"]));
   }
-  toJson() {
+  Map<String, dynamic> toJson() {
     return {"delegation": delegation?.toJSON(), "signature": signature?.toHex()};
   }
 }
@@ -295,9 +295,9 @@ class DelegationIdentity extends SignIdentity {
       body: {
         "content": body,
         "sender_sig": await sign(
-          blobFromUint8Array(u8aConcat([requestDomainSeparator, requestId])),
+          u8aConcat([requestDomainSeparator, requestId]),
         ),
-        "sender_delegation": _delegation.delegations,
+        "sender_delegation": _delegation.delegations.map((e) => e.toJson()).toList(),
         "sender_pubkey": _delegation.publicKey,
       },
     };
