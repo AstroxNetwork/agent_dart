@@ -36,3 +36,8 @@ revamp
 
 ## 0.1.3
 * fix delegation request sign and request_id
+
+## 0.1.4
+* added sourceType of II, plugWallet, keysmith with different settings since they use different derivePath to generate seed
+* added `Signer.importPhrase` to use settings above
+* added related tests
