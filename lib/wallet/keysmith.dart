@@ -67,6 +67,7 @@ ECKeys getECKeys(String mnemonic, {String passphase = "", int index = 0}) {
   final xpub = masterPrvRaw.toBase58();
 
   final prv = masterPrv.privateKey;
+
   final pub = prv != null ? getPublicFromPrivateKey(prv, false) : null;
   final pubCompressed = prv != null ? getPublicFromPrivateKey(prv, true) : null;
 
@@ -91,6 +92,7 @@ Uint8List? getPublicFromPrivateKey(Uint8List privateKey, [bool compress = false]
 }
 
 class ECKeys {
+  Uint8List? ecChainCode;
   Uint8List? ecPrivateKey;
   Uint8List? ecPublicKey;
   Uint8List? ecCompressedPublicKey;
@@ -99,6 +101,7 @@ class ECKeys {
   String? get ecPrincipal => ecPublicKey != null ? getPrincipalFromECPublicKey(ecPublicKey!) : null;
   String? extendedECPublicKey;
   ECKeys({
+    this.ecChainCode,
     this.ecPrivateKey,
     this.ecPublicKey,
     this.ecCompressedPublicKey,

@@ -40,10 +40,19 @@ class ICPAccount extends BaseAccount {
   ECKeys? get ecKeys => _ecKeys;
   String? _keystore;
 
-  static ICPAccount fromPhrase(String phrase, {String passphase = "", int index = 0}) {
-    ECKeys keys = getECKeys(phrase, passphase: passphase, index: index);
+  static ICPAccount fromPhrase(String phrase,
+      {String passphase = "", int? index, List<int>? icPath}) {
+    ECKeys keys = getECKeys(phrase,
+        passphase: passphase,
+        index: index != null
+            ? index != HARDENED
+                ? index
+                : 0
+            : 0);
+    var path = List<int>.from(icPath ?? IC_BASE_PATH);
 
-    Ed25519KeyIdentity identity = Ed25519KeyIdentity.generate(keys.ecPrivateKey);
+    Ed25519KeyIdentity identity =
+        fromMnemonicWithoutValidation(phrase, path, offset: index ?? HARDENED);
     return ICPAccount()
       .._ecKeys = keys
       .._identity = identity;
@@ -113,11 +122,15 @@ class ICPAccount extends BaseAccount {
   }
 }
 
+enum SourceType { II, Plug, Keysmith }
+
 class ICPSigner
     extends BaseSigner<ICPAccount, ConstructionPayloadsResponse, CombineSignedTransactionResult> {
   String? _phrase;
   int? _index;
+  SourceType? _sourceType;
   ICPAccount get account => _acc;
+  SourceType? get sourceType => _sourceType;
   int? get index => _index;
   bool get isHD => index == null;
   String? get idPublicKey => account.identity?.getPublicKey().toRaw().toHex();
@@ -129,18 +142,23 @@ class ICPSigner
   late ICPAccount _acc;
   ICPSigner.create() : this.fromPhrase(genrateMnemonic());
 
-  ICPSigner.fromPhrase(String phrase, {String passphase = "", int index = 0}) {
+  ICPSigner.fromPhrase(String phrase,
+      {String passphase = "", int? index = 0, List<int>? icPath = IC_BASE_PATH}) {
     _phrase = phrase;
     _index ??= index;
-    _acc = ICPAccount.fromPhrase(_phrase!, passphase: passphase, index: _index!);
+    _acc = ICPAccount.fromPhrase(_phrase!, passphase: passphase, index: _index!, icPath: icPath);
   }
 
   ICPSigner.fromPrivatKey(String privateKey) {
     _acc = ICPAccount.fromPrivateKey(privateKey);
   }
 
-  ICPAccount hdCreate({String passphase = "", int index = 0}) {
-    return ICPAccount.fromPhrase(_phrase!, passphase: passphase, index: _index!);
+  ICPAccount hdCreate({String passphase = "", int? index = 0, List<int>? icPath = IC_BASE_PATH}) {
+    return ICPAccount.fromPhrase(_phrase!, passphase: passphase, index: _index!, icPath: icPath);
+  }
+
+  void setSourceType(SourceType _type) {
+    _sourceType = _type;
   }
 
   @override
@@ -168,6 +186,32 @@ class ICPSigner
       }
     } catch (e) {
       rethrow;
+    }
+  }
+
+  factory ICPSigner.importPhrase(String phrase,
+      {int index = 0, SourceType sourceType = SourceType.II}) {
+    switch (sourceType) {
+      case SourceType.II:
+        {
+          return ICPSigner.fromPhrase(phrase, index: HARDENED, icPath: IC_DERIVATION_PATH)
+            ..setSourceType(SourceType.II);
+        }
+      case SourceType.Keysmith:
+        {
+          return ICPSigner.fromPhrase(phrase, index: index, icPath: IC_DERIVATION_PATH)
+            ..setSourceType(SourceType.Keysmith);
+        }
+      case SourceType.Plug:
+        {
+          return ICPSigner.fromPhrase(phrase, index: index, icPath: IC_BASE_PATH)
+            ..setSourceType(SourceType.Keysmith);
+        }
+      default:
+        {
+          return ICPSigner.fromPhrase(phrase, index: HARDENED, icPath: IC_DERIVATION_PATH)
+            ..setSourceType(SourceType.II);
+        }
     }
   }
 }
