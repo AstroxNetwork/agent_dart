@@ -272,6 +272,12 @@ class Ed25519KeyIdentityRecoveredFromII {
 // ignore: constant_identifier_names
 const HARDENED = 0x80000000;
 // ignore: constant_identifier_names
+const IC_BASE_PATH = [
+  44,
+  223,
+  0,
+];
+// ignore: constant_identifier_names
 const IC_DERIVATION_PATH = [44, 223, 0, 0, 0];
 
 /// Create an Ed25519 based on a mnemonic phrase according to SLIP 0010:
@@ -284,10 +290,11 @@ const IC_DERIVATION_PATH = [44, 223, 0, 0, 0];
 /// @param derivationPath an array that is always interpreted as a hardened path.
 /// e.g. to generate m/44'/223’/0’/0’/0' the derivation path should be [44, 223, 0, 0, 0]
 /// @param skipValidation if true, validation checks on the mnemonics are skipped.
-Ed25519KeyIdentity fromMnemonicWithoutValidation(String mnemonic, List<int>? derivationPath) {
+Ed25519KeyIdentity fromMnemonicWithoutValidation(String mnemonic, List<int>? derivationPath,
+    {int offset = HARDENED}) {
   derivationPath ??= [];
   final seed = mnemonicToSeed(mnemonic);
-  return fromSeedWithSlip0010(seed, derivationPath);
+  return fromSeedWithSlip0010(seed, derivationPath, offset: offset);
 }
 
 /// Create an Ed25519 according to SLIP 0010:
@@ -295,7 +302,8 @@ Ed25519KeyIdentity fromMnemonicWithoutValidation(String mnemonic, List<int>? der
 ///
 /// The derivation path is an array that is always interpreted as a hardened path.
 /// e.g. to generate m/44'/223’/0’/0’/0' the derivation path should be [44, 223, 0, 0, 0]
-Ed25519KeyIdentity fromSeedWithSlip0010(Uint8List masterSeed, List<int>? derivationPath) {
+Ed25519KeyIdentity fromSeedWithSlip0010(Uint8List masterSeed, List<int>? derivationPath,
+    {int offset = HARDENED}) {
   var chainSet = generateMasterKey(masterSeed);
   var slipSeed = chainSet.first;
   var chainCode = chainSet.last;
@@ -303,11 +311,10 @@ Ed25519KeyIdentity fromSeedWithSlip0010(Uint8List masterSeed, List<int>? derivat
   derivationPath ??= [];
 
   for (var i = 0; i < derivationPath.length; i++) {
-    var newSet = derive(slipSeed, chainCode, derivationPath[i] | HARDENED);
+    var newSet = derive(slipSeed, chainCode, derivationPath[i] | offset);
     slipSeed = newSet.first;
     chainCode = newSet.last;
   }
-
   return Ed25519KeyIdentity.generate(slipSeed);
 }
 
