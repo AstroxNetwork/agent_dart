@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:agent_dart/agent/crypto/keystore/api.dart';
 import 'package:agent_dart/identity/identity.dart';
@@ -39,9 +40,10 @@ class ICPAccount extends BaseAccount {
   Ed25519KeyIdentity? get identity => _identity;
   ECKeys? get ecKeys => _ecKeys;
   String? _keystore;
+  String? _phrase;
 
   static ICPAccount fromPhrase(String phrase,
-      {String passphase = "", int? index, List<int>? icPath}) {
+      {String passphase = "", int? index, List<int>? icPath = IC_BASE_PATH}) {
     ECKeys keys = getECKeys(phrase,
         passphase: passphase,
         index: index != null
@@ -55,25 +57,17 @@ class ICPAccount extends BaseAccount {
         fromMnemonicWithoutValidation(phrase, path, offset: index ?? HARDENED);
     return ICPAccount()
       .._ecKeys = keys
-      .._identity = identity;
+      .._identity = identity
+      .._phrase = phrase;
   }
 
-  static ICPAccount fromPrivateKey(String privateKey) {
-    assert(isPrivateKey(privateKey), "$privateKey is not valid privateKey");
-    final prv = privateKey.toU8a();
-    final pub = getPublicFromPrivateKey(prv, false);
-    final pubCompressed = getPublicFromPrivateKey(prv, true);
-
-    var keys = ECKeys(
-      ecPrivateKey: prv,
-      ecPublicKey: pub,
-      ecCompressedPublicKey: pubCompressed,
-    );
-
-    Ed25519KeyIdentity identity = Ed25519KeyIdentity.generate(prv);
+  factory ICPAccount.fromSeed(Uint8List seed, {int? index}) {
+    ECKeys keys = fromSeed(seed, index: index ?? 0);
+    Ed25519KeyIdentity identity = Ed25519KeyIdentity.generate(seed);
     return ICPAccount()
       .._ecKeys = keys
-      .._identity = identity;
+      .._identity = identity
+      .._phrase = '';
   }
 
   ICPAccount() : super();
@@ -94,7 +88,8 @@ class ICPAccount extends BaseAccount {
   }
 
   Future<void> lock(String? passphrase) async {
-    _keystore = await encodePrivateKey(ecKeys!.ecPrivateKey!.toHex(), passphrase ?? "");
+    _keystore = await encodePhrase(_phrase!, passphrase ?? "");
+    _phrase = null;
     _ecKeys = null;
     _identity = null;
     isLocked = true;
@@ -109,8 +104,9 @@ class ICPAccount extends BaseAccount {
           throw "keystore file is not found";
         }
       }
-      final decryptedPrv = await decodePrivateKey(jsonDecode(_keystore!), passphrase);
-      var newIcp = ICPAccount.fromPrivateKey(decryptedPrv);
+      final phrase = await decodePhrase(jsonDecode(_keystore!), passphrase);
+      var newIcp = ICPAccount.fromPhrase(phrase, index: 0, icPath: IC_BASE_PATH);
+      _phrase = phrase;
       _ecKeys = newIcp._ecKeys;
       _identity = newIcp._identity;
       newIcp._ecKeys = null;
@@ -149,8 +145,9 @@ class ICPSigner
     _acc = ICPAccount.fromPhrase(_phrase!, passphase: passphase, index: _index!, icPath: icPath);
   }
 
-  ICPSigner.fromPrivatKey(String privateKey) {
-    _acc = ICPAccount.fromPrivateKey(privateKey);
+  ICPSigner.fromSeed(Uint8List seed, {int? index = 0}) {
+    _index ??= index;
+    _acc = ICPAccount.fromSeed(seed, index: index);
   }
 
   ICPAccount hdCreate({String passphase = "", int? index = 0, List<int>? icPath = IC_BASE_PATH}) {
