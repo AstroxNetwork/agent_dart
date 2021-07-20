@@ -60,6 +60,10 @@ Uint8List getAccountIdFromDerKey(Uint8List der) {
 ECKeys getECKeys(String mnemonic, {String passphase = "", int index = 0}) {
   assert(validateMnemonic(mnemonic), "Mnemonic phrases is not valid $mnemonic");
   final seed = mnemonicToSeed(mnemonic, passphrase: passphase);
+  return fromSeed(seed, index: index);
+}
+
+ECKeys fromSeed(Uint8List seed, {int index = 0}) {
   final node = bip32.BIP32.fromSeed(seed);
 
   var masterPrv = node.derivePath("$ICP_PATH/0/$index");

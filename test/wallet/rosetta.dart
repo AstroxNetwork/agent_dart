@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:agent_dart/identity/identity.dart';
+import 'package:agent_dart/wallet/hashing.dart';
+import 'package:agent_dart/wallet/keysmith.dart';
 import 'package:agent_dart/wallet/signer.dart';
 import 'package:agent_dart/wallet/types.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,13 +20,12 @@ void main() {
 /// this test is not complete yet
 void rosettaTest() {
   test('encodes properly', () async {
-    /// create signer
-    var signer =
-        ICPSigner.fromPrivatKey("07acb84879d371491ceccb357322b264fc7703e7966686c0fd4d39cebcaffab3");
+    const phrase =
+        'steel obey anxiety vast clever relax million girl cost pond elbow bridge hill health toilet desk sleep grid boost flavor shy cry armed mass';
 
-    /// create receiver
-    final seed = Uint8List.fromList(List.filled(32, 0)).toHex();
-    var receiver = ICPSigner.fromPrivatKey(seed);
+    final signer = ICPSigner.importPhrase(phrase);
+
+    var receiver = ICPSigner.fromSeed(Uint8List.fromList(List.filled(32, 0)));
 
     /// setup RosettaApi and init
     RosettaApi rose = RosettaApi(host: "http://127.0.0.1:8080");
