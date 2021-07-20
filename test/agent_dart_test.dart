@@ -5,6 +5,7 @@ import './authentication/authentication.dart' as auth;
 import './candid/idl.dart' as candid;
 import './identity/identity.dart' as identity;
 import './principal/index.dart' as principal;
+import './wallet/signer.dart' as signer;
 
 void main() {
   agent.main();
@@ -12,4 +13,5 @@ void main() {
   candid.main();
   identity.main();
   principal.main();
+  signer.main();
 }

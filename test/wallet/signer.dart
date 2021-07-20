@@ -18,7 +18,7 @@ void signerTest() {
     expect(acc2.account.ecKeys?.accountId!.toHex(),
         "02f2326544f2040d3985e31db5e7021402c541d3cde911cd20e951852ee4da47");
     expect(acc2.account.identity?.accountId.toHex(),
-        "852e8464176ea2199c8f885155483dbb112a7568895387f2c915933e");
+        "7910af41c53cddb31862f0fa2c31cbd58db9645d90ffb875c7abc8c9");
 
     await acc2.lock("123");
     expect(acc2.isLocked, true);
@@ -28,7 +28,7 @@ void signerTest() {
     await acc2.unlock("123");
     expect(acc2.isLocked, false);
     expect(acc2.account.identity?.accountId.toHex(),
-        "852e8464176ea2199c8f885155483dbb112a7568895387f2c915933e");
+        "7910af41c53cddb31862f0fa2c31cbd58db9645d90ffb875c7abc8c9");
     expect(acc2.account.ecKeys?.accountId!.toHex(),
         "02f2326544f2040d3985e31db5e7021402c541d3cde911cd20e951852ee4da47");
 
