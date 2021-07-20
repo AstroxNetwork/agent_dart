@@ -41,3 +41,7 @@ revamp
 * added sourceType of II, plugWallet, keysmith with different settings since they use different derivePath to generate seed
 * added `Signer.importPhrase` to use settings above
 * added related tests
+
+## 0.1.5
+* **BREAKING** remove `ICPSigner.fromPrivatekey` and added `ICPSigner.fromSeed`
+* Won't support import privatekey to signer anymore, may separate different signer, eg: `Secp256k1Signer` or `SchnorrSigner` in the future supporting different coin specs.
