@@ -3,6 +3,16 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'index.dart';
 
+const defaultTimeout = Duration(seconds: 30);
+
+/// defaultFetch is wrapper of http get
+/// can be replaced by any other http packages eg. dio
+/// because the http is lower level implementation and is embedded by flutter by default
+/// we use it directly.
+/// here we have `get` and `post` in the play
+/// you can set host should be full path of http/https
+/// usually we use `defaultHost+endpoint` and set the defaultHost to somewhere final, and change the endpoint programatically
+/// We set `Duration(second:30)` as default timeout limit, and throw error directly to end the request section
 Future<Map<String, dynamic>> defaultFetch(
     {required String endpoint,
     String? host,
@@ -10,6 +20,7 @@ Future<Map<String, dynamic>> defaultFetch(
     String method = "POST",
     Map<String, dynamic>? baseHeaders,
     Map<String, dynamic>? headers,
+    Duration? timeout = defaultTimeout,
     dynamic body}) async {
   final client = http.Client();
   FetchMethod fetchMethod = FetchMethod.post;
@@ -25,6 +36,8 @@ Future<Map<String, dynamic>> defaultFetch(
       var getResponse = await client.get(Uri.parse(host ?? "$defaultHost$endpoint"), headers: {
         ...?baseHeaders,
         ...?headers,
+      }).timeout(timeout ?? defaultTimeout, onTimeout: () {
+        throw 'http request(GET) to ${host ?? "$defaultHost$endpoint"} timeout';
       });
       client.close();
       return {
@@ -35,7 +48,8 @@ Future<Map<String, dynamic>> defaultFetch(
         "arrayBuffer": getResponse.bodyBytes,
       };
     } else {
-      var postResponse = await client.post(
+      var postResponse = await client
+          .post(
         Uri.parse(host ?? "$defaultHost$endpoint"),
         headers: {
           ...?baseHeaders,
@@ -43,7 +57,10 @@ Future<Map<String, dynamic>> defaultFetch(
         },
         body: body,
         // encoding: Encoding.getByName('utf8')
-      );
+      )
+          .timeout(timeout ?? defaultTimeout, onTimeout: () {
+        throw 'http request(POST) to ${host ?? "$defaultHost$endpoint"} timeout';
+      });
 
       client.close();
       return {
