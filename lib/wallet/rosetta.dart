@@ -481,6 +481,9 @@ Future<CombineSignedTransactionResult> transferCombine(
   }));
 }
 
+// to be change after latest docker release:
+// see:
+// https://github.com/dfinity/rosetta-client/commit/bebac5737f3c1ad7ed607c5db08ded4cc4ad7f97#diff-8fd36260d6da44e31d76877ca9f8622cff1258c70efa8c7b81c18daa419763a0
 CombineSignedTransactionResult combine(rosetta.ConstructionCombineRequestPart req) {
   Map<String, rosetta.Signature> signaturesBySigData = <String, rosetta.Signature>{};
   for (var sig in req.signatures) {
@@ -490,11 +493,11 @@ CombineSignedTransactionResult combine(rosetta.ConstructionCombineRequestPart re
   var unsignedTransaction = cborDecode<Map>(req.unsigned_transaction.toU8a());
 
   assert(req.signatures.length == unsignedTransaction["ingress_expiries"]?.length * 2);
-  assert(unsignedTransaction["update"] != null);
+  assert((unsignedTransaction["updates"] as List).length == 1);
 
   var envelopes = [];
 
-  var update = unsignedTransaction["update"];
+  var update = unsignedTransaction["updates"][0];
   var requestEnvelopes = [];
 
   for (var ingressExpiry in unsignedTransaction["ingress_expiries"]) {
@@ -534,8 +537,9 @@ CombineSignedTransactionResult combine(rosetta.ConstructionCombineRequestPart re
 
     // readStateEnvelope.content.encodeCBOR = cbor.Encoder.encodeIndefinite;
 
-    requestEnvelopes.add(envelope);
-    requestEnvelopes.add(readStateEnvelope);
+    // requestEnvelopes.add(envelope);
+    // requestEnvelopes.add(readStateEnvelope);
+    requestEnvelopes.add({"update": envelope, "read_state": readStateEnvelope});
   }
   envelopes.add(requestEnvelopes);
 
