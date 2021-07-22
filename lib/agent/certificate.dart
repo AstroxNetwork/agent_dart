@@ -109,7 +109,7 @@ class Delegation implements ReadStateResponse {
   Delegation(this.subnet_id, this.certificate);
   factory Delegation.fromJson(Map<String, dynamic> json) {
     return Delegation(
-        json["subnet_id"],
+        Uint8List.fromList(json["subnet_id"] as List<int>),
         json["certificate"] is Uint8List
             ? blobFromUint8Array(json["certificate"])
             : Uint8List.fromList([]));
