@@ -122,11 +122,17 @@ class Delegation implements ReadStateResponse {
 class Certificate {
   late Cert cert;
   bool verified = false;
+  bool _blsinit = false;
   BinaryBlob? _rootKey;
 
   final Agent _agent;
   Certificate(ReadStateResponse response, this._agent) {
     cert = Cert.fromJson(cborDecode(response.certificate));
+    _initBls();
+  }
+
+  void _initBls() async {
+    _blsinit = await blsInit();
   }
 
   Uint8List? lookupEx(List path) {
@@ -140,6 +146,9 @@ class Certificate {
   }
 
   Future<bool> verify() async {
+    if (_blsinit == false) {
+      await blsInit();
+    }
     final rootHash = await reconstruct(cert.tree!);
     final derKey = await _checkDelegation(cert.delegation);
     final sig = cert.signature;
