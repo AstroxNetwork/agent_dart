@@ -49,3 +49,6 @@ revamp
 ## 0.1.6
 * Fix cbordecode in the Delegation
 * Apply rosetta-api to current docker specs
+
+## 0.1.7
+* Use `blsSync` instead of async isolation
