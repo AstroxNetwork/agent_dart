@@ -131,9 +131,13 @@ class Certificate {
     _initBls();
   }
 
-  void _initBls() async {
-    _blsinit = await blsInit();
+  void _initBls() {
+    _blsinit = blsInitSync();
   }
+
+  // void _initBls() async {
+  //   _blsinit = await blsInit();
+  // }
 
   Uint8List? lookupEx(List path) {
     checkState();
@@ -154,7 +158,8 @@ class Certificate {
     final sig = cert.signature;
     final key = extractDER(derKey);
     final msg = u8aConcat([domainSep('ic-state-root'), rootHash]);
-    final res = await blsVerify(key, sig!, msg);
+    final res = blsVerifySync(key, sig!, msg);
+    // final res = await blsVerify(key, sig!, msg);
     verified = res;
     return res;
   }
