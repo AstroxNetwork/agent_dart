@@ -408,6 +408,7 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
       }
 
       final pollStrategy = pollingStrategyFactory();
+
       final responseBytes = await pollForResponse(agent, ecid, requestId, pollStrategy);
 
       if (responseBytes.isNotEmpty) {

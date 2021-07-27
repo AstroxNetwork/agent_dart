@@ -10,6 +10,25 @@ import 'ffi_helper.dart';
 export 'ffi_base.dart';
 export 'ffi_helper.dart';
 
+bool blsInitSync() {
+  Pointer<Utf8> result = rustBlsInit();
+  final rt = (result.cast<Utf8>().toDartString() == "true");
+  freeCString(result);
+  return rt;
+}
+
+bool blsVerifySync(
+  Uint8List pk,
+  Uint8List sig,
+  Uint8List msg,
+) {
+  Pointer<Utf8> result = rustBlsVerify(sig.toHex(include0x: false).toUtf8(),
+      msg.toHex(include0x: false).toUtf8(), pk.toHex(include0x: false).toUtf8());
+  final ret = result.cast<Utf8>().toDartString() == "true";
+  freeCString(result);
+  return ret;
+}
+
 Future<bool> blsInit() async {
   // ignore: unnecessary_null_comparison
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
@@ -56,9 +75,9 @@ Future<bool> blsVerify(
 ) async {
   // ignore: unnecessary_null_comparison
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
-  if (await blsInit() != true) {
-    throw "ERROR: Cannot initialize BLS instance";
-  }
+  // if (await blsInit() != true) {
+  //   throw "ERROR: Cannot initialize BLS instance";
+  // }
   final response = ReceivePort();
   await Isolate.spawn(
     _isolateBlsVerify,
