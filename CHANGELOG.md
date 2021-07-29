@@ -52,3 +52,6 @@ revamp
 
 ## 0.1.7
 * Use `blsSync` instead of async isolation
+
+## 0.1.8
+* fixed uri parser, added `path` to auth_client
