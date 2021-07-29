@@ -230,6 +230,7 @@ class AuthClient {
         scheme: options?.identityProvider?.scheme ?? authUri?.scheme ?? defaultUri.scheme,
         port: options?.identityProvider?.port ?? authUri?.port ?? defaultUri.port,
         fragment: options?.identityProvider?.fragment ?? authUri?.fragment ?? defaultUri.fragment,
+        path: options?.identityProvider?.path ?? authUri?.path ?? defaultUri.path,
         queryParameters: {
           "callback_uri": callbackScheme,
           "sessionPublicKey": identity != null
