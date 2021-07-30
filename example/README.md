@@ -1,5 +1,8 @@
 # agent_dart_example
 
+## IMPORTANT NOTICE
+This example is for showing how interaction is done only.
+For more complex examples, please stay tuned, we will update the README of the root 
 ## how to run example
 
 1. use [create-ic-app](https://github.com/MioQuispe/create-ic-app) to bootstrap a local canister project
@@ -8,6 +11,8 @@
    [https://github.com/MioQuispe/create-ic-app#get-started](https://github.com/MioQuispe/create-ic-app#get-started)
 
    It will runs a example `counter` canister on your machine. 
+
+   **The counter function is included `caller`, the authorization won't make difference** 
 
 2. dfx port is running randomly. You should be seeing that after you run:
     ```
