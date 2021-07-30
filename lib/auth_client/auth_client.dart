@@ -95,7 +95,9 @@ class AuthClient {
     this.key,
     this.chain,
     this.authUri,
-  });
+  }) {
+    identity ??= AnonymousIdentity();
+  }
 
   factory AuthClient.fromMap(
       String scheme, AuthFunction authFunction, Map<String, dynamic> map, Uri? authUri) {
@@ -201,24 +203,10 @@ class AuthClient {
     } else {
       var data = parsedResult.queryParameters["json"];
       var message = Map<String, dynamic>.from(jsonDecode(data as String));
-      var delegations = message["delegations"] as List;
-      var delegationList = delegations.map((e) {
-        var pubkey = e["delegation"]["pubkey"] is String
-            ? parseStringToU8a(e["delegation"]["pubkey"])
-            : e["delegation"]["pubkey"];
-        return DelegationWithSignature()
-          ..delegation = Delegation.fromMap({...e["delegation"], "pubkey": pubkey})
-          ..signature = Uint8List.fromList(
-              e["signature"] is String ? parseStringToU8a(e["signature"]) : e["signature"]);
-      }).toList();
-      var userPublicKey = Uint8List.fromList(message["userPublicKey"] is String
-          ? parseStringToU8a(message["userPublicKey"])
-          : message["userPublicKey"]);
-      var response = AuthResponseSuccess()
-        ..delegations = delegationList
-        ..userPublicKey = userPublicKey;
-
-      handleSuccess(response, options?.onSuccess);
+      var delegationChain = DelegationChain.fromJSON(message);
+      chain = delegationChain;
+      identity = DelegationIdentity.fromDelegation(key!, chain!);
+      options?.onSuccess?.call();
     }
   }
 
@@ -233,9 +221,8 @@ class AuthClient {
         path: options?.identityProvider?.path ?? authUri?.path ?? defaultUri.path,
         queryParameters: {
           "callback_uri": callbackScheme,
-          "sessionPublicKey": identity != null
-              ? (identity as Ed25519KeyIdentity).getPublicKey().toDer().buffer.asUint8List().toHex()
-              : null,
+          "sessionPublicKey":
+              key != null ? (key as SignIdentity).getPublicKey().toDer().toHex() : null,
           "canisterId": options?.canisterId
         });
 

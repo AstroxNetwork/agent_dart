@@ -16,6 +16,7 @@ class SHA224 {
 
   SHA224() {
     ds = DigestSink();
+
     sha = sha224.startChunkedConversion(ds);
   }
 
