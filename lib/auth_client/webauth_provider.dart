@@ -176,7 +176,7 @@ String generateHtml(
 
               const data = {
                 delegations: newDelegations,
-                userPublicKey: newUserPublicKey,
+                publicKey: newUserPublicKey,
               };
               const json = JSON.stringify(data);
 
