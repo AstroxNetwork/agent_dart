@@ -160,7 +160,7 @@ class HttpAgent implements Agent {
     _pipeline = pl;
   }
 
-  void setIdentity(Future<Identity>? id) async {
+  void setIdentity(Future<Identity>? id) {
     _identity = id;
   }
 

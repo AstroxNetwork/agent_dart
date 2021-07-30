@@ -5,6 +5,7 @@ import 'package:agent_dart/agent/auth.dart';
 import 'package:agent_dart/identity/delegation.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:agent_dart/auth_client/auth_client.dart';
+import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/identity/ed25519.dart';
 
 Future<String> webAuth(AuthPayload payload) async {
@@ -37,27 +38,26 @@ class WebAuthProvider extends AuthClient {
             chain: chain,
             authUri: authUri);
 
-  @override
-  Future<void> login([AuthClientLoginOptions? options]) async {
+  Future<void> start([AuthClientLoginOptions? options]) async {
     if (useLocalPage) {
       var originUrl = authUri;
       key ??= Ed25519KeyIdentity.generate(null);
       var page = generateHtml(
-          sessionPublicKey: key!.getPublicKey().toDer(),
+          sessionPublicKey: key!.getPublicKey().toDer().toHex(),
           callbackPath: path,
           callbackScheme: scheme,
           authUri: originUrl);
       server = await startServer(page, port);
       authUri = Uri.parse('http://localtest.me:32768');
       try {
-        await super.login(options);
+        await login(options);
       } catch (e) {
         server?.close(force: true);
         rethrow;
       }
       server?.close(force: true);
     } else {
-      await super.login(options);
+      await login(options);
       server?.close(force: true);
     }
   }
@@ -70,7 +70,7 @@ class WebAuthProvider extends AuthClient {
 }
 
 String generateHtml(
-    {required Uint8List sessionPublicKey,
+    {required String sessionPublicKey,
     required String callbackScheme,
     required String callbackPath,
     Uri? authUri}) {
@@ -130,14 +130,17 @@ String generateHtml(
   <main>
     <div id="icon">&#x1F3C7;</div>
     <div id="text">You are being redirected to</div> 
-    <div class="text">`$withHash`...</div>
+    <div class="text">$withHash...</div>
     <div id="button" onclick="getValue()"><a>Click To Continue</a></div>
   </main>
   <script>
     var idpWindow;
+
+    const toHex = arr => Array.from(arr, i => i.toString(16).padStart(2, "0")).join("");
+    const fromHexString = hexString => new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
     
     function getValue() {
-      idpWindow = window.open(`$withHash`, 'idpWindow');
+      idpWindow = window.open('$withHash', 'idpWindow');
       if (idpWindow != undefined) {
         var listener = window.addEventListener('message', function (event) {
           var message = event.data;
@@ -146,29 +149,30 @@ String generateHtml(
               // IDP is ready. Send a message to request authorization.
               var request = {
                 kind: 'authorize-client',
-                sessionPublicKey: $sessionPublicKey,
+                sessionPublicKey: fromHexString('$sessionPublicKey'),
                 maxTimeToLive: undefined,
               };
-              // console.log(idpWindow.origin);
-              idpWindow.postMessage(request, `$withHash`);
+              
+              idpWindow.postMessage(request, '$withHash');
               break;
             }
             case 'authorize-client-success':
               idpWindow.close();
+              console.log(message);
               const { userPublicKey, delegations } = message;
-
+           
               const newDelegations = delegations.map((d) => {
                 const { pubkey, expiration } = d.delegation;
                 return {
                   delegation: {
-                    pubkey: '[' + pubkey.join(',') + ']',
+                    pubkey: toHex(pubkey),
                     expiration: expiration.toString(),
                   },
-                  signature: '[' + d.signature.join(',') + ']',
+                  signature: toHex(d.signature),
                 };
               });
 
-              const newUserPublicKey = '[' + userPublicKey.join(',') + ']';
+              const newUserPublicKey = toHex(userPublicKey);
 
               const data = {
                 delegations: newDelegations,
@@ -177,13 +181,13 @@ String generateHtml(
               const json = JSON.stringify(data);
 
               window.removeEventListener('message', listener);
-              window.location.href = `$callbackScheme://$callbackPath?success=true&&json=` + json;
+              window.location.href = '$callbackScheme://$callbackPath?success=true&&json=' + json;
               break;
             case 'authorize-client-failure':
               idpWindow.close();
               window.removeEventListener('message', listener);
               window.location.href =
-                `$callbackScheme://$callbackPath?success=false&&json=` + message.text;
+                '$callbackScheme://$callbackPath?success=false&&json=' + message.text;
               break;
             default:
               break;
