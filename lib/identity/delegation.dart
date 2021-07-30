@@ -282,16 +282,11 @@ class DelegationIdentity extends SignIdentity {
     var body = request.body;
     var requestId = requestIdOf(body.toJson());
 
-    // print("\n>>>>>>>>>>>");
-
-    // print(_inner.getPublicKey().toDer().toHex());
-    // print(_delegation.publicKey.toHex());
-
     return {
       ...request.toJson(),
       "body": {
         "content": request.body.toJson(),
-        "sender_sig": await sign(u8aConcat([requestDomainSeparator, requestId.buffer])),
+        "sender_sig": await sign(u8aConcat([requestDomainSeparator, requestId])),
         "sender_delegation": _delegation.delegations.map((e) => e.toMap()).toList(),
         "sender_pubkey": _delegation.publicKey,
       },
