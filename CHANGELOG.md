@@ -55,3 +55,8 @@ revamp
 
 ## 0.1.8
 * fixed uri parser, added `path` to auth_client
+
+## 0.1.9
+* **BREAKING** the `auth_client` flow is a little bit change due to Internet Identity service won't give correct identity using local webpage like we use `webAuthProvider` here
+* How ever we keep the provider here, because we may have other Identity Provider to give other solution.
+* But we managed to change `auth_client` a bit. 
