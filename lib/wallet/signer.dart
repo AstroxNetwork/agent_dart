@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent/crypto/keystore/api.dart';
 import 'package:agent_dart/identity/identity.dart';
+import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/utils/is.dart';
 import 'package:agent_dart/wallet/keysmith.dart';
@@ -29,6 +30,7 @@ abstract class BaseSigner<T extends BaseAccount, R extends SignablePayload, E>
 
 abstract class BaseAccount {
   Ed25519KeyIdentity? getIdentity();
+  Secp256k1KeyIdentity? getEcIdentity();
   Map<String, dynamic> toJson();
   ECKeys? getEcKeys();
 }
@@ -36,8 +38,10 @@ abstract class BaseAccount {
 class ICPAccount extends BaseAccount {
   bool isLocked = false;
   Ed25519KeyIdentity? _identity;
+  Secp256k1KeyIdentity? _ecIdentity;
   ECKeys? _ecKeys;
   Ed25519KeyIdentity? get identity => _identity;
+  Secp256k1KeyIdentity? get ecIdentity => _ecIdentity;
   ECKeys? get ecKeys => _ecKeys;
   String? _keystore;
   String? _phrase;
@@ -55,18 +59,24 @@ class ICPAccount extends BaseAccount {
 
     Ed25519KeyIdentity identity =
         fromMnemonicWithoutValidation(phrase, path, offset: index ?? HARDENED);
+
+    Secp256k1KeyIdentity ecIdentity = Secp256k1KeyIdentity.fromSecretKey(keys.ecPrivateKey!);
+
     return ICPAccount()
       .._ecKeys = keys
       .._identity = identity
+      .._ecIdentity = ecIdentity
       .._phrase = phrase;
   }
 
   factory ICPAccount.fromSeed(Uint8List seed, {int? index}) {
     ECKeys keys = fromSeed(seed, index: index ?? 0);
     Ed25519KeyIdentity identity = Ed25519KeyIdentity.generate(seed);
+    Secp256k1KeyIdentity ecIdentity = Secp256k1KeyIdentity.fromSecretKey(keys.ecPrivateKey!);
     return ICPAccount()
       .._ecKeys = keys
       .._identity = identity
+      .._ecIdentity = ecIdentity
       .._phrase = '';
   }
 
@@ -75,6 +85,11 @@ class ICPAccount extends BaseAccount {
   @override
   Ed25519KeyIdentity? getIdentity() {
     return _identity;
+  }
+
+  @override
+  Secp256k1KeyIdentity? getEcIdentity() {
+    return _ecIdentity;
   }
 
   @override
@@ -92,6 +107,7 @@ class ICPAccount extends BaseAccount {
     _phrase = null;
     _ecKeys = null;
     _identity = null;
+    _ecIdentity = null;
     isLocked = true;
   }
 
@@ -109,6 +125,7 @@ class ICPAccount extends BaseAccount {
       _phrase = phrase;
       _ecKeys = newIcp._ecKeys;
       _identity = newIcp._identity;
+      _ecIdentity = newIcp._ecIdentity;
       newIcp._ecKeys = null;
       newIcp._identity = null;
       isLocked = false;
@@ -134,6 +151,13 @@ class ICPSigner
   String? get idAddress => account.identity?.getAccountId().toHex();
   String? get idChecksumAddress => account.identity?.getAccountId() != null
       ? crc32Add(account.identity!.getAccountId()).toHex()
+      : null;
+
+  String? get ecPublicKey => account.ecIdentity?.getPublicKey().toRaw().toHex();
+  String? get ecPublicKeyDer => account.ecIdentity?.getPublicKey().toDer().toHex();
+  String? get ecAddress => account.ecIdentity?.getAccountId().toHex();
+  String? get ecChecksumAddress => account.ecIdentity?.getAccountId() != null
+      ? crc32Add(account.ecIdentity!.getAccountId()).toHex()
       : null;
   late ICPAccount _acc;
   ICPSigner.create() : this.fromPhrase(genrateMnemonic());
@@ -177,6 +201,10 @@ class ICPSigner
     try {
       if (signType == SignType.ed25519) {
         var res = await transferCombine(account.identity!, payload);
+        return res;
+      }
+      if (signType == SignType.ecdsa) {
+        var res = await ecTransferCombine(account.ecIdentity!, payload);
         return res;
       } else {
         throw "Signtype $signType is not supported";

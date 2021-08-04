@@ -36,8 +36,8 @@ class _MyAppState extends State<MyApp> {
 
   void initCounter() {
     _counter = AgentFactory.create(
-      canisterId: "rrkah-fqaaa-aaaaa-aaaaq-cai",
-      url: "http://192.168.3.11:8000", // For Android emulator, please use 10.0.2.2 as endpoint
+      canisterId: "r7inp-6aaaa-aaaaa-aaabq-cai",
+      url: "http://127.0.0.1:8000", // For Android emulator, please use 10.0.2.2 as endpoint
       idl: idl,
       identity: _identity,
     ).hook(Counter());
@@ -68,8 +68,8 @@ class _MyAppState extends State<MyApp> {
       var authClient = WebAuthProvider(
           scheme: "identity",
           path: 'auth',
-          authUri: Uri.parse('https://identity.ic0.app/#authorize'),
-          useLocalPage: true);
+          authUri: Uri.parse('http://localhost:8080/#authorize'),
+          useLocalPage: false);
 
       await authClient.login(
           // AuthClientLoginOptions()..canisterId = "rwlgt-iiaaa-aaaaa-aaaaa-cai"

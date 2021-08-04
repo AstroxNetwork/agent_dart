@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/identity/ed25519.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/principal/utils/sha224.dart';
@@ -147,15 +148,19 @@ class Secp256k1PublicKey implements PublicKey {
   Secp256k1PublicKey(this.rawKey) {
     derKey = Secp256k1PublicKey.derEncode(rawKey);
   }
-  static fromRaw(BinaryBlob rawKey) {
+  static Secp256k1PublicKey fromRaw(BinaryBlob rawKey) {
     return Secp256k1PublicKey(rawKey);
   }
 
-  static fromDer(BinaryBlob derKey) {
+  static Secp256k1PublicKey fromDer(BinaryBlob derKey) {
     return Secp256k1PublicKey(Secp256k1PublicKey.derDecode(derKey));
   }
 
-  static derEncode(BinaryBlob publicKey) {
+  static Secp256k1PublicKey from(PublicKey key) {
+    return Secp256k1PublicKey.fromDer(key.toDer());
+  }
+
+  static Uint8List derEncode(BinaryBlob publicKey) {
     if (publicKey.byteLength != Secp256k1PublicKey.RAW_KEY_LENGTH) {
       final bl = publicKey.byteLength;
       throw "secp256k1 public key must be ${Secp256k1PublicKey.RAW_KEY_LENGTH} bytes long (is $bl)";
@@ -167,14 +172,14 @@ class Secp256k1PublicKey implements PublicKey {
     return derBlobFromBlob(blobFromUint8Array(derPublicKey));
   }
 
-  static derDecode(BinaryBlob key) {
+  static Uint8List derDecode(BinaryBlob key) {
     final expectedLength = Secp256k1PublicKey.DER_PREFIX.length + Secp256k1PublicKey.RAW_KEY_LENGTH;
     if (key.byteLength != expectedLength) {
       final bl = key.byteLength;
       throw "secp256k1 DER-encoded public key must be $expectedLength bytes long (is $bl)";
     }
     final rawKey = blobFromUint8Array(key.sublist(Secp256k1PublicKey.DER_PREFIX.length));
-    if (!derEncode(rawKey).equals(key)) {
+    if (!u8aEq(derEncode(rawKey), key)) {
       throw 'secp256k1 DER-encoded public key is invalid. A valid secp256k1 DER-encoded public key '
           "must have the following prefix: ${Secp256k1PublicKey.DER_PREFIX}";
     }
