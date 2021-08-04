@@ -187,11 +187,11 @@ class Secp256k1PublicKey implements PublicKey {
   }
 
   @override
-  toDer() {
+  Uint8List toDer() {
     return derKey;
   }
 
-  toRaw() {
+  Uint8List toRaw() {
     return rawKey;
   }
 }
