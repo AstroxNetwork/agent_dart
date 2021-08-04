@@ -60,3 +60,7 @@ revamp
 * **BREAKING** the `auth_client` flow is a little bit change due to Internet Identity service won't give correct identity using local webpage like we use `webAuthProvider` here
 * How ever we keep the provider here, because we may have other Identity Provider to give other solution.
 * But we managed to change `auth_client` a bit. 
+
+## 0.1.10
+* Added Secp256k1 Identity
+* Added ledger with send and getBalance
