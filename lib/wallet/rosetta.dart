@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent/agent/http/fetch.dart';
 import 'package:agent_dart/agent_dart.dart';
+import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/protobuf/ic_ledger/pb/v1/types.pb.dart';
 import 'package:agent_dart/utils/extension.dart';
 
@@ -471,6 +472,29 @@ Future<CombineSignedTransactionResult> transferCombine(
         "curve_type": "edwards25519",
       },
       "signature_type": "ed25519",
+      "hex_bytes": hexBytes,
+    };
+    signatures.add(signedPayload);
+  }
+  return combine(rosetta.ConstructionCombineRequestPart.fromMap({
+    "signatures": signatures,
+    "unsigned_transaction": payloadsRes.unsigned_transaction,
+  }));
+}
+
+Future<CombineSignedTransactionResult> ecTransferCombine(
+    Secp256k1KeyIdentity identity, rosetta.SignablePayload payloadsRes) async {
+  var signatures = [];
+  for (var p in payloadsRes.payloads) {
+    var hexBytes = blobToHex(await identity.sign(blobFromHex(p.hex_bytes)));
+
+    var signedPayload = {
+      "signing_payload": p.toJson(),
+      "public_key": {
+        "hex_bytes": identity.getPublicKey().rawKey.toHex(),
+        "curve_type": "secp256k1",
+      },
+      "signature_type": "ecdsa",
       "hex_bytes": hexBytes,
     };
     signatures.add(signedPayload);

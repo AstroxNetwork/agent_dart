@@ -9,6 +9,7 @@ import 'package:agent_dart/agent/utils/leb128.dart';
 import 'package:agent_dart/agent/utils/utils.dart';
 import 'package:agent_dart/principal/principal.dart' as principal;
 import 'package:agent_dart/utils/extension.dart';
+import 'package:agent_dart/utils/map.dart';
 import 'package:agent_dart/utils/number.dart';
 import 'package:agent_dart/utils/u8a.dart';
 // import 'package:agent_dart/agent_dart.dart';
@@ -896,6 +897,12 @@ class RecordClass extends ConstructType<Map> {
           if (!x.containsKey(k)) {
             throw "Record is missing key '$k'.";
           }
+          var some = t.covariant(x[k]);
+          if (some == false) {
+            print(t);
+            print(x[k]);
+          }
+
           return t.covariant(x[k]);
         }));
   }
@@ -1495,7 +1502,7 @@ String toReadableString(dynamic x) {
   if (x is BigInt) {
     return "BigInt($x)";
   } else {
-    return jsonEncode(x);
+    return jsonEncode(makeBigIntToString(x));
   }
 }
 
