@@ -121,31 +121,50 @@ class Secp256k1KeyIdentity extends SignIdentity {
   @override
   Future<Uint8List> sign(Uint8List blob) async {
     final digest = SHA256Digest();
-    final signer = ECDSASigner(null, HMac(digest, 64));
+    final signer = ECDSASigner(digest, HMac(digest, 64));
+
     final key = ECPrivateKey(bytesToUnsignedInt(_privateKey), params);
 
     signer.init(true, p_api.PrivateKeyParameter(key));
     var sig = signer.generateSignature(blob) as ECSignature;
-
-    return u8aConcat([sig.r.toU8a(), sig.s.toU8a()]);
+    var signature = u8aConcat([sig.r.toU8a(), sig.s.toU8a()]);
+    return signature;
   }
 }
 
 Uint8List sign(String message, BinaryBlob secretKey) {
   final blob = message.plainToU8a(useDartEncode: true);
   final digest = SHA256Digest();
-  final signer = ECDSASigner(null, HMac(digest, 64));
+  final signer = ECDSASigner(digest, HMac(digest, 64));
   final key = ECPrivateKey(bytesToUnsignedInt(secretKey), params);
 
   signer.init(true, p_api.PrivateKeyParameter(key));
   var sig = signer.generateSignature(blob) as ECSignature;
-  return u8aConcat([sig.r.toU8a(), sig.s.toU8a()]);
+  var signature = u8aConcat([sig.r.toU8a(), sig.s.toU8a()]);
+
+  return signature;
 }
 
 bool verify(String message, Uint8List signature, Secp256k1PublicKey publicKey) {
   final blob = message.plainToU8a(useDartEncode: true);
   final digest = SHA256Digest();
-  final signer = ECDSASigner(null, HMac(digest, 64));
+  final signer = ECDSASigner(digest, HMac(digest, 64));
+
+  var sig = ECSignature(signature.sublist(0, 32).toBn(endian: Endian.big),
+      signature.sublist(32).toBn(endian: Endian.big));
+
+  var kpub = params.curve.decodePoint(publicKey.toRaw())!;
+
+  var pub = ECPublicKey(kpub, params);
+
+  signer.init(false, p_api.PublicKeyParameter(pub));
+
+  return signer.verifySignature(blob, sig);
+}
+
+bool verifyBlob(Uint8List blob, Uint8List signature, Secp256k1PublicKey publicKey) {
+  final digest = SHA256Digest();
+  final signer = ECDSASigner(digest, HMac(digest, 64));
 
   var sig = ECSignature(signature.sublist(0, 32).toBn(endian: Endian.big),
       signature.sublist(32).toBn(endian: Endian.big));
