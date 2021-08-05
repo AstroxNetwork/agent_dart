@@ -141,7 +141,12 @@ Uint8List sign(String message, BinaryBlob secretKey) {
   signer.init(true, p_api.PrivateKeyParameter(key));
   var sig = signer.generateSignature(blob) as ECSignature;
   var signature = u8aConcat([sig.r.toU8a(), sig.s.toU8a()]);
-
+  if (signature.length == 63) {
+    signature = u8aConcat([
+      Uint8List.fromList([0, 0]),
+      signature
+    ]);
+  }
   return signature;
 }
 
