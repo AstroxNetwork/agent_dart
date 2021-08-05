@@ -64,3 +64,6 @@ revamp
 ## 0.1.10
 * Added Secp256k1 Identity
 * Added ledger with send and getBalance
+
+## 0.1.11
+* Fixed secp256k1 signature length
