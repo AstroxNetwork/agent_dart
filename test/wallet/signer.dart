@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:agent_dart/agent/crypto/keystore/api.dart';
+import 'package:agent_dart/utils/bech32.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:agent_dart/wallet/signer.dart';
 import 'package:agent_dart/utils/extension.dart';

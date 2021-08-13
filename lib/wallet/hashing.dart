@@ -181,8 +181,7 @@ Uint8List hash_array(List elements) {
 /// @returns {Buffer}
 Uint8List crc32Del(Uint8List buf) {
   final res = buf.sublist(4);
-  final view = ByteData(4);
-  assert(getCrc32(res.buffer) == view.getUint32(0));
+  assert(getCrc32(res.buffer) == buf.buffer.asByteData().getUint32(0));
   return res;
 }
 
