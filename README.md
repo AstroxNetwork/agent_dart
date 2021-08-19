@@ -3,6 +3,8 @@
 
 [![GitHub license](https://img.shields.io/github/license/AstroxNetwork/agent_dart?style=flat-square)](https://github.com/AstroxNetwork/agent_dart/blob/master/LICENSE)
 
+![Discord](https://img.shields.io/discord/845497925298815036?color=purple&label=Discord)
+
 
 An agent library built for Internet Computer, a plugin package for dart and flutter apps. Developers can build ones to interact with Dfinity's blockchain directly.
 
