@@ -218,7 +218,6 @@ class HttpAgent implements Agent {
 
     var newTransformed = await id!.transformRequest(transformedRequest);
     var body = cbor.cborEncode(newTransformed["body"]);
-
     var list = await Future.wait([
       _fetch!(
           endpoint: "/api/v2/canister/${ecid.toText()}/call",
@@ -230,7 +229,6 @@ class HttpAgent implements Agent {
 
     var response = list[0] as Map<String, dynamic>;
     var requestId = list[1] as Uint8List;
-
     if (!(response["ok"] as bool)) {
       // ignore: prefer_adjacent_string_concatenation
       throw 'Server returned an error:\n' +
@@ -290,6 +288,7 @@ class HttpAgent implements Agent {
     Map<String, dynamic> newTransformed = await id!.transformRequest(transformedRequest);
 
     var body = cbor.cborEncode(newTransformed["body"]);
+
     final response = await _fetch!(
         endpoint: "/api/v2/canister/${canister.toText()}/query",
         method: "POST",
@@ -337,7 +336,6 @@ class HttpAgent implements Agent {
     Map<String, dynamic> newTransformed = await id!.transformRequest(transformedRequest);
 
     var body = cbor.cborEncode(newTransformed["body"]);
-
     final response = await _fetch!(
         endpoint: "/api/v2/canister/$canister/read_state",
         method: "POST",
