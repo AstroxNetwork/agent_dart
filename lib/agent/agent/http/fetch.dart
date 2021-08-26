@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
+import 'package:agent_dart/utils/extension.dart';
 import 'index.dart';
 
 const defaultTimeout = Duration(seconds: 30);
@@ -48,6 +49,7 @@ Future<Map<String, dynamic>> defaultFetch(
         "arrayBuffer": getResponse.bodyBytes,
       };
     } else {
+      print((body as Uint8List).toHex());
       var postResponse = await client
           .post(
         Uri.parse(host ?? "$defaultHost$endpoint"),
