@@ -106,7 +106,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
     } else if (data is Uint8List) {
       writeBytes(Uint8Buffer()..addAll(data));
     } else if (data.every((element) => element is int)) {
-      writeBytes(Uint8Buffer()..addAll(data as List<int>));
+      writeBytes(Uint8Buffer()..addAll(List<int>.from(data)));
     } else if (data is List) {
       writeTypeValue(cbor.majorTypeArray, data.length);
       for (final byte in data) {
