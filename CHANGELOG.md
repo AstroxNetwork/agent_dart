@@ -67,3 +67,7 @@ revamp
 
 ## 0.1.11
 * Fixed secp256k1 signature length
+
+## 0.1.12
+* Expose AgentFactory
+* Fix Cbor with List<int> casting
