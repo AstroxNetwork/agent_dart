@@ -130,13 +130,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_web_auth:
-    dependency: "direct main"
-    description:
-      name: flutter_web_auth
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.3.0"
   hex:
     dependency: transitive
     description:

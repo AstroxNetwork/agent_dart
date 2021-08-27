@@ -71,3 +71,6 @@ revamp
 ## 0.1.12
 * Expose AgentFactory
 * Fix Cbor with List<int> casting
+
+## 0.1.13
+* **Breaking** separating `auth_provider` to standalone `agent_dart_auth` package
