@@ -1,6 +1,6 @@
 name: agent_dart
 description: An agent library built for Internet Computer, a plugin package for dart and flutter apps. Developers can build ones to interact with Dfinity's blockchain directly.
-version: 0.1.12
+version: 0.1.13
 homepage: https://github.com/AstroxNetwork/agent_dart
 
 environment:
@@ -19,7 +19,6 @@ dependencies:
   fixnum: ^1.0.0
   flutter:
     sdk: flutter
-  flutter_web_auth: ^0.3.0
   http: ^0.13.3
   pinenacl: ^0.3.1
   pointycastle: ^3.1.2
