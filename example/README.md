@@ -1,5 +1,6 @@
 # agent_dart_example
 
+**This example is pretty outdated, hang tight**
 ## IMPORTANT NOTICE
 This example is for showing how interaction is done only.
 For more complex examples, please stay tuned, we will update the README of the root 
