@@ -87,7 +87,11 @@ ECKeys fromSeed(Uint8List seed, {int index = 0}) {
 Uint8List? getPublicFromPrivateKey(Uint8List privateKey, [bool compress = false]) {
   BigInt privateKeyNum = privateKey.toBn(endian: Endian.big);
 
-  ECPoint? p = params.G * privateKeyNum;
+  return getPublicFromPrivateKeyBigInt(privateKeyNum, compress);
+}
+
+Uint8List? getPublicFromPrivateKeyBigInt(BigInt bigint, [bool compress = false]) {
+  ECPoint? p = params.G * bigint;
 
   if (p != null) {
     return p.getEncoded(compress);
