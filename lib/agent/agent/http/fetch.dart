@@ -49,7 +49,6 @@ Future<Map<String, dynamic>> defaultFetch(
         "arrayBuffer": getResponse.bodyBytes,
       };
     } else {
-      print((body as Uint8List).toHex());
       var postResponse = await client
           .post(
         Uri.parse(host ?? "$defaultHost$endpoint"),
