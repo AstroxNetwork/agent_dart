@@ -74,3 +74,6 @@ revamp
 
 ## 0.1.13
 * **Breaking** separating `auth_provider` to standalone `agent_dart_auth` package
+
+## 0.1.14
+* Minor Fix fetch and keysmith
