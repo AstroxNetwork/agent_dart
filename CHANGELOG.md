@@ -77,3 +77,7 @@ revamp
 
 ## 0.1.14
 * Minor Fix fetch and keysmith
+
+## 0.1.14+1
+* added archiver
+* fix padding issue on signing method
