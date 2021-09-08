@@ -6,4 +6,4 @@ cd rust
 
 cargo build
 
-cp ".\\target\\debug\\lib${LIB_NAME}.dll" "..\\windows\\lib${LIB_NAME}.dll"
+cp ".\\target\\debug\\${LIB_NAME}.dll" "..\\windows\\${LIB_NAME}.dll"
