@@ -81,3 +81,7 @@ revamp
 ## 0.1.14+1
 * added archiver
 * fix padding issue on signing method
+
+## 0.1.15
+* added Windows ffi support
+* **IMPORTANT** fix candid parser with BigInt and others
