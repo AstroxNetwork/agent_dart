@@ -75,7 +75,6 @@ elif [ "$SYSTEM" = "Linux" ]
     bash ./scripts/build_linux.sh
 elif [ "$SYSTEM" = "Windows" ]
   then
-    bash ./scripts/build_android.sh
     bash ./scripts/build_windows.sh
 fi
 

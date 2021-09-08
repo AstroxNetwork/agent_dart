@@ -3,12 +3,12 @@ name: Rust Bindings for linux
 on:
   push:
     branches:
-      - main
+      - feat/windows
 
 jobs:
   ci:
     name: Compile, Build and Release
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Cache LLVM and Clang
         id: cache-llvm
@@ -68,7 +68,7 @@ jobs:
       - name: Execute build scripts
         run: |
           bash ./scripts/clean.sh
-          bash ./scripts/build_linux.sh
+          bash ./scripts/build_windows.sh
 
       - name: Run binding/crypto tests
         run: flutter test test/crypto/crypto.dart
