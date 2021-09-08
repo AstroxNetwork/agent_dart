@@ -71,7 +71,7 @@ jobs:
           bash ./scripts/build_linux.sh
 
       - name: Run binding/crypto tests
-        run: flutter test test/crypto/crypto.dart
+        run: flutter test test/agent/utils/bls.dart
 
       - name: Commit files
         uses: stefanzweifel/git-auto-commit-action@v4
