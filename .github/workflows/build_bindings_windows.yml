@@ -1,8 +1,9 @@
-name: Rust Bindings for linux
+name: Rust Bindings for windows
 
 on:
   push:
     branches:
+      - main
       - feat/windows
 
 jobs:
