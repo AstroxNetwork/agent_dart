@@ -1501,8 +1501,10 @@ class ServiceClass extends ConstructType<PrincipalId> {
 String toReadableString(dynamic x) {
   if (x is BigInt) {
     return "BigInt($x)";
-  } else {
+  } else if (x is Map) {
     return jsonEncode(makeBigIntToString(x));
+  } else {
+    return jsonEncode(x);
   }
 }
 
