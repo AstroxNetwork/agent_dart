@@ -3,7 +3,7 @@ name: Rust Bindings for ios android and mac
 on:
   push:
     branches:
-      - main
+      - feat/bindings
 
 jobs:
   ci:
