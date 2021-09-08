@@ -24,5 +24,5 @@ final dylib = Platform.isAndroid
                     ? DynamicLibrary.open("lib$libName.dylib")
                     : DynamicLibrary.open("linux/lib$libName.so")
                 : Platform.isWindows // not tested in windows, should see if anything different
-                    ? DynamicLibrary.open("windows/lib$libName.dll")
+                    ? DynamicLibrary.open("windows/$libName.dll")
                     : DynamicLibrary.open("rust/target/debug/lib$libName.dylib");
