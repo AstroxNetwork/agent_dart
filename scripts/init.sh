@@ -12,6 +12,10 @@ for i in "${IOS_ARCHS[@]}";
   do rustup target add "$i";
 done
 
+for i in "${WIN_ARCHS[@]}";
+  do rustup target add "$i";
+done
+
 # for i in "${LINUX_ARCHS[@]}";
 #   do rustup target add "$i";
 # done
