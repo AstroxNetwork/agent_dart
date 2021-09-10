@@ -85,3 +85,6 @@ revamp
 ## 0.1.15
 * added Windows ffi support
 * **IMPORTANT** fix candid parser with BigInt and others
+
+## 0.1.15+1
+* fix secp256k1 signature verifier
