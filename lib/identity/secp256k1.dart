@@ -18,7 +18,8 @@ BigInt bytesToUnsignedInt(Uint8List bytes) {
   return p_utils.decodeBigIntWithSign(1, bytes);
 }
 
-// final BigInt _halfCurveOrder = params.n >> 1;
+// final ECDomainParameters params = ECCurve_secp256k1();
+final BigInt _halfCurveOrder = params.n >> 1;
 
 class Secp256k1KeyPair implements KeyPair {
   @override
@@ -127,14 +128,20 @@ class Secp256k1KeyIdentity extends SignIdentity {
 
     signer.init(true, p_api.PrivateKeyParameter(key));
     var sig = signer.generateSignature(blob) as ECSignature;
-    var signature = u8aConcat([sig.r.toU8a(), sig.s.toU8a()]);
-    if (signature.length == 63) {
-      signature = u8aConcat([
-        Uint8List.fromList([0]),
-        signature
-      ]);
+    if (sig.s.compareTo(_halfCurveOrder) > 0) {
+      final canonicalisedS = params.n - sig.s;
+      sig = ECSignature(sig.r, canonicalisedS);
     }
-    return signature;
+    var rU8a = sig.r.toU8a();
+    var sU8a = sig.s.toU8a();
+    if (rU8a.length < 32) {
+      rU8a = Uint8List.fromList([0, ...rU8a]);
+    }
+    if (sU8a.length < 32) {
+      sU8a = Uint8List.fromList([0, ...sU8a]);
+    }
+
+    return u8aConcat([rU8a, sU8a]);
   }
 }
 
@@ -146,14 +153,20 @@ Uint8List sign(String message, BinaryBlob secretKey) {
 
   signer.init(true, p_api.PrivateKeyParameter(key));
   var sig = signer.generateSignature(blob) as ECSignature;
-  var signature = u8aConcat([sig.r.toU8a(), sig.s.toU8a()]);
-  if (signature.length == 63) {
-    signature = u8aConcat([
-      Uint8List.fromList([0]),
-      signature
-    ]);
+  if (sig.s.compareTo(_halfCurveOrder) > 0) {
+    final canonicalisedS = params.n - sig.s;
+    sig = ECSignature(sig.r, canonicalisedS);
   }
-  return signature;
+  var rU8a = sig.r.toU8a();
+  var sU8a = sig.s.toU8a();
+  if (rU8a.length < 32) {
+    rU8a = Uint8List.fromList([0, ...rU8a]);
+  }
+  if (sU8a.length < 32) {
+    sU8a = Uint8List.fromList([0, ...sU8a]);
+  }
+
+  return u8aConcat([rU8a, sU8a]);
 }
 
 bool verify(String message, Uint8List signature, Secp256k1PublicKey publicKey) {
@@ -169,7 +182,6 @@ bool verify(String message, Uint8List signature, Secp256k1PublicKey publicKey) {
   var pub = ECPublicKey(kpub, params);
 
   signer.init(false, p_api.PublicKeyParameter(pub));
-
   return signer.verifySignature(blob, sig);
 }
 
