@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -5,6 +7,9 @@ import 'counter.dart';
 import 'init.dart';
 
 void main() {
+  print(Platform.environment["_"] == null ||
+      (Platform.environment["_"] != null &&
+          Platform.environment["FLUTTER_ENGINE_SWITCH_1"] != null));
   runApp(const MyApp());
 }
 
