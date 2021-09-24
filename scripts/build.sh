@@ -69,6 +69,7 @@ if [ "$SYSTEM" = "Darwin" ]
     sh ./scripts/build_ios.sh
     sh ./scripts/build_android.sh 
     sh ./scripts/build_macos.sh 
+    sh ./scripts/build_end.sh 
 elif [ "$SYSTEM" = "Linux" ]
   then
     bash ./scripts/build_android.sh
