@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -34,7 +36,7 @@ class _MyAppState extends State<MyApp> {
 
   void initCounter() {
     _counter = AgentFactory.create(
-      canisterId: "r7inp-6aaaa-aaaaa-aaabq-cai",
+      canisterId: "vszjv-naaaa-aaaaa-aaa3q-cai",
       url: "http://127.0.0.1:8000", // For Android emulator, please use 10.0.2.2 as endpoint
       idl: idl,
     ).hook(Counter());
