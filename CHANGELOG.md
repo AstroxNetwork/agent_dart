@@ -88,3 +88,6 @@ revamp
 
 ## 0.1.15+1
 * fix secp256k1 signature verifier
+
+## 0.1.15+2
+* fix build scripts incase dylib not found
