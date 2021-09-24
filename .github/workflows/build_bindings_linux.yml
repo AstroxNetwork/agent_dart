@@ -73,6 +73,9 @@ jobs:
       - name: Run binding/crypto tests
         run: flutter test test/agent/utils/bls.dart
 
+      - name: Run git pull
+        run: git pull
+
       - name: Commit files
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
