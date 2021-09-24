@@ -74,7 +74,9 @@ jobs:
         run: flutter test test/agent/utils/bls.dart
 
       - name: Run git pull
-        run: git pull
+        run: |
+          git reset --hard HEAD
+          git pull
 
       - name: Commit files
         uses: stefanzweifel/git-auto-commit-action@v4
