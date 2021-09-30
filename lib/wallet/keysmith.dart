@@ -45,10 +45,10 @@ Uint8List getAccountIdFromEd25519PublicKey(Uint8List publicKey) {
   return getAccountIdFromDerKey(der);
 }
 
-Uint8List getAccountIdFromDerKey(Uint8List der) {
+Uint8List getAccountIdFromPrincipal(Principal principal) {
   final hash = SHA224();
   hash.update(('\x0Aaccount-id').plainToU8a());
-  hash.update(Principal.selfAuthenticating(der).toBlob());
+  hash.update(principal.toBlob());
   hash.update(Uint8List(32));
   final data = hash.digest();
   final view = ByteData(4);
@@ -56,6 +56,14 @@ Uint8List getAccountIdFromDerKey(Uint8List der) {
   final checksum = view.buffer.asUint8List();
   final bytes = Uint8List.fromList(data);
   return Uint8List.fromList([...checksum, ...bytes]);
+}
+
+Uint8List getAccountIdFromDerKey(Uint8List der) {
+  return getAccountIdFromPrincipal(Principal.selfAuthenticating(der));
+}
+
+Uint8List getAccountIdPrincipalID(String id) {
+  return getAccountIdFromPrincipal(Principal.fromText(id));
 }
 
 ECKeys getECKeys(String mnemonic, {String passphase = "", int index = 0}) {
