@@ -70,7 +70,8 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
   static const int GZIP = 1;
 
   @override
-  void zipDirectory(Directory dir, {String? filename, int? level, bool followLinks = true}) {
+  void zipDirectory(Directory dir,
+      {String? filename, int? level, bool followLinks = true, DateTime? modified}) {
     final dirPath = dir.path;
     final zip_path = filename ?? '$dirPath.zip';
     level ??= GZIP;
@@ -83,7 +84,7 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
   void open(String zip_path) => create(zip_path);
 
   @override
-  void create(String zip_path, {int? level}) {
+  void create(String zip_path, {int? level, DateTime? modified}) {
     this.zip_path = zip_path;
     _output = OutputFileStream(zip_path);
     _encoder.startEncode(_output, level: level);
