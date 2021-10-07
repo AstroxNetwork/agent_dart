@@ -1,6 +1,6 @@
-import 'dart:ffi';
+// import 'dart:ffi';
 import 'dart:typed_data';
-import 'package:ffi/ffi.dart';
+// import 'package:ffi/ffi.dart';
 import 'package:typed_data/typed_data.dart';
 // ignore: library_prefixes
 import 'hex.dart' as hexUtil;
@@ -26,7 +26,7 @@ extension StringExtension on String {
       stringUtil.stringToU8a(this, enc: enc, useDartEncode: useDartEncode);
   BigInt hexToBn({Endian endian = Endian.big, bool isNegative = false}) =>
       hexUtil.hexToBn(this, endian: endian, isNegative: isNegative);
-  Pointer<Utf8> toUtf8() => toNativeUtf8();
+  // Pointer<Utf8> toUtf8() => toNativeUtf8();
   String camelCase() => stringUtil.stringCamelCase(this);
 }
 

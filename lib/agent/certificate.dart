@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
+import 'package:agent_dart/bls/bls.web.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:agent_dart/agent/agent.dart';
 import 'package:agent_dart/agent/cbor.dart';
 import 'package:agent_dart/agent/request_id.dart';
 import 'package:agent_dart/agent/types.dart';
@@ -9,8 +11,10 @@ import 'package:agent_dart/utils/u8a.dart';
 import 'package:typed_data/typed_data.dart';
 
 import 'agent/api.dart';
-import 'crypto/bls.dart';
+import '../bls/bls.base.dart';
 import 'errors.dart';
+
+BaseBLS bls = BaseBLS();
 
 /// A certificate needs to be verified (using {@link Certificate.prototype.verify})
 /// before it can be used.
@@ -131,13 +135,13 @@ class Certificate {
     _initBls();
   }
 
-  void _initBls() {
-    _blsinit = blsInitSync();
+  Future<void> _initBls() async {
+    if (kIsWeb) {
+      await (bls as WebBls).initInstance();
+      _blsinit = await bls.blsInit();
+    }
+    _blsinit = bls.blsInitSync();
   }
-
-  // void _initBls() async {
-  //   _blsinit = await blsInit();
-  // }
 
   Uint8List? lookupEx(List path) {
     checkState();
@@ -151,14 +155,18 @@ class Certificate {
 
   Future<bool> verify() async {
     if (_blsinit == false) {
-      await blsInit();
+      if (kIsWeb) {
+        await (bls as WebBls).initInstance();
+        await bls.blsInit();
+      }
+      bls.blsInitSync();
     }
     final rootHash = await reconstruct(cert.tree!);
     final derKey = await _checkDelegation(cert.delegation);
     final sig = cert.signature;
     final key = extractDER(derKey);
     final msg = u8aConcat([domainSep('ic-state-root'), rootHash]);
-    final res = blsVerifySync(key, sig!, msg);
+    var res = kIsWeb ? await bls.blsVerify(key, sig!, msg) : bls.blsVerifySync(key, sig!, msg);
     // final res = await blsVerify(key, sig!, msg);
     verified = res;
     return res;
