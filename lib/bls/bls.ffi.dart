@@ -29,6 +29,7 @@ class FFIBls implements BaseBLS {
     return ret;
   }
 
+  @override
   Future<bool> blsInit() async {
     // ignore: unnecessary_null_comparison
     if (dylib == null) throw "ERROR: The library is not initialized 🙁";
@@ -68,6 +69,7 @@ class FFIBls implements BaseBLS {
     });
   }
 
+  @override
   Future<bool> blsVerify(
     Uint8List pk,
     Uint8List sig,
