@@ -92,5 +92,8 @@ revamp
 ## 0.1.15+2
 * fix build scripts incase dylib not found
 
-## 0.1.15+3
+## 0.1.16
 * added principal to accountId
+* added flutter web support
+* regroup project structure
+* fixed archiver overriding
