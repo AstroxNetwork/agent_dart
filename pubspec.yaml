@@ -8,11 +8,11 @@ environment:
   flutter: '>=2.2.0'
 
 dependencies:
-  archive: ^3.1.2
+  archive: ^3.1.5
   args: ^2.1.1
   bip32: ^2.0.0
   bip39: ^1.0.6
-  cbor: ^4.0.2
+  cbor: ^4.1.0
   collection: ^1.15.0
   convert: ^3.0.0
   crypto: ^3.0.1
@@ -20,7 +20,10 @@ dependencies:
   fixnum: ^1.0.0
   flutter:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
   http: ^0.13.3
+  js: ^0.6.3
   path: ^1.8.0
   pinenacl: ^0.3.1
   pointycastle: ^3.1.2
@@ -58,6 +61,9 @@ flutter:
         pluginClass: AgentDartPlugin
       windows:
         pluginClass: AgentDartPlugin
+      web:
+        pluginClass: AgentDartPlugin
+        fileName: agent_dart_web.dart
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

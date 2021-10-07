@@ -1,7 +1,9 @@
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:agent_dart/principal/principal.dart';
 import 'package:cbor/cbor.dart' as cbor;
 import 'package:typed_data/typed_data.dart';
+import 'dart:math' as math;
 
 import 'types.dart';
 
@@ -164,7 +166,12 @@ class SelfDescribeEncoder extends cbor.Encoder {
       // Encode to a bignum, if the value can be represented as
       // an integer it must be greater than 2*32 so encode as 64 bit.
       final bignum = BigInt.from(value);
-      if (bignum.isValidInt) {
+      if (kIsWeb) {
+        var data = serializeValue(0, 27, bignum.toRadixString(16));
+        var buf = Uint8Buffer();
+        buf.addAll(data.asUint8List());
+        addBuilderOutput(buf);
+      } else if (bignum.isValidInt) {
         // Uint64
         _out.putByte(type | cbor.ai27);
         final buff = Uint64Buffer(1);
@@ -321,4 +328,25 @@ T cborDecode<T>(List<int> value) {
   } catch (e) {
     throw "Can not decode with cbor :$e";
   }
+}
+
+ByteBuffer serializeValue(int major, int minor, String val) {
+  // Remove everything that's not an hexadecimal character. These are not
+  // considered errors since the value was already validated and they might
+  // be number decimals or sign.
+  var value = val.replaceAll('r[^0-9a-fA-F]', "");
+  // Create the buffer from the value with left padding with 0.
+  final length = math.pow(2, minor - 24).toInt();
+
+  var temp = value.substring(value.length <= length * 2 ? 0 : value.length - length * 2);
+  var prefix = "0" * (2 * length - temp.length);
+  value = prefix + temp;
+
+  var bytes = [(major << 5) + minor];
+  var arr = <int>[];
+  for (var i = 0; i < value.length; i += 2) {
+    arr.add(int.parse(value.substring(i, i + 2), radix: 16));
+  }
+  bytes.addAll(arr);
+  return Uint8List.fromList(bytes).buffer;
 }
