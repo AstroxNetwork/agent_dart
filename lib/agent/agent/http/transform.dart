@@ -1,9 +1,13 @@
+import 'dart:io';
 import 'dart:typed_data';
+import 'dart:math' as math;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:agent_dart/agent/cbor.dart';
 import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/agent/utils/leb128.dart';
 import 'package:cbor/cbor.dart' as cbor;
+import 'package:typed_data/typed_data.dart';
 
 import 'types.dart';
 
@@ -32,8 +36,14 @@ class Expiry extends ToCBorable {
 
   @override
   void write(cbor.Encoder encoder) {
-    // encoder.writeBignum(_value);
-    encoder.writeInt(_value.toInt());
+    if (kIsWeb) {
+      var data = serializeValue(0, 27, _value.toRadixString(16));
+      var buf = Uint8Buffer();
+      buf.addAll(data.asUint8List());
+      encoder.addBuilderOutput(buf);
+    } else {
+      encoder.writeInt(_value.toInt());
+    }
   }
 }
 
