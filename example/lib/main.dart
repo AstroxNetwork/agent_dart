@@ -30,8 +30,8 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     initCounter();
-    // loading(true);
-    // readCount();
+    loading(true);
+    readCount();
   }
 
   void initCounter() {
