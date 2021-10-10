@@ -97,3 +97,5 @@ revamp
 * added flutter web support
 * regroup project structure
 * fixed archiver overriding
+* fixed bls on io
+* fixed test compatible with flutter web
