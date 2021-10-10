@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:agent_dart/bls/bls.web.dart';
+// import 'package:agent_dart/bls/bls.web.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:agent_dart/agent/agent.dart';
 import 'package:agent_dart/agent/cbor.dart';
@@ -132,15 +132,6 @@ class Certificate {
   final Agent _agent;
   Certificate(ReadStateResponse response, this._agent) {
     cert = Cert.fromJson(cborDecode(response.certificate));
-    _initBls();
-  }
-
-  Future<void> _initBls() async {
-    if (kIsWeb) {
-      await (bls as WebBls).initInstance();
-      _blsinit = await bls.blsInit();
-    }
-    _blsinit = bls.blsInitSync();
   }
 
   Uint8List? lookupEx(List path) {
@@ -154,20 +145,12 @@ class Certificate {
   }
 
   Future<bool> verify() async {
-    if (_blsinit == false) {
-      if (kIsWeb) {
-        await (bls as WebBls).initInstance();
-        await bls.blsInit();
-      }
-      bls.blsInitSync();
-    }
     final rootHash = await reconstruct(cert.tree!);
     final derKey = await _checkDelegation(cert.delegation);
     final sig = cert.signature;
     final key = extractDER(derKey);
     final msg = u8aConcat([domainSep('ic-state-root'), rootHash]);
     var res = kIsWeb ? await bls.blsVerify(key, sig!, msg) : bls.blsVerifySync(key, sig!, msg);
-    // final res = await blsVerify(key, sig!, msg);
     verified = res;
     return res;
   }

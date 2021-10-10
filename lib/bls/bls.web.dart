@@ -810,6 +810,8 @@ final wasmBytesBase64 = '''
 
 final moduleBytes = base64Decode(wasmBytesBase64);
 
+typedef BLSVerifyFunc = int Function(int, int, int, int, int, int);
+
 class WebBls implements BaseBLS {
   Instance? instance;
   Uint8List? cachegetUint8Memory0;
@@ -841,15 +843,19 @@ class WebBls implements BaseBLS {
 
   @override
   Future<bool> blsVerify(Uint8List pk, Uint8List sig, Uint8List msg) async {
-    if (!await blsInit()) {
-      throw 'Cannot initialize BLS';
+    BLSVerifyFunc? blsVerifyFunc;
+    if (blsVerifyFunc == null) {
+      await initInstance();
+      if (!await blsInit()) {
+        throw 'Cannot initialize BLS';
+      }
+      blsVerifyFunc =
+          instance!.functions['bls_verify']! as int Function(int, int, int, int, int, int);
     }
+
     var set0 = passArray8ToWasm0(sig, _malloc);
     var set1 = passArray8ToWasm0(msg, _malloc);
     var set2 = passArray8ToWasm0(pk, _malloc);
-
-    var blsVerifyFunc =
-        instance!.functions['bls_verify']! as int Function(int, int, int, int, int, int);
 
     return blsVerifyFunc(set0.first, set0.last, set1.first, set1.last, set2.first, set2.last) == 0
         ? true
