@@ -99,3 +99,8 @@ revamp
 * fixed archiver overriding
 * fixed bls on io
 * fixed test compatible with flutter web
+
+## 0.1.16+1
+* fixed rosetta with latest mainnet apis
+* fixed cbor with primitive types
+* dart fmt all files
