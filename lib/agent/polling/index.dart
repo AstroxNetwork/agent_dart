@@ -12,7 +12,8 @@ Future<BinaryBlob> pollForResponse(
   PollStrategy strategy,
 ) async {
   final path = [blobFromText('request_status'), requestId];
-  final state = await agent.readState(canisterId, ReadStateOptions()..paths = [path], null);
+  final state = await agent.readState(
+      canisterId, ReadStateOptions()..paths = [path], null);
   final cert = Certificate(state, agent);
   final verified = await cert.verify();
   if (!verified) {
@@ -43,10 +44,13 @@ Future<BinaryBlob> pollForResponse(
 
     case RequestStatusResponseStatus.Rejected:
       {
-        final rejectCode = cert.lookup([...path, blobFromText('reject_code')])!.u8aToString();
-        final rejectMessage = cert.lookup([...path, blobFromText('reject_message')])!.u8aToString();
+        final rejectCode =
+            cert.lookup([...path, blobFromText('reject_code')])!.u8aToString();
+        final rejectMessage = cert
+            .lookup([...path, blobFromText('reject_message')])!.u8aToString();
         // ignore: prefer_adjacent_string_concatenation
-        throw "Call was rejected:\n" "  Request ID: ${requestIdToHex(requestId)}\n" +
+        throw "Call was rejected:\n"
+                "  Request ID: ${requestIdToHex(requestId)}\n" +
             "  Reject code: $rejectCode\n" +
             "  Reject text: $rejectMessage\n";
       }

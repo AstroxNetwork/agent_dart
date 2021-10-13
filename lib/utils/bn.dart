@@ -33,7 +33,8 @@ BigInt bnToBn(dynamic value) {
 
 BigInt compactToBn(Map<String, dynamic> value) {
   var toBnTrue = value.containsKey("toBn") && isFunction(value['toBn']);
-  var toBigIntTrue = value.containsKey("toBigInt") && isFunction(value['toBigInt']);
+  var toBigIntTrue =
+      value.containsKey("toBigInt") && isFunction(value['toBigInt']);
   if (toBnTrue && !toBigIntTrue) {
     return (value["toBn"] as Function).call();
   }
@@ -72,7 +73,8 @@ BigInt bitnot(BigInt bn, {int? bitLength}) {
 
 String bnToHex(BigInt bn,
     {int bitLength = -1, Endian endian = Endian.big, bool isNegative = false}) {
-  var u8a = bnToU8a(bn, bitLength: bitLength, endian: endian, isNegative: isNegative);
+  var u8a =
+      bnToU8a(bn, bitLength: bitLength, endian: endian, isNegative: isNegative);
   return u8aToHex(u8a, include0x: true);
 }
 
@@ -83,7 +85,9 @@ class Options {
 }
 
 Uint8List bnToU8a(BigInt? value,
-    {int bitLength = -1, Endian endian = Endian.little, bool isNegative = false}) {
+    {int bitLength = -1,
+    Endian endian = Endian.little,
+    bool isNegative = false}) {
   BigInt valueBn = bnToBn(value);
   int byteLength;
   if (bitLength == -1) {

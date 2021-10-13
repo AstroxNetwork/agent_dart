@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart/identity/identity.dart';
-import 'package:agent_dart/wallet/hashing.dart';
-import 'package:agent_dart/wallet/keysmith.dart';
 import 'package:agent_dart/wallet/signer.dart';
 import 'package:agent_dart/wallet/types.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -34,21 +31,28 @@ void rosettaTest() {
     /// create payload
     final amount = BigInt.from(100000000);
     var unsignedTransaction = await rose.transferPreCombine(
-        signer.idPublicKey!.toU8a(), receiver.idAddress!.toU8a(), amount, null, null);
+        signer.idPublicKey!.toU8a(),
+        receiver.idAddress!.toU8a(),
+        amount,
+        null,
+        null);
 
-    var accountBalance = await rose.accountBalanceByAddress(signer.idChecksumAddress!);
+    var accountBalance =
+        await rose.accountBalanceByAddress(signer.idChecksumAddress!);
 
     // ignore: avoid_print
     print("\n ------ payload ------");
     // ignore: avoid_print
-    print("\n from Identity: ${signer.account.getIdentity()?.getPrincipal().toText()}");
+    print(
+        "\n from Identity: ${signer.account.getIdentity()?.getPrincipal().toText()}");
     // ignore: avoid_print
     print("\n from :${signer.idAddress}");
     // ignore: avoid_print
     print("\n to :${receiver.idAddress}");
 
     // ignore: avoid_print
-    print("\n unsignedTransaction :${jsonEncode(unsignedTransaction.toJson())}");
+    print(
+        "\n unsignedTransaction :${jsonEncode(unsignedTransaction.toJson())}");
     // ignore: avoid_print
     print("\n sender_pubkey :${signer.idPublicKey}");
 
@@ -56,7 +60,8 @@ void rosettaTest() {
     print(" ------ payload ------ \n");
 
     /// sign transaction, offline signer we assume
-    var signedTransaction = await transferCombine(signer.account.identity!, unsignedTransaction);
+    var signedTransaction =
+        await transferCombine(signer.account.identity!, unsignedTransaction);
 
     /// send transaction after
     var txn = await rose.transfer_post_combine(signedTransaction);
@@ -69,7 +74,8 @@ void rosettaTest() {
       }));
     });
 
-    var accountBalanceAfter = await rose.accountBalanceByAddress(signer.idChecksumAddress!);
+    var accountBalanceAfter =
+        await rose.accountBalanceByAddress(signer.idChecksumAddress!);
     // ignore: avoid_print
     print("\n ------ transaction confirm ------");
     // ignore: avoid_print

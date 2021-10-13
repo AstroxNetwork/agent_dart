@@ -17,11 +17,14 @@ final RustBlsInitFunc rustBlsInit =
 ///
 typedef RustBlsVerifyFunc = Pointer<Utf8> Function(
     Pointer<Utf8> sig, Pointer<Utf8> m, Pointer<Utf8> w);
-typedef RustBlsVerifyNative = Pointer<Utf8> Function(Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>);
-final RustBlsVerifyFunc rustBlsVerify =
-    dylib.lookup<NativeFunction<RustBlsVerifyNative>>("bls_verify").asFunction();
+typedef RustBlsVerifyNative = Pointer<Utf8> Function(
+    Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>);
+final RustBlsVerifyFunc rustBlsVerify = dylib
+    .lookup<NativeFunction<RustBlsVerifyNative>>("bls_verify")
+    .asFunction();
 
 typedef FreeStringFunc = void Function(Pointer<Utf8>);
 typedef FreeStringFuncNative = Void Function(Pointer<Utf8>);
-final FreeStringFunc freeCString =
-    dylib.lookup<NativeFunction<FreeStringFuncNative>>("rust_cstr_free").asFunction();
+final FreeStringFunc freeCString = dylib
+    .lookup<NativeFunction<FreeStringFuncNative>>("rust_cstr_free")
+    .asFunction();

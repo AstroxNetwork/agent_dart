@@ -20,16 +20,21 @@ void authenticationTest() {
   test('checks expiration', () async {
     final root = createIdentity(0);
     final session = createIdentity(1);
-    final future =
-        DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch + 1000);
-    final past = DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch - 1000);
+    final future = DateTime.fromMillisecondsSinceEpoch(
+        DateTime.now().millisecondsSinceEpoch + 1000);
+    final past = DateTime.fromMillisecondsSinceEpoch(
+        DateTime.now().millisecondsSinceEpoch - 1000);
 
     // Create a valid delegation.
     expect(
-        isDelegationValid(await DelegationChain.create(root, session.getPublicKey(), future), null),
+        isDelegationValid(
+            await DelegationChain.create(root, session.getPublicKey(), future),
+            null),
         true);
     expect(
-        isDelegationValid(await DelegationChain.create(root, session.getPublicKey(), past), null),
+        isDelegationValid(
+            await DelegationChain.create(root, session.getPublicKey(), past),
+            null),
         false);
   });
 }

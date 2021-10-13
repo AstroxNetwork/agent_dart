@@ -5,18 +5,22 @@ import 'package:convert/convert.dart';
 BigInt decodeBigInt(List<int> bytes, {Endian endian = Endian.little}) {
   BigInt result = BigInt.from(0);
   for (int i = 0; i < bytes.length; i++) {
-    result += BigInt.from(bytes[endian == Endian.little ? i : bytes.length - i - 1]) << (8 * i);
+    result += BigInt.from(
+            bytes[endian == Endian.little ? i : bytes.length - i - 1]) <<
+        (8 * i);
   }
   return result;
 }
 
-Uint8List encodeBigInt(BigInt number, {Endian endian = Endian.little, int? bitLength}) {
+Uint8List encodeBigInt(BigInt number,
+    {Endian endian = Endian.little, int? bitLength}) {
   var bl = (bitLength != null) ? bitLength : number.bitLength;
   int size = (bl + 7) >> 3;
   var result = Uint8List(size);
 
   for (int i = 0; i < size; i++) {
-    result[endian == Endian.little ? i : size - i - 1] = (number & BigInt.from(0xff)).toInt();
+    result[endian == Endian.little ? i : size - i - 1] =
+        (number & BigInt.from(0xff)).toInt();
     number = number >> 8;
   }
   return result;
@@ -31,7 +35,8 @@ Uint8List encodeBigInt(BigInt number, {Endian endian = Endian.little, int? bitLe
 /// with zeroes. Note that [forcePadLen] refers to the string length, meaning
 /// that one byte has a length of 2. When [include0x] is set to true, the
 /// output wil have "0x" prepended to it after any padding is done.
-String numberToHex(dynamic number, {bool pad = false, bool include0x = false, int? forcePadLen}) {
+String numberToHex(dynamic number,
+    {bool pad = false, bool include0x = false, int? forcePadLen}) {
   String toHexSimple() {
     if (number is int) {
       return number.toRadixString(16);

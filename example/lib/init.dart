@@ -61,12 +61,13 @@ class AgentFactory {
     if (_debug) {
       await _agent.fetchRootKey();
     }
-    _agent.addTransform(HttpAgentRequestTransformFn()..call = makeNonceTransform());
+    _agent.addTransform(
+        HttpAgentRequestTransformFn()..call = makeNonceTransform());
   }
 
   void _createActor() {
-    _actor =
-        Actor.createActor(_idl, ActorConfig.fromMap({"canisterId": _canisterId, "agent": _agent}));
+    _actor = Actor.createActor(_idl,
+        ActorConfig.fromMap({"canisterId": _canisterId, "agent": _agent}));
   }
 }
 

@@ -23,19 +23,31 @@ Future<String> encrypt(String privateKey, String passphrase,
     n = kdf == 'pbkdf2' ? 262144 : level;
   }
 
-  Map<String, dynamic> kdfParams = {'salt': salt, 'n': n, 'r': 8, 'p': 1, 'dklen': 32};
+  Map<String, dynamic> kdfParams = {
+    'salt': salt,
+    'n': n,
+    'r': 8,
+    'p': 1,
+    'dklen': 32
+  };
 
   List<int> encodedPassword = utf8.encode(passphrase);
   _KeyDerivator derivator = getDerivedKey(kdf, kdfParams);
   List<int> derivedKey = derivator.deriveKey(encodedPassword);
 
-  List<int> ciphertextBytes = _encryptPrivateKey(
-      derivator, Uint8List.fromList(encodedPassword), Uint8List.fromList(iv), privateKey);
+  List<int> ciphertextBytes = _encryptPrivateKey(derivator,
+      Uint8List.fromList(encodedPassword), Uint8List.fromList(iv), privateKey);
 
-  List<int> macBuffer =
-      derivedKey.sublist(16, 32) + ciphertextBytes + iv + ALGO_IDENTIFIER.codeUnits;
+  List<int> macBuffer = derivedKey.sublist(16, 32) +
+      ciphertextBytes +
+      iv +
+      ALGO_IDENTIFIER.codeUnits;
 
-  String mac = (SHA256().update(Uint8List.fromList(derivedKey)).update(macBuffer).digest().toHex());
+  String mac = (SHA256()
+      .update(Uint8List.fromList(derivedKey))
+      .update(macBuffer)
+      .digest()
+      .toHex());
 
   Map<String, dynamic> map = {
     'crypto': {
@@ -66,9 +78,14 @@ Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
   List<int> encodedPassword = utf8.encode(passphrase);
   _KeyDerivator derivator = getDerivedKey(kdf, kdfparams);
   List<int> derivedKey = derivator.deriveKey(encodedPassword);
-  List<int> macBuffer = derivedKey.sublist(16, 32) + ciphertext + iv + ALGO_IDENTIFIER.codeUnits;
+  List<int> macBuffer =
+      derivedKey.sublist(16, 32) + ciphertext + iv + ALGO_IDENTIFIER.codeUnits;
 
-  String mac = (SHA256().update(Uint8List.fromList(derivedKey)).update(macBuffer).digest().toHex());
+  String mac = (SHA256()
+      .update(Uint8List.fromList(derivedKey))
+      .update(macBuffer)
+      .digest()
+      .toHex());
 
   String macString = keyStore['crypto']['mac'];
 
@@ -78,7 +95,8 @@ Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
   }
 
   var aesKey = derivedKey.sublist(0, 16);
-  var encryptedPrivateKey = (keyStore["crypto"]["ciphertext"] as String).toU8a();
+  var encryptedPrivateKey =
+      (keyStore["crypto"]["ciphertext"] as String).toU8a();
 
   var aes = _initCipher(false, aesKey, iv);
 
@@ -106,19 +124,31 @@ Future<String> encryptPhrase(String phrase, String password,
     n = kdf == 'pbkdf2' ? 262144 : level;
   }
 
-  Map<String, dynamic> kdfParams = {'salt': salt, 'n': n, 'r': 8, 'p': 1, 'dklen': 32};
+  Map<String, dynamic> kdfParams = {
+    'salt': salt,
+    'n': n,
+    'r': 8,
+    'p': 1,
+    'dklen': 32
+  };
 
   List<int> encodedPassword = utf8.encode(password);
   _KeyDerivator derivator = getDerivedKey(kdf, kdfParams);
   List<int> derivedKey = derivator.deriveKey(encodedPassword);
 
-  List<int> ciphertextBytes = _encryptPhrase(
-      derivator, Uint8List.fromList(encodedPassword), Uint8List.fromList(iv), phrase);
+  List<int> ciphertextBytes = _encryptPhrase(derivator,
+      Uint8List.fromList(encodedPassword), Uint8List.fromList(iv), phrase);
 
-  List<int> macBuffer =
-      derivedKey.sublist(16, 32) + ciphertextBytes + iv + ALGO_IDENTIFIER.codeUnits;
+  List<int> macBuffer = derivedKey.sublist(16, 32) +
+      ciphertextBytes +
+      iv +
+      ALGO_IDENTIFIER.codeUnits;
 
-  String mac = (SHA256().update(Uint8List.fromList(derivedKey)).update(macBuffer).digest().toHex());
+  String mac = (SHA256()
+      .update(Uint8List.fromList(derivedKey))
+      .update(macBuffer)
+      .digest()
+      .toHex());
 
   Map<String, dynamic> map = {
     'crypto': {
@@ -136,7 +166,8 @@ Future<String> encryptPhrase(String phrase, String password,
   return result;
 }
 
-Future<String> decryptPhrase(Map<String, dynamic> keyStore, String passphrase) async {
+Future<String> decryptPhrase(
+    Map<String, dynamic> keyStore, String passphrase) async {
   Uint8List ciphertext = (keyStore['crypto']['ciphertext'] as String).toU8a();
   String kdf = keyStore['crypto']['kdf'];
 
@@ -149,9 +180,14 @@ Future<String> decryptPhrase(Map<String, dynamic> keyStore, String passphrase) a
   List<int> encodedPassword = utf8.encode(passphrase);
   _KeyDerivator derivator = getDerivedKey(kdf, kdfparams);
   List<int> derivedKey = derivator.deriveKey(encodedPassword);
-  List<int> macBuffer = derivedKey.sublist(16, 32) + ciphertext + iv + ALGO_IDENTIFIER.codeUnits;
+  List<int> macBuffer =
+      derivedKey.sublist(16, 32) + ciphertext + iv + ALGO_IDENTIFIER.codeUnits;
 
-  String mac = (SHA256().update(Uint8List.fromList(derivedKey)).update(macBuffer).digest().toHex());
+  String mac = (SHA256()
+      .update(Uint8List.fromList(derivedKey))
+      .update(macBuffer)
+      .digest()
+      .toHex());
 
   String macString = keyStore['crypto']['mac'];
 
@@ -169,7 +205,8 @@ Future<String> decryptPhrase(Map<String, dynamic> keyStore, String passphrase) a
   return privateKeyByte.u8aToString();
 }
 
-Future<String> encodePrivateKey(String prvKey, String psw, [Map<String, dynamic>? options]) async {
+Future<String> encodePrivateKey(String prvKey, String psw,
+    [Map<String, dynamic>? options]) async {
   final response = ReceivePort();
 
   await Isolate.spawn(
@@ -201,7 +238,8 @@ void _encodePrivateKey(SendPort initialReplyTo) {
     try {
       final prvKey = message[0] as String;
       final psw = message[1] as String;
-      final options = message[2] != null ? message[2] as Map<String, dynamic> : null;
+      final options =
+          message[2] != null ? message[2] as Map<String, dynamic> : null;
       final send = message.last as SendPort;
       final encrypted = await encrypt(prvKey, psw, options);
 
@@ -259,7 +297,8 @@ void _decodePrivateKey(SendPort initialReplyTo) {
   });
 }
 
-Future<String> encodePhrase(String prvKey, String psw, [Map<String, dynamic>? options]) async {
+Future<String> encodePhrase(String prvKey, String psw,
+    [Map<String, dynamic>? options]) async {
   final response = ReceivePort();
 
   await Isolate.spawn(
@@ -291,7 +330,8 @@ void _encodePhrase(SendPort initialReplyTo) {
     try {
       final prvKey = message[0] as String;
       final psw = message[1] as String;
-      final options = message[2] != null ? message[2] as Map<String, dynamic> : null;
+      final options =
+          message[2] != null ? message[2] as Map<String, dynamic> : null;
       final send = message.last as SendPort;
       final encrypted = await encryptPhrase(prvKey, psw, options);
 

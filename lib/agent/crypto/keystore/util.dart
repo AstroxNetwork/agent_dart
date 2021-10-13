@@ -20,19 +20,22 @@ _KeyDerivator getDerivedKey(String kdf, Map<String, dynamic> params) {
 
 CTRStreamCipher _initCipher(bool forEncryption, List<int> key, List<int> iv) {
   return CTRStreamCipher(AESFastEngine())
-    ..init(false, ParametersWithIV(KeyParameter(Uint8List.fromList(key)), Uint8List.fromList(iv)));
+    ..init(
+        false,
+        ParametersWithIV(
+            KeyParameter(Uint8List.fromList(key)), Uint8List.fromList(iv)));
 }
 
-List<int> _encryptPrivateKey(
-    _KeyDerivator _derivator, Uint8List _password, Uint8List _iv, String privateKey) {
+List<int> _encryptPrivateKey(_KeyDerivator _derivator, Uint8List _password,
+    Uint8List _iv, String privateKey) {
   var derived = _derivator.deriveKey(_password);
   var aesKey = derived.sublist(0, 16);
   var aes = _initCipher(true, aesKey, _iv);
   return aes.process((privateKey).toU8a());
 }
 
-List<int> _encryptPhrase(
-    _KeyDerivator _derivator, Uint8List _password, Uint8List _iv, String phrase) {
+List<int> _encryptPhrase(_KeyDerivator _derivator, Uint8List _password,
+    Uint8List _iv, String phrase) {
   var derived = _derivator.deriveKey(_password);
   var aesKey = derived.sublist(0, 16);
   var aes = _initCipher(true, aesKey, _iv);

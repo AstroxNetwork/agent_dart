@@ -29,7 +29,10 @@ class Secp256k1KeyPair implements KeyPair {
   Secp256k1KeyPair(this.publicKey, this.secretKey);
 
   toJson() {
-    return [publicKey.toDer().toHex(include0x: false), secretKey.toHex(include0x: false)];
+    return [
+      publicKey.toDer().toHex(include0x: false),
+      secretKey.toHex(include0x: false)
+    ];
   }
 }
 
@@ -52,28 +55,36 @@ class Secp256k1KeyIdentity extends SignIdentity {
       var secretKey = parsed["secretKey"];
       var _privateKey = parsed["_privateKey"];
       final pk = publicKey != null
-          ? Secp256k1PublicKey.fromRaw(blobFromUint8Array(Uint8List.fromList(publicKey.data)))
-          : Secp256k1PublicKey.fromDer(blobFromUint8Array(Uint8List.fromList(_publicKey.data)));
+          ? Secp256k1PublicKey.fromRaw(
+              blobFromUint8Array(Uint8List.fromList(publicKey.data)))
+          : Secp256k1PublicKey.fromDer(
+              blobFromUint8Array(Uint8List.fromList(_publicKey.data)));
 
       if (publicKey && secretKey && secretKey.data) {
-        return Secp256k1KeyIdentity(pk, blobFromUint8Array(Uint8List.fromList(secretKey.data)));
+        return Secp256k1KeyIdentity(
+            pk, blobFromUint8Array(Uint8List.fromList(secretKey.data)));
       }
       if (_publicKey && _privateKey && _privateKey.data) {
-        return Secp256k1KeyIdentity(pk, blobFromUint8Array(Uint8List.fromList(_privateKey.data)));
+        return Secp256k1KeyIdentity(
+            pk, blobFromUint8Array(Uint8List.fromList(_privateKey.data)));
       }
     }
     throw "Deserialization error: Invalid JSON type for string: ${jsonEncode(json)}";
   }
 
-  static Secp256k1KeyIdentity fromKeyPair(BinaryBlob publicKey, BinaryBlob privateKey) {
-    return Secp256k1KeyIdentity(Secp256k1PublicKey.fromRaw(publicKey), privateKey);
+  static Secp256k1KeyIdentity fromKeyPair(
+      BinaryBlob publicKey, BinaryBlob privateKey) {
+    return Secp256k1KeyIdentity(
+        Secp256k1PublicKey.fromRaw(publicKey), privateKey);
   }
 
   static Secp256k1KeyIdentity fromSecretKey(Uint8List secretKey) {
     try {
-      final publicKey = getPublicFromPrivateKey(Uint8List.fromList(secretKey), false);
+      final publicKey =
+          getPublicFromPrivateKey(Uint8List.fromList(secretKey), false);
       final identity = Secp256k1KeyIdentity.fromKeyPair(
-          blobFromUint8Array(publicKey!), blobFromUint8Array(Uint8List.fromList(secretKey)));
+          blobFromUint8Array(publicKey!),
+          blobFromUint8Array(Uint8List.fromList(secretKey)));
       return identity;
     } catch (e) {
       rethrow;
@@ -95,7 +106,8 @@ class Secp256k1KeyIdentity extends SignIdentity {
 
   /// Return a copy of the key pair.
   Secp256k1KeyPair getKeyPair() {
-    return Secp256k1KeyPair(_publicKey, blobFromUint8Array(Uint8List.fromList(_privateKey)));
+    return Secp256k1KeyPair(
+        _publicKey, blobFromUint8Array(Uint8List.fromList(_privateKey)));
   }
 
   /// Return the public key.
@@ -185,7 +197,8 @@ bool verify(String message, Uint8List signature, Secp256k1PublicKey publicKey) {
   return signer.verifySignature(blob, sig);
 }
 
-bool verifyBlob(Uint8List blob, Uint8List signature, Secp256k1PublicKey publicKey) {
+bool verifyBlob(
+    Uint8List blob, Uint8List signature, Secp256k1PublicKey publicKey) {
   final digest = SHA256Digest();
   final signer = ECDSASigner(digest, HMac(digest, 64));
 

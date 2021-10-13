@@ -185,13 +185,15 @@ class HttpAgent implements Agent {
   }
 
   @override
-  Future<SubmitResponse> call(Principal canisterId, CallOptions fields, Identity? identity) async {
+  Future<SubmitResponse> call(
+      Principal canisterId, CallOptions fields, Identity? identity) async {
     final id = (identity ?? await _identity);
 
     final canister = Principal.from(canisterId);
 
-    final ecid =
-        fields.effectiveCanisterId != null ? Principal.from(fields.effectiveCanisterId) : canister;
+    final ecid = fields.effectiveCanisterId != null
+        ? Principal.from(fields.effectiveCanisterId)
+        : canister;
 
     // ignore: unnecessary_null_comparison
     final sender = id != null ? id.getPrincipal() : Principal.anonymous();
@@ -242,7 +244,8 @@ class HttpAgent implements Agent {
   @override
   Future<BinaryBlob> fetchRootKey() async {
     if (_rootKeyFetched == false) {
-      var key = (((await status())["root_key"]) as Uint8Buffer).buffer.asUint8List();
+      var key =
+          (((await status())["root_key"]) as Uint8Buffer).buffer.asUint8List();
       // Hex-encoded version of the replica root key
       rootKey = blobFromUint8Array(key);
       _rootKeyFetched = true;
@@ -260,8 +263,11 @@ class HttpAgent implements Agent {
   }
 
   @override
-  Future<QueryResponse> query(Principal canisterId, QueryFields options, Identity? identity) async {
-    final canister = canisterId is String ? Principal.fromText(canisterId as String) : canisterId;
+  Future<QueryResponse> query(
+      Principal canisterId, QueryFields options, Identity? identity) async {
+    final canister = canisterId is String
+        ? Principal.fromText(canisterId as String)
+        : canisterId;
     final id = (identity ?? await _identity);
     final sender = id?.getPrincipal() ?? Principal.anonymous();
 
@@ -285,7 +291,8 @@ class HttpAgent implements Agent {
       };
 
     var transformedRequest = await _transform(rsRequest);
-    Map<String, dynamic> newTransformed = await id!.transformRequest(transformedRequest);
+    Map<String, dynamic> newTransformed =
+        await id!.transformRequest(transformedRequest);
 
     var body = cbor.cborEncode(newTransformed["body"]);
 
@@ -310,7 +317,9 @@ class HttpAgent implements Agent {
   @override
   Future<ReadStateResponse> readState(
       Principal canisterId, ReadStateOptions fields, Identity? identity) async {
-    final canister = canisterId is String ? Principal.fromText(canisterId as String) : canisterId;
+    final canister = canisterId is String
+        ? Principal.fromText(canisterId as String)
+        : canisterId;
     final id = (identity ?? await _identity);
     final sender = id?.getPrincipal() ?? Principal.anonymous();
 
@@ -333,7 +342,8 @@ class HttpAgent implements Agent {
 
     var transformedRequest = await _transform(rsRequest);
 
-    Map<String, dynamic> newTransformed = await id!.transformRequest(transformedRequest);
+    Map<String, dynamic> newTransformed =
+        await id!.transformRequest(transformedRequest);
 
     var body = cbor.cborEncode(newTransformed["body"]);
     final response = await _fetch!(
@@ -352,13 +362,15 @@ class HttpAgent implements Agent {
     final buffer = response["arrayBuffer"] as Uint8List;
 
     return ReadStateResponseResult()
-      ..certificate =
-          blobFromBuffer(((cbor.cborDecode<Map>(buffer)["certificate"]) as Uint8Buffer).buffer);
+      ..certificate = blobFromBuffer(
+          ((cbor.cborDecode<Map>(buffer)["certificate"]) as Uint8Buffer)
+              .buffer);
   }
 
   @override
   Future<Map> status() async {
-    var response = await _fetch!(endpoint: "/api/v2/status", headers: {}, method: "GET");
+    var response =
+        await _fetch!(endpoint: "/api/v2/status", headers: {}, method: "GET");
 
     if (!(response["ok"] as bool)) {
       // ignore: prefer_adjacent_string_concatenation

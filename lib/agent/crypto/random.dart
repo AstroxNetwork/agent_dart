@@ -11,7 +11,9 @@ import 'package:agent_dart/utils/u8a.dart';
 // ignore: constant_identifier_names
 const DEFAULT_LENGTH = 32;
 
-final bn53 = BigInt.parse('11111111111111111111111111111111111111111111111111111', radix: 2);
+final bn53 = BigInt.parse(
+    '11111111111111111111111111111111111111111111111111111',
+    radix: 2);
 
 class DartRandom {
   Random dartRandom;
@@ -31,8 +33,9 @@ class DartRandom {
 
     /// forcing remainingBits to be calculate with bitLength
     int remainingBits = (bitLength - main.bitLength);
-    int additional =
-        remainingBits < 4 ? dartRandom.nextInt(pow(2, remainingBits).toInt()) : remainingBits;
+    int additional = remainingBits < 4
+        ? dartRandom.nextInt(pow(2, remainingBits).toInt())
+        : remainingBits;
     BigInt additionalBit = (BigInt.from(additional) << (fullBytes * 8));
     BigInt result = main + additionalBit;
     return result;

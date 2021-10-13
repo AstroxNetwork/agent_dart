@@ -47,7 +47,8 @@ class SigningBlockEncoder extends ZipEncoder {
       int algoId = 0x0201})
       : super() {
     signingBlock = ZipSigningBlock.create(signingBlocks: [
-      SigningBlock.create(messages: [message], signatures: [signature], publicKeys: [publicKey])
+      SigningBlock.create(
+          messages: [message], signatures: [signature], publicKeys: [publicKey])
     ]);
   }
 
@@ -71,12 +72,16 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
 
   @override
   void zipDirectory(Directory dir,
-      {String? filename, int? level, bool followLinks = true, DateTime? modified}) {
+      {String? filename,
+      int? level,
+      bool followLinks = true,
+      DateTime? modified}) {
     final dirPath = dir.path;
     final zip_path = filename ?? '$dirPath.zip';
     level ??= GZIP;
     create(zip_path, level: level);
-    addDirectory(dir, includeDirName: false, level: level, followLinks: followLinks);
+    addDirectory(dir,
+        includeDirName: false, level: level, followLinks: followLinks);
     close();
   }
 
@@ -103,15 +108,16 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
       final f = file;
       final dir_name = path.basename(dir.path);
       final rel_path = path.relative(f.path, from: dir.path);
-      addFile(f, includeDirName ? (dir_name + '/' + rel_path) : rel_path, level);
+      addFile(
+          f, includeDirName ? (dir_name + '/' + rel_path) : rel_path, level);
     }
   }
 
   @override
   void addFile(File file, [String? filename, int? level = GZIP]) {
     var file_stream = InputFileStream.file(file);
-    var archiveFile =
-        ArchiveFile.stream(filename ?? path.basename(file.path), file.lengthSync(), file_stream);
+    var archiveFile = ArchiveFile.stream(
+        filename ?? path.basename(file.path), file.lengthSync(), file_stream);
 
     if (level == STORE) {
       archiveFile.compress = false;

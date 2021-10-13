@@ -20,8 +20,11 @@ void secp256k1Test() {
   test('sign', () {
     var res = sign(msg, prv.toU8a());
     expect(res.length, 64);
-    var isValid = verify(msg, res,
-        Secp256k1PublicKey.from(Secp256k1KeyIdentity.fromSecretKey(prv.toU8a()).getPublicKey()));
+    var isValid = verify(
+        msg,
+        res,
+        Secp256k1PublicKey.from(
+            Secp256k1KeyIdentity.fromSecretKey(prv.toU8a()).getPublicKey()));
     expect(isValid, true);
   });
 
@@ -31,8 +34,11 @@ void secp256k1Test() {
       var wordR = msg;
       var res = sign(wordR, prvR);
       expect(res.length, 64);
-      var isValid = verify(wordR, res,
-          Secp256k1PublicKey.from(Secp256k1KeyIdentity.fromSecretKey(prvR).getPublicKey()));
+      var isValid = verify(
+          wordR,
+          res,
+          Secp256k1PublicKey.from(
+              Secp256k1KeyIdentity.fromSecretKey(prvR).getPublicKey()));
       expect(isValid, true);
     }
   });
