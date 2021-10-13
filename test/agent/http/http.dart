@@ -15,14 +15,21 @@ void httpTest() {
       var nonce = Uint8List.fromList([0, 1, 2, 3, 4, 5, 6, 7]);
       var principal = Principal.anonymous();
 
-      var agent = HttpAgent(options: HttpAgentOptions()..identity = AnonymousIdentity());
+      var agent = HttpAgent(
+          options: HttpAgentOptions()..identity = AnonymousIdentity());
 
-      agent.addTransform(HttpAgentRequestTransformFn()..call = makeNonceTransform(() => nonce));
+      agent.addTransform(HttpAgentRequestTransformFn()
+        ..call = makeNonceTransform(() => nonce));
 
       const methodName = 'greet';
       final arg = Uint8List.fromList([]);
 
-      agent.setFetch(({body, endpoint = "https://localhost:8000", headers, host, method = 'POST'}) {
+      agent.setFetch((
+          {body,
+          endpoint = "https://localhost:8000",
+          headers,
+          host,
+          method = 'POST'}) {
         return Future.value({
           "body": null,
           "ok": true,
@@ -60,7 +67,8 @@ void httpTest() {
         "content": mockPartialRequest,
       };
 
-      var expectedRequestId = requestIdOf(expectedRequest["content"] as Map<String, dynamic>);
+      var expectedRequestId =
+          requestIdOf(expectedRequest["content"] as Map<String, dynamic>);
 
       expect(expectedRequestId, mockPartialsRequestId);
     });

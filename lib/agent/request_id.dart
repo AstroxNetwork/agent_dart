@@ -103,7 +103,8 @@ extension CompareListComparableExtension<T extends Comparable<T>> on List<T> {
 /// @param request - ic-ref request to hash into RequestId
 
 RequestId requestIdOf(Map<String, dynamic> request) {
-  final hashed = request.entries.where((element) => element.value != null).map((e) {
+  final hashed =
+      request.entries.where((element) => element.value != null).map((e) {
     final hashedKey = hashString(e.key);
     final hashedValue = hashValue(e.value);
     return [hashedKey, hashedValue];

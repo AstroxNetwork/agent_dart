@@ -62,7 +62,7 @@ Uint8List getAccountIdFromDerKey(Uint8List der) {
   return getAccountIdFromPrincipal(Principal.selfAuthenticating(der));
 }
 
-Uint8List getAccountIdPrincipalID(String id) {
+Uint8List getAccountIdFromPrincipalID(String id) {
   return getAccountIdFromPrincipal(Principal.fromText(id));
 }
 
@@ -92,13 +92,15 @@ ECKeys fromSeed(Uint8List seed, {int index = 0}) {
   );
 }
 
-Uint8List? getPublicFromPrivateKey(Uint8List privateKey, [bool compress = false]) {
+Uint8List? getPublicFromPrivateKey(Uint8List privateKey,
+    [bool compress = false]) {
   BigInt privateKeyNum = privateKey.toBn(endian: Endian.big);
 
   return getPublicFromPrivateKeyBigInt(privateKeyNum, compress);
 }
 
-Uint8List? getPublicFromPrivateKeyBigInt(BigInt bigint, [bool compress = false]) {
+Uint8List? getPublicFromPrivateKeyBigInt(BigInt bigint,
+    [bool compress = false]) {
   ECPoint? p = params.G * bigint;
 
   if (p != null) {
@@ -115,7 +117,8 @@ class ECKeys {
   Uint8List? ecCompressedPublicKey;
   Uint8List? get accountId =>
       ecPublicKey != null ? getAccountIdFromRawPublicKey(ecPublicKey!) : null;
-  String? get ecPrincipal => ecPublicKey != null ? getPrincipalFromECPublicKey(ecPublicKey!) : null;
+  String? get ecPrincipal =>
+      ecPublicKey != null ? getPrincipalFromECPublicKey(ecPublicKey!) : null;
   String? extendedECPublicKey;
   ECKeys({
     this.ecChainCode,
@@ -185,12 +188,14 @@ class Secp256k1PublicKey implements PublicKey {
   }
 
   static Uint8List derDecode(BinaryBlob key) {
-    final expectedLength = Secp256k1PublicKey.DER_PREFIX.length + Secp256k1PublicKey.RAW_KEY_LENGTH;
+    final expectedLength = Secp256k1PublicKey.DER_PREFIX.length +
+        Secp256k1PublicKey.RAW_KEY_LENGTH;
     if (key.byteLength != expectedLength) {
       final bl = key.byteLength;
       throw "secp256k1 DER-encoded public key must be $expectedLength bytes long (is $bl)";
     }
-    final rawKey = blobFromUint8Array(key.sublist(Secp256k1PublicKey.DER_PREFIX.length));
+    final rawKey =
+        blobFromUint8Array(key.sublist(Secp256k1PublicKey.DER_PREFIX.length));
     if (!u8aEq(derEncode(rawKey), key)) {
       throw 'secp256k1 DER-encoded public key is invalid. A valid secp256k1 DER-encoded public key '
           "must have the following prefix: ${Secp256k1PublicKey.DER_PREFIX}";

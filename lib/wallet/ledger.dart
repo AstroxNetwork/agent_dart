@@ -37,7 +37,8 @@ class Duration {
   Map<String, dynamic> toJson() => {
         "secs": secs,
         "nanos": nanos,
-      }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
 }
 
 class ArchiveOptions {
@@ -74,7 +75,8 @@ class ArchiveOptions {
         "max_message_size_bytes": max_message_size_bytes,
         "node_max_memory_size_bytes": node_max_memory_size_bytes,
         "controller_id": controller_id,
-      }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
 }
 
 class ICPTs {
@@ -92,7 +94,8 @@ class ICPTs {
   static Record idl = IDL.Record({"e8s": IDL.Nat64});
   Map<String, dynamic> toJson() => {
         "e8s": e8s,
-      }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
 }
 
 class LedgerCanisterInitPayload {
@@ -134,11 +137,13 @@ class LedgerCanisterInitPayload {
       send_whitelist: map["send_whitelist"],
       minting_account: map["minting_account"],
       initial_values: initial_values,
-      transaction_window:
-          map["transaction_window"] != null ? Duration.fromMap(map["transaction_window"]) : null,
+      transaction_window: map["transaction_window"] != null
+          ? Duration.fromMap(map["transaction_window"])
+          : null,
       max_message_size_bytes: map["max_message_size_bytes"],
-      archive_options:
-          map["archive_options"] != null ? ArchiveOptions.fromMap(map["archive_options"]) : null,
+      archive_options: map["archive_options"] != null
+          ? ArchiveOptions.fromMap(map["archive_options"])
+          : null,
     );
   }
 
@@ -151,15 +156,21 @@ class LedgerCanisterInitPayload {
     "initial_values": IDL.Vec(IDL.Tuple([AccountIdentifier, ICPTs.idl])),
   });
   Map<String, dynamic> toJson() => {
-        "send_whitelist": send_whitelist.map((e) => e.map((f) => f).toList()).toList(),
+        "send_whitelist":
+            send_whitelist.map((e) => e.map((f) => f).toList()).toList(),
         "minting_account": minting_account,
-        "transaction_window": transaction_window != null ? [transaction_window?.toJson()] : [],
-        "max_message_size_bytes": max_message_size_bytes != null ? [max_message_size_bytes] : [],
-        "archive_options": archive_options != null ? [archive_options?.toJson()] : [],
+        "transaction_window":
+            transaction_window != null ? [transaction_window?.toJson()] : [],
+        "max_message_size_bytes":
+            max_message_size_bytes != null ? [max_message_size_bytes] : [],
+        "archive_options":
+            archive_options != null ? [archive_options?.toJson()] : [],
         "initial_values": initial_values
-            .map((e) => e.map((f) => f is String ? f : (f as ICPTs).toJson()).toList())
+            .map((e) =>
+                e.map((f) => f is String ? f : (f as ICPTs).toJson()).toList())
             .toList()
-      }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
 }
 
 class AccountBalanceArgs {
@@ -177,7 +188,8 @@ class AccountBalanceArgs {
   static Record idl = IDL.Record({"account": AccountIdentifier});
   Map<String, dynamic> toJson() => {
         "account": account,
-      }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
 }
 
 // ignore: non_constant_identifier_names
@@ -233,7 +245,8 @@ class NotifyCanisterArgs {
         "to_canister": to_canister,
         "max_fee": max_fee.toJson(),
         "block_height": block_height,
-      }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
 }
 
 // ignore: non_constant_identifier_names
@@ -250,13 +263,15 @@ class TimeStamp {
 
   factory TimeStamp.fromMap(Map map) {
     return TimeStamp(
-        timestamp_nanos: map["timestamp_nanos"] ?? DateTime.now().millisecondsSinceEpoch.toBn());
+        timestamp_nanos: map["timestamp_nanos"] ??
+            DateTime.now().millisecondsSinceEpoch.toBn());
   }
 
   static Record idl = IDL.Record({"timestamp_nanos": IDL.Nat64});
   Map<String, dynamic> toJson() => {
         "timestamp_nanos": timestamp_nanos,
-      }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
 }
 
 class SendArgs {
@@ -288,10 +303,12 @@ class SendArgs {
       fee: ICPTs.fromMap(map["fee"]),
       memo: map["memo"],
       amount: ICPTs.fromMap(map["amount"]),
-      from_subaccount:
-          map["from_subaccount"] != null ? List<int>.from(map["from_subaccount"]) : null,
-      created_at_time:
-          map["created_at_time"] != null ? TimeStamp.fromMap(map["created_at_time"]) : null,
+      from_subaccount: map["from_subaccount"] != null
+          ? List<int>.from(map["from_subaccount"])
+          : null,
+      created_at_time: map["created_at_time"] != null
+          ? TimeStamp.fromMap(map["created_at_time"])
+          : null,
     );
   }
 
@@ -308,13 +325,16 @@ class SendArgs {
         "fee": fee.toJson(),
         "memo": memo,
         "from_subaccount": from_subaccount != null ? [from_subaccount] : [],
-        "created_at_time": created_at_time != null ? [created_at_time!.toJson()] : [],
+        "created_at_time":
+            created_at_time != null ? [created_at_time!.toJson()] : [],
         "amount": amount.toJson()
-      }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
 }
 
 Service ledgerIdl = IDL.Service({
-  "account_balance_dfx": IDL.Func([AccountBalanceArgs.idl], [ICPTs.idl], ['query']),
+  "account_balance_dfx":
+      IDL.Func([AccountBalanceArgs.idl], [ICPTs.idl], ['query']),
   "notify_dfx": IDL.Func([NotifyCanisterArgs.idl], [], []),
   "send_dfx": IDL.Func([SendArgs.idl], [BlockHeight], []),
 });
@@ -378,8 +398,9 @@ class Ledger {
   }) async {
     try {
       var ledgerInstance = Ledger.hook(agent)..setIdentity(identity);
-      var res = await ledgerInstance.agent.actor!
-          .getFunc(LedgerMethods.getBalance)!([AccountBalanceArgs(account: accountId).toJson()]);
+      var res =
+          await ledgerInstance.agent.actor!.getFunc(LedgerMethods.getBalance)!(
+              [AccountBalanceArgs(account: accountId).toJson()]);
 
       if (res != null) {
         return ICPTs.fromMap(res);
@@ -412,7 +433,10 @@ class Ledger {
         "from_subaccount": null,
         "created_at_time": sendOpts?.created_at_time == null
             ? null
-            : {"timestamp_nanos": sendOpts?.created_at_time?.millisecondsSinceEpoch.toBn()},
+            : {
+                "timestamp_nanos":
+                    sendOpts?.created_at_time?.millisecondsSinceEpoch.toBn()
+              },
       };
 
       var res = await ledgerInstance.agent.actor!

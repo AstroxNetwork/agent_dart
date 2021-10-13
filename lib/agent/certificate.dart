@@ -150,7 +150,9 @@ class Certificate {
     final sig = cert.signature;
     final key = extractDER(derKey);
     final msg = u8aConcat([domainSep('ic-state-root'), rootHash]);
-    var res = kIsWeb ? await bls.blsVerify(key, sig!, msg) : bls.blsVerifySync(key, sig!, msg);
+    var res = kIsWeb
+        ? await bls.blsVerify(key, sig!, msg)
+        : bls.blsVerifySync(key, sig!, msg);
     verified = res;
     return res;
   }
@@ -188,7 +190,8 @@ class Certificate {
 
 // ignore: non_constant_identifier_names
 final DER_PREFIX =
-    '308182301d060d2b0601040182dc7c0503010201060c2b0601040182dc7c05030201036100'.toU8a();
+    '308182301d060d2b0601040182dc7c0503010201060c2b0601040182dc7c05030201036100'
+        .toU8a();
 // ignore: constant_identifier_names
 const KEY_LENGTH = 96;
 
@@ -266,7 +269,9 @@ Uint8List? lookupPath(List path, List tree) {
     switch (tree[0]) {
       case NodeId.Leaf:
         {
-          return tree[1] is Uint8List ? tree[1] : (tree[1] as Uint8Buffer).buffer.asUint8List();
+          return tree[1] is Uint8List
+              ? tree[1]
+              : (tree[1] as Uint8Buffer).buffer.asUint8List();
         }
       default:
         {
@@ -275,7 +280,8 @@ Uint8List? lookupPath(List path, List tree) {
     }
   }
   final t = findLabel(
-      path[0] is ByteBuffer ? (path[0] as ByteBuffer).asUint8List() : path[0], flattenForks(tree));
+      path[0] is ByteBuffer ? (path[0] as ByteBuffer).asUint8List() : path[0],
+      flattenForks(tree));
   if (t != null) {
     return lookupPath(path.sublist(1), t);
   }
@@ -300,7 +306,8 @@ List? findLabel(Uint8List l, List<List> trees) {
   }
   for (var t in trees) {
     if (t[0] == NodeId.Labeled) {
-      var p = t[1] is Uint8List ? t[1] : (t[1] as Uint8Buffer).buffer.asUint8List();
+      var p =
+          t[1] is Uint8List ? t[1] : (t[1] as Uint8Buffer).buffer.asUint8List();
       if (u8aEq(l, p)) {
         return t[2] as List;
       }

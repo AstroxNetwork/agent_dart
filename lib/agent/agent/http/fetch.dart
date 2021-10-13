@@ -34,7 +34,8 @@ Future<Map<String, dynamic>> defaultFetch(
 
   try {
     if (fetchMethod == FetchMethod.get) {
-      var getResponse = await client.get(Uri.parse(host ?? "$defaultHost$endpoint"), headers: {
+      var getResponse = await client
+          .get(Uri.parse(host ?? "$defaultHost$endpoint"), headers: {
         ...?baseHeaders,
         ...?headers,
       }).timeout(timeout ?? defaultTimeout, onTimeout: () {
@@ -84,10 +85,11 @@ class FetchResponse {
   int statusCode;
   String statusText;
   Uint8List arrayBuffer;
-  FetchResponse(this.body, this.ok, this.statusCode, this.statusText, this.arrayBuffer);
+  FetchResponse(
+      this.body, this.ok, this.statusCode, this.statusText, this.arrayBuffer);
   factory FetchResponse.fromMap(Map<String, dynamic> map) {
-    return FetchResponse(
-        map["body"], map["ok"], map["statusCode"], map["statusText"], map["arrayBuffer"]);
+    return FetchResponse(map["body"], map["ok"], map["statusCode"],
+        map["statusText"], map["arrayBuffer"]);
   }
   toJson() {
     return {

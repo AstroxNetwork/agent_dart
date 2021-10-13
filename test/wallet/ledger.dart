@@ -26,7 +26,8 @@ void ledgerTest() {
       return await AgentFactory.createAgent(
           canisterId:
               "rwlgt-iiaaa-aaaaa-aaaaa-cai", // local ledger canister id, should change accourdingly
-          url: "http://127.0.0.1:8000/", // For Android emulator, please use 10.0.2.2 as endpoint
+          url:
+              "http://127.0.0.1:8000/", // For Android emulator, please use 10.0.2.2 as endpoint
           idl: ledgerIdl,
           identity: identity,
           debug: true);
@@ -35,15 +36,15 @@ void ledgerTest() {
     test('test fetch balance and send', () async {
       var agent = await getAgent();
       var someReceiver = ICPSigner.create();
-      var senderBalance =
-          await Ledger.getBalance(agent: agent, accountId: signer.ecChecksumAddress!);
+      var senderBalance = await Ledger.getBalance(
+          agent: agent, accountId: signer.ecChecksumAddress!);
       expect(senderBalance.e8s > BigInt.zero, true);
       print("\n----- test fetch balance and send -----");
       print("\n---👩 sender Balance before send:");
       print(senderBalance.e8s);
 
-      var receiverBeforeSend =
-          await Ledger.getBalance(agent: agent, accountId: someReceiver.ecChecksumAddress!);
+      var receiverBeforeSend = await Ledger.getBalance(
+          agent: agent, accountId: someReceiver.ecChecksumAddress!);
       expect(receiverBeforeSend.e8s == BigInt.zero, true);
       print("\n---🧑 receiver balance before send:");
       print(receiverBeforeSend.e8s);
@@ -63,14 +64,16 @@ void ledgerTest() {
       print("\n---✅ sending end=====>");
       print("\n---🔢 block height: $blockHeight");
       expect(blockHeight >= BigInt.zero, true);
-      var receiverAfterSend =
-          await Ledger.getBalance(agent: agent, accountId: someReceiver.ecChecksumAddress!);
+      var receiverAfterSend = await Ledger.getBalance(
+          agent: agent, accountId: someReceiver.ecChecksumAddress!);
       expect(receiverAfterSend.e8s == BigInt.from(100000000), true);
       print("\n---🧑 receiver balance after send:");
       print(receiverAfterSend.e8s);
-      var senderBalanceAfter =
-          await Ledger.getBalance(agent: agent, accountId: signer.ecChecksumAddress!);
-      expect(senderBalanceAfter.e8s < senderBalance.e8s - BigInt.from(100000000), true);
+      var senderBalanceAfter = await Ledger.getBalance(
+          agent: agent, accountId: signer.ecChecksumAddress!);
+      expect(
+          senderBalanceAfter.e8s < senderBalance.e8s - BigInt.from(100000000),
+          true);
       print("\n---👩 sender balance after send:");
       print(senderBalanceAfter.e8s);
       print("\n---💰 balance change:");

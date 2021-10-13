@@ -99,21 +99,25 @@ class AuthClient {
     identity ??= AnonymousIdentity();
   }
 
-  factory AuthClient.fromMap(
-      String scheme, AuthFunction authFunction, Map<String, dynamic> map, Uri? authUri) {
+  factory AuthClient.fromMap(String scheme, AuthFunction authFunction,
+      Map<String, dynamic> map, Uri? authUri) {
     var identityString = map[KEY_LOCALSTORAGE_KEY] as String?;
     var delegationString = map[KEY_LOCALSTORAGE_DELEGATION] as String?;
 
-    SignIdentity? key = identityString != null ? Ed25519KeyIdentity.fromJSON(identityString) : null;
-    DelegationChain? chain =
-        delegationString != null ? DelegationChain.fromJSON(delegationString) : null;
+    SignIdentity? key = identityString != null
+        ? Ed25519KeyIdentity.fromJSON(identityString)
+        : null;
+    DelegationChain? chain = delegationString != null
+        ? DelegationChain.fromJSON(delegationString)
+        : null;
 
     var identity = AnonymousIdentity();
 
     if (chain != null && !isDelegationValid(chain, null)) {
       key = null;
     } else {
-      identity = DelegationIdentity.fromDelegation(key!, chain!) as AnonymousIdentity;
+      identity =
+          DelegationIdentity.fromDelegation(key!, chain!) as AnonymousIdentity;
     }
 
     return AuthClient(
@@ -151,7 +155,8 @@ class AuthClient {
     onSuccess?.call();
   }
 
-  void handleFailure(String? errorMessage, void Function(String? error)? onError) {
+  void handleFailure(
+      String? errorMessage, void Function(String? error)? onError) {
     onError?.call(errorMessage);
   }
 
@@ -160,7 +165,9 @@ class AuthClient {
   }
 
   Future<bool> isAuthenticated() async {
-    return getIdentity() != null && !getIdentity()!.getPrincipal().isAnonymous() && chain != null;
+    return getIdentity() != null &&
+        !getIdentity()!.getPrincipal().isAnonymous() &&
+        chain != null;
   }
 
   Future<void> login([AuthClientLoginOptions? options]) async {
@@ -181,7 +188,8 @@ class AuthClient {
         var decoded = cborDecode<Map>((data as String).toU8a());
         handleFailure(jsonEncode(decoded), options?.onError);
       } else {
-        handleFailure(jsonEncode(parsedResult.queryParameters["json"]), options?.onError);
+        handleFailure(
+            jsonEncode(parsedResult.queryParameters["json"]), options?.onError);
       }
     } else if (parsedResult.queryParameters["json"] == null) {
       var data = parsedResult.queryParameters["data"];
@@ -211,18 +219,27 @@ class AuthClient {
   }
 
   AuthPayload _createAuthPayload(AuthClientLoginOptions? options) {
-    var defaultUri = Uri.parse(IDENTITY_PROVIDER_DEFAULT + '/' + IDENTITY_PROVIDER_ENDPOINT);
+    var defaultUri =
+        Uri.parse(IDENTITY_PROVIDER_DEFAULT + '/' + IDENTITY_PROVIDER_ENDPOINT);
     var callbackScheme = scheme + "://" + path;
     var identityProviderUrl = Uri(
-        host: options?.identityProvider?.host ?? authUri?.host ?? defaultUri.host,
-        scheme: options?.identityProvider?.scheme ?? authUri?.scheme ?? defaultUri.scheme,
-        port: options?.identityProvider?.port ?? authUri?.port ?? defaultUri.port,
-        fragment: options?.identityProvider?.fragment ?? authUri?.fragment ?? defaultUri.fragment,
-        path: options?.identityProvider?.path ?? authUri?.path ?? defaultUri.path,
+        host:
+            options?.identityProvider?.host ?? authUri?.host ?? defaultUri.host,
+        scheme: options?.identityProvider?.scheme ??
+            authUri?.scheme ??
+            defaultUri.scheme,
+        port:
+            options?.identityProvider?.port ?? authUri?.port ?? defaultUri.port,
+        fragment: options?.identityProvider?.fragment ??
+            authUri?.fragment ??
+            defaultUri.fragment,
+        path:
+            options?.identityProvider?.path ?? authUri?.path ?? defaultUri.path,
         queryParameters: {
           "callback_uri": callbackScheme,
-          "sessionPublicKey":
-              key != null ? (key as SignIdentity).getPublicKey().toDer().toHex() : null,
+          "sessionPublicKey": key != null
+              ? (key as SignIdentity).getPublicKey().toDer().toHex()
+              : null,
           "canisterId": options?.canisterId
         });
 
@@ -231,9 +248,11 @@ class AuthClient {
 
   String toStorage() {
     return jsonEncode({
-      KEY_LOCALSTORAGE_KEY:
-          identity != null ? jsonEncode((identity as Ed25519KeyIdentity).toJSON()) : null,
-      KEY_LOCALSTORAGE_DELEGATION: chain != null ? jsonEncode(chain!.toJSON()) : null,
+      KEY_LOCALSTORAGE_KEY: identity != null
+          ? jsonEncode((identity as Ed25519KeyIdentity).toJSON())
+          : null,
+      KEY_LOCALSTORAGE_DELEGATION:
+          chain != null ? jsonEncode(chain!.toJSON()) : null,
     });
   }
 }

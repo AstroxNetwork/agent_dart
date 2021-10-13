@@ -1,1 +1,1 @@
-flutter packages pub publish --server=https://pub.dartlang.org
+dartfmt ./lib/ && flutter packages pub publish --server=https://pub.dartlang.org

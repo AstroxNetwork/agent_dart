@@ -127,7 +127,8 @@ class SigningBlockDecoder extends ZipDecoder {
     var current = start;
     _input.offset = current;
     var blockLength = _input.readUint32();
-    assert(blockLength + 4 == expectedBlockLength, 'Message Blocklength is not correct');
+    assert(blockLength + 4 == expectedBlockLength,
+        'Message Blocklength is not correct');
     current = current + 4;
     _input.offset = current;
     var algoId = _input.readUint32();
@@ -154,7 +155,8 @@ class SigningBlockDecoder extends ZipDecoder {
     var current = start;
     _input.offset = current;
     var blockLength = _input.readUint32();
-    assert(blockLength + 4 == expectedBlockLength, 'Signature Blocklength is not correct');
+    assert(blockLength + 4 == expectedBlockLength,
+        'Signature Blocklength is not correct');
     current = current + 4;
     _input.offset = current;
     var algoId = _input.readUint32();
@@ -181,7 +183,8 @@ class SigningBlockDecoder extends ZipDecoder {
     _input.offset = current;
 
     var publicKeyLength = _input.readUint32();
-    assert(publicKeyLength + 4 == expectedBlockLength, 'PublicKey Blocklength is not correct');
+    assert(publicKeyLength + 4 == expectedBlockLength,
+        'PublicKey Blocklength is not correct');
 
     current = current + 4;
     _input.offset = current;
@@ -213,13 +216,17 @@ class SigningBlockResult {
   final int algoId;
   Uint8List? publicKey;
   SigningBlockResult(
-      {required this.message, required this.signature, required this.algoId, this.publicKey});
+      {required this.message,
+      required this.signature,
+      required this.algoId,
+      this.publicKey});
   Map<String, dynamic> toJson() => {
         'message': message,
         'signature': signature,
         'algoId': algoId,
         'publicKey': publicKey
-      }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
 }
 
 typedef SigningBlockResultList = List<SigningBlockResult>;

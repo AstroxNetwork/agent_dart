@@ -32,8 +32,10 @@ class AgentFactory {
     _url = url;
   }
 
-  static CanisterActor createActor(ServiceClass idl, HttpAgent agent, Principal canisterId) {
-    return Actor.createActor(idl, ActorConfig.fromMap({"canisterId": canisterId, "agent": agent}));
+  static CanisterActor createActor(
+      ServiceClass idl, HttpAgent agent, Principal canisterId) {
+    return Actor.createActor(
+        idl, ActorConfig.fromMap({"canisterId": canisterId, "agent": agent}));
   }
 
   static Future<AgentFactory> createAgent(
@@ -71,11 +73,12 @@ class AgentFactory {
     if (_debug) {
       await _agent.fetchRootKey();
     }
-    _agent.addTransform(HttpAgentRequestTransformFn()..call = makeNonceTransform());
+    _agent.addTransform(
+        HttpAgentRequestTransformFn()..call = makeNonceTransform());
   }
 
   void setActor() {
-    _actor =
-        Actor.createActor(_idl, ActorConfig.fromMap({"canisterId": _canisterId, "agent": _agent}));
+    _actor = Actor.createActor(_idl,
+        ActorConfig.fromMap({"canisterId": _canisterId, "agent": _agent}));
   }
 }

@@ -71,7 +71,11 @@ class CallConfig {
   /// The effective canister ID. This should almost always be ignored.
   Principal? effectiveCanisterId;
 
-  CallConfig({this.agent, this.pollingStrategyFactory, this.canisterId, this.effectiveCanisterId});
+  CallConfig(
+      {this.agent,
+      this.pollingStrategyFactory,
+      this.canisterId,
+      this.effectiveCanisterId});
 
   factory CallConfig.fromMap(Map<String, dynamic> map) {
     return CallConfig(
@@ -131,7 +135,11 @@ class ActorConfig extends CallConfig {
 
   @override
   Map<String, dynamic> toJson() {
-    return {...super.toJson(), "callTransform": callTransform, "queryTransform": queryTransform};
+    return {
+      ...super.toJson(),
+      "callTransform": callTransform,
+      "queryTransform": queryTransform
+    };
   }
 }
 
@@ -210,7 +218,9 @@ class Actor {
   ) async {
     final mode = fields.mode ?? CanisterInstallMode.Install;
     // Need to transform the arg into a number array.
-    final arg = fields.arg != null ? Uint8List.fromList([...?fields.arg]) : Uint8List.fromList([]);
+    final arg = fields.arg != null
+        ? Uint8List.fromList([...?fields.arg])
+        : Uint8List.fromList([]);
     // Same for module.
     final wasmModule = Uint8List.fromList([...fields.module]);
 
@@ -232,7 +242,8 @@ class Actor {
     final canister = getManagementCanister(
       config ?? CallConfig(),
     );
-    ActorMethod? func = canister.getFunc("provisional_create_canister_with_cycles");
+    ActorMethod? func =
+        canister.getFunc("provisional_create_canister_with_cycles");
     // ignore: prefer_typing_uninitialized_variables
     var result;
     if (func != null) {
@@ -291,7 +302,8 @@ class CanisterActor extends Actor {
           ..service = service) {
     var fields = service.fields;
     for (var e in fields) {
-      methodMap.putIfAbsent(e.key, () => _createActorMethod(this, e.key, e.value));
+      methodMap.putIfAbsent(
+          e.key, () => _createActorMethod(this, e.key, e.value));
     }
   }
 
@@ -299,7 +311,8 @@ class CanisterActor extends Actor {
     return methodMap[method];
   }
 
-  static CanisterActor Function(ActorConfig config) withService(Service service) =>
+  static CanisterActor Function(ActorConfig config) withService(
+          Service service) =>
       (ActorConfig config) => CanisterActor(config, service);
 }
 
@@ -335,8 +348,10 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
         ...presetOption != null ? presetOption.toJson() : {},
       });
 
-      final agent = newOptions.agent ?? actor.metadata.config!.agent; // getDefaultAgent()
-      final cid = Principal.from(newOptions.canisterId ?? actor.metadata.config!.canisterId);
+      final agent =
+          newOptions.agent ?? actor.metadata.config!.agent; // getDefaultAgent()
+      final cid = Principal.from(
+          newOptions.canisterId ?? actor.metadata.config!.canisterId);
       final arg = IDL.encode(func.argTypes, args);
 
       final result = await agent!.query(
@@ -375,21 +390,26 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
         ...presetOption != null ? presetOption.toJson() : {},
       });
 
-      final agent = newOptions.agent ?? actor.metadata.config!.agent; // getDefaultAgent()
+      final agent =
+          newOptions.agent ?? actor.metadata.config!.agent; // getDefaultAgent()
       // final { canisterId, effectiveCanisterId, pollingStrategyFactory } = {
       //   ...DEFAULT_ACTOR_CONFIG,
       //   ...actor[metadataSymbol].config,
       //   ...options,
       // };
 
-      final canisterId = actor.metadata.config!.canisterId ?? newOptions.canisterId;
-      final effectiveCanisterId =
-          actor.metadata.config!.effectiveCanisterId ?? newOptions.effectiveCanisterId;
-      final pollingStrategyFactory = actor.metadata.config!.pollingStrategyFactory ??
-          newOptions.pollingStrategyFactory ??
-          defaultStrategy;
+      final canisterId =
+          actor.metadata.config!.canisterId ?? newOptions.canisterId;
+      final effectiveCanisterId = actor.metadata.config!.effectiveCanisterId ??
+          newOptions.effectiveCanisterId;
+      final pollingStrategyFactory =
+          actor.metadata.config!.pollingStrategyFactory ??
+              newOptions.pollingStrategyFactory ??
+              defaultStrategy;
       final cid = Principal.from(canisterId);
-      final ecid = effectiveCanisterId != null ? Principal.from(effectiveCanisterId) : cid;
+      final ecid = effectiveCanisterId != null
+          ? Principal.from(effectiveCanisterId)
+          : cid;
       final arg = IDL.encode(func.argTypes, args);
       // final { requestId, response } =
       final result = await agent!.call(
@@ -409,7 +429,8 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
 
       final pollStrategy = pollingStrategyFactory();
 
-      final responseBytes = await pollForResponse(agent, ecid, requestId, pollStrategy);
+      final responseBytes =
+          await pollForResponse(agent, ecid, requestId, pollStrategy);
 
       if (responseBytes.isNotEmpty) {
         return decodeReturnValue(func.retTypes, responseBytes);
@@ -436,7 +457,8 @@ class ActorMethod {
   }
 
   // ignore: non_constant_identifier_names
-  Future<dynamic> WithOptions(CallConfig withOptions, List<dynamic>? args) async =>
+  Future<dynamic> WithOptions(
+          CallConfig withOptions, List<dynamic>? args) async =>
       caller!(withOptions, args ?? []);
 }
 

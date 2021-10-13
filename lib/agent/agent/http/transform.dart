@@ -47,7 +47,8 @@ class Expiry extends ToCBorable {
   }
 }
 
-HttpAgentRequestTransformFnCall makeNonceTransform([NonceFunc nonceFn = makeNonce]) {
+HttpAgentRequestTransformFnCall makeNonceTransform(
+    [NonceFunc nonceFn = makeNonce]) {
   return (HttpAgentRequest request) async {
     // Nonce are only useful for async calls, to prevent replay attacks. Other types of
     // calls don't need Nonce so we just skip creating one.

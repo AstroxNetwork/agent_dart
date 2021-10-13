@@ -63,7 +63,18 @@ int decodeLenBytes(Uint8List buf, int offset) {
 final DER_COSE_OID = Uint8List.fromList([
   ...[0x30, 0x0c], // SEQUENCE
   ...[0x06, 0x0a], // OID with 10 bytes
-  ...[0x2b, 0x06, 0x01, 0x04, 0x01, 0x83, 0xb8, 0x43, 0x01, 0x01], // DER encoded COSE
+  ...[
+    0x2b,
+    0x06,
+    0x01,
+    0x04,
+    0x01,
+    0x83,
+    0xb8,
+    0x43,
+    0x01,
+    0x01
+  ], // DER encoded COSE
 ]);
 
 /// A DER encoded `SEQUENCE(OID)` for the Ed25519 algorithm
@@ -122,7 +133,8 @@ Uint8List unwrapDER(ByteBuffer derEncoded, Uint8List oid) {
   check(0x30, 'sequence');
   offset += decodeLenBytes(buf, offset);
 
-  if (!bufEquals(buf.sublist(offset, offset + oid.lengthInBytes).buffer, oid.buffer)) {
+  if (!bufEquals(
+      buf.sublist(offset, offset + oid.lengthInBytes).buffer, oid.buffer)) {
     throw 'Not the expected OID.';
   }
   offset += oid.lengthInBytes;

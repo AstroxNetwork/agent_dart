@@ -13,13 +13,13 @@ const SELF_AUTHENTICATING_SUFFIX = 2;
 // ignore: constant_identifier_names
 const ANONYMOUS_SUFFIX = 4;
 
-Uint8List fromHexString(String hexString) =>
-    Uint8List.fromList((RegExp(r'.{1,2}').allMatches(hexString).toList()).map<int>((byte) {
+Uint8List fromHexString(String hexString) => Uint8List.fromList(
+        (RegExp(r'.{1,2}').allMatches(hexString).toList()).map<int>((byte) {
       return int.parse(byte.group(0)!, radix: 16);
     }).toList());
 
-String toHexString(Uint8List bytes) =>
-    bytes.fold<String>('', (str, byte) => str + byte.toRadixString(16).padLeft(2, '0'));
+String toHexString(Uint8List bytes) => bytes.fold<String>(
+    '', (str, byte) => str + byte.toRadixString(16).padLeft(2, '0'));
 
 class Principal {
   static Principal anonymous() {

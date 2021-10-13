@@ -20,7 +20,8 @@ abstract class Signer<T extends SignablePayload, R> {
   bool? get isLocked;
   Future<void>? unlock(String passphrase, {String? keystore});
   Future<void>? lock(String? passphrase);
-  Future<R> sign(T payload, {SignType? signType = SignType.ed25519, SigningCallback? callback});
+  Future<R> sign(T payload,
+      {SignType? signType = SignType.ed25519, SigningCallback? callback});
 }
 
 abstract class BaseSigner<T extends BaseAccount, R extends SignablePayload, E>
@@ -60,7 +61,8 @@ class ICPAccount extends BaseAccount {
     Ed25519KeyIdentity identity =
         fromMnemonicWithoutValidation(phrase, path, offset: index ?? HARDENED);
 
-    Secp256k1KeyIdentity ecIdentity = Secp256k1KeyIdentity.fromSecretKey(keys.ecPrivateKey!);
+    Secp256k1KeyIdentity ecIdentity =
+        Secp256k1KeyIdentity.fromSecretKey(keys.ecPrivateKey!);
 
     return ICPAccount()
       .._ecKeys = keys
@@ -72,7 +74,8 @@ class ICPAccount extends BaseAccount {
   factory ICPAccount.fromSeed(Uint8List seed, {int? index}) {
     ECKeys keys = fromSeed(seed, index: index ?? 0);
     Ed25519KeyIdentity identity = Ed25519KeyIdentity.generate(seed);
-    Secp256k1KeyIdentity ecIdentity = Secp256k1KeyIdentity.fromSecretKey(keys.ecPrivateKey!);
+    Secp256k1KeyIdentity ecIdentity =
+        Secp256k1KeyIdentity.fromSecretKey(keys.ecPrivateKey!);
     return ICPAccount()
       .._ecKeys = keys
       .._identity = identity
@@ -121,7 +124,8 @@ class ICPAccount extends BaseAccount {
         }
       }
       final phrase = await decodePhrase(jsonDecode(_keystore!), passphrase);
-      var newIcp = ICPAccount.fromPhrase(phrase, index: 0, icPath: IC_BASE_PATH);
+      var newIcp =
+          ICPAccount.fromPhrase(phrase, index: 0, icPath: IC_BASE_PATH);
       _phrase = phrase;
       _ecKeys = newIcp._ecKeys;
       _identity = newIcp._identity;
@@ -135,10 +139,10 @@ class ICPAccount extends BaseAccount {
   }
 }
 
-enum SourceType { II, Plug, Keysmith }
+enum SourceType { II, Plug, Keysmith, Base }
 
-class ICPSigner
-    extends BaseSigner<ICPAccount, ConstructionPayloadsResponse, CombineSignedTransactionResult> {
+class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
+    CombineSignedTransactionResult> {
   String? _phrase;
   int? _index;
   SourceType? _sourceType;
@@ -147,14 +151,16 @@ class ICPSigner
   int? get index => _index;
   bool get isHD => index == null;
   String? get idPublicKey => account.identity?.getPublicKey().toRaw().toHex();
-  String? get idPublicKeyDer => account.identity?.getPublicKey().toDer().toHex();
+  String? get idPublicKeyDer =>
+      account.identity?.getPublicKey().toDer().toHex();
   String? get idAddress => account.identity?.getAccountId().toHex();
   String? get idChecksumAddress => account.identity?.getAccountId() != null
       ? crc32Add(account.identity!.getAccountId()).toHex()
       : null;
 
   String? get ecPublicKey => account.ecIdentity?.getPublicKey().toRaw().toHex();
-  String? get ecPublicKeyDer => account.ecIdentity?.getPublicKey().toDer().toHex();
+  String? get ecPublicKeyDer =>
+      account.ecIdentity?.getPublicKey().toDer().toHex();
   String? get ecAddress => account.ecIdentity?.getAccountId().toHex();
   String? get ecChecksumAddress => account.ecIdentity?.getAccountId() != null
       ? crc32Add(account.ecIdentity!.getAccountId()).toHex()
@@ -163,10 +169,13 @@ class ICPSigner
   ICPSigner.create() : this.fromPhrase(genrateMnemonic());
 
   ICPSigner.fromPhrase(String phrase,
-      {String passphase = "", int? index = 0, List<int>? icPath = IC_BASE_PATH}) {
+      {String passphase = "",
+      int? index = 0,
+      List<int>? icPath = IC_BASE_PATH}) {
     _phrase = phrase;
     _index ??= index;
-    _acc = ICPAccount.fromPhrase(_phrase!, passphase: passphase, index: _index!, icPath: icPath);
+    _acc = ICPAccount.fromPhrase(_phrase!,
+        passphase: passphase, index: _index!, icPath: icPath);
   }
 
   ICPSigner.fromSeed(Uint8List seed, {int? index = 0}) {
@@ -174,8 +183,12 @@ class ICPSigner
     _acc = ICPAccount.fromSeed(seed, index: index);
   }
 
-  ICPAccount hdCreate({String passphase = "", int? index = 0, List<int>? icPath = IC_BASE_PATH}) {
-    return ICPAccount.fromPhrase(_phrase!, passphase: passphase, index: _index!, icPath: icPath);
+  ICPAccount hdCreate(
+      {String passphase = "",
+      int? index = 0,
+      List<int>? icPath = IC_BASE_PATH}) {
+    return ICPAccount.fromPhrase(_phrase!,
+        passphase: passphase, index: _index!, icPath: icPath);
   }
 
   void setSourceType(SourceType _type) {
@@ -196,8 +209,10 @@ class ICPSigner
   }
 
   @override
-  Future<CombineSignedTransactionResult> sign(ConstructionPayloadsResponse payload,
-      {SignType? signType = SignType.ed25519, SigningCallback? callback}) async {
+  Future<CombineSignedTransactionResult> sign(
+      ConstructionPayloadsResponse payload,
+      {SignType? signType = SignType.ed25519,
+      SigningCallback? callback}) async {
     try {
       if (signType == SignType.ed25519) {
         var res = await transferCombine(account.identity!, payload);
@@ -219,22 +234,32 @@ class ICPSigner
     switch (sourceType) {
       case SourceType.II:
         {
-          return ICPSigner.fromPhrase(phrase, index: HARDENED, icPath: IC_DERIVATION_PATH)
+          return ICPSigner.fromPhrase(phrase,
+              index: HARDENED, icPath: IC_DERIVATION_PATH)
             ..setSourceType(SourceType.II);
         }
       case SourceType.Keysmith:
         {
-          return ICPSigner.fromPhrase(phrase, index: index, icPath: IC_DERIVATION_PATH)
+          return ICPSigner.fromPhrase(phrase,
+              index: index, icPath: IC_DERIVATION_PATH)
             ..setSourceType(SourceType.Keysmith);
         }
       case SourceType.Plug:
         {
-          return ICPSigner.fromPhrase(phrase, index: index, icPath: IC_BASE_PATH)
+          return ICPSigner.fromPhrase(phrase,
+              index: index, icPath: IC_DERIVATION_PATH)
+            ..setSourceType(SourceType.Keysmith);
+        }
+      case SourceType.Base:
+        {
+          return ICPSigner.fromPhrase(phrase,
+              index: index, icPath: IC_BASE_PATH)
             ..setSourceType(SourceType.Keysmith);
         }
       default:
         {
-          return ICPSigner.fromPhrase(phrase, index: HARDENED, icPath: IC_DERIVATION_PATH)
+          return ICPSigner.fromPhrase(phrase,
+              index: HARDENED, icPath: IC_DERIVATION_PATH)
             ..setSourceType(SourceType.II);
         }
     }
