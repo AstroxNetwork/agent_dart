@@ -63,8 +63,8 @@ abstract class SignIdentity implements Identity {
       "body": {
         "content": (request).body.toJson(),
         "sender_pubkey": getPublicKey().toDer(),
-        "sender_sig":
-            await sign(blobFromBuffer(u8aConcat([domainSeparator, requestId.buffer]).buffer)),
+        "sender_sig": await sign(blobFromBuffer(
+            u8aConcat([domainSeparator, requestId.buffer]).buffer)),
       },
     };
   }
@@ -104,7 +104,8 @@ class IdentityDescriptor {
   late String? publicKey;
   IdentityDescriptor({required this.type, this.publicKey});
   factory IdentityDescriptor.fromJson(Map<String, dynamic> json) {
-    var descriptor = IdentityDescriptor(type: json["type"] ?? "AnonymousIdentity");
+    var descriptor =
+        IdentityDescriptor(type: json["type"] ?? "AnonymousIdentity");
     if (json["publicKey"] != null) {
       descriptor.publicKey = json["publicKey"];
     }

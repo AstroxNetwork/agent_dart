@@ -42,7 +42,8 @@ class DelegationValidChecks {
 /// the authentication provider). Will throw if some options are invalid.
 /// @param options An option with all options for the authentication request.
 Uri createAuthenticationRequestUrl(CreateUrlOptions options) {
-  var url = Uri.parse(options.identityProvider?.toString() ?? DEFAULT_IDENTITY_PROVIDER_URL);
+  var url = Uri.parse(
+      options.identityProvider?.toString() ?? DEFAULT_IDENTITY_PROVIDER_URL);
   url.queryParameters.addEntries([
     const MapEntry('response_type', 'token'),
     MapEntry('login_hint', options.publicKey.toDer().toHex()),
@@ -80,9 +81,10 @@ getAccessTokenFromWindow(dynamic link) {
 String? getAccessTokenFromURL(dynamic url) {
   try {
     Uri uri = url is String ? Uri.parse(url) : url;
-    var query =
-        Uri.tryParse(uri.fragment.startsWith("/") ? uri.fragment.substring(1) : uri.fragment)
-            ?.queryParameters;
+    var query = Uri.tryParse(uri.fragment.startsWith("/")
+            ? uri.fragment.substring(1)
+            : uri.fragment)
+        ?.queryParameters;
     return query?["access_token"];
   } catch (e) {
     rethrow;
@@ -137,7 +139,8 @@ isDelegationValid(DelegationChain chain, DelegationValidChecks? checks) {
     var exp = delegation.expiration;
     var t = exp / BigInt.from(1000000);
     // prettier-ignore
-    if (DateTime.fromMillisecondsSinceEpoch(t.toInt()).isBefore(DateTime.now())) {
+    if (DateTime.fromMillisecondsSinceEpoch(t.toInt())
+        .isBefore(DateTime.now())) {
       return false;
     }
   }
@@ -149,10 +152,12 @@ isDelegationValid(DelegationChain chain, DelegationValidChecks? checks) {
 
   if (maybeScope != null) {
     if (maybeScope is List) {
-      scopes.addAll(
-          maybeScope.map((s) => (s is String ? Principal.fromText(s) : (s as Principal))).toList());
+      scopes.addAll(maybeScope
+          .map((s) => (s is String ? Principal.fromText(s) : (s as Principal)))
+          .toList());
     } else {
-      scopes.addAll(maybeScope is String ? Principal.fromText(maybeScope) : maybeScope);
+      scopes.addAll(
+          maybeScope is String ? Principal.fromText(maybeScope) : maybeScope);
     }
   }
 

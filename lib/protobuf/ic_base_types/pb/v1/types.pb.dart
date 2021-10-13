@@ -10,10 +10,22 @@ import 'dart:core' as $core;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class PrincipalId extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'PrincipalId', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'ic_base_types.pb.v1'), createEmptyInstance: create)
-    ..a<$core.List<$core.int>>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'serializedId', $pb.PbFieldType.OY)
-    ..hasRequiredFields = false
-  ;
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'PrincipalId',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'ic_base_types.pb.v1'),
+      createEmptyInstance: create)
+    ..a<$core.List<$core.int>>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'serializedId',
+        $pb.PbFieldType.OY)
+    ..hasRequiredFields = false;
 
   PrincipalId._() : super();
   factory PrincipalId({
@@ -25,31 +37,39 @@ class PrincipalId extends $pb.GeneratedMessage {
     }
     return _result;
   }
-  factory PrincipalId.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory PrincipalId.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
+  factory PrincipalId.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory PrincipalId.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   PrincipalId clone() => PrincipalId()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  PrincipalId copyWith(void Function(PrincipalId) updates) => super.copyWith((message) => updates(message as PrincipalId)) as PrincipalId; // ignore: deprecated_member_use
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  PrincipalId copyWith(void Function(PrincipalId) updates) =>
+      super.copyWith((message) => updates(message as PrincipalId))
+          as PrincipalId; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static PrincipalId create() => PrincipalId._();
   PrincipalId createEmptyInstance() => create();
   static $pb.PbList<PrincipalId> createRepeated() => $pb.PbList<PrincipalId>();
   @$core.pragma('dart2js:noInline')
-  static PrincipalId getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<PrincipalId>(create);
+  static PrincipalId getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<PrincipalId>(create);
   static PrincipalId? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.List<$core.int> get serializedId => $_getN(0);
   @$pb.TagNumber(1)
-  set serializedId($core.List<$core.int> v) { $_setBytes(0, v); }
+  set serializedId($core.List<$core.int> v) {
+    $_setBytes(0, v);
+  }
+
   @$pb.TagNumber(1)
   $core.bool hasSerializedId() => $_has(0);
   @$pb.TagNumber(1)
@@ -57,11 +77,27 @@ class PrincipalId extends $pb.GeneratedMessage {
 }
 
 class Types {
-  static final tuiSignedMessage = $pb.Extension<$core.bool>(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'google.protobuf.MessageOptions', const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'tuiSignedMessage', 20000, $pb.PbFieldType.OB);
-  static final tuiSignedDisplayQ22021 = $pb.Extension<$core.bool>(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'google.protobuf.FieldOptions', const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'tuiSignedDisplayQ22021', 20001, $pb.PbFieldType.OB, protoName: 'tui_signed_display_q2_2021');
+  static final tuiSignedMessage = $pb.Extension<$core.bool>(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'google.protobuf.MessageOptions',
+      const $core.bool.fromEnvironment('protobuf.omit_field_names')
+          ? ''
+          : 'tuiSignedMessage',
+      20000,
+      $pb.PbFieldType.OB);
+  static final tuiSignedDisplayQ22021 = $pb.Extension<$core.bool>(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'google.protobuf.FieldOptions',
+      const $core.bool.fromEnvironment('protobuf.omit_field_names')
+          ? ''
+          : 'tuiSignedDisplayQ22021',
+      20001,
+      $pb.PbFieldType.OB,
+      protoName: 'tui_signed_display_q2_2021');
   static void registerAllExtensions($pb.ExtensionRegistry registry) {
     registry.add(tuiSignedMessage);
     registry.add(tuiSignedDisplayQ22021);
   }
 }
-

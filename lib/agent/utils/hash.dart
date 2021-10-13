@@ -23,7 +23,10 @@ num idlLabelToId(String label) {
 
     var result = num.tryParse(lb);
 
-    if (result != null && !isBigInt(result) && result >= 0 && result < pow(2, 32)) {
+    if (result != null &&
+        !isBigInt(result) &&
+        result >= 0 &&
+        result < pow(2, 32)) {
       return result;
     }
   }

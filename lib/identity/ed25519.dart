@@ -21,7 +21,10 @@ class Ed25519KeyPair implements auth.KeyPair {
   Ed25519KeyPair(this.publicKey, this.secretKey);
 
   toJson() {
-    return [publicKey.toDer().toHex(include0x: false), secretKey.toHex(include0x: false)];
+    return [
+      publicKey.toDer().toHex(include0x: false),
+      secretKey.toHex(include0x: false)
+    ];
   }
 }
 
@@ -56,7 +59,8 @@ class Ed25519PublicKey implements auth.PublicKey {
   ]);
 
   static DerEncodedBlob derEncode(BinaryBlob publicKey) {
-    return derBlobFromBlob(blobFromUint8Array(wrapDER(publicKey.buffer, ED25519_OID)));
+    return derBlobFromBlob(
+        blobFromUint8Array(wrapDER(publicKey.buffer, ED25519_OID)));
   }
 
   static BinaryBlob derDecode(BinaryBlob key) {
@@ -132,21 +136,24 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
       final pk = publicKey != null
           ? Ed25519PublicKey.fromRaw(
               blobFromUint8Array(Uint8List.fromList(List<int>.from(publicKey))))
-          : Ed25519PublicKey.fromDer(
-              blobFromUint8Array(Uint8List.fromList(List<int>.from(_publicKey!))));
+          : Ed25519PublicKey.fromDer(blobFromUint8Array(
+              Uint8List.fromList(List<int>.from(_publicKey!))));
 
       if (publicKey != null && secretKey != null) {
-        return Ed25519KeyIdentity(
-            pk, blobFromUint8Array(Uint8List.fromList(List<int>.from(secretKey))));
+        return Ed25519KeyIdentity(pk,
+            blobFromUint8Array(Uint8List.fromList(List<int>.from(secretKey))));
       } else if (_publicKey != null && _privateKey != null) {
         return Ed25519KeyIdentity(
-            pk, blobFromUint8Array(Uint8List.fromList(List<int>.from(_privateKey))));
+            pk,
+            blobFromUint8Array(
+                Uint8List.fromList(List<int>.from(_privateKey))));
       }
     }
     throw 'Deserialization error: Invalid JSON type for string: ${jsonEncode(json)}';
   }
 
-  static Ed25519KeyIdentity fromKeyPair(BinaryBlob publicKey, BinaryBlob privateKey) {
+  static Ed25519KeyIdentity fromKeyPair(
+      BinaryBlob publicKey, BinaryBlob privateKey) {
     return Ed25519KeyIdentity(Ed25519PublicKey.fromRaw(publicKey), privateKey);
   }
 
@@ -159,12 +166,14 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     return identity;
   }
 
-  static Ed25519KeyIdentityRecoveredFromII recoverFromIISeedPhrase(String phrase) {
+  static Ed25519KeyIdentityRecoveredFromII recoverFromIISeedPhrase(
+      String phrase) {
     try {
       var userNumber = extractUserNumber(phrase);
       var mne = dropLeadingUserNumber(phrase);
       var identity = fromMnemonicWithoutValidation(mne, IC_DERIVATION_PATH);
-      return Ed25519KeyIdentityRecoveredFromII(userNumber: userNumber, identity: identity);
+      return Ed25519KeyIdentityRecoveredFromII(
+          userNumber: userNumber, identity: identity);
     } catch (e) {
       rethrow;
     }
@@ -203,12 +212,14 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     final blob = challenge is BinaryBlob
         ? blobFromUint8Array(challenge)
         : blobFromBuffer(challenge as ByteBuffer);
-    return Future.value(blobFromUint8Array(_sk.sign(blob).signature.asTypedList));
+    return Future.value(
+        blobFromUint8Array(_sk.sign(blob).signature.asTypedList));
   }
 
   bool verify(Uint8List signature, Uint8List message) {
     return _sk.verifyKey.verify(
-        signature: SignedMessage.fromList(signedMessage: signature).signature, message: message);
+        signature: SignedMessage.fromList(signedMessage: signature).signature,
+        message: message);
   }
 
   Uint8List get accountId => getAccountId();
@@ -260,7 +271,8 @@ const IC_DERIVATION_PATH = [44, 223, 0, 0, 0];
 /// @param derivationPath an array that is always interpreted as a hardened path.
 /// e.g. to generate m/44'/223’/0’/0’/0' the derivation path should be [44, 223, 0, 0, 0]
 /// @param skipValidation if true, validation checks on the mnemonics are skipped.
-Ed25519KeyIdentity fromMnemonicWithoutValidation(String mnemonic, List<int>? derivationPath,
+Ed25519KeyIdentity fromMnemonicWithoutValidation(
+    String mnemonic, List<int>? derivationPath,
     {int offset = HARDENED}) {
   derivationPath ??= [];
   final seed = mnemonicToSeed(mnemonic);
@@ -272,7 +284,8 @@ Ed25519KeyIdentity fromMnemonicWithoutValidation(String mnemonic, List<int>? der
 ///
 /// The derivation path is an array that is always interpreted as a hardened path.
 /// e.g. to generate m/44'/223’/0’/0’/0' the derivation path should be [44, 223, 0, 0, 0]
-Ed25519KeyIdentity fromSeedWithSlip0010(Uint8List masterSeed, List<int>? derivationPath,
+Ed25519KeyIdentity fromSeedWithSlip0010(
+    Uint8List masterSeed, List<int>? derivationPath,
     {int offset = HARDENED}) {
   var chainSet = generateMasterKey(masterSeed);
   var slipSeed = chainSet.first;
@@ -289,7 +302,8 @@ Ed25519KeyIdentity fromSeedWithSlip0010(Uint8List masterSeed, List<int>? derivat
 }
 
 Set<Uint8List> generateMasterKey(Uint8List seed) {
-  var hmacSha512 = Hmac(sha512, 'ed25519 seed'.plainToU8a(useDartEncode: true)); // HMAC-SHA512
+  var hmacSha512 = Hmac(
+      sha512, 'ed25519 seed'.plainToU8a(useDartEncode: true)); // HMAC-SHA512
   var h = hmacSha512.convert(seed);
   final slipSeed = Uint8List.fromList(h.bytes.sublist(0, 32));
   final chainCode = Uint8List.fromList(h.bytes.sublist(32));

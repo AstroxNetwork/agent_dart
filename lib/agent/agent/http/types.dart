@@ -116,7 +116,8 @@ abstract class HttpAgentBaseRequest<T extends WithToJson> extends BaseRequest {
   late T body;
 }
 
-abstract class HttpAgentSubmitRequest extends HttpAgentBaseRequest<CallRequest> {
+abstract class HttpAgentSubmitRequest
+    extends HttpAgentBaseRequest<CallRequest> {
   @override
   // ignore: overridden_fields
   String? endpoint = Endpoint.Call;
@@ -165,7 +166,8 @@ class HttpAgentRequestTransformFn {
   int? priority;
 }
 
-typedef HttpAgentRequestTransformFnCall = Future<HttpAgentRequest?> Function(HttpAgentRequest args);
+typedef HttpAgentRequestTransformFnCall = Future<HttpAgentRequest?> Function(
+    HttpAgentRequest args);
 
 class HttpResponseBody extends ResponseBody {
   @override
@@ -176,7 +178,9 @@ class HttpResponseBody extends ResponseBody {
   late String? statusText;
   late String? body;
   late Uint8List? arrayBuffer;
-  HttpResponseBody({this.ok, this.status, this.statusText, this.body, this.arrayBuffer}) : super();
+  HttpResponseBody(
+      {this.ok, this.status, this.statusText, this.body, this.arrayBuffer})
+      : super();
 
   factory HttpResponseBody.fromJson(Map<String, dynamic> map) {
     return HttpResponseBody(
@@ -214,7 +218,11 @@ class CallResponseBody extends SubmitResponse {
       this.requestId})
       : super() {
     response = HttpResponseBody(
-        arrayBuffer: arrayBuffer, status: status, statusText: statusText, body: body, ok: ok);
+        arrayBuffer: arrayBuffer,
+        status: status,
+        statusText: statusText,
+        body: body,
+        ok: ok);
   }
   factory CallResponseBody.fromJson(Map<String, dynamic> map) {
     return CallResponseBody(

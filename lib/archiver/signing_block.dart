@@ -19,9 +19,12 @@ class SigningBlock {
       required this.signatures,
       required this.publicKeys,
       this.algoId = 0x0201}) {
-    messageBlocks = <MessageBlock>[]..addAll(messages.map((e) => MessageBlock(e, algoId)));
-    signatureBlocks = <SignatureBlock>[]..addAll(signatures.map((e) => SignatureBlock(e, algoId)));
-    publicKeyBlocks = <PublicKeyBlock>[]..addAll(publicKeys.map((e) => PublicKeyBlock(e)));
+    messageBlocks = <MessageBlock>[]
+      ..addAll(messages.map((e) => MessageBlock(e, algoId)));
+    signatureBlocks = <SignatureBlock>[]
+      ..addAll(signatures.map((e) => SignatureBlock(e, algoId)));
+    publicKeyBlocks = <PublicKeyBlock>[]
+      ..addAll(publicKeys.map((e) => PublicKeyBlock(e)));
   }
 
   int messageBlocksSize() {
@@ -49,7 +52,12 @@ class SigningBlock {
   }
 
   int getSize() {
-    return 4 + messageBlocksSize() + 4 + signatureBlocksSize() + 4 + publicKeyBlocksSize();
+    return 4 +
+        messageBlocksSize() +
+        4 +
+        signatureBlocksSize() +
+        4 +
+        publicKeyBlocksSize();
   }
 
   void write(OutputStreamBase output) {

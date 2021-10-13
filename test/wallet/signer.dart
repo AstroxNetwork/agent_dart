@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:agent_dart/agent/crypto/keystore/api.dart';
-import 'package:agent_dart/utils/bech32.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:agent_dart/wallet/signer.dart';
 import 'package:agent_dart/utils/extension.dart';
@@ -34,7 +33,8 @@ void signerTest() {
         "02f2326544f2040d3985e31db5e7021402c541d3cde911cd20e951852ee4da47");
 
     var encryptedPhrase = await encodePhrase(mne2, "123");
-    var decryptedPhrase = await decodePhrase(jsonDecode(encryptedPhrase), "123");
+    var decryptedPhrase =
+        await decodePhrase(jsonDecode(encryptedPhrase), "123");
     expect(decryptedPhrase, mne2);
   });
 }

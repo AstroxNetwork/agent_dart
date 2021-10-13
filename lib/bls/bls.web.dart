@@ -849,20 +849,23 @@ class WebBls implements BaseBLS {
       if (!await blsInit()) {
         throw 'Cannot initialize BLS';
       }
-      blsVerifyFunc =
-          instance!.functions['bls_verify']! as int Function(int, int, int, int, int, int);
+      blsVerifyFunc = instance!.functions['bls_verify']! as int Function(
+          int, int, int, int, int, int);
     }
 
     var set0 = passArray8ToWasm0(sig, _malloc);
     var set1 = passArray8ToWasm0(msg, _malloc);
     var set2 = passArray8ToWasm0(pk, _malloc);
 
-    return blsVerifyFunc(set0.first, set0.last, set1.first, set1.last, set2.first, set2.last) == 0
+    return blsVerifyFunc(set0.first, set0.last, set1.first, set1.last,
+                set2.first, set2.last) ==
+            0
         ? true
         : false;
   }
 
-  Uint8List get memory => instance!.memories['memory']!.jsObject.buffer.asUint8List();
+  Uint8List get memory =>
+      instance!.memories['memory']!.jsObject.buffer.asUint8List();
 
   int _malloc(int a) {
     var mal = instance!.functions['__wbindgen_malloc']! as int Function(int);
@@ -885,7 +888,6 @@ class WebBls implements BaseBLS {
 }
 
 BaseBLS createBLS() => WebBls();
-
 
 // let cachegetUint8Memory0: any = null;
 // function getUint8Memory0() {

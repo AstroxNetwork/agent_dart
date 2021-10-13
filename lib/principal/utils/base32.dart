@@ -57,8 +57,10 @@ Uint8List base32Decode(String input) {
     var output = Uint8List(((input.length * 4) / 3).ceil() | 0);
     int o = 0;
 
-    final Map<String, int> lookupTable = alphabet.split('').fold<Map<String, int>>({},
-        (Map<String, int> previousValue, String element) {
+    final Map<String, int> lookupTable = alphabet
+        .split('')
+        .fold<Map<String, int>>({},
+            (Map<String, int> previousValue, String element) {
       previousValue[element] = alphabet.indexOf(element);
       return previousValue;
     });
