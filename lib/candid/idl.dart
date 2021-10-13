@@ -54,7 +54,8 @@ class IDLTypeIds {
 
 const magicNumber = 'DIDL';
 
-List<TR> zipWith<TX, TY, TR>(List<TX> xs, List<TY> ys, TR Function(TX a, TY b) f) {
+List<TR> zipWith<TX, TY, TR>(
+    List<TX> xs, List<TY> ys, TR Function(TX a, TY b) f) {
   return xs.asMap().entries.map((e) => f(e.value, ys[e.key])).toList();
 }
 
@@ -446,7 +447,9 @@ class ReservedClass extends PrimitiveType<dynamic> {
 }
 
 bool isValidUTF8(Uint8List buf) {
-  return u8aEq(buf.u8aToString(useDartEncode: true).plainToU8a(useDartEncode: true), buf);
+  return u8aEq(
+      buf.u8aToString(useDartEncode: true).plainToU8a(useDartEncode: true),
+      buf);
 }
 
 class TextClass extends PrimitiveType<String> {
@@ -581,9 +584,15 @@ class FloatClass extends PrimitiveType<num> {
     checkType(t);
     final k = safeRead((x as Pipe<int>), (_bits / 8).ceil());
     if (_bits == 32) {
-      return Uint8List.fromList(k).buffer.asByteData().getFloat32(0, Endian.little);
+      return Uint8List.fromList(k)
+          .buffer
+          .asByteData()
+          .getFloat32(0, Endian.little);
     } else {
-      return Uint8List.fromList(k).buffer.asByteData().getFloat64(0, Endian.little);
+      return Uint8List.fromList(k)
+          .buffer
+          .asByteData()
+          .getFloat64(0, Endian.little);
     }
   }
 
@@ -655,7 +664,8 @@ class FixedIntClass extends PrimitiveType {
 
   @override
   Uint8List encodeValue(dynamic x) {
-    assert((x is int || x is BigInt), "value with ${x.runtimeType} has to be int or BigInt");
+    assert((x is int || x is BigInt),
+        "value with ${x.runtimeType} has to be int or BigInt");
     return writeIntLE(x, (_bits / 8).ceil());
   }
 
@@ -798,7 +808,8 @@ class OptClass<T> extends ConstructType<List> {
 
   @override
   bool covariant(x) {
-    return (x is List) && (x.isEmpty || (x.length == 1 && _type.covariant(x[0])));
+    return (x is List) &&
+        (x.isEmpty || (x.length == 1 && _type.covariant(x[0])));
   }
 
   @override
@@ -861,11 +872,13 @@ class RecordClass extends ConstructType<Map> {
     fields ??= Map.from({});
     _fields = (Map.from(fields)).entries.toList();
     assert(
-        _fields.every(
-            (element) => (element.key is String && element.key != null) || (element.key == null)),
+        _fields.every((element) =>
+            (element.key is String && element.key != null) ||
+            (element.key == null)),
         "Currently we only support Map<String,dynamic> as input");
     _fields.sort((a, b) =>
-        idlLabelToId((a.key).toString()).toInt() - idlLabelToId((b.key).toString()).toInt());
+        idlLabelToId((a.key).toString()).toInt() -
+        idlLabelToId((b.key).toString()).toInt());
   }
 
   @override
@@ -924,7 +937,10 @@ class RecordClass extends ConstructType<Map> {
     final opCode = slebEncode(IDLTypeIds.Record);
     final len = lebEncode(_fields.length);
     final fields = _fields.map(
-      (entry) => u8aConcat([lebEncode(idlLabelToId(entry.key)), entry.value.encodeType(typeTable)]),
+      (entry) => u8aConcat([
+        lebEncode(idlLabelToId(entry.key)),
+        entry.value.encodeType(typeTable)
+      ]),
     );
 
     typeTable.add(this, u8aConcat([opCode, len, u8aConcat(fields.toList())]));
@@ -937,12 +953,15 @@ class RecordClass extends ConstructType<Map> {
     if (record is RecordClass || record is TupleClass) {
       final r = {};
       var idx = 0;
-      var fields = (record is RecordClass) ? record.fields : (record as TupleClass).fields;
+      var fields = (record is RecordClass)
+          ? record.fields
+          : (record as TupleClass).fields;
       for (var entry in fields) {
         var hash = entry.key;
         var type = entry.value;
         // [hash, type]
-        if (idx >= _fields.length || idlLabelToId(_fields[idx].key) != idlLabelToId(hash)) {
+        if (idx >= _fields.length ||
+            idlLabelToId(_fields[idx].key) != idlLabelToId(hash)) {
           // skip field
           entry.value.decodeValue(x, type);
           continue;
@@ -970,15 +989,16 @@ class RecordClass extends ConstructType<Map> {
 
   @override
   String display() {
-    final fields = _fields.map((entry) => entry.key + ':' + entry.value.display());
+    final fields =
+        _fields.map((entry) => entry.key + ':' + entry.value.display());
     return "record {${fields.join('; ')}}";
   }
 
   @override
   valueToString(Map x) {
     final values = _fields.map((entry) => x[entry.key]).toList();
-    final fields = zipWith<MapEntry, dynamic, String>(
-        _fields, values, (entry, d) => entry.key + '=' + entry.value.valueToString(d));
+    final fields = zipWith<MapEntry, dynamic, String>(_fields, values,
+        (entry, d) => entry.key + '=' + entry.value.valueToString(d));
     return "record {${fields.join('; ')}}";
   }
 }
@@ -999,7 +1019,8 @@ class TupleClass<T extends List> extends ConstructType<List> {
   TupleClass(List<CType> components) : super() {
     _components = components;
     _fields = (Map.from(makeMap(components))).entries.toList();
-    _fields.sort((a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt());
+    _fields.sort(
+        (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt());
   }
 
   @override
@@ -1021,7 +1042,8 @@ class TupleClass<T extends List> extends ConstructType<List> {
 
   @override
   Uint8List encodeValue(List x) {
-    final bufs = zipWith<CType, dynamic, Uint8List>(_components, x, (c, d) => c.encodeValue(d));
+    final bufs = zipWith<CType, dynamic, Uint8List>(
+        _components, x, (c, d) => c.encodeValue(d));
     return u8aConcat(bufs);
   }
 
@@ -1033,7 +1055,10 @@ class TupleClass<T extends List> extends ConstructType<List> {
     final opCode = slebEncode(IDLTypeIds.Record);
     final len = lebEncode(_fields.length);
     final fields = _fields.map(
-      (entry) => u8aConcat([lebEncode(idlLabelToId(entry.key)), entry.value.encodeType(typeTable)]),
+      (entry) => u8aConcat([
+        lebEncode(idlLabelToId(entry.key)),
+        entry.value.encodeType(typeTable)
+      ]),
     );
 
     typeTable.add(this, u8aConcat([opCode, len, u8aConcat(fields.toList())]));
@@ -1072,7 +1097,8 @@ class TupleClass<T extends List> extends ConstructType<List> {
 
   @override
   String valueToString(List x) {
-    final fields = zipWith<CType, dynamic, String>(_components, x, (c, d) => c.valueToString(d));
+    final fields = zipWith<CType, dynamic, String>(
+        _components, x, (c, d) => c.valueToString(d));
     return "record {${fields.join('; ')}}";
   }
 
@@ -1087,7 +1113,8 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
   late final List<MapEntry<String, CType<dynamic>>> _fields;
   VariantClass(Map<String, CType> fields) : super() {
     _fields = fields.entries.toList();
-    _fields.sort((a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt());
+    _fields.sort(
+        (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt());
   }
 
   @override
@@ -1102,7 +1129,8 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
         _fields.every((entry) {
           // [k, v]
           // eslint-disable-next-line
-          return !x.containsKey(entry.key) || entry.value.covariant(x[entry.key]);
+          return !x.containsKey(entry.key) ||
+              entry.value.covariant(x[entry.key]);
         }));
   }
 
@@ -1131,7 +1159,10 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
     final opCode = slebEncode(IDLTypeIds.Variant);
     final len = lebEncode(_fields.length);
     final fields = _fields.map(
-      (entry) => u8aConcat([lebEncode(idlLabelToId(entry.key)), entry.value.encodeType(typeTable)]),
+      (entry) => u8aConcat([
+        lebEncode(idlLabelToId(entry.key)),
+        entry.value.encodeType(typeTable)
+      ]),
     );
     typeTable.add(this, u8aConcat([opCode, len, ...fields]));
   }
@@ -1167,7 +1198,9 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
   @override
   String display() {
     final fields = _fields.map(
-      (entry) => entry.key + (entry.value.name == 'null' ? '' : ":${entry.value.display()}"),
+      (entry) =>
+          entry.key +
+          (entry.value.name == 'null' ? '' : ":${entry.value.display()}"),
     );
     return "variant {${fields.join('; ')}}";
   }
@@ -1317,7 +1350,11 @@ class FuncClass extends ConstructType<List> {
       throw 'arity mismatch';
     }
     return '(' +
-        types.asMap().entries.map((entry) => entry.value.valueToString(v[entry.key])).join(', ') +
+        types
+            .asMap()
+            .entries
+            .map((entry) => entry.value.valueToString(v[entry.key]))
+            .join(', ') +
         ')';
   }
 
@@ -1334,7 +1371,11 @@ class FuncClass extends ConstructType<List> {
 
   @override
   bool covariant(x) {
-    return ((x is List) && x.length == 2 && x[0] != null && x[0] is PrincipalId && x[1] is String);
+    return ((x is List) &&
+        x.length == 2 &&
+        x[0] != null &&
+        x[0] is PrincipalId &&
+        x[1] is String);
   }
 
   @override
@@ -1349,7 +1390,8 @@ class FuncClass extends ConstructType<List> {
       buf
     ]);
 
-    final method = Uint8List.fromList((x[1] as String).plainToU8a(useDartEncode: true));
+    final method =
+        Uint8List.fromList((x[1] as String).plainToU8a(useDartEncode: true));
     final methodLen = lebEncode(method.length);
     return u8aConcat([
       Uint8List.fromList([1]),
@@ -1370,13 +1412,17 @@ class FuncClass extends ConstructType<List> {
 
     final opCode = slebEncode(IDLTypeIds.Func);
     final argLen = lebEncode(argTypes.length);
-    final args = u8aConcat(argTypes.map((arg) => arg.encodeType(typeTable)).toList());
+    final args =
+        u8aConcat(argTypes.map((arg) => arg.encodeType(typeTable)).toList());
     final retLen = lebEncode(retTypes.length);
-    final rets = u8aConcat(retTypes.map((arg) => arg.encodeType(typeTable)).toList());
+    final rets =
+        u8aConcat(retTypes.map((arg) => arg.encodeType(typeTable)).toList());
     final annLen = lebEncode(annotations.length);
-    final anns = u8aConcat(annotations.map((a) => encodeAnnotation(a)).toList());
+    final anns =
+        u8aConcat(annotations.map((a) => encodeAnnotation(a)).toList());
 
-    typeTable.add(this, u8aConcat([opCode, argLen, args, retLen, rets, annLen, anns]));
+    typeTable.add(
+        this, u8aConcat([opCode, argLen, args, retLen, rets, annLen, anns]));
   }
 
   @override
@@ -1435,8 +1481,9 @@ class ServiceClass extends ConstructType<PrincipalId> {
 
   ServiceClass(Map<String, FuncClass> fields) : super() {
     _fields = (fields.entries).toList();
-    _fields.sort(
-        (a, b) => idlLabelToId(a.key.toString()).toInt() - idlLabelToId(b.key.toString()).toInt());
+    _fields.sort((a, b) =>
+        idlLabelToId(a.key.toString()).toInt() -
+        idlLabelToId(b.key.toString()).toInt());
   }
 
   @override
@@ -1546,7 +1593,8 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
   if (bytes.lengthInBytes < magicNumber.length) {
     throw 'Message length smaller than magic number';
   }
-  final magic = Uint8List.fromList(safeRead(b, magicNumber.length)).u8aToString();
+  final magic =
+      Uint8List.fromList(safeRead(b, magicNumber.length)).u8aToString();
 
   if (magic != magicNumber) {
     throw 'Wrong magic number: $magic';
@@ -1817,15 +1865,17 @@ class IDL {
   // ignore: non_constant_identifier_names
   static Rec() => RecClass();
   // ignore: non_constant_identifier_names
-  static Func(
-          List<CType<dynamic>> argTypes, List<CType<dynamic>> retTypes, List<String> annotations) =>
+  static Func(List<CType<dynamic>> argTypes, List<CType<dynamic>> retTypes,
+          List<String> annotations) =>
       FuncClass(argTypes, retTypes, annotations);
   // ignore: non_constant_identifier_names
   static Service(Map<String, FuncClass> fields) => ServiceClass(fields);
 
-  static BinaryBlob encode(List<CType> argTypes, List args) => idlEncode(argTypes, args);
+  static BinaryBlob encode(List<CType> argTypes, List args) =>
+      idlEncode(argTypes, args);
 
-  static List decode(List<CType> retTypes, Uint8List bytes) => idlDecode(retTypes, bytes);
+  static List decode(List<CType> retTypes, Uint8List bytes) =>
+      idlDecode(retTypes, bytes);
 }
 
 typedef Tuple = TupleClass;

@@ -7,13 +7,18 @@ typedef PollStrategy = Future<void> Function(
     Principal canisterId, RequestId requestId, String status);
 typedef PollStrategyFactory = PollStrategy Function();
 
-typedef Predicate<T> = Future<T> Function(Principal canisterId, RequestId requestId, String status);
+typedef Predicate<T> = Future<T> Function(
+    Principal canisterId, RequestId requestId, String status);
 
 // ignore: constant_identifier_names
 const FIVE_MINUTES_IN_MSEC = 5 * 60 * 1000;
 
 PollStrategy defaultStrategy() {
-  return chain([conditionalDelay(once(), 1000), backoff(1000, 1.2), timeout(FIVE_MINUTES_IN_MSEC)]);
+  return chain([
+    conditionalDelay(once(), 1000),
+    backoff(1000, 1.2),
+    timeout(FIVE_MINUTES_IN_MSEC)
+  ]);
 }
 
 Predicate<bool> once() {

@@ -118,7 +118,8 @@ BigInt slebDecode(BufferPipe pipe) {
   final bytes = Uint8List.fromList(safeRead(pipe as BufferPipe<int>, len + 1));
   var value = BigInt.zero;
   for (var i = bytes.lengthInBytes - 1; i >= 0; i--) {
-    value = value * BigInt.from(0x80) + BigInt.from(0x80 - (bytes[i] & 0x7f) - 1);
+    value =
+        value * BigInt.from(0x80) + BigInt.from(0x80 - (bytes[i] & 0x7f) - 1);
   }
   return -value - BigInt.one;
 }
@@ -165,8 +166,8 @@ BigInt readUIntLE(BufferPipe pipe, int byteLength) {
 
 BigInt readIntLE(BufferPipe pipe, int byteLength) {
   var val = readUIntLE(pipe, byteLength);
-  final mul =
-      BigInt.from(2).pow((BigInt.from(8) * BigInt.from(byteLength - 1) + BigInt.from(7)).toInt());
+  final mul = BigInt.from(2).pow(
+      (BigInt.from(8) * BigInt.from(byteLength - 1) + BigInt.from(7)).toInt());
   if (val >= mul) {
     val -= mul * BigInt.from(2);
   }

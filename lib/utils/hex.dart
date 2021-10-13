@@ -10,7 +10,9 @@ import 'string.dart';
 import 'u8a.dart';
 
 bool hexHasPrefix(String value) {
-  return !!(value is String && isHex(value, -1, true) && value.substring(0, 2) == '0x');
+  return !!(value is String &&
+      isHex(value, -1, true) &&
+      value.substring(0, 2) == '0x');
 }
 
 String hexStripPrefix(String value) {
@@ -28,27 +30,32 @@ String hexStripPrefix(String value) {
   throw "Invalid hex $value passed to hexStripPrefix";
 }
 
-BigInt hexToBn(dynamic value, {Endian endian = Endian.big, bool isNegative = false}) {
+BigInt hexToBn(dynamic value,
+    {Endian endian = Endian.big, bool isNegative = false}) {
   try {
     if (value == null) return BigInt.from(0);
     if (isNegative == false) {
       if (isHex(value)) {
-        var sValue =
-            value is num ? int.parse(value.toString(), radix: 10).toRadixString(16) : value;
+        var sValue = value is num
+            ? int.parse(value.toString(), radix: 10).toRadixString(16)
+            : value;
         if (endian == Endian.big) {
-          return BigInt.parse(hexStripPrefix(sValue) == '' ? '0' : hexStripPrefix(sValue),
+          return BigInt.parse(
+              hexStripPrefix(sValue) == '' ? '0' : hexStripPrefix(sValue),
               radix: 16);
         } else {
-          return decodeBigInt(
-              hexToBytes(hexStripPrefix(sValue) == '' ? '0' : hexStripPrefix(sValue)));
+          return decodeBigInt(hexToBytes(
+              hexStripPrefix(sValue) == '' ? '0' : hexStripPrefix(sValue)));
         }
       }
-      var _sValue = value is num ? int.parse(value.toString(), radix: 10).toRadixString(16) : value;
+      var _sValue = value is num
+          ? int.parse(value.toString(), radix: 10).toRadixString(16)
+          : value;
       if (endian == Endian.big) {
         return BigInt.parse(_sValue, radix: 16);
       } else {
-        return decodeBigInt(
-            hexToBytes(hexStripPrefix(_sValue) == '' ? '0' : hexStripPrefix(_sValue)));
+        return decodeBigInt(hexToBytes(
+            hexStripPrefix(_sValue) == '' ? '0' : hexStripPrefix(_sValue)));
       }
     } else {
       var hex = value is num
@@ -57,12 +64,16 @@ BigInt hexToBn(dynamic value, {Endian endian = Endian.big, bool isNegative = fal
       if (hex.length % 2 > 0) {
         hex = '0' + hex;
       }
-      hex = decodeBigInt(hexToBytes(hexStripPrefix(hex) == '' ? '0' : hexStripPrefix(hex)),
+      hex = decodeBigInt(
+              hexToBytes(hexStripPrefix(hex) == '' ? '0' : hexStripPrefix(hex)),
               endian: endian)
           .toRadixString(16);
       var bn = BigInt.parse(hex, radix: 16);
 
-      if ((0x80 & int.parse(hex.substring(0, 2 > hex.length ? hex.length : 2), radix: 16)) > 0) {
+      if ((0x80 &
+              int.parse(hex.substring(0, 2 > hex.length ? hex.length : 2),
+                  radix: 16)) >
+          0) {
         var some = BigInt.parse(
                 bn.toRadixString(2).split('').map((i) {
                   return '0' == i ? 1 : 0;
@@ -107,7 +118,8 @@ Uint8List hexToU8a(String value, [int bitLength = -1]) {
       var subStart = index * 2;
       var subEnd = subStart + 2 <= _value.length ? subStart + 2 : _value.length;
       var arrIndex = index + offset;
-      result[arrIndex] = int.tryParse(_value.substring(subStart, subEnd), radix: 16)!;
+      result[arrIndex] =
+          int.tryParse(_value.substring(subStart, subEnd), radix: 16)!;
     }
     return result;
   } catch (e) {
@@ -148,7 +160,8 @@ String hexAddPrefix(String? value) {
   return "0x$prefix${value ?? ''}";
 }
 
-String hexFixLength(String value, [int bitLength = -1, bool withPadding = false]) {
+String hexFixLength(String value,
+    [int bitLength = -1, bool withPadding = false]) {
   var strLength = (bitLength / 4).ceil();
   var hexLength = strLength + 2;
   // ignore: prefer_typing_uninitialized_variables

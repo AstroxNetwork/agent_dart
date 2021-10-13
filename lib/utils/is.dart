@@ -9,7 +9,8 @@ const FORMAT = [9, 10, 13];
 
 bool isAscii(dynamic value) {
   return value != null
-      ? !u8aToU8a(value).any((byte) => (byte >= 127) || (byte < 32 && !FORMAT.contains(byte)))
+      ? !u8aToU8a(value)
+          .any((byte) => (byte >= 127) || (byte < 32 && !FORMAT.contains(byte)))
       : isString(value);
 }
 
@@ -43,8 +44,8 @@ bool isFunction(dynamic value) {
 
 bool isHex(dynamic value, [int bitLength = -1, bool ignoreLength = false]) {
   final reg = RegExp(r"^0x[a-fA-F0-9]+$");
-  final isValidHex =
-      value == '0x' || (isString(value) && reg.allMatches(value.toString()).isNotEmpty);
+  final isValidHex = value == '0x' ||
+      (isString(value) && reg.allMatches(value.toString()).isNotEmpty);
   if (isValidHex && bitLength != -1) {
     return (value as String).length == (2 + (bitLength / 4).ceil());
   }
@@ -53,7 +54,9 @@ bool isHex(dynamic value, [int bitLength = -1, bool ignoreLength = false]) {
 }
 
 bool isHexString(String str) {
-  var result = str.startsWith(RegExp(r'0x', caseSensitive: false)) ? str.substring(2) : str;
+  var result = str.startsWith(RegExp(r'0x', caseSensitive: false))
+      ? str.substring(2)
+      : str;
   return validators.matches(result, '^[0-9a-fA-F]{${result.length}}');
 }
 
@@ -96,7 +99,8 @@ bool isObservable(dynamic value) {
 }
 
 bool isTestChain(String value) {
-  return value is String && value.allMatches(r"/(Development|Local Testnet)$/").isNotEmpty;
+  return value is String &&
+      value.allMatches(r"/(Development|Local Testnet)$/").isNotEmpty;
 }
 
 bool isU8a(dynamic value) {
@@ -239,7 +243,8 @@ bool isUtf8(dynamic value) {
       }
 
       i += 4;
-    } else if (u8a[i] >= 0xF1 && u8a[i] <= 0xF3) /* F1..F3 80..BF 80..BF 80..BF */ {
+    } else if (u8a[i] >= 0xF1 &&
+        u8a[i] <= 0xF3) /* F1..F3 80..BF 80..BF 80..BF */ {
       if (i + 3 < len) /* Expect a 2nd, 3rd 3th byte */ {
         if (u8a[i + 1] < 0x80 || u8a[i + 1] > 0xBF) {
           // *message = "After a first byte of F1, F2, or F3, expecting a 2nd byte between 80 and BF.";
@@ -306,7 +311,9 @@ bool isUrl(String url) {
 }
 
 bool isByteString(String byStr, {required int length}) {
-  var str = byStr.startsWith(RegExp(r'0x', caseSensitive: false)) ? byStr.substring(2) : byStr;
+  var str = byStr.startsWith(RegExp(r'0x', caseSensitive: false))
+      ? byStr.substring(2)
+      : byStr;
   return validators.matches(str, '^[0-9a-fA-F]{$length}') &&
       validators.isLength(str, length, length);
 }

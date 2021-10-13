@@ -21,7 +21,8 @@ class OutOfRangeHrpCharacters implements Exception {
 
   final String hpr;
 
-  String toString() => "The human readable part contains invalid characters: $hpr";
+  String toString() =>
+      "The human readable part contains invalid characters: $hpr";
 }
 
 class MixedCase implements Exception {
@@ -112,9 +113,13 @@ class Bech32Encoder extends Converter<Bech32, String> with Bech32Validations {
     var hrp = input.hrp;
     var data = input.data;
 
-    if (hrp.length + data.length + separator.length + Bech32Validations.checksumLength >
+    if (hrp.length +
+            data.length +
+            separator.length +
+            Bech32Validations.checksumLength >
         Bech32Validations.maxInputLength) {
-      throw TooLong(hrp.length + data.length + 1 + Bech32Validations.checksumLength);
+      throw TooLong(
+          hrp.length + data.length + 1 + Bech32Validations.checksumLength);
     }
 
     if (hrp.length < 1) {
@@ -169,9 +174,10 @@ class Bech32Decoder extends Converter<String, Bech32> with Bech32Validations {
     input = input.toLowerCase();
 
     var hrp = input.substring(0, separatorPosition);
-    var data =
-        input.substring(separatorPosition + 1, input.length - Bech32Validations.checksumLength);
-    var checksum = input.substring(input.length - Bech32Validations.checksumLength);
+    var data = input.substring(
+        separatorPosition + 1, input.length - Bech32Validations.checksumLength);
+    var checksum =
+        input.substring(input.length - Bech32Validations.checksumLength);
 
     if (hasOutOfRangeHrpCharacters(hrp)) {
       throw OutOfRangeHrpCharacters(hrp);

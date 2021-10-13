@@ -72,7 +72,8 @@ void hashTest() {
 
     expect(
       (await reconstruct(tree)),
-      'eb5c5b2195e62d996b84c9bcc8259d19a83786a2f59e0878cec84c811f669aa0'.toU8a(),
+      'eb5c5b2195e62d996b84c9bcc8259d19a83786a2f59e0878cec84c811f669aa0'
+          .toU8a(),
     );
   });
   test('pruned hash tree', () async {
@@ -92,7 +93,11 @@ void hashTest() {
           label('a'),
           [
             1,
-            [4, pruned('1b4feff9bef8131788b0c9dc6dbad6e81e524249c879e9f10f71ce3749f5a638')],
+            [
+              4,
+              pruned(
+                  '1b4feff9bef8131788b0c9dc6dbad6e81e524249c879e9f10f71ce3749f5a638')
+            ],
             [
               2,
               label('y'),
@@ -103,12 +108,20 @@ void hashTest() {
         [
           2,
           label('b'),
-          [4, pruned('7b32ac0c6ba8ce35ac82c255fc7906f7fc130dab2a090f80fe12f9c2cae83ba6')],
+          [
+            4,
+            pruned(
+                '7b32ac0c6ba8ce35ac82c255fc7906f7fc130dab2a090f80fe12f9c2cae83ba6')
+          ],
         ],
       ],
       [
         1,
-        [4, pruned('ec8324b8a1f1ac16bd2e806edba78006479c9877fed4eb464a25485465af601d')],
+        [
+          4,
+          pruned(
+              'ec8324b8a1f1ac16bd2e806edba78006479c9877fed4eb464a25485465af601d')
+        ],
         [
           2,
           label('d'),
@@ -120,7 +133,8 @@ void hashTest() {
     expect(tree, expected);
     expect(
       (await reconstruct(tree)),
-      'eb5c5b2195e62d996b84c9bcc8259d19a83786a2f59e0878cec84c811f669aa0'.toU8a(),
+      'eb5c5b2195e62d996b84c9bcc8259d19a83786a2f59e0878cec84c811f669aa0'
+          .toU8a(),
     );
   });
 
@@ -134,7 +148,11 @@ void hashTest() {
           label('a'),
           [
             1,
-            [4, pruned('1b4feff9bef8131788b0c9dc6dbad6e81e524249c879e9f10f71ce3749f5a638')],
+            [
+              4,
+              pruned(
+                  '1b4feff9bef8131788b0c9dc6dbad6e81e524249c879e9f10f71ce3749f5a638')
+            ],
             [
               2,
               label('y'),
@@ -145,12 +163,20 @@ void hashTest() {
         [
           2,
           label('b'),
-          [4, pruned('7b32ac0c6ba8ce35ac82c255fc7906f7fc130dab2a090f80fe12f9c2cae83ba6')],
+          [
+            4,
+            pruned(
+                '7b32ac0c6ba8ce35ac82c255fc7906f7fc130dab2a090f80fe12f9c2cae83ba6')
+          ],
         ],
       ],
       [
         1,
-        [4, pruned('ec8324b8a1f1ac16bd2e806edba78006479c9877fed4eb464a25485465af601d')],
+        [
+          4,
+          pruned(
+              'ec8324b8a1f1ac16bd2e806edba78006479c9877fed4eb464a25485465af601d')
+        ],
         [
           2,
           label('d'),
@@ -159,12 +185,17 @@ void hashTest() {
       ],
     ];
     expect(
-        lookupPath(
-            ['a'.plainToU8a(useDartEncode: true), 'a'.plainToU8a(useDartEncode: true)], tree),
+        lookupPath([
+          'a'.plainToU8a(useDartEncode: true),
+          'a'.plainToU8a(useDartEncode: true)
+        ], tree),
         null);
 
     expect(
-      lookupPath(['a'.plainToU8a(useDartEncode: true), 'y'.plainToU8a(useDartEncode: true)], tree),
+      lookupPath([
+        'a'.plainToU8a(useDartEncode: true),
+        'y'.plainToU8a(useDartEncode: true)
+      ], tree),
       'world'.plainToU8a(useDartEncode: true),
     );
     expect(lookupPath(['aa'.plainToU8a(useDartEncode: true)], tree), null);

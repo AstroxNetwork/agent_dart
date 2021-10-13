@@ -117,10 +117,11 @@ abstract class Agent {
   /// but the certificate might contain less information than requested.
   /// @param effectiveCanisterId A Canister ID related to this call.
   /// @param options The options for this call.
-  Future<ReadStateResponse> readState(
-      Principal effectiveCanisterId, ReadStateOptions options, Identity? identity);
+  Future<ReadStateResponse> readState(Principal effectiveCanisterId,
+      ReadStateOptions options, Identity? identity);
 
-  Future<SubmitResponse> call(Principal canisterId, CallOptions fields, Identity? identity);
+  Future<SubmitResponse> call(
+      Principal canisterId, CallOptions fields, Identity? identity);
 
   /// Query the status endpoint of the replica. This normally has a few fields that
   /// corresponds to the version of the replica, its root public key, and any other
@@ -137,7 +138,8 @@ abstract class Agent {
   /// @returns The response from the replica. The Promise will only reject when the communication
   ///     failed. If the query itself failed but no protocol errors happened, the response will
   ///     be of type QueryResponseRejected.
-  Future<QueryResponse> query(Principal canisterId, QueryFields options, Identity? identity);
+  Future<QueryResponse> query(
+      Principal canisterId, QueryFields options, Identity? identity);
 
   /// By default, the agent is configured to talk to the main Internet Computer,
   /// and verifies responses using a hard-coded public key.

@@ -13,7 +13,14 @@ import 'dart:typed_data' as $typed_data;
 const PrincipalId$json = const {
   '1': 'PrincipalId',
   '2': const [
-    const {'1': 'serialized_id', '3': 1, '4': 1, '5': 12, '8': const {}, '10': 'serializedId'},
+    const {
+      '1': 'serialized_id',
+      '3': 1,
+      '4': 1,
+      '5': 12,
+      '8': const {},
+      '10': 'serializedId'
+    },
   ],
   '7': const {},
 };

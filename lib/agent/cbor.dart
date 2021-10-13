@@ -118,8 +118,10 @@ class SelfDescribeEncoder extends cbor.Encoder {
           serializeMap(byte);
         } else if (byte is Iterable) {
           serializeIterable(byte);
-        } else {
+        } else if (byte is int) {
           _out.putByte(byte);
+        } else {
+          serializeData(byte);
         }
       }
     }
@@ -338,7 +340,8 @@ ByteBuffer serializeValue(int major, int minor, String val) {
   // Create the buffer from the value with left padding with 0.
   final length = math.pow(2, minor - 24).toInt();
 
-  var temp = value.substring(value.length <= length * 2 ? 0 : value.length - length * 2);
+  var temp = value
+      .substring(value.length <= length * 2 ? 0 : value.length - length * 2);
   var prefix = "0" * (2 * length - temp.length);
   value = prefix + temp;
 

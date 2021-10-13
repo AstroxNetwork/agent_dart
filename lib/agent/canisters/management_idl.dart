@@ -13,7 +13,8 @@ Service managementIDL() {
   return IDL.Service({
     "provisional_create_canister_with_cycles": IDL.Func(
       [
-        IDL.Record({"amount": IDL.Opt(IDL.Nat), "settings": IDL.Opt(CanisterSettings)})
+        IDL.Record(
+            {"amount": IDL.Opt(IDL.Nat), "settings": IDL.Opt(CanisterSettings)})
       ],
       [
         IDL.Record({"canister_id": canister_id})
@@ -26,7 +27,11 @@ Service managementIDL() {
     "install_code": IDL.Func(
       [
         IDL.Record({
-          "mode": IDL.Variant({"install": IDL.Null, "reinstall": IDL.Null, "upgrade": IDL.Null}),
+          "mode": IDL.Variant({
+            "install": IDL.Null,
+            "reinstall": IDL.Null,
+            "upgrade": IDL.Null
+          }),
           "canister_id": canister_id,
           "wasm_module": wasm_module,
           "arg": IDL.Vec(IDL.Nat8),
@@ -37,7 +42,8 @@ Service managementIDL() {
     ),
     "set_controller": IDL.Func(
       [
-        IDL.Record({"canister_id": canister_id, "new_controller": IDL.Principal})
+        IDL.Record(
+            {"canister_id": canister_id, "new_controller": IDL.Principal})
       ],
       [],
       [],

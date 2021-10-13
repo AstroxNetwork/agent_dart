@@ -22,8 +22,10 @@ class FFIBls implements BaseBLS {
     Uint8List sig,
     Uint8List msg,
   ) {
-    Pointer<Utf8> result = rustBlsVerify(sig.toHex(include0x: false).toNativeUtf8(),
-        msg.toHex(include0x: false).toNativeUtf8(), pk.toHex(include0x: false).toNativeUtf8());
+    Pointer<Utf8> result = rustBlsVerify(
+        sig.toHex(include0x: false).toNativeUtf8(),
+        msg.toHex(include0x: false).toNativeUtf8(),
+        pk.toHex(include0x: false).toNativeUtf8());
     final ret = result.cast<Utf8>().toDartString() == "true";
     freeCString(result);
     return ret;
@@ -115,8 +117,8 @@ class FFIBls implements BaseBLS {
         final msg = message[1] as String;
         final pk = message[2] as String;
         final send = message.last as SendPort;
-        Pointer<Utf8> result =
-            rustBlsVerify(sig.toNativeUtf8(), msg.toNativeUtf8(), pk.toNativeUtf8());
+        Pointer<Utf8> result = rustBlsVerify(
+            sig.toNativeUtf8(), msg.toNativeUtf8(), pk.toNativeUtf8());
         send.send(result.cast<Utf8>().toDartString() == "true");
         freeCString(result);
       } catch (e) {

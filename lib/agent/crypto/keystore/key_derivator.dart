@@ -21,14 +21,20 @@ class _PBDKDF2KeyDerivator extends _KeyDerivator {
 
   @override
   Uint8List deriveKey(List<int> password) {
-    var impl = pbkdf2.PBKDF2KeyDerivator(mac)..init(Pbkdf2Parameters(salt, iterations, dklen));
+    var impl = pbkdf2.PBKDF2KeyDerivator(mac)
+      ..init(Pbkdf2Parameters(salt, iterations, dklen));
 
     return impl.process(Uint8List.fromList(password));
   }
 
   @override
   Map<String, dynamic> encode() {
-    return {'c': iterations, 'dklen': dklen, 'prf': 'hmac-sha256', 'salt': (salt).toHex()};
+    return {
+      'c': iterations,
+      'dklen': dklen,
+      'prf': 'hmac-sha256',
+      'salt': (salt).toHex()
+    };
   }
 
   @override
@@ -48,7 +54,8 @@ class _ScryptKeyDerivator extends _KeyDerivator {
 
   @override
   Uint8List deriveKey(List<int> password) {
-    var impl = scrypt.Scrypt()..init(ScryptParameters(n, r, p, dklen, Uint8List.fromList(salt)));
+    var impl = scrypt.Scrypt()
+      ..init(ScryptParameters(n, r, p, dklen, Uint8List.fromList(salt)));
 
     return impl.process(Uint8List.fromList(password));
   }

@@ -9,13 +9,15 @@ void main() {
 
 void principalTest() {
   test('encodes properly', () {
-    expect(Principal.fromHex('efcdab000000000001').toText(), '2chl6-4hpzw-vqaaa-aaaaa-c');
+    expect(Principal.fromHex('efcdab000000000001').toText(),
+        '2chl6-4hpzw-vqaaa-aaaaa-c');
     expect(Principal.fromHex('').toText(), 'aaaaa-aa');
     expect(Principal.anonymous().toText(), '2vxsx-fae');
   });
 
   test('parses properly', () {
-    expect(Principal.fromText('2chl6-4hpzw-vqaaa-aaaaa-c').toHex(), 'EFCDAB000000000001');
+    expect(Principal.fromText('2chl6-4hpzw-vqaaa-aaaaa-c').toHex(),
+        'EFCDAB000000000001');
     expect(Principal.fromText('aaaaa-aa').toHex(), '');
     expect(Principal.fromText('2vxsx-fae').toHex(), '04');
     expect(Principal.fromText('2vxsx-fae').isAnonymous(), true);

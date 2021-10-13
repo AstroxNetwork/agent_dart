@@ -12,7 +12,9 @@ Uint8List convertString(String str, {bool useDartEncode = true}) {
   // return isHexString(str)
   //     ? stringToU8a(strip0xHex(str), useDartEncode: useDartEncode)
   //     : stringToU8a(str, useDartEncode: useDartEncode);
-  return isHex(str) ? hexToU8a(str) : stringToU8a(str, useDartEncode: useDartEncode);
+  return isHex(str)
+      ? hexToU8a(str)
+      : stringToU8a(str, useDartEncode: useDartEncode);
 }
 
 Uint8List convertArray(List<int> arr) {
@@ -34,7 +36,8 @@ Uint8List u8aToU8a(dynamic value, {bool useDartEncode = true}) {
 }
 
 Uint8List u8aConcat(List<dynamic> list) {
-  var u8as = List<Uint8List>.generate(list.length, (index) => Uint8List.fromList([]));
+  var u8as =
+      List<Uint8List>.generate(list.length, (index) => Uint8List.fromList([]));
 
   for (var i = 0; i < list.length; i += 1) {
     u8as[i] = u8aToU8a(list[i]);
@@ -49,7 +52,8 @@ bool u8aEq(Uint8List a, Uint8List b) {
   return const ListEquality().equals(a, b);
 }
 
-Uint8List u8aFixLength(Uint8List value, {int bitLength = -1, bool atStart = false}) {
+Uint8List u8aFixLength(Uint8List value,
+    {int bitLength = -1, bool atStart = false}) {
   final byteLength = (bitLength / 8).ceil();
 
   if (bitLength == -1 || value.length == byteLength) {
@@ -93,7 +97,8 @@ List<Uint8List> u8aSorted(List<Uint8List> u8as) {
   return u8as;
 }
 
-BigInt u8aToBn(Uint8List u8a, {Endian endian = Endian.little, bool isNegative = false}) {
+BigInt u8aToBn(Uint8List u8a,
+    {Endian endian = Endian.little, bool isNegative = false}) {
   return hexToBn(u8aToHex(u8a), endian: endian, isNegative: isNegative);
   // return decodeBigInt(u8a, endian: endian);
 }
