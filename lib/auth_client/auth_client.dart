@@ -57,6 +57,14 @@ class DelegationWithSignature {
   late Uint8List signature;
 }
 
+class FromStorageResult {
+  DelegationIdentity? delegationIdentity;
+  SignIdentity? signIdentity;
+  DelegationChain? delegationChain;
+  FromStorageResult(
+      {this.delegationChain, this.signIdentity, this.delegationIdentity});
+}
+
 abstract class AuthResponse {
   late String kind;
 }
@@ -99,8 +107,8 @@ class AuthClient {
     identity ??= AnonymousIdentity();
   }
 
-  factory AuthClient.fromMap(String scheme, AuthFunction authFunction,
-      Map<String, dynamic> map, Uri? authUri) {
+  static FromStorageResult fromStorage(String str) {
+    var map = Map<String, dynamic>.from(jsonDecode(str));
     var identityString = map[KEY_LOCALSTORAGE_KEY] as String?;
     var delegationString = map[KEY_LOCALSTORAGE_DELEGATION] as String?;
 
@@ -111,21 +119,30 @@ class AuthClient {
         ? DelegationChain.fromJSON(delegationString)
         : null;
 
-    var identity = AnonymousIdentity();
+    DelegationIdentity? identity;
 
     if (chain != null && !isDelegationValid(chain, null)) {
       key = null;
     } else {
-      identity =
-          DelegationIdentity.fromDelegation(key!, chain!) as AnonymousIdentity;
+      identity = DelegationIdentity.fromDelegation(key!, chain!);
     }
+    return FromStorageResult(
+        delegationChain: chain,
+        signIdentity: key,
+        delegationIdentity: identity);
+  }
+
+  factory AuthClient.fromMap(String scheme, AuthFunction authFunction,
+      Map<String, dynamic> map, Uri? authUri) {
+    var fromStorageResult = AuthClient.fromStorage(jsonEncode(map));
+    Identity? identity = fromStorageResult.delegationIdentity;
 
     return AuthClient(
         scheme: scheme,
         authFunction: authFunction,
-        identity: identity,
-        key: key,
-        chain: chain,
+        identity: identity ?? AnonymousIdentity(),
+        key: fromStorageResult.signIdentity,
+        chain: fromStorageResult.delegationChain,
         authUri: authUri);
   }
 
@@ -253,7 +270,7 @@ class AuthClient {
           : null,
       KEY_LOCALSTORAGE_DELEGATION:
           chain != null ? jsonEncode(chain!.toJSON()) : null,
-    });
+    }..removeWhere((key, value) => value == null));
   }
 }
 
