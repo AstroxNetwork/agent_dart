@@ -104,3 +104,6 @@ revamp
 * fixed rosetta with latest mainnet apis
 * fixed cbor with primitive types
 * dart fmt all files
+
+## 0.1.16+2
+* added fromStorage to auth_client
