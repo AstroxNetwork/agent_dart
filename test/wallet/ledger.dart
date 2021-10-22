@@ -42,7 +42,6 @@ void ledgerTest() {
       print("\n----- test fetch balance and send -----");
       print("\n---👩 sender Balance before send:");
       print(senderBalance.e8s);
-
       var receiverBeforeSend = await Ledger.getBalance(
           agent: agent, accountId: someReceiver.ecChecksumAddress!);
       expect(receiverBeforeSend.e8s == BigInt.zero, true);
