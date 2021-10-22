@@ -265,9 +265,8 @@ class AuthClient {
 
   String toStorage() {
     return jsonEncode({
-      KEY_LOCALSTORAGE_KEY: identity != null
-          ? jsonEncode((identity as Ed25519KeyIdentity).toJSON())
-          : null,
+      KEY_LOCALSTORAGE_KEY:
+          key != null ? jsonEncode((key as Ed25519KeyIdentity).toJSON()) : null,
       KEY_LOCALSTORAGE_DELEGATION:
           chain != null ? jsonEncode(chain!.toJSON()) : null,
     }..removeWhere((key, value) => value == null));
