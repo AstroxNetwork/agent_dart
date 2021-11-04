@@ -1853,23 +1853,26 @@ class IDL {
   // ignore: constant_identifier_names
 
   // ignore: non_constant_identifier_names
-  static Tuple(List<CType> components) => TupleClass(components);
+  static TupleClass<List<CType>> Tuple(List<CType> components) =>
+      TupleClass(components);
   // ignore: non_constant_identifier_names
-  static Vec<T>(CType<T> type) => VecClass(type);
+  static VecClass<T> Vec<T>(CType<T> type) => VecClass(type);
   // ignore: non_constant_identifier_names
-  static Opt<T>(CType<T> type) => OptClass(type);
+  static OptClass Opt<T>(CType<T> type) => OptClass(type);
   // ignore: non_constant_identifier_names
-  static Record(Map? fields) => RecordClass(fields);
+  static RecordClass Record(Map? fields) => RecordClass(fields);
   // ignore: non_constant_identifier_names
-  static Variant(Map<String, CType<dynamic>> fields) => VariantClass(fields);
+  static VariantClass Variant(Map<String, CType<dynamic>> fields) =>
+      VariantClass(fields);
   // ignore: non_constant_identifier_names
-  static Rec() => RecClass();
+  static RecClass Rec() => RecClass();
   // ignore: non_constant_identifier_names
-  static Func(List<CType<dynamic>> argTypes, List<CType<dynamic>> retTypes,
-          List<String> annotations) =>
+  static FuncClass Func(List<CType<dynamic>> argTypes,
+          List<CType<dynamic>> retTypes, List<String> annotations) =>
       FuncClass(argTypes, retTypes, annotations);
   // ignore: non_constant_identifier_names
-  static Service(Map<String, FuncClass> fields) => ServiceClass(fields);
+  static ServiceClass Service(Map<String, FuncClass> fields) =>
+      ServiceClass(fields);
 
   static BinaryBlob encode(List<CType> argTypes, List args) =>
       idlEncode(argTypes, args);
