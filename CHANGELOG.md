@@ -107,3 +107,6 @@ revamp
 
 ## 0.1.16+2
 * added fromStorage to auth_client
+
+## 0.1.17
+* added CanisterId class
