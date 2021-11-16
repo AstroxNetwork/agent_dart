@@ -1,5 +1,6 @@
 import 'package:agent_dart/agent/agent/factory.dart';
 import 'package:agent_dart/agent_dart.dart';
+import 'package:agent_dart/protobuf/ic_base_types/pb/v1/types.pb.dart';
 import 'package:agent_dart/wallet/ledger.dart';
 import 'package:agent_dart/wallet/signer.dart';
 import 'package:flutter_test/flutter_test.dart';
