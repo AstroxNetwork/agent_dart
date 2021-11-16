@@ -127,11 +127,17 @@ By contributing to agent_dart, you agree that your contributions will be license
 
 ## ⚠️ FAQ
 
-### Build rust libraries for iOS/macOS
+### Build rust libraries for iOS/MacOS
 - All rust method have to be written inside `SwiftAgentDartPlugin.swift`, to avoid tree shaking of latest release build by XCode.
 - The `agent_dart_podspec` should change accordingly when this repo goes 1.0.0
+- On M1 chipset of MacOS, please install `rosetta 2`
 
-### Network problem in iOS and macOS
+   ```bash
+   $ sudo softwareupdate --install-rosetta --agree-to-license
+   ```
+
+
+### Network problem in iOS and MacOS
 
 - If you run example or build a flutter app, you may come up with this:
   

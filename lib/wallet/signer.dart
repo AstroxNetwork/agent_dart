@@ -254,7 +254,7 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
         {
           return ICPSigner.fromPhrase(phrase,
               index: index, icPath: IC_BASE_PATH)
-            ..setSourceType(SourceType.Keysmith);
+            ..setSourceType(SourceType.Base);
         }
       default:
         {
