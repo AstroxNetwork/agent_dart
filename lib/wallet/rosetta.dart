@@ -75,7 +75,7 @@ class RosettaTransaction extends rosetta.Transaction {
             rosettaTransaction.operations, rosettaTransaction.metadata) {
     hash = rosettaTransaction.transaction_identifier.hash;
     var timestampMs =
-        BigInt.parse(rosettaTransaction.metadata?["timestamp"] as String) ~/
+        BigInt.from(rosettaTransaction.metadata?["timestamp"] as int) ~/
             BigInt.from(1000000);
     timestamp = DateTime.fromMillisecondsSinceEpoch(timestampMs.toInt());
     var operations = rosettaTransaction.operations;
