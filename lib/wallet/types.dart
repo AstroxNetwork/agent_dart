@@ -1570,17 +1570,22 @@ class SearchTransactionsResponse {
   /// transactions is an array of BlockTransactions sorted by most recent BlockIdentifier (meaning that transactions in recent blocks appear first). If there are many transactions for a particular search, transactions may not contain all matching transactions. It is up to the caller to paginate these transactions using the max_block field.
   List<BlockTransaction> transactions;
 
-  SearchTransactionsResponse(this.transactions, this.next_offset);
+  int? total_count;
+
+  SearchTransactionsResponse(
+      this.transactions, this.total_count, this.next_offset);
   factory SearchTransactionsResponse.fromMap(Map<String, dynamic> map) {
     return SearchTransactionsResponse(
         (map["transactions"] as List)
             .map((e) => BlockTransaction.fromMap(e))
             .toList(),
+        map['total_count'] as int,
         map["next_offset"]);
   }
 
   Map<String, dynamic> toJson() => {
         "transactions": transactions.map((e) => e.toJson()),
+        "total_count": total_count ?? transactions.length,
         "next_offset": next_offset
       }..removeWhere(
           (dynamic key, dynamic value) => key == null || value == null);

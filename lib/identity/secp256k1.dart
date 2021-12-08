@@ -144,6 +144,9 @@ class Secp256k1KeyIdentity extends SignIdentity {
       final canonicalisedS = params.n - sig.s;
       sig = ECSignature(sig.r, canonicalisedS);
     }
+    if (sig.r == sig.s) {
+      return await sign(blob);
+    }
     var rU8a = sig.r.toU8a();
     var sU8a = sig.s.toU8a();
     if (rU8a.length < 32) {
@@ -168,6 +171,9 @@ Uint8List sign(String message, BinaryBlob secretKey) {
   if (sig.s.compareTo(_halfCurveOrder) > 0) {
     final canonicalisedS = params.n - sig.s;
     sig = ECSignature(sig.r, canonicalisedS);
+  }
+  if (sig.r == sig.s) {
+    return sign(message, secretKey);
   }
   var rU8a = sig.r.toU8a();
   var sU8a = sig.s.toU8a();
