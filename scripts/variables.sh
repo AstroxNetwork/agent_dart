@@ -9,6 +9,7 @@ ANDROID_ARCHS=(aarch64-linux-android armv7-linux-androideabi i686-linux-android 
 ANDROID_FOLDER=(arm64-v8a armeabi-v7a x86 x86_64)
 ANDROID_BIN_PREFIX=(aarch64-linux-android armv7a-linux-androideabi i686-linux-android)
 IOS_ARCHS=(aarch64-apple-ios x86_64-apple-ios)
+MACOS_ARCHS=(aarch64-apple-darwin x86_64-apple-darwin)
 WIN_ARCHS=(x86_64-pc-windows-msvc)
 # LINUX_ARCHS=(x86_64-unknown-linux-gnu)
 OS_ARCH=$(uname | tr '[:upper:]' '[:lower:]')

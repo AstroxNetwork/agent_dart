@@ -12,13 +12,14 @@ DynamicLibrary getDyLib() {
   if (Platform.isIOS) {
     return DynamicLibrary.process();
   }
+ 
   if (Platform.isMacOS) {
     if (Platform.environment["_"] == null ||
         (Platform.environment["_"] != null &&
             Platform.environment["FLUTTER_ENGINE_SWITCH_1"] != null)) {
-      return DynamicLibrary.open("lib$libName.dylib");
+      return DynamicLibrary.process();
     }
-    return DynamicLibrary.open("macos/lib$libName.dylib");
+    return DynamicLibrary.open("macos/cli/x86_64-apple-darwin/lib$libName.dylib");
   }
   if (Platform.isLinux) {
     if (Platform.environment["_"] == null ||
@@ -35,3 +36,4 @@ DynamicLibrary getDyLib() {
 }
 
 final dylib = getDyLib();
+
