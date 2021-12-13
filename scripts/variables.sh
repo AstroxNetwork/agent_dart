@@ -1,8 +1,12 @@
 #!/bin/bash
 
+
 # Change this name to the rust library name
 LIB_NAME=agent_dart
 API_LEVEL=29
+# SYSTEM_ARCH=`arch`
+
+
 
 ANDROID_ARCHS=(aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android)
 # ANDROID_FOLDER=(arm64-v8a armeabi-v7a x86 x86_64)
