@@ -139,3 +139,4 @@ revamp
 - added CanisterId class
 - fix rosetta api
 - prevent secp256k1 weak signatures
+- fix build scripts
