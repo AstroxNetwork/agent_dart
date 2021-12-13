@@ -13,10 +13,11 @@ A new flutter plugin project.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
+  s.public_header_files = 'Classes/**/*.h'
   s.source_files     = 'Classes/**/*'
   s.dependency 'FlutterMacOS'
-  s.static_framework = false
-  s.vendored_libraries = "**/*.dylib"
+  s.static_framework = true
+  s.vendored_libraries = "**/*.a"
 
   s.platform = :osx, '10.11'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
