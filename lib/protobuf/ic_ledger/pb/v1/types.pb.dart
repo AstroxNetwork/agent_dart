@@ -23,14 +23,30 @@ class LedgerInit extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..aOM<AccountIdentifier>(
-        1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mintingAccount',
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'mintingAccount',
         subBuilder: AccountIdentifier.create)
-    ..pc<Account>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'initialValues', $pb.PbFieldType.PM,
+    ..pc<Account>(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'initialValues',
+        $pb.PbFieldType.PM,
         subBuilder: Account.create)
     ..aOM<$0.PrincipalId>(
-        3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'archiveCanister',
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'archiveCanister',
         subBuilder: $0.PrincipalId.create)
-    ..a<$core.int>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxMessageSizeBytes', $pb.PbFieldType.OU3)
+    ..a<$core.int>(
+        4,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'maxMessageSizeBytes',
+        $pb.PbFieldType.OU3)
     ..hasRequiredFields = false;
 
   LedgerInit._() : super();
@@ -168,25 +184,57 @@ class LedgerUpgrade extends $pb.GeneratedMessage {
 }
 
 class SendRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SendRequest',
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'SendRequest',
       package: const $pb.PackageName(
           const $core.bool.fromEnvironment('protobuf.omit_message_names')
               ? ''
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
-    ..aOM<Memo>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'memo',
+    ..aOM<Memo>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'memo',
         subBuilder: Memo.create)
-    ..aOM<Payment>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'payment',
+    ..aOM<Payment>(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'payment',
         subBuilder: Payment.create)
-    ..aOM<ICPTs>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxFee',
+    ..aOM<ICPTs>(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'maxFee',
         subBuilder: ICPTs.create)
-    ..aOM<Subaccount>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'fromSubaccount',
+    ..aOM<Subaccount>(
+        4,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'fromSubaccount',
         subBuilder: Subaccount.create)
     ..aOM<AccountIdentifier>(
-        5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'to',
+        5,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'to',
         subBuilder: AccountIdentifier.create)
-    ..aOM<BlockHeight>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'createdAt', subBuilder: BlockHeight.create)
-    ..aOM<TimeStamp>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'createdAtTime', subBuilder: TimeStamp.create)
+    ..aOM<BlockHeight>(
+        6,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'createdAt',
+        subBuilder: BlockHeight.create)
+    ..aOM<TimeStamp>(
+        7,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'createdAtTime',
+        subBuilder: TimeStamp.create)
     ..hasRequiredFields = false;
 
   SendRequest._() : super();
@@ -419,25 +467,45 @@ class SendResponse extends $pb.GeneratedMessage {
 }
 
 class NotifyRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'NotifyRequest',
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'NotifyRequest',
       package: const $pb.PackageName(
           const $core.bool.fromEnvironment('protobuf.omit_message_names')
               ? ''
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..aOM<BlockHeight>(
-        1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'blockHeight',
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'blockHeight',
         subBuilder: BlockHeight.create)
     ..aOM<ICPTs>(
-        2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxFee',
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'maxFee',
         subBuilder: ICPTs.create)
     ..aOM<Subaccount>(
-        3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'fromSubaccount',
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'fromSubaccount',
         subBuilder: Subaccount.create)
     ..aOM<$0.PrincipalId>(
-        4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'toCanister',
+        4,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'toCanister',
         subBuilder: $0.PrincipalId.create)
-    ..aOM<Subaccount>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'toSubaccount', subBuilder: Subaccount.create)
+    ..aOM<Subaccount>(
+        5,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'toSubaccount',
+        subBuilder: Subaccount.create)
     ..hasRequiredFields = false;
 
   NotifyRequest._() : super();
@@ -617,17 +685,47 @@ class TransactionNotificationRequest extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..aOM<$0.PrincipalId>(
-        1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'from',
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'from',
         subBuilder: $0.PrincipalId.create)
-    ..aOM<Subaccount>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'fromSubaccount',
+    ..aOM<Subaccount>(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'fromSubaccount',
         subBuilder: Subaccount.create)
     ..aOM<$0.PrincipalId>(
-        3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'to',
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'to',
         subBuilder: $0.PrincipalId.create)
-    ..aOM<Subaccount>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'toSubaccount', subBuilder: Subaccount.create)
-    ..aOM<BlockHeight>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'blockHeight', subBuilder: BlockHeight.create)
-    ..aOM<ICPTs>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'amount', subBuilder: ICPTs.create)
-    ..aOM<Memo>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'memo', subBuilder: Memo.create)
+    ..aOM<Subaccount>(
+        4,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'toSubaccount',
+        subBuilder: Subaccount.create)
+    ..aOM<BlockHeight>(
+        5,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'blockHeight',
+        subBuilder: BlockHeight.create)
+    ..aOM<ICPTs>(
+        6,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'amount',
+        subBuilder: ICPTs.create)
+    ..aOM<Memo>(
+        7,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'memo',
+        subBuilder: Memo.create)
     ..hasRequiredFields = false;
 
   TransactionNotificationRequest._() : super();
@@ -893,12 +991,22 @@ class CyclesNotificationResponse extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..oo(0, [1, 2, 3])
     ..aOM<$0.PrincipalId>(
-        1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'createdCanisterId',
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'createdCanisterId',
         subBuilder: $0.PrincipalId.create)
-    ..aOM<Refund>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'refund',
+    ..aOM<Refund>(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'refund',
         subBuilder: Refund.create)
     ..aOM<ToppedUp>(
-        3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'toppedUp',
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'toppedUp',
         subBuilder: ToppedUp.create)
     ..hasRequiredFields = false;
 
@@ -1200,7 +1308,10 @@ class TipOfChainResponse extends $pb.GeneratedMessage {
             : 'certification',
         subBuilder: Certification.create)
     ..aOM<BlockHeight>(
-        2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'chainLength',
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'chainLength',
         subBuilder: BlockHeight.create)
     ..hasRequiredFields = false;
 
@@ -1614,7 +1725,10 @@ class BlockResponse extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..oo(0, [1, 2])
     ..aOM<EncodedBlock>(
-        1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'block',
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'block',
         subBuilder: EncodedBlock.create)
     ..aOM<$0.PrincipalId>(
         2,
@@ -1709,11 +1823,17 @@ class GetBlocksRequest extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..a<$fixnum.Int64>(
-        1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'start', $pb.PbFieldType.OU6,
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'start',
+        $pb.PbFieldType.OU6,
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..a<$fixnum.Int64>(
         2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'length',
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'length',
         $pb.PbFieldType.OU6,
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
@@ -2090,11 +2210,17 @@ class IterBlocksRequest extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..a<$fixnum.Int64>(
-        1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'start', $pb.PbFieldType.OU6,
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'start',
+        $pb.PbFieldType.OU6,
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..a<$fixnum.Int64>(
         2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'length',
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'length',
         $pb.PbFieldType.OU6,
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
@@ -2236,14 +2362,25 @@ class ArchiveIndexEntry extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..a<$fixnum.Int64>(
-        1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'heightFrom', $pb.PbFieldType.OU6,
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'heightFrom',
+        $pb.PbFieldType.OU6,
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..a<$fixnum.Int64>(
         2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'heightTo',
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'heightTo',
         $pb.PbFieldType.OU6,
         defaultOrMaker: $fixnum.Int64.ZERO)
-    ..aOM<$0.PrincipalId>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'canisterId', subBuilder: $0.PrincipalId.create)
+    ..aOM<$0.PrincipalId>(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'canisterId',
+        subBuilder: $0.PrincipalId.create)
     ..hasRequiredFields = false;
 
   ArchiveIndexEntry._() : super();
@@ -2899,13 +3036,23 @@ class Block extends $pb.GeneratedMessage {
               ? ''
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
-    ..aOM<Hash>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'parentHash',
+    ..aOM<Hash>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'parentHash',
         subBuilder: Hash.create)
     ..aOM<TimeStamp>(
-        2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'timestamp',
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'timestamp',
         subBuilder: TimeStamp.create)
     ..aOM<Transaction>(
-        3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'transaction',
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'transaction',
         subBuilder: Transaction.create)
     ..hasRequiredFields = false;
 
@@ -3080,7 +3227,10 @@ class Account extends $pb.GeneratedMessage {
             : 'identifier',
         subBuilder: AccountIdentifier.create)
     ..aOM<ICPTs>(
-        2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'balance',
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'balance',
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
 
@@ -3173,16 +3323,42 @@ class Transaction extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..oo(0, [1, 2, 3])
-    ..aOM<Burn>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'burn',
+    ..aOM<Burn>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'burn',
         subBuilder: Burn.create)
-    ..aOM<Mint>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mint',
+    ..aOM<Mint>(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'mint',
         subBuilder: Mint.create)
-    ..aOM<Send>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'send',
+    ..aOM<Send>(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'send',
         subBuilder: Send.create)
-    ..aOM<Memo>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'memo',
+    ..aOM<Memo>(
+        4,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'memo',
         subBuilder: Memo.create)
-    ..aOM<BlockHeight>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'createdAt', subBuilder: BlockHeight.create)
-    ..aOM<TimeStamp>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'createdAtTime', subBuilder: TimeStamp.create)
+    ..aOM<BlockHeight>(
+        5,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'createdAt',
+        subBuilder: BlockHeight.create)
+    ..aOM<TimeStamp>(
+        6,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'createdAtTime',
+        subBuilder: TimeStamp.create)
     ..hasRequiredFields = false;
 
   Transaction._() : super();
@@ -3341,14 +3517,29 @@ class Send extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..aOM<AccountIdentifier>(
-        1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'from',
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'from',
         subBuilder: AccountIdentifier.create)
     ..aOM<AccountIdentifier>(
-        2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'to',
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'to',
         subBuilder: AccountIdentifier.create)
-    ..aOM<ICPTs>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'amount',
+    ..aOM<ICPTs>(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'amount',
         subBuilder: ICPTs.create)
-    ..aOM<ICPTs>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxFee', subBuilder: ICPTs.create)
+    ..aOM<ICPTs>(
+        4,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'maxFee',
+        subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
 
   Send._() : super();
@@ -3467,7 +3658,10 @@ class Mint extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..aOM<AccountIdentifier>(
-        2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'to',
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'to',
         subBuilder: AccountIdentifier.create)
     ..aOM<ICPTs>(
         3,
@@ -3557,7 +3751,10 @@ class Burn extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..aOM<AccountIdentifier>(
-        1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'from',
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'from',
         subBuilder: AccountIdentifier.create)
     ..aOM<ICPTs>(
         3,
