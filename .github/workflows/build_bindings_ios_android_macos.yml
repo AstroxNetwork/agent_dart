@@ -51,6 +51,8 @@ jobs:
             target/i686-linux-android
             target/aarch64-apple-ios
             target/x86_64-apple-ios
+            target/aarch64-apple-darwin
+            target/x86_64-apple-darwin
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Install Cargo Tools (cbindgen)
