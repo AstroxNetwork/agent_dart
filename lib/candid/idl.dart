@@ -1065,7 +1065,7 @@ class TupleClass<T extends List> extends ConstructType<List> {
   }
 
   @override
-  T decodeValue(Pipe x, CType t) {
+  decodeValue(Pipe x, CType t) {
     final tuple = checkType(t);
     if ((tuple is! TupleClass)) {
       throw 'not a tuple type';
@@ -1073,7 +1073,7 @@ class TupleClass<T extends List> extends ConstructType<List> {
     if (tuple._components.length < _components.length) {
       throw 'tuple mismatch';
     }
-    final res = [];
+    var res = [];
     for (var entry in tuple._components.asMap().entries) {
       //[i, wireType]
       var i = entry.key;
@@ -1086,7 +1086,7 @@ class TupleClass<T extends List> extends ConstructType<List> {
         res.add(_components[i].decodeValue(x, wireType));
       }
     }
-    return res as T;
+    return res;
   }
 
   @override
