@@ -140,3 +140,6 @@ revamp
 - fix rosetta api
 - prevent secp256k1 weak signatures
 - fix build scripts
+
+## 0.1.17+1
+- fix type annotation applied to dart 2.15.0

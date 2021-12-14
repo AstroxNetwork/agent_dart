@@ -28,7 +28,7 @@ void ledgerTest() {
           canisterId:
               "ryjl3-tyaaa-aaaaa-aaaba-cai", // local ledger canister id, should change accourdingly
           url:
-              "http://127.0.0.1:8000/", // For Android emulator, please use 10.0.2.2 as endpoint
+              "http://localhost:8000/", // For Android emulator, please use 10.0.2.2 as endpoint
           idl: ledgerIdl,
           identity: identity,
           debug: true);
