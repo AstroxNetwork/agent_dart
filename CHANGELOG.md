@@ -143,3 +143,6 @@ revamp
 
 ## 0.1.17+1
 - fix type annotation applied to dart 2.15.0
+
+## 0.1.18
+- added identity from pem

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:basic_utils/basic_utils.dart';
-import 'package:pointycastle/asn1/object_identifiers.dart';
 
 enum KeyType { ED25519, SECP256k1 }
 
@@ -27,7 +26,6 @@ Future<PemFile> getPemFile(String path) async {
 
 Future<Ed25519KeyIdentity> ed25519KeyIdentityFromPem(String pem) async {
   try {
-    // var pemStart = '-----BEGIN PRIVATE KEY-----';
     var privateKeyPem = pem
         .replaceAll("-----END PRIVATE KEY-----", "")
         .replaceAll(RegExp(r"\n+"), "")
@@ -48,9 +46,6 @@ Future<Ed25519KeyIdentity> ed25519KeyIdentityFromPem(String pem) async {
 
 Future<Secp256k1KeyIdentity> secp256k1KeyIdentityFromPem(String pem) async {
   try {
-    // var pem = await File(path).readAsString();
-    // var pemStart = '-----BEGIN EC PRIVATE KEY-----';
-    // var privateKeyPem = pem.split(pemStart)[1];
     var pem2 = CryptoUtils.BEGIN_EC_PRIVATE_KEY + pem;
     var key = CryptoUtils.ecPrivateKeyFromPem(pem2).d;
     var prvU8a = key!.toU8a();
