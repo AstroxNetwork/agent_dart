@@ -7,6 +7,7 @@ import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/utils/is.dart';
 import 'package:agent_dart/wallet/keysmith.dart';
+import 'package:agent_dart/wallet/pem.dart';
 import 'package:agent_dart/wallet/rosetta.dart';
 import 'package:agent_dart/wallet/types.dart';
 
