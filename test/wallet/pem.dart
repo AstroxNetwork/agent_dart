@@ -1,5 +1,5 @@
-import 'package:agent_dart/wallet/pem.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:agent_dart/agent_dart.dart';
 
 void main() {
   pemTest();
