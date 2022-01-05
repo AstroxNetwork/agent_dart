@@ -67,6 +67,9 @@ flutter:
         pluginClass: AgentDartPlugin
         fileName: agent_dart_web.dart
 
+false_secrets:
+  - /test/fixture/*.pem
+
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
