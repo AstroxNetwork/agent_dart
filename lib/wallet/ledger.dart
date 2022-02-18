@@ -1,6 +1,7 @@
 import 'package:agent_dart/agent/agent/factory.dart';
 import 'package:agent_dart/agent/auth.dart';
 import 'package:agent_dart/agent/crypto/random.dart';
+import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/candid/idl.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/protobuf/ic_ledger/pb/v1/types.pb.dart';
@@ -332,17 +333,201 @@ class SendArgs {
           (dynamic key, dynamic value) => key == null || value == null);
 }
 
+final AccountIdentifierNew = IDL.Vec(IDL.Nat8);
+
+class AccountBalanceArgsNew {
+  List<int> account;
+
+  AccountBalanceArgsNew({
+    // ignore: non_constant_identifier_names
+    required this.account,
+  });
+
+  factory AccountBalanceArgsNew.fromMap(Map map) {
+    return AccountBalanceArgsNew(account: List<int>.from(map["account"]));
+  }
+
+  static Record idl = IDL.Record({
+    'account': AccountIdentifierNew,
+  });
+  Map<String, dynamic> toJson() => {
+        "account": account,
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
+}
+
+class Tokens {
+  BigInt e8s;
+
+  Tokens({
+    // ignore: non_constant_identifier_names
+    required this.e8s,
+  });
+
+  factory Tokens.fromMap(Map map) {
+    return Tokens(e8s: map["e8s"]);
+  }
+
+  static Record idl = IDL.Record({"e8s": IDL.Nat64});
+  Map<String, dynamic> toJson() => {
+        "e8s": e8s,
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
+}
+
+class TransferArgs {
+  // ignore: non_constant_identifier_names
+  List<int> to;
+  Tokens fee;
+  BigInt memo;
+  // ignore: non_constant_identifier_names
+  List<int>? from_subaccount;
+  // ignore: non_constant_identifier_names
+  TimeStamp? created_at_time;
+  Tokens amount;
+
+  TransferArgs({
+    // ignore: non_constant_identifier_names
+    required this.to,
+    required this.fee,
+    required this.memo,
+    required this.amount,
+    // ignore: non_constant_identifier_names
+    this.from_subaccount,
+    // ignore: non_constant_identifier_names
+    this.created_at_time,
+  });
+
+  factory TransferArgs.fromMap(Map map) {
+    return TransferArgs(
+      to: (map["to"] is String
+          ? isHexString(map["to"])
+              ? (map["to"] as String).toU8a().toList()
+              : Principal.fromText((map["to"] as String)).toAccountID().toList()
+          : (u8aToU8a(map["to"]).toList())),
+      fee: Tokens.fromMap(map["fee"]),
+      memo: map["memo"],
+      amount: Tokens.fromMap(map["amount"]),
+      from_subaccount: map["from_subaccount"] != null
+          ? List<int>.from(map["from_subaccount"])
+          : null,
+      created_at_time: map["created_at_time"] != null
+          ? TimeStamp.fromMap(map["created_at_time"])
+          : null,
+    );
+  }
+
+  static Record idl = IDL.Record({
+    'to': AccountIdentifierNew,
+    'fee': Tokens.idl,
+    'memo': Memo,
+    'from_subaccount': IDL.Opt(SubAccount),
+    'created_at_time': IDL.Opt(TimeStamp.idl),
+    'amount': Tokens.idl,
+  });
+  Map<String, dynamic> toJson() => {
+        "to": to,
+        "fee": fee.toJson(),
+        "memo": memo,
+        "from_subaccount": from_subaccount != null ? [from_subaccount] : [],
+        "created_at_time":
+            created_at_time != null ? [created_at_time!.toJson()] : [],
+        "amount": amount.toJson()
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
+}
+
+final BlockIndex = IDL.Nat64;
+
+class TransferError {
+  Map? TxTooOld;
+  Map? BadFee;
+  Map? TxDuplicate;
+  bool? TxCreatedInFuture;
+  Map? InsufficientFunds;
+
+  TransferError(
+      {this.TxTooOld,
+      this.BadFee,
+      this.TxDuplicate,
+      this.TxCreatedInFuture,
+      this.InsufficientFunds});
+
+  factory TransferError.fromMap(Map map) {
+    return TransferError(
+        TxTooOld: map["TxTooOld"] != null ? Map.from(map["TxTooOld"]) : null,
+        BadFee: map["BadFee"] != null ? Map.from(map["BadFee"]) : null,
+        TxDuplicate:
+            map["TxDuplicate"] != null ? Map.from(map["TxDuplicate"]) : null,
+        InsufficientFunds: map["InsufficientFunds"] != null
+            ? Map.from(map["InsufficientFunds"])
+            : null,
+        TxCreatedInFuture: map.containsKey("TxCreatedInFuture"));
+  }
+  static Variant idl = IDL.Variant({
+    'TxTooOld': IDL.Record({'allowed_window_nanos': IDL.Nat64}),
+    'BadFee': IDL.Record({'expected_fee': Tokens.idl}),
+    'TxDuplicate': IDL.Record({'duplicate_of': BlockIndex}),
+    'TxCreatedInFuture': IDL.Null,
+    'InsufficientFunds': IDL.Record({'balance': Tokens.idl}),
+  });
+  Map<String, dynamic> toJson() {
+    var res = {
+      "TxTooOld": TxTooOld,
+      "BadFee": BadFee,
+      "TxDuplicate": TxDuplicate,
+      "InsufficientFunds": InsufficientFunds,
+      "TxCreatedInFuture": TxCreatedInFuture
+    }..removeWhere((dynamic key, dynamic value) =>
+        key == null || value == null || value == false);
+    if (res["TxCreatedInFuture"] != null && res["TxCreatedInFuture"] == true) {
+      res.update("TxCreatedInFuture", (value) => null);
+    }
+    return res;
+  }
+}
+
+class TransferResult {
+  BigInt? Ok;
+  TransferError? Err;
+  TransferResult({this.Ok, this.Err});
+  factory TransferResult.fromMap(Map map) {
+    return TransferResult(
+      Ok: map["Ok"] != null ? (map["Ok"]) : null,
+      Err: map["Err"] != null ? TransferError.fromMap(map["Err"]) : null,
+    );
+  }
+
+  static Variant idl = IDL.Variant({
+    'Ok': BlockIndex,
+    'Err': TransferError.idl,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "Ok": Ok,
+      "Err": Err?.toJson(),
+    }..removeWhere(
+        (dynamic key, dynamic value) => key == null || value == null);
+  }
+}
+
 Service ledgerIdl = IDL.Service({
+  'account_balance':
+      IDL.Func([AccountBalanceArgsNew.idl], [Tokens.idl], ['query']),
   "account_balance_dfx":
       IDL.Func([AccountBalanceArgs.idl], [ICPTs.idl], ['query']),
   "notify_dfx": IDL.Func([NotifyCanisterArgs.idl], [], []),
   "send_dfx": IDL.Func([SendArgs.idl], [BlockHeight], []),
+  'transfer': IDL.Func([TransferArgs.idl], [TransferResult.idl], []),
 });
 
 class LedgerMethods {
   static const getBalance = 'account_balance_dfx';
   static const notify = 'notify_dfx';
   static const send = 'send_dfx';
+  static const accountBalance = 'account_balance';
+  static const transfer = 'transfer';
 }
 
 // ledgerInit() {
@@ -411,6 +596,30 @@ class Ledger {
     }
   }
 
+  static Future<Tokens> accountBalance({
+    required AgentFactory agent,
+    required String accountIdOrPrincipal,
+    SignIdentity? identity,
+  }) async {
+    try {
+      var ledgerInstance = Ledger.hook(agent)..setIdentity(identity);
+      var accountId = isHexString(accountIdOrPrincipal)
+          ? (accountIdOrPrincipal).toU8a().toList()
+          : Principal.fromText(accountIdOrPrincipal).toAccountID().toList();
+
+      var res = await ledgerInstance.agent.actor!
+              .getFunc(LedgerMethods.accountBalance)!(
+          [AccountBalanceArgsNew(account: accountId).toJson()]);
+
+      if (res != null) {
+        return Tokens.fromMap(res);
+      }
+      throw "Cannot get count but $res";
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   static Future<BigInt> send({
     required AgentFactory agent,
     required String to,
@@ -444,6 +653,46 @@ class Ledger {
 
       if (res != null) {
         return res as BigInt;
+      }
+      throw "Cannot get count but $res";
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<TransferResult> transfer({
+    required AgentFactory agent,
+    required String to,
+    required BigInt amount,
+    SendOpts? sendOpts,
+    SignIdentity? identity,
+  }) async {
+    try {
+      var ledgerInstance = Ledger.hook(agent)..setIdentity(identity);
+      var defaultFee = BigInt.from(10000);
+      var defaultMemo = getRandomValues(4).toBn(endian: Endian.big);
+
+      var sendArgs = {
+        "to": to,
+        "fee": {
+          "e8s": sendOpts?.fee ?? defaultFee,
+        },
+        "amount": {"e8s": amount},
+        "memo": sendOpts?.memo ?? defaultMemo,
+        "from_subaccount": null,
+        "created_at_time": sendOpts?.created_at_time == null
+            ? null
+            : {
+                "timestamp_nanos":
+                    sendOpts?.created_at_time?.millisecondsSinceEpoch.toBn()
+              },
+      };
+
+      var res = await ledgerInstance.agent.actor!.getFunc(
+          LedgerMethods.transfer)!([TransferArgs.fromMap(sendArgs).toJson()]);
+
+      if (res != null) {
+        return TransferResult.fromMap(res as Map);
       }
       throw "Cannot get count but $res";
     } catch (e) {

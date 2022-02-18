@@ -146,3 +146,7 @@ revamp
 
 ## 0.1.18
 - added identity from pem
+
+## 0.1.19
+- use latest api of ledger
+- fix encoder
