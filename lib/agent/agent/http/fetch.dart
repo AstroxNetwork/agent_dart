@@ -41,6 +41,12 @@ Future<Map<String, dynamic>> defaultFetch(
       }).timeout(timeout ?? defaultTimeout, onTimeout: () {
         throw 'http request(GET) to ${host ?? "$defaultHost$endpoint"} timeout';
       });
+      if (getResponse.headers["content-type"] != null &&
+          getResponse.headers["content-type"]!.split(",").length > 1) {
+        var actualHeader =
+            getResponse.headers["content-type"]!.split(",").first;
+        getResponse.headers["content-type"] = actualHeader;
+      }
       client.close();
       return {
         "body": getResponse.body,
@@ -55,7 +61,8 @@ Future<Map<String, dynamic>> defaultFetch(
         Uri.parse(host ?? "$defaultHost$endpoint"),
         headers: {
           ...?baseHeaders,
-          ...?headers,
+          // ...?headers,
+          'Content-Type': 'application/cbor'
         },
         body: body,
         // encoding: Encoding.getByName('utf8')
@@ -63,7 +70,12 @@ Future<Map<String, dynamic>> defaultFetch(
           .timeout(timeout ?? defaultTimeout, onTimeout: () {
         throw 'http request(POST) to ${host ?? "$defaultHost$endpoint"} timeout';
       });
-
+      if (postResponse.headers["content-type"] != null &&
+          postResponse.headers["content-type"]!.split(",").length > 1) {
+        var actualHeader =
+            postResponse.headers["content-type"]!.split(",").first;
+        postResponse.headers["content-type"] = actualHeader;
+      }
       client.close();
       return {
         "body": postResponse.body,
