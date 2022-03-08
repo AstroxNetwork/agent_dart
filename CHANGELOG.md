@@ -150,3 +150,9 @@ revamp
 ## 0.1.19
 - use latest api of ledger
 - fix encoder
+
+## 0.1.19+1
+- skip
+
+## 0.1.19+2
+- fix http request when IC returns dual headers using flutter web,
