@@ -207,139 +207,93 @@ Future<String> decryptPhrase(
 
 Future<String> encodePrivateKey(String prvKey, String psw,
     [Map<String, dynamic>? options]) async {
-  final response = ReceivePort();
-
-  await Isolate.spawn(
-    _encodePrivateKey,
-    response.sendPort,
-    onExit: response.sendPort,
-  );
-
-  final sendPort = await response.first as SendPort;
-  final receivePort = ReceivePort();
-
-  sendPort.send([prvKey, psw, options, receivePort.sendPort]);
-
   try {
-    final result = await receivePort.first as String;
-    response.close();
-    return result;
+    final response = ReceivePort();
+
+    await Isolate.spawn(
+      _encodePrivateKey,
+      [response.sendPort, prvKey, psw, options],
+    );
+
+    return (await response.first) as String;
   } catch (e) {
     rethrow;
   }
 }
 
-void _encodePrivateKey(SendPort initialReplyTo) {
-  final port = ReceivePort();
-
-  initialReplyTo.send(port.sendPort);
-
-  port.listen((message) async {
-    try {
-      final prvKey = message[0] as String;
-      final psw = message[1] as String;
-      final options =
-          message[2] != null ? message[2] as Map<String, dynamic> : null;
-      final send = message.last as SendPort;
-      final encrypted = await encrypt(prvKey, psw, options);
-
-      send.send(encrypted);
-    } catch (e) {
-      rethrow;
-    }
-  });
+Future<void> _encodePrivateKey(List<dynamic> args) async {
+  try {
+    SendPort responsePort = args[0];
+    final prvKey = args[1] as String;
+    final psw = args[2] as String;
+    final options = args[3] != null ? args[3] as Map<String, dynamic> : null;
+    final encrypted = await encrypt(prvKey, psw, options);
+    Isolate.exit(responsePort, encrypted);
+  } catch (e) {
+    rethrow;
+  }
 }
 
 Future<String> decodePrivateKey(
   Map<String, dynamic> keyStore,
   String psw,
 ) async {
-  final response = ReceivePort();
-
-  await Isolate.spawn(
-    _decodePrivateKey,
-    response.sendPort,
-    onExit: response.sendPort,
-    onError: response.sendPort,
-  );
-
-  final sendPort = await response.first as SendPort;
-  final receivePort = ReceivePort();
-
-  sendPort.send([keyStore, psw, receivePort.sendPort]);
-
   try {
-    final result = await receivePort.first as String;
+    final response = ReceivePort();
 
-    response.close();
-    return result;
+    await Isolate.spawn(
+      _decodePrivateKey,
+      [response.sendPort, keyStore, psw],
+    );
+
+    final sendPort = await response.first as SendPort;
+    final receivePort = ReceivePort();
+
+    sendPort.send([keyStore, psw, receivePort.sendPort]);
+    return (await response.first) as String;
   } catch (e) {
     rethrow;
   }
 }
 
-void _decodePrivateKey(SendPort initialReplyTo) {
-  final port = ReceivePort();
-
-  initialReplyTo.send(port.sendPort);
-
-  port.listen((message) async {
-    try {
-      final send = message.last as SendPort;
-      final keyStore = message[0] as Map<String, dynamic>;
-      final psw = message[1] as String;
-
-      var decrypted = await decrypt(keyStore, psw);
-      send.send(decrypted);
-    } catch (e) {
-      rethrow;
-    }
-  });
+Future<void> _decodePrivateKey(List<dynamic> args) async {
+  try {
+    SendPort responsePort = args[0];
+    final keyStore = args[1] as Map<String, dynamic>;
+    final psw = args[2] as String;
+    var decrypted = await decrypt(keyStore, psw);
+    Isolate.exit(responsePort, decrypted);
+  } catch (e) {
+    rethrow;
+  }
 }
 
 Future<String> encodePhrase(String prvKey, String psw,
     [Map<String, dynamic>? options]) async {
   final response = ReceivePort();
-
-  await Isolate.spawn(
-    _encodePhrase,
-    response.sendPort,
-    onExit: response.sendPort,
-  );
-
-  final sendPort = await response.first as SendPort;
-  final receivePort = ReceivePort();
-
-  sendPort.send([prvKey, psw, options, receivePort.sendPort]);
-
   try {
-    final result = await receivePort.first as String;
-    response.close();
-    return result;
+    await Isolate.spawn(
+      _encodePhrase,
+      [response.sendPort, prvKey, psw, options],
+    );
+
+    return (await response.first) as String;
   } catch (e) {
     rethrow;
   }
 }
 
-void _encodePhrase(SendPort initialReplyTo) {
-  final port = ReceivePort();
-
-  initialReplyTo.send(port.sendPort);
-
-  port.listen((message) async {
-    try {
-      final prvKey = message[0] as String;
-      final psw = message[1] as String;
-      final options =
-          message[2] != null ? message[2] as Map<String, dynamic> : null;
-      final send = message.last as SendPort;
-      final encrypted = await encryptPhrase(prvKey, psw, options);
-
-      send.send(encrypted);
-    } catch (e) {
-      rethrow;
-    }
-  });
+Future<void> _encodePhrase(List<dynamic> args) async {
+  try {
+    SendPort responsePort = args[0];
+    final prvKey = args[1] as String;
+    final psw = args[2] as String;
+    final options = args[3] != null ? args[3] as Map<String, dynamic> : null;
+    final encrypted = await encryptPhrase(prvKey, psw, options);
+    Isolate.exit(responsePort, encrypted);
+  } catch (e) {
+    rethrow;
+  }
 }
 
 Future<String> decodePhrase(
@@ -347,45 +301,26 @@ Future<String> decodePhrase(
   String psw,
 ) async {
   final response = ReceivePort();
-
-  await Isolate.spawn(
-    _decodePhrase,
-    response.sendPort,
-    onExit: response.sendPort,
-    onError: response.sendPort,
-  );
-
-  final sendPort = await response.first as SendPort;
-  final receivePort = ReceivePort();
-
-  sendPort.send([keyStore, psw, receivePort.sendPort]);
-
   try {
-    final result = await receivePort.first as String;
+    await Isolate.spawn(
+      _decodePhrase,
+      [response.sendPort, keyStore, psw],
+    );
 
-    response.close();
-    return result;
+    return (await response.first) as String;
   } catch (e) {
     rethrow;
   }
 }
 
-void _decodePhrase(SendPort initialReplyTo) {
-  final port = ReceivePort();
-
-  initialReplyTo.send(port.sendPort);
-
-  port.listen((message) async {
-    try {
-      final send = message.last as SendPort;
-      final keyStore = message[0] as Map<String, dynamic>;
-      final psw = message[1] as String;
-
-      var decrypted = await decryptPhrase(keyStore, psw);
-
-      send.send(decrypted);
-    } catch (e) {
-      rethrow;
-    }
-  });
+Future<void> _decodePhrase(List<dynamic> args) async {
+  try {
+    SendPort responsePort = args[0];
+    final keyStore = args[1] as Map<String, dynamic>;
+    final psw = args[2] as String;
+    final decrypted = await decryptPhrase(keyStore, psw);
+    Isolate.exit(responsePort, decrypted);
+  } catch (e) {
+    rethrow;
+  }
 }

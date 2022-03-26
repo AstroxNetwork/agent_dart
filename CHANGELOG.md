@@ -156,3 +156,6 @@ revamp
 
 ## 0.1.19+2
 - fix http request when IC returns dual headers using flutter web,
+
+## 0.1.19+3
+- use Isolate.spawn+exit to optimize isolate functions

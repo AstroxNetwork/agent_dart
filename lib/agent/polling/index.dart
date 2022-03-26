@@ -1,7 +1,6 @@
 export 'strategy.dart';
 
 import 'package:agent_dart/agent/agent.dart';
-import 'package:agent_dart/agent/certificate.dart';
 import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/principal/principal.dart';
 
