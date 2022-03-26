@@ -33,42 +33,30 @@ class FFIBls implements BaseBLS {
 
   @override
   Future<bool> blsInit() async {
-    // ignore: unnecessary_null_comparison
-    if (dylib == null) throw "ERROR: The library is not initialized 🙁";
-    final response = ReceivePort();
-    await Isolate.spawn(
-      _isolateBlsInit,
-      response.sendPort,
-      onExit: response.sendPort,
-    );
-    final sendPort = await response.first as SendPort;
-    final receivePort = ReceivePort();
-    sendPort.send([receivePort.sendPort]);
-
     try {
-      final result = await receivePort.first as bool;
-      response.close();
-      return result;
+      // ignore: unnecessary_null_comparison
+      if (dylib == null) throw "ERROR: The library is not initialized 🙁";
+      final response = ReceivePort();
+      await Isolate.spawn(
+        _isolateBlsInit,
+        [response.sendPort],
+      );
+      return (await response.first) as bool;
     } catch (e) {
       throw "Cannot initialize BLS instance :$e";
     }
   }
 
-  void _isolateBlsInit(SendPort initialReplyTo) {
-    final port = ReceivePort();
-
-    initialReplyTo.send(port.sendPort);
-
-    port.listen((message) async {
-      try {
-        Pointer<Utf8> result = rustBlsInit();
-        final send = message.last as SendPort;
-        send.send(result.cast<Utf8>().toDartString() == "true");
-        freeCString(result);
-      } catch (e) {
-        message.last.send(e);
-      }
-    });
+  Future<void> _isolateBlsInit(List<dynamic> args) async {
+    try {
+      SendPort responsePort = args[0];
+      Pointer<Utf8> result = rustBlsInit();
+      final res = result.cast<Utf8>().toDartString() == "true";
+      freeCString(result);
+      Isolate.exit(responsePort, res);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
@@ -77,54 +65,42 @@ class FFIBls implements BaseBLS {
     Uint8List sig,
     Uint8List msg,
   ) async {
-    // ignore: unnecessary_null_comparison
-    if (dylib == null) throw "ERROR: The library is not initialized 🙁";
-    // if (await blsInit() != true) {
-    //   throw "ERROR: Cannot initialize BLS instance";
-    // }
-    final response = ReceivePort();
-    await Isolate.spawn(
-      _isolateBlsVerify,
-      response.sendPort,
-      onExit: response.sendPort,
-    );
-    final sendPort = await response.first as SendPort;
-    final receivePort = ReceivePort();
-    sendPort.send([
-      sig.toHex(include0x: false),
-      msg.toHex(include0x: false),
-      pk.toHex(include0x: false),
-      receivePort.sendPort
-    ]);
-
     try {
-      final result = await receivePort.first as bool;
-      response.close();
-      return result;
+      // ignore: unnecessary_null_comparison
+      if (dylib == null) throw "ERROR: The library is not initialized 🙁";
+      // if (await blsInit() != true) {
+      //   throw "ERROR: Cannot initialize BLS instance";
+      // }
+      final response = ReceivePort();
+      await Isolate.spawn(
+        _isolateBlsVerify,
+        [
+          response.sendPort,
+          sig.toHex(include0x: false),
+          msg.toHex(include0x: false),
+          pk.toHex(include0x: false),
+        ],
+      );
+      return (await response.first) as bool;
     } catch (e) {
       throw "Cannot verify bls_verify instance :$e";
     }
   }
 
-  void _isolateBlsVerify(SendPort initialReplyTo) {
-    final port = ReceivePort();
-
-    initialReplyTo.send(port.sendPort);
-
-    port.listen((message) async {
-      try {
-        final sig = message[0] as String;
-        final msg = message[1] as String;
-        final pk = message[2] as String;
-        final send = message.last as SendPort;
-        Pointer<Utf8> result = rustBlsVerify(
-            sig.toNativeUtf8(), msg.toNativeUtf8(), pk.toNativeUtf8());
-        send.send(result.cast<Utf8>().toDartString() == "true");
-        freeCString(result);
-      } catch (e) {
-        message.last.send(e);
-      }
-    });
+  Future<void> _isolateBlsVerify(List<dynamic> args) {
+    try {
+      SendPort responsePort = args[0];
+      final sig = args[1] as String;
+      final msg = args[2] as String;
+      final pk = args[3] as String;
+      Pointer<Utf8> result = rustBlsVerify(
+          sig.toNativeUtf8(), msg.toNativeUtf8(), pk.toNativeUtf8());
+      final res = result.cast<Utf8>().toDartString() == "true";
+      freeCString(result);
+      Isolate.exit(responsePort, res);
+    } catch (e) {
+      rethrow;
+    }
   }
 }
 
