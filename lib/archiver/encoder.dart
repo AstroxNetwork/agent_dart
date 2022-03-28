@@ -96,10 +96,11 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
   }
 
   @override
-  void addDirectory(Directory dir,
-      {bool includeDirName = true, int? level, bool followLinks = true}) {
+  Future<void> addDirectory(Directory dir,
+      {bool includeDirName = true, int? level, bool followLinks = true}) async {
     // _encoder.signingBlock.write(_output);
     List files = dir.listSync(recursive: true, followLinks: followLinks);
+    var futures = <Future<void>>[];
     for (var file in files) {
       if (file is! File) {
         continue;
@@ -108,13 +109,14 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
       final f = file;
       final dir_name = path.basename(dir.path);
       final rel_path = path.relative(f.path, from: dir.path);
-      addFile(
-          f, includeDirName ? (dir_name + '/' + rel_path) : rel_path, level);
+      futures.add(addFile(
+          f, includeDirName ? (dir_name + '/' + rel_path) : rel_path, level));
     }
+    await Future.wait(futures);
   }
 
   @override
-  void addFile(File file, [String? filename, int? level = GZIP]) {
+  Future<void> addFile(File file, [String? filename, int? level = GZIP]) async {
     var file_stream = InputFileStream(file.path);
     var archiveFile = ArchiveFile.stream(
         filename ?? path.basename(file.path), file.lengthSync(), file_stream);
@@ -127,7 +129,7 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
     archiveFile.mode = file.statSync().mode;
 
     _encoder.addFile(archiveFile);
-    file_stream.close();
+    await file_stream.close();
   }
 
   @override
