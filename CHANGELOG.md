@@ -159,3 +159,6 @@ revamp
 
 ## 0.1.19+3
 - use Isolate.spawn+exit to optimize isolate functions
+
+## 0.1.19+4
+- fix archive 3.3.0
