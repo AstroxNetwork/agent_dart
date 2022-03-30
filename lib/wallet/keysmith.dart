@@ -180,11 +180,10 @@ class Secp256k1PublicKey implements PublicKey {
       final bl = publicKey.byteLength;
       throw "secp256k1 public key must be ${Secp256k1PublicKey.RAW_KEY_LENGTH} bytes long (is $bl)";
     }
-    final derPublicKey = Uint8List.fromList([
+    return Uint8List.fromList([
       ...Secp256k1PublicKey.DER_PREFIX,
       ...Uint8List.fromList(publicKey),
     ]);
-    return derBlobFromBlob(blobFromUint8Array(derPublicKey));
   }
 
   static Uint8List derDecode(BinaryBlob key) {
@@ -194,8 +193,7 @@ class Secp256k1PublicKey implements PublicKey {
       final bl = key.byteLength;
       throw "secp256k1 DER-encoded public key must be $expectedLength bytes long (is $bl)";
     }
-    final rawKey =
-        blobFromUint8Array(key.sublist(Secp256k1PublicKey.DER_PREFIX.length));
+    final rawKey = key.sublist(Secp256k1PublicKey.DER_PREFIX.length);
     if (!u8aEq(derEncode(rawKey), key)) {
       throw 'secp256k1 DER-encoded public key is invalid. A valid secp256k1 DER-encoded public key '
           "must have the following prefix: ${Secp256k1PublicKey.DER_PREFIX}";

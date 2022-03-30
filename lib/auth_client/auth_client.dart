@@ -150,17 +150,17 @@ class AuthClient {
     var delegations = message.delegations.map((signedDelegation) {
       return SignedDelegation.fromMap({
         "delegation": Delegation(
-          blobFromUint8Array(signedDelegation.delegation.pubkey),
+          signedDelegation.delegation.pubkey,
           signedDelegation.delegation.expiration,
           signedDelegation.delegation.targets,
         ),
-        "signature": blobFromUint8Array(signedDelegation.signature),
+        "signature": signedDelegation.signature,
       });
     }).toList();
 
     final delegationChain = DelegationChain.fromDelegations(
       delegations,
-      derBlobFromBlob(blobFromUint8Array(message.userPublicKey)),
+      message.userPublicKey,
     );
 
     if (key == null) {

@@ -59,8 +59,7 @@ class Ed25519PublicKey implements auth.PublicKey {
   ]);
 
   static DerEncodedBlob derEncode(BinaryBlob publicKey) {
-    return derBlobFromBlob(
-        blobFromUint8Array(wrapDER(publicKey.buffer, ED25519_OID)));
+    return wrapDER(publicKey.buffer, ED25519_OID);
   }
 
   static BinaryBlob derDecode(BinaryBlob key) {
@@ -69,7 +68,7 @@ class Ed25519PublicKey implements auth.PublicKey {
       throw 'An Ed25519 public key must be exactly 32bytes long';
     }
 
-    return blobFromUint8Array(unwrapped);
+    return unwrapped;
   }
 
   late BinaryBlob rawKey;
@@ -105,8 +104,8 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     secretKey = kp.asTypedList;
 
     return Ed25519KeyIdentity(
-      Ed25519PublicKey.fromRaw(blobFromUint8Array(publicKey)),
-      blobFromUint8Array(secretKey),
+      Ed25519PublicKey.fromRaw(publicKey),
+      secretKey,
     );
   }
 
@@ -135,18 +134,16 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
 
       final pk = publicKey != null
           ? Ed25519PublicKey.fromRaw(
-              blobFromUint8Array(Uint8List.fromList(List<int>.from(publicKey))))
-          : Ed25519PublicKey.fromDer(blobFromUint8Array(
-              Uint8List.fromList(List<int>.from(_publicKey!))));
+              Uint8List.fromList(List<int>.from(publicKey)))
+          : Ed25519PublicKey.fromDer(
+              Uint8List.fromList(List<int>.from(_publicKey!)));
 
       if (publicKey != null && secretKey != null) {
-        return Ed25519KeyIdentity(pk,
-            blobFromUint8Array(Uint8List.fromList(List<int>.from(secretKey))));
+        return Ed25519KeyIdentity(
+            pk, Uint8List.fromList(List<int>.from(secretKey)));
       } else if (_publicKey != null && _privateKey != null) {
         return Ed25519KeyIdentity(
-            pk,
-            blobFromUint8Array(
-                Uint8List.fromList(List<int>.from(_privateKey))));
+            pk, Uint8List.fromList(List<int>.from(_privateKey)));
       }
     }
     throw 'Deserialization error: Invalid JSON type for string: ${jsonEncode(json)}';
@@ -160,7 +157,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
   static Ed25519KeyIdentity fromSecretKey(Uint8List secretKey) {
     final keyPair = SigningKey.fromValidBytes(secretKey);
     final identity = Ed25519KeyIdentity.fromKeyPair(
-      blobFromUint8Array(keyPair.publicKey.asTypedList),
+      keyPair.publicKey.asTypedList,
       secretKey,
     );
     return identity;
@@ -196,7 +193,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
 
   /// Return a copy of the key pair.
   auth.KeyPair getKeyPair() {
-    return Ed25519KeyPair(_publicKey, blobFromUint8Array(_privateKey));
+    return Ed25519KeyPair(_publicKey, _privateKey);
   }
 
   /// Return the public key.
@@ -210,10 +207,9 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
   @override
   Future<BinaryBlob> sign(dynamic challenge) {
     final blob = challenge is BinaryBlob
-        ? blobFromUint8Array(challenge)
+        ? challenge
         : blobFromBuffer(challenge as ByteBuffer);
-    return Future.value(
-        blobFromUint8Array(_sk.sign(blob).signature.asTypedList));
+    return Future.value(_sk.sign(blob).signature.asTypedList);
   }
 
   bool verify(Uint8List signature, Uint8List message) {
