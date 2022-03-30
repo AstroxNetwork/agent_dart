@@ -55,18 +55,14 @@ class Secp256k1KeyIdentity extends SignIdentity {
       var secretKey = parsed["secretKey"];
       var _privateKey = parsed["_privateKey"];
       final pk = publicKey != null
-          ? Secp256k1PublicKey.fromRaw(
-              blobFromUint8Array(Uint8List.fromList(publicKey.data)))
-          : Secp256k1PublicKey.fromDer(
-              blobFromUint8Array(Uint8List.fromList(_publicKey.data)));
+          ? Secp256k1PublicKey.fromRaw(Uint8List.fromList(publicKey.data))
+          : Secp256k1PublicKey.fromDer(Uint8List.fromList(_publicKey.data));
 
       if (publicKey && secretKey && secretKey.data) {
-        return Secp256k1KeyIdentity(
-            pk, blobFromUint8Array(Uint8List.fromList(secretKey.data)));
+        return Secp256k1KeyIdentity(pk, Uint8List.fromList(secretKey.data));
       }
       if (_publicKey && _privateKey && _privateKey.data) {
-        return Secp256k1KeyIdentity(
-            pk, blobFromUint8Array(Uint8List.fromList(_privateKey.data)));
+        return Secp256k1KeyIdentity(pk, Uint8List.fromList(_privateKey.data));
       }
     }
     throw "Deserialization error: Invalid JSON type for string: ${jsonEncode(json)}";
@@ -80,11 +76,8 @@ class Secp256k1KeyIdentity extends SignIdentity {
 
   static Secp256k1KeyIdentity fromSecretKey(Uint8List secretKey) {
     try {
-      final publicKey =
-          getPublicFromPrivateKey(Uint8List.fromList(secretKey), false);
-      final identity = Secp256k1KeyIdentity.fromKeyPair(
-          blobFromUint8Array(publicKey!),
-          blobFromUint8Array(Uint8List.fromList(secretKey)));
+      final publicKey = getPublicFromPrivateKey(secretKey, false);
+      final identity = Secp256k1KeyIdentity.fromKeyPair(publicKey!, secretKey);
       return identity;
     } catch (e) {
       rethrow;
@@ -106,8 +99,7 @@ class Secp256k1KeyIdentity extends SignIdentity {
 
   /// Return a copy of the key pair.
   Secp256k1KeyPair getKeyPair() {
-    return Secp256k1KeyPair(
-        _publicKey, blobFromUint8Array(Uint8List.fromList(_privateKey)));
+    return Secp256k1KeyPair(_publicKey, _privateKey);
   }
 
   /// Return the public key.

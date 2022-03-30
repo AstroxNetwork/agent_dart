@@ -1580,7 +1580,7 @@ BinaryBlob idlEncode(List<CType> argTypes, List args) {
     }),
   );
 
-  return blobFromUint8Array(u8aConcat([magic, table, len, typs, vals]));
+  return u8aConcat([magic, table, len, typs, vals]);
 }
 
 /// Decode a binary value
