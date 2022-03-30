@@ -95,7 +95,7 @@ String hashTreeToString(List tree) {
       }
     case 4:
       {
-        return "pruned(${blobToHex(blobFromUint8Array(tree[1] as Uint8List))}";
+        return "pruned(${blobToHex(tree[1] as Uint8List)}";
       }
     default:
       {

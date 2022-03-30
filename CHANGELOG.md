@@ -162,3 +162,6 @@ revamp
 
 ## 0.1.19+4
 - fix archive 3.3.0
+
+## 0.1.20
+- remove unused files and functions

@@ -20,7 +20,7 @@ String requestIdToHex(RequestId requestId) {
 
 BinaryBlob hash(Uint8List data) {
   final hashed = sha256.convert(data).bytes;
-  return blobFromUint8Array(Uint8List.fromList(hashed));
+  return Uint8List.fromList(hashed);
 }
 
 BinaryBlob hashString(String value) {
@@ -37,14 +37,14 @@ BinaryBlob hashValue(dynamic value) {
   } else if (value is num) {
     return hash(lebEncode(value));
   } else if (value is Uint8List) {
-    return hash(blobFromUint8Array(value));
+    return hash(value);
   } else if (value is Uint8Buffer) {
-    return hash(blobFromUint8Array(Uint8List.fromList(value)));
+    return hash(Uint8List.fromList(value));
   } else if (value is List && (value is! Uint8List)) {
     final vals = value.map(hashValue).toList();
     return hash(concat(vals));
   } else if (value is Principal) {
-    return hash(blobFromUint8Array(value.toUint8Array()));
+    return hash(value.toUint8Array());
   } else if (value is Map && (value as ToHashable).toHash is Function) {
     return hashValue((value as ToHashable).toHash());
     // ignore: todo
