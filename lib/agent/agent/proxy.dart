@@ -409,7 +409,7 @@ class ProxyAgent implements Agent {
   @override
   Future<BinaryBlob> fetchRootKey() async {
     // Hex-encoded version of the replica root key
-    rootKey = blobFromUint8Array((await status())["root_key"] as Uint8List);
+    rootKey = (await status())["root_key"] as Uint8List;
     return Future.value(rootKey);
   }
 }

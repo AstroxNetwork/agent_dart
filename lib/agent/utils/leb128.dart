@@ -43,7 +43,7 @@ Uint8List lebEncode(dynamic value) {
 /// Decode a leb encoded buffer into a bigint. The number will always be positive (does not
 /// support signed leb encoding).
 /// @param pipe A Buffer containing the leb encoded bits.
-BigInt lebDecode(BufferPipe pipe) {
+BigInt lebDecode<T>(BufferPipe<T> pipe) {
   var weight = BigInt.one;
   var value = BigInt.zero;
   // ignore: prefer_typing_uninitialized_variables
@@ -61,8 +61,8 @@ BigInt lebDecode(BufferPipe pipe) {
 /// Encode a number (or bigint) into a Buffer, with support for negative numbers. The number
 /// will be floored to the nearest integer.
 /// @param value The number to encode.
-Uint8List slebEncode(dynamic value) {
-  var bn = value is BigInt ? value : BigInt.from(value);
+Uint8List slebEncode(Comparable value) {
+  var bn = value is BigInt ? value : BigInt.from(value as num);
 
   final isNeg = bn < BigInt.zero;
   if (isNeg) {

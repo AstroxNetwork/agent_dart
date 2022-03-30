@@ -221,8 +221,7 @@ class DelegationChain {
       });
     }).toList();
 
-    return DelegationChain(
-        parsedDelegations, derBlobFromBlob(blobFromHex(publicKey)));
+    return DelegationChain(parsedDelegations, blobFromHex(publicKey));
   }
 
   /// Creates a DelegationChain object from a list of delegations and a DER-encoded public key.

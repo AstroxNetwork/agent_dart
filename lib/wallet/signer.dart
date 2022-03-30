@@ -5,9 +5,7 @@ import 'package:agent_dart/agent/crypto/keystore/api.dart';
 import 'package:agent_dart/identity/identity.dart';
 import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/utils/extension.dart';
-import 'package:agent_dart/utils/is.dart';
 import 'package:agent_dart/wallet/keysmith.dart';
-import 'package:agent_dart/wallet/pem.dart';
 import 'package:agent_dart/wallet/rosetta.dart';
 import 'package:agent_dart/wallet/types.dart';
 
@@ -57,14 +55,13 @@ class ICPAccount extends BaseAccount {
                 ? index
                 : 0
             : 0);
+
     var path = List<int>.from(icPath ?? IC_BASE_PATH);
 
     Ed25519KeyIdentity identity =
         fromMnemonicWithoutValidation(phrase, path, offset: index ?? HARDENED);
-
     Secp256k1KeyIdentity ecIdentity =
         Secp256k1KeyIdentity.fromSecretKey(keys.ecPrivateKey!);
-
     return ICPAccount()
       .._ecKeys = keys
       .._identity = identity
