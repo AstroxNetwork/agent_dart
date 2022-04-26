@@ -30,7 +30,7 @@ void secp256k1Test() {
 
   test('random sign', () async {
     for (var i = 0; i < 10; i += 1) {
-      var prvR = getECKeys(genrateMnemonic()).ecPrivateKey!;
+      var prvR = getECKeys(generateMnemonic()).ecPrivateKey!;
       var wordR = msg;
       var res = sign(wordR, prvR);
       expect(res.length, 64);

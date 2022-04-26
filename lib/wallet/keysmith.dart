@@ -16,7 +16,7 @@ final ECCurve_secp256k1 params = ECCurve_secp256k1();
 // ignore: constant_identifier_names
 const ICP_PATH = "m/44'/223'/0'";
 
-String genrateMnemonic({int bitLength = 128}) {
+String generateMnemonic({int bitLength = 128}) {
   return bip39.generateMnemonic(strength: bitLength);
 }
 

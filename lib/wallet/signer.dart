@@ -164,7 +164,7 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
       ? crc32Add(account.ecIdentity!.getAccountId()).toHex()
       : null;
   late ICPAccount _acc;
-  ICPSigner.create() : this.fromPhrase(genrateMnemonic());
+  ICPSigner.create() : this.fromPhrase(generateMnemonic());
 
   ICPSigner.fromPhrase(String phrase,
       {String passphase = "",
