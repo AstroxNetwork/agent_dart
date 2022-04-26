@@ -165,3 +165,6 @@ revamp
 
 ## 0.1.20
 - remove unused files and functions
+
+## 0.1.21
+- fix function name typos
