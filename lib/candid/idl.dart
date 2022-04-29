@@ -1,12 +1,10 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
+
 // import 'dart:math';
 
 import 'package:agent_dart/agent/agent.dart';
-import 'package:agent_dart/agent/utils/buffer_pipe.dart' show BufferPipe;
-import 'package:agent_dart/agent/utils/leb128.dart';
-import 'package:agent_dart/agent/utils/utils.dart';
 import 'package:agent_dart/principal/principal.dart' as principal;
 import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/utils/map.dart';
@@ -20,34 +18,49 @@ typedef PrincipalId = principal.Principal;
 class IDLTypeIds {
   // ignore: constant_identifier_names
   static const Null = -1;
+
   // ignore: constant_identifier_names
   static const Bool = -2;
+
   // ignore: constant_identifier_names
   static const Nat = -3;
+
   // ignore: constant_identifier_names
   static const Int = -4;
+
   // ignore: constant_identifier_names
   static const Float32 = -13;
+
   // ignore: constant_identifier_names
   static const Float64 = -14;
+
   // ignore: constant_identifier_names
   static const Text = -15;
+
   // ignore: constant_identifier_names
   static const Reserved = -16;
+
   // ignore: constant_identifier_names
   static const Empty = -17;
+
   // ignore: constant_identifier_names
   static const Opt = -18;
+
   // ignore: constant_identifier_names
   static const Vector = -19;
+
   // ignore: constant_identifier_names
   static const Record = -20;
+
   // ignore: constant_identifier_names
   static const Variant = -21;
+
   // ignore: constant_identifier_names
   static const Func = -22;
+
   // ignore: constant_identifier_names
   static const Service = -23;
+
   // ignore: constant_identifier_names
   static const Principal = -24;
 }
@@ -56,7 +69,22 @@ const magicNumber = 'DIDL';
 
 List<TR> zipWith<TX, TY, TR>(
     List<TX> xs, List<TY> ys, TR Function(TX a, TY b) f) {
-  return xs.asMap().entries.map((e) => f(e.value, ys[e.key])).toList();
+  return List.generate(xs.length, (i) => f(xs[i], ys[i]), growable: false);
+}
+
+Uint8List? tryToJson(CType type, dynamic value) {
+  if ((type is RecordClass ||
+          type is VariantClass ||
+          (type is TextClass && value is! String)) &&
+      // obj may be a map, must be ignore.
+      value is! Map) {
+    try {
+      return type.encodeValue(value.toJson());
+    } catch (e) {
+      return null;
+    }
+  }
+  return null;
 }
 
 /// An IDL Type Table, which precedes the data in the stream.
@@ -205,6 +233,7 @@ abstract class Visitor<D, R> {
 /// Represents an IDL type.
 abstract class CType<T> {
   late String name;
+
   R accept<D, R>(Visitor<D, R> v, D d);
 
   /* Display type name */
@@ -563,6 +592,7 @@ class NatClass extends PrimitiveType {
 
 class FloatClass extends PrimitiveType<num> {
   late final int _bits;
+
   FloatClass(this._bits) : super() {
     if (_bits != 32 && _bits != 64) {
       throw 'not a valid float type';
@@ -623,7 +653,9 @@ class FloatClass extends PrimitiveType<num> {
 
 class FixedIntClass extends PrimitiveType {
   late final int _bits;
+
   FixedIntClass(this._bits) : super();
+
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
     return v.visitFixedInt(this, d);
@@ -678,7 +710,9 @@ class FixedIntClass extends PrimitiveType {
 
 class FixedNatClass extends PrimitiveType<dynamic> {
   late final int _bits;
+
   FixedNatClass(this._bits) : super();
+
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
     return v.visitFixedNat(this, d);
@@ -749,12 +783,15 @@ class VecClass<T> extends ConstructType<List<T>> {
   }
 
   @override
-  Uint8List encodeValue(x) {
+  Uint8List encodeValue(dynamic x) {
     var len = lebEncode(x.length);
     if (_blobOptimization) {
       return u8aConcat([len, Uint8List.fromList(x as List<int>)]);
     }
-    return u8aConcat([len, ...x.map((d) => _type.encodeValue(d))]);
+    return u8aConcat([
+      len,
+      ...x.map((dynamic d) => tryToJson(_type, d) ?? _type.encodeValue(d))
+    ]);
   }
 
   @override
@@ -799,8 +836,11 @@ class VecClass<T> extends ConstructType<List<T>> {
 
 class OptClass<T> extends ConstructType<List> {
   late final CType<T> _type;
+
   CType<T> get type => _type;
+
   OptClass(this._type);
+
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
     return v.visitOpt(this, _type, d);
@@ -867,7 +907,9 @@ class OptClass<T> extends ConstructType<List> {
 
 class RecordClass extends ConstructType<Map> {
   late final List<MapEntry> _fields;
+
   List<MapEntry> get fields => _fields;
+
   RecordClass(Map? fields) {
     fields ??= Map.from({});
     _fields = (Map.from(fields)).entries.toList();
@@ -924,8 +966,11 @@ class RecordClass extends ConstructType<Map> {
   Uint8List encodeValue(Map x) {
     final values = _fields.map((entry) => x[entry.key]).toList();
 
-    final bufs = zipWith<MapEntry, dynamic, Uint8List>(
-        _fields, values, (entry, d) => entry.value.encodeValue(d));
+    final bufs =
+        zipWith<MapEntry, dynamic, Uint8List>(_fields, values, (entry, d) {
+      var t = entry.value;
+      return tryToJson(t, d) ?? t.encodeValue(d);
+    });
     return u8aConcat(bufs);
   }
 
@@ -1015,7 +1060,9 @@ Map makeMap(List<CType> components) {
 class TupleClass<T extends List> extends ConstructType<List> {
   late final List<CType> _components;
   late final List<MapEntry> _fields;
+
   List<MapEntry> get fields => _fields;
+
   TupleClass(List<CType> components) : super() {
     _components = components;
     _fields = (Map.from(makeMap(components))).entries.toList();
@@ -1111,6 +1158,7 @@ class TupleClass<T extends List> extends ConstructType<List> {
 
 class VariantClass extends ConstructType<Map<String, dynamic>> {
   late final List<MapEntry<String, CType<dynamic>>> _fields;
+
   VariantClass(Map<String, CType> fields) : super() {
     _fields = fields.entries.toList();
     _fields.sort(
@@ -1138,13 +1186,13 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
   Uint8List encodeValue(Map<String, dynamic> x) {
     for (var i = 0; i < _fields.length; i++) {
       var name = _fields[i].key;
-      var type = _fields[i].value;
+      var t = _fields[i].value;
       // eslint-disable-next-line
       if (x.containsKey(name)) {
         final idx = lebEncode(i);
-        final buf = type.encodeValue(x[name]);
-
-        return u8aConcat([idx, buf]);
+        return u8aConcat(
+          [idx, tryToJson(t, x[name]) ?? t.encodeValue(x[name])],
+        );
       }
     }
     throw 'Variant has no data: $x';
@@ -1227,6 +1275,7 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
 /// types.
 class RecClass<T> extends ConstructType<T> {
   static int _counter = 0;
+
   // ignore: prefer_final_fields
   int _id = RecClass._counter++;
   ConstructType<T>? _type;
@@ -1477,6 +1526,7 @@ class FuncClass extends ConstructType<List> {
 
 class ServiceClass extends ConstructType<PrincipalId> {
   late final List<MapEntry<String, FuncClass>> _fields;
+
   List<MapEntry<String, FuncClass>> get fields => _fields;
 
   ServiceClass(Map<String, FuncClass> fields) : super() {
@@ -1573,6 +1623,10 @@ BinaryBlob idlEncode(List<CType> argTypes, List args) {
   final typs = u8aConcat(argTypes.map((t) => t.encodeType(typeTable)).toList());
   final vals = u8aConcat(
     zipWith<CType<dynamic>, dynamic, dynamic>(argTypes, args, (t, x) {
+      var buf = tryToJson(t, x);
+      if (buf != null) {
+        return buf;
+      }
       if (!t.covariant(x)) {
         throw "Invalid ${t.display()} argument: ${toReadableString(x)}";
       }
@@ -1815,38 +1869,55 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
 class IDL {
 // ignore: non_constant_identifier_names
   static final Empty = EmptyClass();
+
 // ignore: non_constant_identifier_names
   static final Reserved = ReservedClass();
+
 // ignore: non_constant_identifier_names
   static final Bool = BoolClass();
+
 // ignore: non_constant_identifier_names
   static final Null = NullClass();
+
 // ignore: non_constant_identifier_names
   static final Text = TextClass();
+
 // ignore: non_constant_identifier_names
   static final Int = IntClass();
+
 // ignore: non_constant_identifier_names
   static final Nat = NatClass();
+
 // ignore: non_constant_identifier_names
   static final Float32 = FloatClass(32);
+
 // ignore: non_constant_identifier_names
   static final Float64 = FloatClass(64);
+
 // ignore: non_constant_identifier_names
   static final Int8 = FixedIntClass(8);
+
 // ignore: non_constant_identifier_names
   static final Int16 = FixedIntClass(16);
+
 // ignore: non_constant_identifier_names
   static final Int32 = FixedIntClass(32);
+
 // ignore: non_constant_identifier_names
   static final Int64 = FixedIntClass(64);
+
 // ignore: non_constant_identifier_names
   static final Nat8 = FixedNatClass(8);
+
 // ignore: non_constant_identifier_names
   static final Nat16 = FixedNatClass(16);
+
 // ignore: non_constant_identifier_names
   static final Nat32 = FixedNatClass(32);
+
 // ignore: non_constant_identifier_names
   static final Nat64 = FixedNatClass(64);
+
 // ignore: non_constant_identifier_names
   static final Principal = PrincipalClass();
 
@@ -1855,21 +1926,28 @@ class IDL {
   // ignore: non_constant_identifier_names
   static TupleClass<List<CType>> Tuple(List<CType> components) =>
       TupleClass(components);
+
   // ignore: non_constant_identifier_names
   static VecClass<T> Vec<T>(CType<T> type) => VecClass(type);
+
   // ignore: non_constant_identifier_names
   static OptClass Opt<T>(CType<T> type) => OptClass(type);
+
   // ignore: non_constant_identifier_names
   static RecordClass Record(Map? fields) => RecordClass(fields);
+
   // ignore: non_constant_identifier_names
   static VariantClass Variant(Map<String, CType<dynamic>> fields) =>
       VariantClass(fields);
+
   // ignore: non_constant_identifier_names
   static RecClass Rec() => RecClass();
+
   // ignore: non_constant_identifier_names
   static FuncClass Func(List<CType<dynamic>> argTypes,
           List<CType<dynamic>> retTypes, List<String> annotations) =>
       FuncClass(argTypes, retTypes, annotations);
+
   // ignore: non_constant_identifier_names
   static ServiceClass Service(Map<String, FuncClass> fields) =>
       ServiceClass(fields);
