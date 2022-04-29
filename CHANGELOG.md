@@ -168,3 +168,4 @@ revamp
 
 ## 0.1.21
 - fix function name typos
+- support toJson to candid
