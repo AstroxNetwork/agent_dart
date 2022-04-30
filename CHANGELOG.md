@@ -169,3 +169,7 @@ revamp
 ## 0.1.21
 - fix function name typos
 - support toJson to candid
+
+## 0.1.22
+- remove unused files
+- use structured polling exceptions
