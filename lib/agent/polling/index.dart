@@ -1,8 +1,8 @@
-export 'strategy.dart';
-
 import 'package:agent_dart/agent/agent.dart';
-import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/principal/principal.dart';
+import 'package:agent_dart/utils/extension.dart';
+
+export 'strategy.dart';
 
 Future<BinaryBlob> pollForResponse(
   Agent agent,
@@ -47,18 +47,73 @@ Future<BinaryBlob> pollForResponse(
             cert.lookup([...path, blobFromText('reject_code')])!.u8aToString();
         final rejectMessage = cert
             .lookup([...path, blobFromText('reject_message')])!.u8aToString();
-        // ignore: prefer_adjacent_string_concatenation
-        throw "Call was rejected:\n"
-                "  Request ID: ${requestIdToHex(requestId)}\n" +
-            "  Reject code: $rejectCode\n" +
-            "  Reject text: $rejectMessage\n";
+        throw PollingResponseRejectedException(
+          requestId: requestIdToHex(requestId),
+          status: status,
+          rejectCode: rejectCode,
+          rejectMessage: rejectMessage,
+        );
       }
 
     case RequestStatusResponseStatus.Done:
       // This is _technically_ not an error, but we still didn't see the `Replied` status so
       // we don't know the result and cannot decode it.
-      throw "Call was marked as done but we never saw the reply:\n"
-          "  Request ID: ${requestIdToHex(requestId)}\n";
+      throw PollingResponseDoneException(
+        requestId: requestIdToHex(requestId),
+        status: status,
+      );
   }
   throw 'unreachable';
+}
+
+class PollingResponseException implements Exception {
+  final String requestId;
+  final String status;
+
+  PollingResponseException({required this.requestId, required this.status});
+
+  @override
+  String toString() {
+    return "Call was $status:\n"
+        "   Request ID: $requestId\n";
+  }
+}
+
+class PollingResponseDoneException implements PollingResponseException {
+  @override
+  final String requestId;
+  @override
+  final String status;
+
+  PollingResponseDoneException({required this.requestId, required this.status});
+
+  @override
+  String toString() {
+    return "Call was marked as $status but we never saw the reply:\n"
+        "  Request ID: $requestId\n";
+  }
+}
+
+class PollingResponseRejectedException implements PollingResponseException {
+  @override
+  final String requestId;
+  @override
+  final String status;
+  final String rejectCode;
+  final String rejectMessage;
+
+  PollingResponseRejectedException({
+    required this.requestId,
+    required this.status,
+    required this.rejectCode,
+    required this.rejectMessage,
+  });
+
+  @override
+  String toString() {
+    return "Call was $status:\n"
+        "   Request ID: $requestId\n"
+        "  Reject code: $rejectCode\n"
+        "   Reject msg: $rejectMessage\n";
+  }
 }
