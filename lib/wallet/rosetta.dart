@@ -6,10 +6,7 @@ import 'package:agent_dart/agent/agent/http/fetch.dart';
 import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/protobuf/ic_ledger/pb/v1/types.pb.dart';
-import 'package:agent_dart/utils/extension.dart';
 
-import 'hashing.dart';
-import 'keysmith.dart';
 import 'types.dart' as rosetta;
 
 // Set useNativeBigInt to true and use BigInt once BigInt is widely supported.
@@ -282,19 +279,23 @@ class RosettaApi {
   /// @private
   Future<Map<String, dynamic>> request(String url, dynamic data) async {
     var res = await defaultFetch(
-        endpoint: url,
-        method: "POST",
-        defaultHost: host,
-        baseHeaders: {'Content-Type': 'application/json;charset=utf-8'},
-        body: jsonEncode(data));
+      endpoint: url,
+      method: FetchMethod.post,
+      defaultHost: host,
+      baseHeaders: {'Content-Type': 'application/json;charset=utf-8'},
+      body: jsonEncode(data),
+    );
     var response = FetchResponse.fromMap(res);
     if (response.ok) {
       return jsonDecode(response.body);
     } else {
-      throw TransactionError(response.statusText, response.statusCode,
-          detail: response.body.isNotEmpty
-              ? jsonDecode(response.body)
-              : response.body);
+      throw TransactionError(
+        response.statusText,
+        response.statusCode,
+        detail: response.body.isNotEmpty
+            ? jsonDecode(response.body)
+            : response.body,
+      );
     }
   }
 
@@ -610,6 +611,7 @@ CombineSignedTransactionResult combine(
 
 class CombineSignedTransactionResult {
   String signedTransaction;
+
   CombineSignedTransactionResult(this.signedTransaction);
 }
 

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
+
 import 'index.dart';
 
 const defaultTimeout = Duration(seconds: 30);
@@ -19,46 +20,15 @@ Future<Map<String, dynamic>> defaultFetch({
   required String endpoint,
   String? host,
   String? defaultHost,
-  String method = 'POST',
+  FetchMethod method = FetchMethod.post,
   Map<String, dynamic>? baseHeaders,
   Map<String, dynamic>? headers,
   Duration? timeout = defaultTimeout,
   dynamic body,
 }) async {
   final client = http.Client();
-  final FetchMethod fetchMethod;
-  if (method.toUpperCase() == 'GET') {
-    fetchMethod = FetchMethod.get;
-  } else {
-    fetchMethod = FetchMethod.post;
-  }
-
   try {
-    if (fetchMethod == FetchMethod.get) {
-      var getResponse = await client.get(
-        Uri.parse(host ?? '$defaultHost$endpoint'),
-        headers: {...?baseHeaders, ...?headers},
-      ).timeout(
-        timeout ?? defaultTimeout,
-        onTimeout: () => throw SocketException(
-          '${host ?? '$defaultHost$endpoint'} timeout',
-        ),
-      );
-      if (getResponse.headers["content-type"] != null &&
-          getResponse.headers["content-type"]!.split(",").length > 1) {
-        var actualHeader =
-            getResponse.headers["content-type"]!.split(",").first;
-        getResponse.headers["content-type"] = actualHeader;
-      }
-      client.close();
-      return {
-        "body": getResponse.body,
-        "ok": getResponse.statusCode >= 200 && getResponse.statusCode < 300,
-        "statusCode": getResponse.statusCode,
-        "statusText": getResponse.reasonPhrase ?? '',
-        "arrayBuffer": getResponse.bodyBytes,
-      };
-    } else {
+    if (method == FetchMethod.post) {
       var postResponse = await client
           .post(
             Uri.parse(host ?? '$defaultHost$endpoint'),
@@ -87,6 +57,30 @@ Future<Map<String, dynamic>> defaultFetch({
         "statusCode": postResponse.statusCode,
         "statusText": postResponse.reasonPhrase ?? '',
         "arrayBuffer": postResponse.bodyBytes,
+      };
+    } else {
+      var getResponse = await client.get(
+        Uri.parse(host ?? '$defaultHost$endpoint'),
+        headers: {...?baseHeaders, ...?headers},
+      ).timeout(
+        timeout ?? defaultTimeout,
+        onTimeout: () => throw SocketException(
+          '${host ?? '$defaultHost$endpoint'} timeout',
+        ),
+      );
+      if (getResponse.headers["content-type"] != null &&
+          getResponse.headers["content-type"]!.split(",").length > 1) {
+        var actualHeader =
+            getResponse.headers["content-type"]!.split(",").first;
+        getResponse.headers["content-type"] = actualHeader;
+      }
+      client.close();
+      return {
+        "body": getResponse.body,
+        "ok": getResponse.statusCode >= 200 && getResponse.statusCode < 300,
+        "statusCode": getResponse.statusCode,
+        "statusText": getResponse.reasonPhrase ?? '',
+        "arrayBuffer": getResponse.bodyBytes,
       };
     }
   } catch (e) {
