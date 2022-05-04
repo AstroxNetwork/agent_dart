@@ -1,32 +1,33 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:agent_dart/utils/extension.dart';
 import 'index.dart';
 
 const defaultTimeout = Duration(seconds: 30);
 
-/// defaultFetch is wrapper of http get
-/// can be replaced by any other http packages eg. dio
-/// because the http is lower level implementation and is embedded by flutter by default
-/// we use it directly.
-/// here we have `get` and `post` in the play
-/// you can set host should be full path of http/https
-/// usually we use `defaultHost+endpoint` and set the defaultHost to somewhere final, and change the endpoint programatically
-/// We set `Duration(second:30)` as default timeout limit, and throw error directly to end the request section
-Future<Map<String, dynamic>> defaultFetch(
-    {required String endpoint,
-    String? host,
-    String? defaultHost,
-    String method = "POST",
-    Map<String, dynamic>? baseHeaders,
-    Map<String, dynamic>? headers,
-    Duration? timeout = defaultTimeout,
-    dynamic body}) async {
+/// [defaultFetch] is a wrapper of [http.get],
+/// which can be replaced by any other http packages (e.g. `dio`).
+/// [http] has embedded by default, so the library use it directly.
+/// Users can set host should be full path of http/https.
+/// Usually the usage could be `defaultHost+endpoint`
+/// and set the defaultHost to somewhere final,
+/// then change the endpoint programatically.
+/// `Duration(second: 30)` is the default timeout limit,
+/// and throw error directly to end the request section.
+Future<Map<String, dynamic>> defaultFetch({
+  required String endpoint,
+  String? host,
+  String? defaultHost,
+  String method = 'POST',
+  Map<String, dynamic>? baseHeaders,
+  Map<String, dynamic>? headers,
+  Duration? timeout = defaultTimeout,
+  dynamic body,
+}) async {
   final client = http.Client();
-  FetchMethod fetchMethod = FetchMethod.post;
-
-  if (method == "Get" || method == "get" || method == "GET") {
+  final FetchMethod fetchMethod;
+  if (method.toUpperCase() == 'GET') {
     fetchMethod = FetchMethod.get;
   } else {
     fetchMethod = FetchMethod.post;
@@ -34,13 +35,15 @@ Future<Map<String, dynamic>> defaultFetch(
 
   try {
     if (fetchMethod == FetchMethod.get) {
-      var getResponse = await client
-          .get(Uri.parse(host ?? "$defaultHost$endpoint"), headers: {
-        ...?baseHeaders,
-        ...?headers,
-      }).timeout(timeout ?? defaultTimeout, onTimeout: () {
-        throw 'http request(GET) to ${host ?? "$defaultHost$endpoint"} timeout';
-      });
+      var getResponse = await client.get(
+        Uri.parse(host ?? '$defaultHost$endpoint'),
+        headers: {...?baseHeaders, ...?headers},
+      ).timeout(
+        timeout ?? defaultTimeout,
+        onTimeout: () => throw SocketException(
+          '${host ?? '$defaultHost$endpoint'} timeout',
+        ),
+      );
       if (getResponse.headers["content-type"] != null &&
           getResponse.headers["content-type"]!.split(",").length > 1) {
         var actualHeader =
@@ -58,18 +61,19 @@ Future<Map<String, dynamic>> defaultFetch(
     } else {
       var postResponse = await client
           .post(
-        Uri.parse(host ?? "$defaultHost$endpoint"),
-        headers: {
-          ...?baseHeaders,
-          // ...?headers,
-          'Content-Type': 'application/cbor'
-        },
-        body: body,
-        // encoding: Encoding.getByName('utf8')
-      )
-          .timeout(timeout ?? defaultTimeout, onTimeout: () {
-        throw 'http request(POST) to ${host ?? "$defaultHost$endpoint"} timeout';
-      });
+            Uri.parse(host ?? '$defaultHost$endpoint'),
+            headers: {
+              ...?baseHeaders,
+              ...?headers,
+            }..['Content-Type'] = 'application/cbor',
+            body: body,
+          )
+          .timeout(
+            timeout ?? defaultTimeout,
+            onTimeout: () => throw SocketException(
+              '${host ?? '$defaultHost$endpoint'} timeout',
+            ),
+          );
       if (postResponse.headers["content-type"] != null &&
           postResponse.headers["content-type"]!.split(",").length > 1) {
         var actualHeader =
@@ -87,23 +91,36 @@ Future<Map<String, dynamic>> defaultFetch(
     }
   } catch (e) {
     client.close();
-    throw "http request failed because $e";
+    rethrow;
   }
 }
 
 class FetchResponse {
-  String body;
-  bool ok;
-  int statusCode;
-  String statusText;
-  Uint8List arrayBuffer;
   FetchResponse(
-      this.body, this.ok, this.statusCode, this.statusText, this.arrayBuffer);
+    this.body,
+    this.ok,
+    this.statusCode,
+    this.statusText,
+    this.arrayBuffer,
+  );
+
   factory FetchResponse.fromMap(Map<String, dynamic> map) {
-    return FetchResponse(map["body"], map["ok"], map["statusCode"],
-        map["statusText"], map["arrayBuffer"]);
+    return FetchResponse(
+      map["body"],
+      map["ok"],
+      map["statusCode"],
+      map["statusText"],
+      map["arrayBuffer"],
+    );
   }
-  toJson() {
+
+  final String body;
+  final bool ok;
+  final int statusCode;
+  final String statusText;
+  final Uint8List arrayBuffer;
+
+  Map<String, dynamic> toJson() {
     return {
       "body": body,
       "ok": ok,
