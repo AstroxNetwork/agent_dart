@@ -16,73 +16,96 @@ const defaultTimeout = Duration(seconds: 30);
 /// then change the endpoint programatically.
 /// `Duration(second: 30)` is the default timeout limit,
 /// and throw error directly to end the request section.
+///
 Future<Map<String, dynamic>> defaultFetch({
   required String endpoint,
   String? host,
   String? defaultHost,
   FetchMethod method = FetchMethod.post,
-  Map<String, dynamic>? baseHeaders,
-  Map<String, dynamic>? headers,
+  Map<String, String>? baseHeaders,
+  Map<String, String>? headers,
   Duration? timeout = defaultTimeout,
   dynamic body,
 }) async {
+  assert(
+    method != FetchMethod.connect &&
+        method != FetchMethod.options &&
+        method != FetchMethod.trace,
+    "Unsupported http request method: `${method.name.toUpperCase()}`.",
+  );
+  assert(
+    (method == FetchMethod.get || method == FetchMethod.head) && body == null,
+    "`${method.name.toUpperCase()}` method should not have a body.",
+  );
   final client = http.Client();
   try {
-    if (method == FetchMethod.post) {
-      var postResponse = await client
-          .post(
-            Uri.parse(host ?? '$defaultHost$endpoint'),
-            headers: {
-              ...?baseHeaders,
-              ...?headers,
-            }..['Content-Type'] = 'application/cbor',
-            body: body,
-          )
-          .timeout(
-            timeout ?? defaultTimeout,
-            onTimeout: () => throw SocketException(
-              '${host ?? '$defaultHost$endpoint'} timeout',
-            ),
-          );
-      if (postResponse.headers["content-type"] != null &&
-          postResponse.headers["content-type"]!.split(",").length > 1) {
-        var actualHeader =
-            postResponse.headers["content-type"]!.split(",").first;
-        postResponse.headers["content-type"] = actualHeader;
-      }
-      client.close();
-      return {
-        "body": postResponse.body,
-        "ok": postResponse.statusCode >= 200 && postResponse.statusCode < 300,
-        "statusCode": postResponse.statusCode,
-        "statusText": postResponse.reasonPhrase ?? '',
-        "arrayBuffer": postResponse.bodyBytes,
-      };
-    } else {
-      var getResponse = await client.get(
-        Uri.parse(host ?? '$defaultHost$endpoint'),
-        headers: {...?baseHeaders, ...?headers},
-      ).timeout(
-        timeout ?? defaultTimeout,
-        onTimeout: () => throw SocketException(
-          '${host ?? '$defaultHost$endpoint'} timeout',
-        ),
-      );
-      if (getResponse.headers["content-type"] != null &&
-          getResponse.headers["content-type"]!.split(",").length > 1) {
-        var actualHeader =
-            getResponse.headers["content-type"]!.split(",").first;
-        getResponse.headers["content-type"] = actualHeader;
-      }
-      client.close();
-      return {
-        "body": getResponse.body,
-        "ok": getResponse.statusCode >= 200 && getResponse.statusCode < 300,
-        "statusCode": getResponse.statusCode,
-        "statusText": getResponse.reasonPhrase ?? '',
-        "arrayBuffer": getResponse.bodyBytes,
-      };
+    var uri = Uri.parse(host ?? '$defaultHost$endpoint');
+    Future<http.Response> fr;
+    switch (method) {
+      case FetchMethod.post:
+        fr = client.post(
+          uri,
+          headers: {...?baseHeaders, ...?headers}..['Content-Type'] =
+              'application/cbor',
+          body: body,
+        );
+        break;
+      case FetchMethod.get:
+        fr = client.get(uri, headers: {...?baseHeaders, ...?headers});
+        break;
+      case FetchMethod.head:
+        fr = client.head(uri, headers: {...?baseHeaders, ...?headers});
+        break;
+      case FetchMethod.put:
+        fr = client.put(
+          uri,
+          headers: {...?baseHeaders, ...?headers}..['Content-Type'] =
+              'application/cbor',
+          body: body,
+        );
+        break;
+      case FetchMethod.delete:
+        fr = client.delete(
+          uri,
+          headers: {...?baseHeaders, ...?headers}..['Content-Type'] =
+              'application/cbor',
+          body: body,
+        );
+        break;
+      case FetchMethod.patch:
+        fr = client.patch(
+          uri,
+          headers: {...?baseHeaders, ...?headers}..['Content-Type'] =
+              'application/cbor',
+          body: body,
+        );
+        break;
+      case FetchMethod.connect:
+      case FetchMethod.options:
+      case FetchMethod.trace:
+        throw UnimplementedError(
+            "Unsupported http request method: `${method.name.toUpperCase()}`.");
     }
+
+    var response = await fr.timeout(
+      timeout ?? defaultTimeout,
+      onTimeout: () => throw SocketException(
+        '${host ?? '$defaultHost$endpoint'} timeout',
+      ),
+    );
+    if (response.headers["content-type"] != null &&
+        response.headers["content-type"]!.split(",").length > 1) {
+      var actualHeader = response.headers["content-type"]!.split(",").first;
+      response.headers["content-type"] = actualHeader;
+    }
+    client.close();
+    return {
+      "body": response.body,
+      "ok": response.statusCode >= 200 && response.statusCode < 300,
+      "statusCode": response.statusCode,
+      "statusText": response.reasonPhrase ?? '',
+      "arrayBuffer": response.bodyBytes,
+    };
   } catch (e) {
     client.close();
     rethrow;
