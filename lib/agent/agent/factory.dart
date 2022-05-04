@@ -1,5 +1,4 @@
 import 'package:agent_dart/agent/agent.dart';
-import 'package:agent_dart/agent/auth.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/candid/idl.dart';
 
