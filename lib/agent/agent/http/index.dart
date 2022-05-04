@@ -6,7 +6,18 @@ import 'package:agent_dart/agent_dart.dart';
 import 'package:typed_data/typed_data.dart';
 
 const btoa = base64Encode;
-enum FetchMethod { get, post }
+
+enum FetchMethod {
+  get,
+  head,
+  post,
+  put,
+  delete,
+  connect,
+  options,
+  trace,
+  patch,
+}
 
 class RequestStatusResponseStatus {
   // ignore: constant_identifier_names
@@ -73,7 +84,7 @@ typedef FetchFunc<T> = Future<T> Function({
   required String endpoint,
   String? host,
   FetchMethod method,
-  Map<String, dynamic>? headers,
+  Map<String, String>? headers,
   dynamic body,
 });
 
@@ -101,7 +112,7 @@ class HttpAgent implements Agent {
 
   late FetchFunc<Map<String, dynamic>>? _fetch;
 
-  late Map<String, dynamic> _baseHeaders;
+  late Map<String, String> _baseHeaders;
 
   // ignore: unused_field
   bool _rootKeyFetched = false;
@@ -387,11 +398,9 @@ class HttpAgent implements Agent {
     return cbor.cborDecode<Map>(buffer);
   }
 
-  Map<String, dynamic> _createBaseHeaders() {
+  Map<String, String> _createBaseHeaders() {
     return _credentials != null && _credentials!.isNotEmpty
-        ? {
-            "Authorization": 'Basic ' + btoa(_credentials),
-          }
+        ? {"Authorization": 'Basic ' + btoa(_credentials)}
         : {};
   }
 
@@ -399,7 +408,7 @@ class HttpAgent implements Agent {
     required String endpoint,
     String? host,
     FetchMethod method = FetchMethod.post,
-    Map<String, dynamic>? headers,
+    Map<String, String>? headers,
     dynamic body,
   }) async {
     return defaultFetch(
