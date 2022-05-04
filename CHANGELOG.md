@@ -173,3 +173,4 @@ revamp
 ## 0.1.22
 - remove unused files
 - use structured polling exceptions
+- improve defaultFetch
