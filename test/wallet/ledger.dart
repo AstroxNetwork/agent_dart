@@ -139,7 +139,6 @@ void ledgerTest() {
       print(senderBalance.e8s);
       var receiverBeforeSend = await Ledger.accountBalance(
           agent: agent, accountIdOrPrincipal: receiver_canister);
-      expect(receiverBeforeSend.e8s == BigInt.zero, true);
       print("\n---🧑 receiver balance before send:");
       print(receiverBeforeSend.e8s);
 
@@ -160,7 +159,10 @@ void ledgerTest() {
       expect((blockHeight as TransferResult).Ok! >= BigInt.zero, true);
       var receiverAfterSend = await Ledger.accountBalance(
           agent: agent, accountIdOrPrincipal: receiver_canister);
-      expect(receiverAfterSend.e8s == BigInt.from(100000000), true);
+      expect(
+          receiverAfterSend.e8s ==
+              receiverBeforeSend.e8s + BigInt.from(100000000),
+          true);
       print("\n---🧑 receiver balance after send:");
       print(receiverAfterSend.e8s);
       var senderBalanceAfter = await Ledger.accountBalance(
