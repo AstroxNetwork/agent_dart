@@ -1,10 +1,8 @@
-## Next
-
-- remove unused tests
-
+<!-- ## Next -->
 ## 0.1.22+1
 
 - **🩹 HotFix 🩹** Remove invalid asserts with `defaultFetch` (#19)
+- remove unused tests
 
 ## 0.1.22
 
