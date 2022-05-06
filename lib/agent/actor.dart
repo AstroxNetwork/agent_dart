@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:agent_dart/agent/agent/api.dart';
 import 'package:agent_dart/agent/canisters/management.dart';
 import 'package:agent_dart/agent/polling/index.dart';
-import 'package:agent_dart/agent/polling/strategy.dart';
 import 'package:agent_dart/candid/idl.dart';
 
 import 'package:agent_dart/principal/principal.dart';

@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:agent_dart/agent_dart.dart';
-import 'package:agent_dart/principal/principal.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -24,12 +23,13 @@ void httpTest() {
       const methodName = 'greet';
       final arg = Uint8List.fromList([]);
 
-      agent.setFetch((
-          {body,
-          endpoint = "https://localhost:8000",
-          headers,
-          host,
-          method = 'POST'}) {
+      agent.setFetch(({
+        body,
+        endpoint = "https://localhost:8000",
+        headers,
+        host,
+        method = FetchMethod.post,
+      }) {
         return Future.value({
           "body": null,
           "ok": true,
