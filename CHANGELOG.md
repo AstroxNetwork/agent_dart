@@ -174,3 +174,4 @@ revamp
 - remove unused files
 - use structured polling exceptions
 - improve defaultFetch
+- added decryptCborPhrase
