@@ -2,6 +2,10 @@
 
 - remove unused tests
 
+## 0.1.22+1
+
+-- ** 🩹 HotFix 🩹 ** remove assert on http
+
 ## 0.1.22
 
 - **💡 BREAKING CHANGE 💡** Fixed fetch method type
