@@ -1,3 +1,5 @@
+## Next
+- remove unused tests
 ## 0.1.22
 - **💡 BREAKING CHANGE 💡** Fixed fetch method type
 - remove unused files
