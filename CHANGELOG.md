@@ -1,4 +1,5 @@
 ## 0.1.22
+- **BREAKING CHANGE** Fixed fetch method type
 - remove unused files
 - use structured polling exceptions
 - improve defaultFetch
