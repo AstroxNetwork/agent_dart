@@ -4,7 +4,7 @@
 
 ## 0.1.22+1
 
--- ** 🩹 HotFix 🩹 ** remove assert on http
+- **🩹 HotFix 🩹** Remove invalid asserts `defaultFetch` (#19)
 
 ## 0.1.22
 
