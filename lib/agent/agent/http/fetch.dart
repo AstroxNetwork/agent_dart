@@ -27,16 +27,6 @@ Future<Map<String, dynamic>> defaultFetch({
   Duration? timeout = defaultTimeout,
   dynamic body,
 }) async {
-  assert(
-    method != FetchMethod.connect &&
-        method != FetchMethod.options &&
-        method != FetchMethod.trace,
-    "Unsupported http request method: `${method.name.toUpperCase()}`.",
-  );
-  assert(
-    (method == FetchMethod.get || method == FetchMethod.head) && body == null,
-    "`${method.name.toUpperCase()}` method should not have a body.",
-  );
   final client = http.Client();
   try {
     var uri = Uri.parse(host ?? '$defaultHost$endpoint');
