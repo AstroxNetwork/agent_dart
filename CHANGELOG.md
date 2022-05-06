@@ -1,6 +1,9 @@
 ## Next
+
 - remove unused tests
+
 ## 0.1.22
+
 - **💡 BREAKING CHANGE 💡** Fixed fetch method type
 - remove unused files
 - use structured polling exceptions
@@ -8,32 +11,41 @@
 - added decryptCborPhrase
 
 ## 0.1.21
+
 - fix function name typos
 - support toJson to candid
 
 ## 0.1.20
+
 - remove unused files and functions
 
 ## 0.1.19+4
+
 - fix archive 3.3.0
 
 ## 0.1.19+3
+
 - use Isolate.spawn+exit to optimize isolate functions
 
 ## 0.1.19+2
+
 - fix http request when IC returns dual headers using flutter web,
 
 ## 0.1.19+1
+
 - skip
 
 ## 0.1.19
+
 - use latest api of ledger
 - fix encoder
 
 ## 0.1.18
+
 - added identity from pem
 
 ## 0.1.17+1
+
 - fix type annotation applied to dart 2.15.0
 
 ## 0.1.17
