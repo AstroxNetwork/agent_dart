@@ -324,3 +324,49 @@ Future<void> _decodePhrase(List<dynamic> args) async {
     rethrow;
   }
 }
+
+// interface PhraseCbor {
+//   cipher: ArrayBuffer;
+//   cipherparams: {
+//     iv: ArrayBuffer;
+//   };
+//   ciphertext: ArrayBuffer;
+//   kdf: ArrayBuffer;
+//   kdfparams: ArrayBuffer;
+//   mac: ArrayBuffer;
+// }
+Future<String> decryptCborPhrase(List<int> bytes, String password) async {
+  final recover = Map<String, dynamic>.from(cborDecode(bytes));
+  final Uint8List ciphertext = Uint8List.fromList(recover['ciphertext']);
+  final Uint8List iv = Uint8List.fromList(recover['cipherparams']['iv']);
+  final kdfparams = Map<String, dynamic>.from(cborDecode(recover['kdfparams']));
+
+  final List<int> encodedPassword = utf8.encode(password);
+  final derivator = getDerivedKey(
+      (Uint8List.fromList(recover['kdf'])).u8aToString(), kdfparams);
+  final List<int> derivedKey = derivator.deriveKey(encodedPassword);
+  final List<int> macBuffer =
+      derivedKey.sublist(16, 32) + ciphertext + iv + ALGO_IDENTIFIER.codeUnits;
+
+  final Uint8List mac = SHA256()
+      .update(Uint8List.fromList(derivedKey))
+      .update(macBuffer)
+      .digest();
+
+  final Uint8List macFromRecover =
+      Uint8List.fromList(u8aToU8a((recover['mac'] as List).map((ele) {
+    return int.parse(ele.toString());
+  }).toList()));
+
+  if (!u8aEq(mac, macFromRecover)) {
+    throw 'Decryption Failed';
+  }
+
+  final List<int> aesKey = derivedKey.sublist(0, 16);
+  final Uint8List encryptedPhrase = Uint8List.fromList(recover['ciphertext']);
+
+  final CTRStreamCipher aes = _initCipher(false, aesKey, iv);
+
+  final Uint8List privateKeyByte = aes.process(encryptedPhrase);
+  return privateKeyByte.u8aToString();
+}
