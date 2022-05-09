@@ -104,8 +104,11 @@ Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
   return privateKeyByte.toHex();
 }
 
-Future<String> encryptPhrase(String phrase, String password,
-    [Map<String, dynamic>? options]) async {
+Future<String> encryptPhrase(
+  String phrase,
+  String password, [
+  Map<String, dynamic>? options,
+]) async {
   Uint8List uuid = Uint8List(16);
   Uuid uuidParser = const Uuid()..v4buffer(uuid);
 
@@ -369,4 +372,61 @@ Future<String> decryptCborPhrase(List<int> bytes, String password) async {
 
   final Uint8List privateKeyByte = aes.process(encryptedPhrase);
   return privateKeyByte.u8aToString();
+}
+
+Future<BinaryBlob> encryptCborPhrase(
+  String phrase,
+  String password, [
+  Map<String, dynamic>? options,
+]) async {
+  String salt = randomAsHex(64);
+  List<int> iv = randomAsU8a(16);
+  String kdf = 'scrypt';
+  int level = 8192;
+  int n = kdf == 'pbkdf2' ? 262144 : level;
+  if (options == null) {
+    kdf = 'scrypt';
+    level = 8192;
+    n = kdf == 'pbkdf2' ? 262144 : level;
+  } else {
+    kdf = options['kdf'] is String ? options['kdf'] : 'scrypt';
+    level = options['level'] is int ? options['level'] : 8192;
+    n = kdf == 'pbkdf2' ? 262144 : level;
+  }
+
+  Map<String, dynamic> kdfParams = {
+    'salt': salt,
+    'n': n,
+    'r': 8,
+    'p': 1,
+    'dklen': 32
+  };
+
+  List<int> encodedPassword = utf8.encode(password);
+  _KeyDerivator derivator = getDerivedKey(kdf, kdfParams);
+  List<int> derivedKey = derivator.deriveKey(encodedPassword);
+
+  List<int> ciphertextBytes = _encryptPhrase(derivator,
+      Uint8List.fromList(encodedPassword), Uint8List.fromList(iv), phrase);
+
+  List<int> macBuffer = derivedKey.sublist(16, 32) +
+      ciphertextBytes +
+      iv +
+      ALGO_IDENTIFIER.codeUnits;
+
+  Uint8List mac = (SHA256()
+      .update(Uint8List.fromList(derivedKey))
+      .update(macBuffer)
+      .digest());
+
+  return cborEncode({
+    "ciphertext": ciphertextBytes,
+    "cipherparams": {
+      "iv": iv,
+    },
+    "cipher": "aes-128-ctr".plainToU8a(),
+    "kdf": kdf.plainToU8a(),
+    "kdfparams": cborEncode(kdfParams),
+    "mac": mac,
+  });
 }
