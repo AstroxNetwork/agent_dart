@@ -374,7 +374,7 @@ Future<String> decryptCborPhrase(List<int> bytes, String password) async {
   return privateKeyByte.u8aToString();
 }
 
-Future<BinaryBlob> encryptCborPhrase(
+Future<Uint8List> encryptCborPhrase(
   String phrase,
   String password, [
   Map<String, dynamic>? options,
