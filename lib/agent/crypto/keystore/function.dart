@@ -3,8 +3,11 @@ part of 'key_store.dart';
 // ignore: constant_identifier_names
 const String ALGO_IDENTIFIER = 'aes-128-ctr';
 
-Future<String> encrypt(String privateKey, String passphrase,
-    [Map<String, dynamic>? options]) async {
+Future<String> encrypt(
+  String privateKey,
+  String passphrase, [
+  Map<String, dynamic>? options,
+]) async {
   Uint8List uuid = Uint8List(16);
   Uuid uuidParser = const Uuid()..v4buffer(uuid);
 
@@ -170,7 +173,9 @@ Future<String> encryptPhrase(
 }
 
 Future<String> decryptPhrase(
-    Map<String, dynamic> keyStore, String passphrase) async {
+  Map<String, dynamic> keyStore,
+  String passphrase,
+) async {
   Uint8List ciphertext = (keyStore['crypto']['ciphertext'] as String).toU8a();
   String kdf = keyStore['crypto']['kdf'];
 
@@ -208,8 +213,11 @@ Future<String> decryptPhrase(
   return privateKeyByte.u8aToString();
 }
 
-Future<String> encodePrivateKey(String prvKey, String psw,
-    [Map<String, dynamic>? options]) async {
+Future<String> encodePrivateKey(
+  String prvKey,
+  String psw, [
+  Map<String, dynamic>? options,
+]) async {
   try {
     final response = ReceivePort();
 
@@ -271,8 +279,11 @@ Future<void> _decodePrivateKey(List<dynamic> args) async {
   }
 }
 
-Future<String> encodePhrase(String prvKey, String psw,
-    [Map<String, dynamic>? options]) async {
+Future<String> encodePhrase(
+  String prvKey,
+  String psw, [
+  Map<String, dynamic>? options,
+]) async {
   final response = ReceivePort();
   try {
     await Isolate.spawn(
@@ -379,8 +390,8 @@ Future<Uint8List> encryptCborPhrase(
   String password, [
   Map<String, dynamic>? options,
 ]) async {
-  String salt = randomAsHex(64);
-  List<int> iv = randomAsU8a(16);
+  final String salt = randomAsHex(64);
+  final List<int> iv = randomAsU8a(16);
   String kdf = 'scrypt';
   int level = 8192;
   int n = kdf == 'pbkdf2' ? 262144 : level;
@@ -394,7 +405,7 @@ Future<Uint8List> encryptCborPhrase(
     n = kdf == 'pbkdf2' ? 262144 : level;
   }
 
-  Map<String, dynamic> kdfParams = {
+  final Map<String, dynamic> kdfParams = {
     'salt': salt,
     'n': n,
     'r': 8,
@@ -402,31 +413,35 @@ Future<Uint8List> encryptCborPhrase(
     'dklen': 32
   };
 
-  List<int> encodedPassword = utf8.encode(password);
-  _KeyDerivator derivator = getDerivedKey(kdf, kdfParams);
-  List<int> derivedKey = derivator.deriveKey(encodedPassword);
+  final List<int> encodedPassword = utf8.encode(password);
+  final _KeyDerivator derivator = getDerivedKey(kdf, kdfParams);
+  final List<int> derivedKey = derivator.deriveKey(encodedPassword);
 
-  List<int> ciphertextBytes = _encryptPhrase(derivator,
-      Uint8List.fromList(encodedPassword), Uint8List.fromList(iv), phrase);
+  final List<int> ciphertextBytes = _encryptPhrase(
+    derivator,
+    Uint8List.fromList(encodedPassword),
+    Uint8List.fromList(iv),
+    phrase,
+  );
 
-  List<int> macBuffer = derivedKey.sublist(16, 32) +
+  final List<int> macBuffer = derivedKey.sublist(16, 32) +
       ciphertextBytes +
       iv +
       ALGO_IDENTIFIER.codeUnits;
 
-  Uint8List mac = (SHA256()
+  final Uint8List mac = SHA256()
       .update(Uint8List.fromList(derivedKey))
       .update(macBuffer)
-      .digest());
+      .digest();
 
   return cborEncode({
-    "ciphertext": ciphertextBytes,
-    "cipherparams": {
-      "iv": iv,
+    'ciphertext': ciphertextBytes,
+    'cipherparams': {
+      'iv': iv,
     },
-    "cipher": "aes-128-ctr".plainToU8a(),
-    "kdf": kdf.plainToU8a(),
-    "kdfparams": cborEncode(kdfParams),
-    "mac": mac,
+    'cipher': ALGO_IDENTIFIER.plainToU8a(),
+    'kdf': kdf.plainToU8a(),
+    'kdfparams': cborEncode(kdfParams),
+    'mac': mac,
   });
 }
