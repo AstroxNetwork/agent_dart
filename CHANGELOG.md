@@ -1,4 +1,7 @@
-<!-- ## Next -->
+## Next
+
+- add `encryptCborPhrase` method.
+
 ## 0.1.22+1
 
 - **🩹 HotFix 🩹** Remove invalid asserts with `defaultFetch` (#19)
@@ -31,7 +34,7 @@
 
 ## 0.1.19+2
 
-- fix http request when IC returns dual headers using flutter web,
+- fix http request when IC returns dual headers using flutter web
 
 ## 0.1.19+1
 
