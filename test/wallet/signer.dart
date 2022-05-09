@@ -3,9 +3,6 @@ import 'dart:convert';
 import 'package:agent_dart/agent/crypto/keystore/api.dart';
 import 'package:agent_dart/agent_dart.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:agent_dart/wallet/signer.dart';
-import 'package:agent_dart/utils/extension.dart';
-import 'package:pinenacl/ed25519.dart';
 
 void main() {
   signerTest();
@@ -38,5 +35,8 @@ void signerTest() {
     var decryptedPhrase =
         await decodePhrase(jsonDecode(encryptedPhrase), "123");
     expect(decryptedPhrase, mne2);
+    var encryptedCborPhrase = await encryptCborPhrase(mne2, "123");
+    var decryptedCborPhrase = await decryptCborPhrase(encryptedCborPhrase, "123");
+    expect(decryptedCborPhrase, mne2);
   });
 }
