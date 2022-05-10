@@ -1,39 +1,36 @@
 import 'dart:ffi';
 import 'dart:io' show Platform;
-// import 'package:args/args.dart';
 
-const libName = "agent_dart";
-const androidlibName = "lib$libName.so";
+const String libName = 'lib_agent_dart';
+final DynamicLibrary dylib = getDyLib();
 
 DynamicLibrary getDyLib() {
   if (Platform.isAndroid) {
-    return DynamicLibrary.open(androidlibName);
+    return DynamicLibrary.open('$libName.so');
   }
   if (Platform.isIOS) {
     return DynamicLibrary.process();
   }
-
   if (Platform.isMacOS) {
-    if (Platform.environment["_"] == null ||
-        (Platform.environment["_"] != null &&
-            Platform.environment["FLUTTER_ENGINE_SWITCH_1"] != null)) {
+    if (Platform.environment['_'] == null ||
+        (Platform.environment['_'] != null &&
+            Platform.environment['FLUTTER_ENGINE_SWITCH_1'] != null)) {
       return DynamicLibrary.process();
     }
     return DynamicLibrary.open(
-        "macos/cli/x86_64-apple-darwin/lib$libName.dylib");
+      'macos/cli/x86_64-apple-darwin/$libName.dylib',
+    );
   }
   if (Platform.isLinux) {
-    if (Platform.environment["_"] == null ||
-        (Platform.environment["_"] != null &&
-            Platform.environment["FLUTTER_ENGINE_SWITCH_1"] != null)) {
-      return DynamicLibrary.open("lib$libName.dylib");
+    if (Platform.environment['_'] == null ||
+        (Platform.environment['_'] != null &&
+            Platform.environment['FLUTTER_ENGINE_SWITCH_1'] != null)) {
+      return DynamicLibrary.open('$libName.dylib');
     }
-    return DynamicLibrary.open("linux/lib$libName.so");
+    return DynamicLibrary.open('linux/$libName.so');
   }
   if (Platform.isWindows) {
-    return DynamicLibrary.open("windows/$libName.dll");
+    return DynamicLibrary.open('windows/$libName.dll');
   }
-  return DynamicLibrary.open("rust/dylib/debug/lib$libName.dylib");
+  return DynamicLibrary.open('rust/dylib/debug/$libName.dylib');
 }
-
-final dylib = getDyLib();

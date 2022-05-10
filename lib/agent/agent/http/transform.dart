@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:agent_dart/agent/cbor.dart';
 import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/agent/utils/leb128.dart';
+import 'package:agent_dart/is_web.dart';
 import 'package:cbor/cbor.dart' as cbor;
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:typed_data/typed_data.dart';
 
 import 'types.dart';
@@ -34,7 +34,7 @@ class Expiry extends ToCBorable {
 
   @override
   void write(cbor.Encoder encoder) {
-    if (kIsWeb) {
+    if (agentDartIsWeb) {
       var data = serializeValue(0, 27, _value.toRadixString(16));
       var buf = Uint8Buffer();
       buf.addAll(data.asUint8List());
@@ -45,14 +45,16 @@ class Expiry extends ToCBorable {
   }
 }
 
-HttpAgentRequestTransformFnCall makeNonceTransform(
-    [NonceFunc nonceFn = makeNonce]) {
+HttpAgentRequestTransformFnCall makeNonceTransform([
+  NonceFunc nonceFn = makeNonce,
+]) {
   return (HttpAgentRequest request) async {
     // Nonce are only useful for async calls, to prevent replay attacks. Other types of
     // calls don't need Nonce so we just skip creating one.
     if (request.endpoint == Endpoint.Call) {
       (request as HttpAgentSubmitRequest).body.nonce = nonceFn();
     }
+    return request;
   };
 }
 

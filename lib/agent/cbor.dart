@@ -1,5 +1,6 @@
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb;
+
+import 'package:agent_dart/is_web.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:cbor/cbor.dart' as cbor;
 import 'package:typed_data/typed_data.dart';
@@ -168,7 +169,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
       // Encode to a bignum, if the value can be represented as
       // an integer it must be greater than 2*32 so encode as 64 bit.
       final bignum = BigInt.from(value);
-      if (kIsWeb) {
+      if (agentDartIsWeb) {
         var data = serializeValue(0, 27, bignum.toRadixString(16));
         var buf = Uint8Buffer();
         buf.addAll(data.asUint8List());
