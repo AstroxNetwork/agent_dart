@@ -1,3 +1,7 @@
+## 0.1.23+1
+
+- Fix encode `OptClass`.
+
 ## 0.1.23
 
 - Add `encryptCborPhrase` method.
