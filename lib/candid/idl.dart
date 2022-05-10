@@ -857,9 +857,10 @@ class OptClass<T> extends ConstructType<List> {
     if (x.isEmpty) {
       return Uint8List.fromList([0]);
     } else {
+      final val = x[0];
       return u8aConcat([
         Uint8List.fromList([1]),
-        _type.encodeValue(x[0])
+        tryToJson(_type, val) ?? _type.encodeValue(val)
       ]);
     }
   }
@@ -952,12 +953,6 @@ class RecordClass extends ConstructType<Map> {
           if (!x.containsKey(k)) {
             throw "Record is missing key '$k'.";
           }
-          var some = t.covariant(x[k]);
-          if (some == false) {
-            print(t);
-            print(x[k]);
-          }
-
           return t.covariant(x[k]);
         }));
   }
@@ -1172,14 +1167,16 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
 
   @override
   bool covariant(x) {
-    return (x is Map &&
-        (x).entries.length == 1 &&
+    // Ignoring types other than `Map`.
+    if (x is! Map) {
+      return true;
+    }
+    return (x).entries.length == 1 &&
         _fields.every((entry) {
           // [k, v]
-          // eslint-disable-next-line
           return !x.containsKey(entry.key) ||
               entry.value.covariant(x[entry.key]);
-        }));
+        });
   }
 
   @override
@@ -1187,7 +1184,6 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
     for (var i = 0; i < _fields.length; i++) {
       var name = _fields[i].key;
       var t = _fields[i].value;
-      // eslint-disable-next-line
       if (x.containsKey(name)) {
         final idx = lebEncode(i);
         return u8aConcat(
