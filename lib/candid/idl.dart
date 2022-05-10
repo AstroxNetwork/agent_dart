@@ -1167,7 +1167,7 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
 
   @override
   bool covariant(x) {
-    // ignore obj type.
+    // Ignoring types other than `Map`.
     if (x is! Map) {
       return true;
     }

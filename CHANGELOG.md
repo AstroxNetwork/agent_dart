@@ -1,6 +1,6 @@
 ## 0.1.23+1
 
-- Fix encode `OptClass`.
+- Fix issues when encoding `OptClass`.
 
 ## 0.1.23
 
