@@ -31,6 +31,11 @@ void signerTest() {
     expect(acc22_time_period < acc2_time_period, true);
     expect(acc21_time_period < acc22_time_period, true);
 
+    expect(acc2.account.identity != null, true);
+    expect(acc2.account.ecIdentity != null, true);
+    expect(acc21.account.ecIdentity, null);
+    expect(acc22.account.identity, null);
+
     var acc3 = expect(acc2.account.ecKeys?.accountId!.toHex(),
         "02f2326544f2040d3985e31db5e7021402c541d3cde911cd20e951852ee4da47");
     expect(acc2.account.identity?.accountId.toHex(),
