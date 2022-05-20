@@ -8,6 +8,7 @@ homepage: https://github.com/AstroxNetwork/agent_dart
 
 environment:
   sdk: '>=2.13.0 <3.0.0'
+  flutter: '>=2.2.0'
 
 dependencies:
   archive: ^3.3.0
@@ -20,6 +21,10 @@ dependencies:
   crypto: ^3.0.1
   ffi: ^1.1.1
   fixnum: ^1.0.0
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
   http: ^0.13.4
   js: ^0.6.3
   path: ^1.8.0
@@ -35,9 +40,27 @@ dependencies:
   basic_utils: ^3.9.4
 
 dev_dependencies:
+  flutter_lints: any
   flutter_test:
     sdk: flutter
-  lints: ^1.0.1
 
 false_secrets:
   - /test/fixture/*.pem
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.astrox.agent_dart
+        pluginClass: AgentDartPlugin
+      ios:
+        pluginClass: AgentDartPlugin
+      linux:
+        pluginClass: AgentDartPlugin
+      macos:
+        pluginClass: AgentDartPlugin
+      windows:
+        pluginClass: AgentDartPlugin
+      web:
+        pluginClass: AgentDartPlugin
+        fileName: agent_dart_web.dart
