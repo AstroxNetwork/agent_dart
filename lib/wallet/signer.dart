@@ -5,11 +5,11 @@ import 'package:agent_dart/agent/crypto/keystore/api.dart';
 import 'package:agent_dart/identity/identity.dart';
 import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/utils/extension.dart';
-import 'package:agent_dart/wallet/keysmith.dart';
-import 'package:agent_dart/wallet/rosetta.dart';
-import 'package:agent_dart/wallet/types.dart';
 
 import 'hashing.dart';
+import 'keysmith.dart';
+import 'rosetta.dart';
+import 'types.dart';
 
 typedef SigningCallback = void Function([dynamic data]);
 
@@ -17,25 +17,30 @@ enum SignType {
   ecdsa,
   ed25519,
 }
+
 enum SourceType {
   II,
   Plug,
   Keysmith,
   Base,
 }
+
 enum CurveType {
-  SECP256K1,
-  ED25519,
-  ALL,
+  secp256k1,
+  ed25519,
+  all,
 }
 
 abstract class Signer<T extends SignablePayload, R> {
   bool? get isLocked;
+
   Future<void>? unlock(
     String passphrase, {
     String? keystore,
   });
+
   Future<void>? lock(String? passphrase);
+
   Future<R> sign(
     T payload, {
     SignType? signType = SignType.ed25519,
@@ -50,30 +55,60 @@ abstract class BaseSigner<T extends BaseAccount, R extends SignablePayload, E>
 
 abstract class BaseAccount {
   Ed25519KeyIdentity? getIdentity();
+
   Secp256k1KeyIdentity? getEcIdentity();
+
   Map<String, dynamic> toJson();
+
   ECKeys? getEcKeys();
 }
 
 class ICPAccount extends BaseAccount {
+  ICPAccount() : super();
+
+  factory ICPAccount.fromSeed(
+    Uint8List seed, {
+    int? index,
+    CurveType curveType = CurveType.ed25519,
+  }) {
+    ECKeys keys = fromSeed(
+      seed,
+      index: index ?? 0,
+    );
+    Ed25519KeyIdentity? identity = curveType == CurveType.secp256k1
+        ? null
+        : Ed25519KeyIdentity.generate(seed);
+    Secp256k1KeyIdentity? ecIdentity = curveType == CurveType.ed25519
+        ? null
+        : Secp256k1KeyIdentity.fromSecretKey(keys.ecPrivateKey!);
+    return ICPAccount()
+      .._ecKeys = keys
+      .._identity = identity
+      .._ecIdentity = ecIdentity
+      .._phrase = '';
+  }
+
   bool isLocked = false;
-  Ed25519KeyIdentity? _identity;
-  Secp256k1KeyIdentity? _ecIdentity;
-  ECKeys? _ecKeys;
-  Ed25519KeyIdentity? get identity => _identity;
-  Secp256k1KeyIdentity? get ecIdentity => _ecIdentity;
-  ECKeys? get ecKeys => _ecKeys;
   String? _keystore;
   String? _phrase;
+
+  Ed25519KeyIdentity? get identity => _identity;
+  Ed25519KeyIdentity? _identity;
+
+  Secp256k1KeyIdentity? get ecIdentity => _ecIdentity;
+  Secp256k1KeyIdentity? _ecIdentity;
+
+  ECKeys? get ecKeys => _ecKeys;
+  ECKeys? _ecKeys;
 
   static ICPAccount fromPhrase(
     String phrase, {
     String passphase = "",
     int? index,
     List<int>? icPath = IC_BASE_PATH,
-    CurveType curveType = CurveType.ALL,
+    CurveType curveType = CurveType.ed25519,
   }) {
-    ECKeys? keys = curveType == CurveType.ED25519
+    ECKeys? keys = curveType == CurveType.ed25519
         ? null
         : getECKeys(phrase,
             passphase: passphase,
@@ -85,11 +120,14 @@ class ICPAccount extends BaseAccount {
 
     var path = List<int>.from(icPath ?? IC_BASE_PATH);
 
-    Ed25519KeyIdentity? identity = curveType == CurveType.SECP256K1
+    Ed25519KeyIdentity? identity = curveType == CurveType.secp256k1
         ? null
-        : fromMnemonicWithoutValidation(phrase, path,
-            offset: index ?? HARDENED);
-    Secp256k1KeyIdentity? ecIdentity = curveType == CurveType.ED25519
+        : fromMnemonicWithoutValidation(
+            phrase,
+            path,
+            offset: index ?? HARDENED,
+          );
+    Secp256k1KeyIdentity? ecIdentity = curveType == CurveType.ed25519
         ? null
         : Secp256k1KeyIdentity.fromSecretKey(keys!.ecPrivateKey!);
     return ICPAccount()
@@ -99,39 +137,11 @@ class ICPAccount extends BaseAccount {
       .._phrase = phrase;
   }
 
-  factory ICPAccount.fromSeed(
-    Uint8List seed, {
-    int? index,
-    CurveType curveType = CurveType.ALL,
-  }) {
-    ECKeys keys = fromSeed(
-      seed,
-      index: index ?? 0,
-    );
-    Ed25519KeyIdentity? identity = curveType == CurveType.SECP256K1
-        ? null
-        : Ed25519KeyIdentity.generate(seed);
-    Secp256k1KeyIdentity? ecIdentity = curveType == CurveType.ED25519
-        ? null
-        : Secp256k1KeyIdentity.fromSecretKey(keys.ecPrivateKey!);
-    return ICPAccount()
-      .._ecKeys = keys
-      .._identity = identity
-      .._ecIdentity = ecIdentity
-      .._phrase = '';
-  }
-
-  ICPAccount() : super();
+  @override
+  Ed25519KeyIdentity? getIdentity() => _identity;
 
   @override
-  Ed25519KeyIdentity? getIdentity() {
-    return _identity;
-  }
-
-  @override
-  Secp256k1KeyIdentity? getEcIdentity() {
-    return _ecIdentity;
-  }
+  Secp256k1KeyIdentity? getEcIdentity() => _ecIdentity;
 
   @override
   Map<String, dynamic> toJson() {
@@ -139,15 +149,10 @@ class ICPAccount extends BaseAccount {
   }
 
   @override
-  ECKeys? getEcKeys() {
-    return _ecKeys;
-  }
+  ECKeys? getEcKeys() => _ecKeys;
 
   Future<void> lock(String? passphrase) async {
-    _keystore = await encodePhrase(
-      _phrase!,
-      passphrase ?? "",
-    );
+    _keystore = await encodePhrase(_phrase!, passphrase ?? "");
     _phrase = null;
     _ecKeys = null;
     _identity = null;
@@ -155,10 +160,7 @@ class ICPAccount extends BaseAccount {
     isLocked = true;
   }
 
-  Future<void> unlock(
-    String passphrase, {
-    String? keystore,
-  }) async {
+  Future<void> unlock(String passphrase, {String? keystore}) async {
     try {
       if ((_keystore == null)) {
         if (keystore != null) {
@@ -184,49 +186,24 @@ class ICPAccount extends BaseAccount {
       newIcp._identity = null;
       isLocked = false;
     } catch (e) {
-      throw "Cannot unlock account with password $passphrase and keystore $_keystore";
+      throw "Cannot unlock account with password $passphrase "
+          "and keystore $_keystore";
     }
   }
 }
 
 class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
     CombineSignedTransactionResult> {
-  String? _phrase;
-  int? _index;
-  SourceType? _sourceType;
-  ICPAccount get account => _acc;
-  SourceType? get sourceType => _sourceType;
-  int? get index => _index;
-  bool get isHD => index == null;
-  String? get idPublicKey => account.identity?.getPublicKey().toRaw().toHex();
-  String? get idPublicKeyDer =>
-      account.identity?.getPublicKey().toDer().toHex();
-  String? get idAddress => account.identity?.getAccountId().toHex();
-  String? get idChecksumAddress => account.identity?.getAccountId() != null
-      ? crc32Add(account.identity!.getAccountId()).toHex()
-      : null;
-
-  String? get ecPublicKey => account.ecIdentity?.getPublicKey().toRaw().toHex();
-  String? get ecPublicKeyDer =>
-      account.ecIdentity?.getPublicKey().toDer().toHex();
-  String? get ecAddress => account.ecIdentity?.getAccountId().toHex();
-  String? get ecChecksumAddress => account.ecIdentity?.getAccountId() != null
-      ? crc32Add(account.ecIdentity!.getAccountId()).toHex()
-      : null;
-  late ICPAccount _acc;
   ICPSigner.create({
-    CurveType curveType = CurveType.ALL,
-  }) : this.fromPhrase(
-          generateMnemonic(),
-          curveType: curveType,
-        );
+    CurveType curveType = CurveType.ed25519,
+  }) : this.fromPhrase(generateMnemonic(), curveType: curveType);
 
   ICPSigner.fromPhrase(
     String phrase, {
     String passphase = "",
     int? index = 0,
     List<int>? icPath = IC_BASE_PATH,
-    CurveType curveType = CurveType.ALL,
+    CurveType curveType = CurveType.ed25519,
   }) {
     _phrase = phrase;
     _index ??= index;
@@ -242,7 +219,7 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
   ICPSigner.fromSeed(
     Uint8List seed, {
     int? index = 0,
-    CurveType curveType = CurveType.ALL,
+    CurveType curveType = CurveType.ed25519,
   }) {
     _index ??= index;
     _acc = ICPAccount.fromSeed(
@@ -252,11 +229,86 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
     );
   }
 
+  factory ICPSigner.importPhrase(
+    String phrase, {
+    int index = 0,
+    SourceType sourceType = SourceType.II,
+    CurveType curveType = CurveType.ed25519,
+  }) {
+    switch (sourceType) {
+      case SourceType.II:
+        return ICPSigner.fromPhrase(
+          phrase,
+          index: HARDENED,
+          icPath: IC_DERIVATION_PATH,
+        )..setSourceType(SourceType.II);
+      case SourceType.Keysmith:
+        return ICPSigner.fromPhrase(
+          phrase,
+          index: index,
+          icPath: IC_DERIVATION_PATH,
+        )..setSourceType(SourceType.Keysmith);
+      case SourceType.Plug:
+        return ICPSigner.fromPhrase(
+          phrase,
+          index: index,
+          icPath: IC_DERIVATION_PATH,
+        )..setSourceType(SourceType.Keysmith);
+      case SourceType.Base:
+        return ICPSigner.fromPhrase(
+          phrase,
+          index: index,
+          icPath: IC_BASE_PATH,
+        )..setSourceType(SourceType.Base);
+      default:
+        return ICPSigner.fromPhrase(
+          phrase,
+          index: HARDENED,
+          icPath: IC_DERIVATION_PATH,
+        )..setSourceType(SourceType.II);
+    }
+  }
+
+  ICPAccount get account => _acc;
+  late ICPAccount _acc;
+
+  String? _phrase;
+  int? _index;
+  SourceType? _sourceType;
+
+  SourceType? get sourceType => _sourceType;
+
+  int? get index => _index;
+
+  bool get isHD => index == null;
+
+  String? get idPublicKey => account.identity?.getPublicKey().toRaw().toHex();
+
+  String? get idPublicKeyDer =>
+      account.identity?.getPublicKey().toDer().toHex();
+
+  String? get idAddress => account.identity?.getAccountId().toHex();
+
+  String? get idChecksumAddress => account.identity?.getAccountId() != null
+      ? crc32Add(account.identity!.getAccountId()).toHex()
+      : null;
+
+  String? get ecPublicKey => account.ecIdentity?.getPublicKey().toRaw().toHex();
+
+  String? get ecPublicKeyDer =>
+      account.ecIdentity?.getPublicKey().toDer().toHex();
+
+  String? get ecAddress => account.ecIdentity?.getAccountId().toHex();
+
+  String? get ecChecksumAddress => account.ecIdentity?.getAccountId() != null
+      ? crc32Add(account.ecIdentity!.getAccountId()).toHex()
+      : null;
+
   ICPAccount hdCreate({
     String passphase = "",
     int? index = 0,
     List<int>? icPath = IC_BASE_PATH,
-    CurveType curveType = CurveType.ALL,
+    CurveType curveType = CurveType.ed25519,
   }) {
     return ICPAccount.fromPhrase(
       _phrase!,
@@ -267,8 +319,8 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
     );
   }
 
-  void setSourceType(SourceType _type) {
-    _sourceType = _type;
+  void setSourceType(SourceType type) {
+    _sourceType = type;
   }
 
   @override
@@ -315,56 +367,6 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
       }
     } catch (e) {
       rethrow;
-    }
-  }
-
-  factory ICPSigner.importPhrase(
-    String phrase, {
-    int index = 0,
-    SourceType sourceType = SourceType.II,
-    CurveType curveType = CurveType.ALL,
-  }) {
-    switch (sourceType) {
-      case SourceType.II:
-        {
-          return ICPSigner.fromPhrase(
-            phrase,
-            index: HARDENED,
-            icPath: IC_DERIVATION_PATH,
-          )..setSourceType(SourceType.II);
-        }
-      case SourceType.Keysmith:
-        {
-          return ICPSigner.fromPhrase(
-            phrase,
-            index: index,
-            icPath: IC_DERIVATION_PATH,
-          )..setSourceType(SourceType.Keysmith);
-        }
-      case SourceType.Plug:
-        {
-          return ICPSigner.fromPhrase(
-            phrase,
-            index: index,
-            icPath: IC_DERIVATION_PATH,
-          )..setSourceType(SourceType.Keysmith);
-        }
-      case SourceType.Base:
-        {
-          return ICPSigner.fromPhrase(
-            phrase,
-            index: index,
-            icPath: IC_BASE_PATH,
-          )..setSourceType(SourceType.Base);
-        }
-      default:
-        {
-          return ICPSigner.fromPhrase(
-            phrase,
-            index: HARDENED,
-            icPath: IC_DERIVATION_PATH,
-          )..setSourceType(SourceType.II);
-        }
     }
   }
 }
