@@ -66,8 +66,7 @@ abstract class BaseAccount {
 class ICPAccount extends BaseAccount {
   ICPAccount({
     CurveType curveType = CurveType.ed25519,
-  })  : _curveType = curveType,
-        super();
+  }) : _curveType = curveType;
 
   factory ICPAccount.fromSeed(
     Uint8List seed, {
