@@ -14,21 +14,17 @@ DynamicLibrary getDyLib() {
   }
 
   if (Platform.isMacOS) {
-    if (Platform.environment["_"] == null ||
-        (Platform.environment["_"] != null &&
-            Platform.environment["FLUTTER_ENGINE_SWITCH_1"] != null)) {
-      return DynamicLibrary.process();
+    if (Platform.environment["FLUTTER_TEST"] != null) {
+      return DynamicLibrary.open(
+          "macos/cli/x86_64-apple-darwin/lib$libName.dylib");
     }
-    return DynamicLibrary.open(
-        "macos/cli/x86_64-apple-darwin/lib$libName.dylib");
+    return DynamicLibrary.process();
   }
   if (Platform.isLinux) {
-    if (Platform.environment["_"] == null ||
-        (Platform.environment["_"] != null &&
-            Platform.environment["FLUTTER_ENGINE_SWITCH_1"] != null)) {
-      return DynamicLibrary.open("lib$libName.dylib");
+    if (Platform.environment["FLUTTER_TEST"] != null) {
+      return DynamicLibrary.open("linux/lib$libName.so");
     }
-    return DynamicLibrary.open("linux/lib$libName.so");
+    return DynamicLibrary.open("lib$libName.dylib");
   }
   if (Platform.isWindows) {
     return DynamicLibrary.open("windows/$libName.dll");
