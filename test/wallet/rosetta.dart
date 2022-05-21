@@ -22,7 +22,10 @@ void rosettaTest() {
 
     final signer = ICPSigner.importPhrase(phrase);
 
-    var receiver = ICPSigner.fromSeed(Uint8List.fromList(List.filled(32, 0)));
+    var receiver = ICPSigner.fromSeed(
+      Uint8List.fromList(List.filled(32, 0)),
+      curveType: CurveType.all,
+    );
 
     /// setup RosettaApi and init
     RosettaApi rose = RosettaApi(host: "http://127.0.0.1:8080");
