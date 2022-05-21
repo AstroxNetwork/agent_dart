@@ -654,6 +654,8 @@ class FloatClass extends PrimitiveType<num> {
 class FixedIntClass extends PrimitiveType {
   late final int _bits;
 
+  int get bits => _bits;
+
   FixedIntClass(this._bits) : super();
 
   @override
@@ -710,6 +712,8 @@ class FixedIntClass extends PrimitiveType {
 
 class FixedNatClass extends PrimitiveType<dynamic> {
   late final int _bits;
+
+  int get bits => _bits;
 
   FixedNatClass(this._bits) : super();
 

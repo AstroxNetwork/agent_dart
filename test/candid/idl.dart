@@ -1,9 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:agent_dart/agent_dart.dart';
-import 'package:agent_dart/principal/principal.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:agent_dart/utils/extension.dart';
 // ignore: library_prefixes
-import 'package:agent_dart/candid/idl.dart';
 
 void main() {
   idlTest();
@@ -186,6 +185,42 @@ void idlTest() {
       ]),
       throwsA(contains("Invalid record {int; text} argument")),
     );
+  });
+
+  test('IDL encoding (arraybuffer)', () {
+    test_(
+      IDL.Vec(IDL.Nat8),
+      Uint8List.fromList([0, 1, 2, 3]),
+      '4449444c016d7b01000400010203',
+      'Array of Nat8s',
+    );
+    test_(
+      IDL.Vec(IDL.Int8),
+      Int8List.fromList([0, 1, 2, 3]),
+      '4449444c016d7701000400010203',
+      'Array of Int8s',
+    );
+    test_(
+      IDL.Vec(IDL.Int16),
+      Int16List.fromList([0, 1, 2, 3, 32767, -1]),
+      '4449444c016d760100060000010002000300ff7fffff',
+      'Array of Int16s',
+    );
+    test_(
+      IDL.Vec(IDL.Nat64),
+      <BigInt>[
+        BigInt.from(0),
+        BigInt.from(1),
+        BigInt.from(1) << 60,
+        BigInt.from(13)
+      ],
+      '4449444c016d780100040000000000000000010000000000000000000000000000100d00000000000000',
+      'Array of Nat64s',
+    );
+    IDL.encode([IDL.Vec(IDL.Nat8)], [Uint8List.fromList([])]);
+    IDL.encode([IDL.Vec(IDL.Nat8)], [Uint8List.fromList(List.filled(100, 42))]);
+    IDL.encode(
+        [IDL.Vec(IDL.Nat16)], [Uint16List.fromList(List.filled(200, 42))]);
   });
 
   test('IDL encoding (array)', () {

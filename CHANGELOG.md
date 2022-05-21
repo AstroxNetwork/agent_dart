@@ -1,3 +1,9 @@
+## 0.1.24
+
+- Add `CurveType` for signers.
+- Add `bits` getters for `FixedIntClass` and `FixedNatClass`.
+- Adopt `Platform.environment` for Flutter 3.
+
 ## 0.1.23+1
 
 - Fix issues when encoding `OptClass`.
