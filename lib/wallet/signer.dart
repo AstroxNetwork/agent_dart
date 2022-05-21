@@ -64,24 +64,24 @@ abstract class BaseAccount {
 }
 
 class ICPAccount extends BaseAccount {
-  ICPAccount() : super();
+  ICPAccount({
+    CurveType curveType = CurveType.ed25519,
+  })  : _curveType = curveType,
+        super();
 
   factory ICPAccount.fromSeed(
     Uint8List seed, {
     int? index,
     CurveType curveType = CurveType.ed25519,
   }) {
-    ECKeys keys = fromSeed(
-      seed,
-      index: index ?? 0,
-    );
+    ECKeys keys = fromSeed(seed, index: index ?? 0);
     Ed25519KeyIdentity? identity = curveType == CurveType.secp256k1
         ? null
         : Ed25519KeyIdentity.generate(seed);
     Secp256k1KeyIdentity? ecIdentity = curveType == CurveType.ed25519
         ? null
         : Secp256k1KeyIdentity.fromSecretKey(keys.ecPrivateKey!);
-    return ICPAccount()
+    return ICPAccount(curveType: curveType)
       .._ecKeys = keys
       .._identity = identity
       .._ecIdentity = ecIdentity
@@ -91,6 +91,7 @@ class ICPAccount extends BaseAccount {
   bool isLocked = false;
   String? _keystore;
   String? _phrase;
+  final CurveType _curveType;
 
   Ed25519KeyIdentity? get identity => _identity;
   Ed25519KeyIdentity? _identity;
@@ -130,7 +131,7 @@ class ICPAccount extends BaseAccount {
     Secp256k1KeyIdentity? ecIdentity = curveType == CurveType.ed25519
         ? null
         : Secp256k1KeyIdentity.fromSecretKey(keys!.ecPrivateKey!);
-    return ICPAccount()
+    return ICPAccount(curveType: curveType)
       .._ecKeys = keys
       .._identity = identity
       .._ecIdentity = ecIdentity
@@ -177,6 +178,7 @@ class ICPAccount extends BaseAccount {
         phrase,
         index: 0,
         icPath: IC_BASE_PATH,
+        curveType: _curveType,
       );
       _phrase = phrase;
       _ecKeys = newIcp._ecKeys;
@@ -222,11 +224,7 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
     CurveType curveType = CurveType.ed25519,
   }) {
     _index ??= index;
-    _acc = ICPAccount.fromSeed(
-      seed,
-      index: index,
-      curveType: curveType,
-    );
+    _acc = ICPAccount.fromSeed(seed, index: index, curveType: curveType);
   }
 
   factory ICPSigner.importPhrase(

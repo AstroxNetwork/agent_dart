@@ -10,17 +10,17 @@ void main() {
         'armed lens vault weather original scissors rug priority '
         'vicious lesson raven spot gossip powder person volcano';
     var acc2CreateTime = DateTime.now();
-    var acc2 = ICPSigner.fromPhrase(mne2);
+    final acc2 = ICPSigner.fromPhrase(mne2, curveType: CurveType.all);
     var acc2TimePeriod = DateTime.now().millisecondsSinceEpoch -
         acc2CreateTime.millisecondsSinceEpoch;
 
     var acc21CreateTime = DateTime.now();
-    var acc21 = ICPSigner.fromPhrase(mne2, curveType: CurveType.ed25519);
+    final acc21 = ICPSigner.fromPhrase(mne2, curveType: CurveType.ed25519);
     var acc21TimePeriod = DateTime.now().millisecondsSinceEpoch -
         acc21CreateTime.millisecondsSinceEpoch;
 
     var acc22CreateTime = DateTime.now();
-    var acc22 = ICPSigner.fromPhrase(mne2, curveType: CurveType.secp256k1);
+    final acc22 = ICPSigner.fromPhrase(mne2, curveType: CurveType.secp256k1);
     var acc22TimePeriod = DateTime.now().millisecondsSinceEpoch -
         acc22CreateTime.millisecondsSinceEpoch;
 
