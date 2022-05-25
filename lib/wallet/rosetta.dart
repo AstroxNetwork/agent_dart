@@ -306,7 +306,6 @@ class RosettaApi {
   /// @private
   Future<rosetta.NetworkListResponse> networksList() async {
     var result = await request('/network/list', {"metadata": {}});
-    print(result);
     return rosetta.NetworkListResponse.fromMap(result);
   }
 
