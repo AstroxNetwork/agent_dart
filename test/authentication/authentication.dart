@@ -6,7 +6,7 @@ import 'package:agent_dart/identity/delegation.dart';
 import 'package:agent_dart/identity/identity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-SignIdentity createIdentity(int seed) {
+Future<SignIdentity> createIdentity(int seed) async {
   var seed1 = List.filled(32, 0);
   seed1[0] = seed;
   return Ed25519KeyIdentity.generate(Uint8List.fromList(seed1));
@@ -18,8 +18,8 @@ void main() {
 
 void authenticationTest() {
   test('checks expiration', () async {
-    final root = createIdentity(0);
-    final session = createIdentity(1);
+    final root = await createIdentity(0);
+    final session = await createIdentity(1);
     final future = DateTime.fromMillisecondsSinceEpoch(
         DateTime.now().millisecondsSinceEpoch + 1000);
     final past = DateTime.fromMillisecondsSinceEpoch(

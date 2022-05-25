@@ -18,23 +18,24 @@ class AgentFactory {
       Identity? identity,
       bool? debug = true}) {
     _setCanisterId(canisterId);
-    _identity = identity ?? Ed25519KeyIdentity.generate(null);
+    _identity = identity ?? AnonymousIdentity();
     _idl = idl;
     _debug = debug ?? true;
     _initAgent(url);
     _createActor();
   }
-  factory AgentFactory.create(
+  static Future<AgentFactory> create(
       {required String canisterId,
       required String url,
       required Service idl,
       Identity? identity,
-      bool? debug = true}) {
+      bool? debug = true}) async {
+    final newIdentity = identity ?? await Ed25519KeyIdentity.generate(null);
     return AgentFactory(
         canisterId: canisterId,
         url: url,
         idl: idl,
-        identity: identity ?? Ed25519KeyIdentity.generate(null),
+        identity: newIdentity,
         debug: debug);
   }
 

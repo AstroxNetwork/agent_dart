@@ -2,7 +2,9 @@
 
 @interface AgentDartPlugin : NSObject<FlutterPlugin>
 @end
-// NOTE: Append the lines below to ios/Classes/<your>Plugin.h
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 #define ECB 0
 
@@ -68,7 +70,13 @@
 
 #define HBITS (BASEBITS / 2)
 
+
+
 #define BIGBITS (MODBYTES * 8)
+
+
+
+
 
 #define BLS_OK 0
 
@@ -152,6 +160,8 @@
 
 #define FEXCESS (((int32_t)1 << 25) - 1)
 
+
+
 #define BIG_ENDIAN_SIGN false
 
 #define ZERO 0
@@ -165,6 +175,10 @@
 #define SPARSE 4
 
 #define DENSE 5
+
+
+
+
 
 #define BAD_PARAMS -11
 
@@ -190,18 +204,69 @@
 
 #define GT_STRONG false
 
+typedef struct wire_uint_8_list {
+  uint8_t *ptr;
+  int32_t len;
+} wire_uint_8_list;
+
+typedef struct WireSyncReturnStruct {
+  uint8_t *ptr;
+  int32_t len;
+  bool success;
+} WireSyncReturnStruct;
+
+typedef int64_t DartPort;
+
+typedef bool (*DartPostCObjectFnType)(DartPort port_id, void *message);
+
 typedef int64_t Chunk;
 
 #define BMASK ((1 << BASEBITS) - 1)
 
 #define HMASK ((1 << HBITS) - 1)
 
+
+
 #define TMASK ((1 << TBITS) - 1)
 
 #define MCONST 140737475470229501
 
-char *bls_init(void);
+void wire_bls_init(int64_t port_);
 
-char *bls_verify(const char *sig, const char *m, const char *w);
+void wire_bls_verify(int64_t port_,
+                     struct wire_uint_8_list *sig,
+                     struct wire_uint_8_list *m,
+                     struct wire_uint_8_list *w);
 
-void rust_cstr_free(char *s);
+void wire_ed25519_from_seed(int64_t port_, struct wire_uint_8_list *seed);
+
+void wire_ed25519_generate(int64_t port_);
+
+void wire_ed25519_sign(int64_t port_,
+                       struct wire_uint_8_list *seed,
+                       struct wire_uint_8_list *message);
+
+void wire_ed25519_verify(int64_t port_,
+                         struct wire_uint_8_list *message,
+                         struct wire_uint_8_list *sig,
+                         struct wire_uint_8_list *pub_key);
+
+struct wire_uint_8_list *new_uint_8_list(int32_t len);
+
+void free_WireSyncReturnStruct(struct WireSyncReturnStruct val);
+
+void store_dart_post_cobject(DartPostCObjectFnType ptr);
+
+static int64_t dummy_method_to_enforce_bundling(void) {
+    int64_t dummy_var = 0;
+    dummy_var ^= ((int64_t) (void*) wire_bls_init);
+    dummy_var ^= ((int64_t) (void*) wire_bls_verify);
+    dummy_var ^= ((int64_t) (void*) wire_ed25519_from_seed);
+    dummy_var ^= ((int64_t) (void*) wire_ed25519_generate);
+    dummy_var ^= ((int64_t) (void*) wire_ed25519_sign);
+    dummy_var ^= ((int64_t) (void*) wire_ed25519_verify);
+    dummy_var ^= ((int64_t) (void*) new_uint_8_list);
+    dummy_var ^= ((int64_t) (void*) free_WireSyncReturnStruct);
+    dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);
+    return dummy_var;
+}

@@ -1,6 +1,6 @@
 import 'dart:ffi';
 import 'dart:io' show Platform;
-// import 'package:args/args.dart';
+import 'bridge_generated.dart';
 
 const libName = "agent_dart";
 const androidlibName = "lib$libName.so";
@@ -32,4 +32,4 @@ DynamicLibrary getDyLib() {
   return DynamicLibrary.open("rust/dylib/debug/lib$libName.dylib");
 }
 
-final dylib = getDyLib();
+final dylib = AgentDartImpl(getDyLib());

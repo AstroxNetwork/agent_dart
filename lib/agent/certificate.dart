@@ -11,7 +11,7 @@ import 'package:agent_dart/utils/u8a.dart';
 import 'package:typed_data/typed_data.dart';
 
 import 'agent/api.dart';
-import '../bls/bls.base.dart';
+import '../bridge/bls.base.dart';
 import 'errors.dart';
 
 BaseBLS bls = BaseBLS();
@@ -150,9 +150,7 @@ class Certificate {
     final sig = cert.signature;
     final key = extractDER(derKey);
     final msg = u8aConcat([domainSep('ic-state-root'), rootHash]);
-    var res = kIsWeb
-        ? await bls.blsVerify(key, sig!, msg)
-        : bls.blsVerifySync(key, sig!, msg);
+    var res = await bls.blsVerify(key, sig!, msg);
     verified = res;
     return res;
   }

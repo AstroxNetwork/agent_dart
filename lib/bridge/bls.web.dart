@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:agent_dart/agent_dart.dart';
-import 'package:agent_dart/bls/bls.base.dart';
-import 'package:agent_dart/bls/wasm_interop.dart';
+import 'package:agent_dart/bridge/bls.base.dart';
+import 'package:agent_dart/bridge/wasm_interop.dart';
 import 'package:agent_dart/utils/base64.dart';
 
 final wasmBytesBase64 = '''
@@ -815,6 +815,7 @@ typedef BLSVerifyFunc = int Function(int, int, int, int, int, int);
 class WebBls implements BaseBLS {
   Instance? instance;
   Uint8List? cachegetUint8Memory0;
+  late bool _isInit;
   WebBls();
 
   Future<void> initInstance() async {
@@ -822,23 +823,9 @@ class WebBls implements BaseBLS {
   }
 
   @override
-  bool blsInitSync() {
-    return true;
-  }
-
-  @override
-  bool blsVerifySync(
-    Uint8List pk,
-    Uint8List sig,
-    Uint8List msg,
-  ) {
-    return true;
-  }
-
-  @override
   Future<bool> blsInit() async {
     var blsInitFunc = instance!.functions['bls_init']! as int Function();
-    return blsInitFunc() == 0 ? true : false;
+    return _isInit = blsInitFunc() == 0 ? true : false;
   }
 
   @override
@@ -885,20 +872,9 @@ class WebBls implements BaseBLS {
     getUint8Memory0().setAll((ptr ~/ 1), arg);
     return [ptr, arg.length];
   }
+
+  @override
+  bool get isInit => _isInit;
 }
 
 BaseBLS createBLS() => WebBls();
-
-// let cachegetUint8Memory0: any = null;
-// function getUint8Memory0() {
-//   if (cachegetUint8Memory0 === null || cachegetUint8Memory0.buffer !== wasm.memory.buffer) {
-//     cachegetUint8Memory0 = new Uint8Array(wasm.memory.buffer);
-//   }
-//   return cachegetUint8Memory0;
-// }
-
-// function passArray8ToWasm0(arg: any, malloc: any): [number, number] {
-//   const ptr = malloc(arg.length * 1);
-//   getUint8Memory0().set(arg, ptr / 1);
-//   return [ptr, arg.length];
-// }

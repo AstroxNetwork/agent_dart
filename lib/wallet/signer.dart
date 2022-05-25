@@ -68,15 +68,15 @@ class ICPAccount extends BaseAccount {
     CurveType curveType = CurveType.ed25519,
   }) : _curveType = curveType;
 
-  factory ICPAccount.fromSeed(
+  static Future<ICPAccount> fromSeed(
     Uint8List seed, {
     int? index,
     CurveType curveType = CurveType.ed25519,
-  }) {
-    ECKeys keys = fromSeed(seed, index: index ?? 0);
+  }) async {
+    ECKeys keys = ecKeysfromSeed(seed, index: index ?? 0);
     Ed25519KeyIdentity? identity = curveType == CurveType.secp256k1
         ? null
-        : Ed25519KeyIdentity.generate(seed);
+        : await Ed25519KeyIdentity.generate(seed);
     Secp256k1KeyIdentity? ecIdentity = curveType == CurveType.ed25519
         ? null
         : Secp256k1KeyIdentity.fromSecretKey(keys.ecPrivateKey!);
@@ -101,13 +101,13 @@ class ICPAccount extends BaseAccount {
   ECKeys? get ecKeys => _ecKeys;
   ECKeys? _ecKeys;
 
-  static ICPAccount fromPhrase(
+  static Future<ICPAccount> fromPhrase(
     String phrase, {
     String passphase = "",
     int? index,
     List<int>? icPath = IC_BASE_PATH,
     CurveType curveType = CurveType.ed25519,
-  }) {
+  }) async {
     ECKeys? keys = curveType == CurveType.ed25519
         ? null
         : getECKeys(phrase,
@@ -122,7 +122,7 @@ class ICPAccount extends BaseAccount {
 
     Ed25519KeyIdentity? identity = curveType == CurveType.secp256k1
         ? null
-        : fromMnemonicWithoutValidation(
+        : await fromMnemonicWithoutValidation(
             phrase,
             path,
             offset: index ?? HARDENED,
@@ -130,6 +130,7 @@ class ICPAccount extends BaseAccount {
     Secp256k1KeyIdentity? ecIdentity = curveType == CurveType.ed25519
         ? null
         : Secp256k1KeyIdentity.fromSecretKey(keys!.ecPrivateKey!);
+
     return ICPAccount(curveType: curveType)
       .._ecKeys = keys
       .._identity = identity
@@ -173,7 +174,7 @@ class ICPAccount extends BaseAccount {
         jsonDecode(_keystore!),
         passphrase,
       );
-      var newIcp = ICPAccount.fromPhrase(
+      var newIcp = await ICPAccount.fromPhrase(
         phrase,
         index: 0,
         icPath: IC_BASE_PATH,
@@ -195,74 +196,91 @@ class ICPAccount extends BaseAccount {
 
 class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
     CombineSignedTransactionResult> {
-  ICPSigner.create({
+  ICPSigner._();
+  static Future<ICPSigner> create({
     CurveType curveType = CurveType.ed25519,
-  }) : this.fromPhrase(generateMnemonic(), curveType: curveType);
+  }) =>
+      ICPSigner.fromPhrase(generateMnemonic(), curveType: curveType);
 
-  ICPSigner.fromPhrase(
+  static Future<ICPSigner> fromPhrase(
     String phrase, {
     String passphase = "",
     int? index = 0,
     List<int>? icPath = IC_BASE_PATH,
     CurveType curveType = CurveType.ed25519,
-  }) {
-    _phrase = phrase;
-    _index ??= index;
-    _acc = ICPAccount.fromPhrase(
-      _phrase!,
+  }) async {
+    final ICPAccount acc = await ICPAccount.fromPhrase(
+      phrase,
       passphase: passphase,
-      index: _index!,
+      index: index,
       icPath: icPath,
       curveType: curveType,
     );
+    return ICPSigner._()
+      .._phrase = phrase
+      .._index = index
+      .._acc = acc;
   }
 
-  ICPSigner.fromSeed(
+  static Future<ICPSigner> fromSeed(
     Uint8List seed, {
     int? index = 0,
     CurveType curveType = CurveType.ed25519,
-  }) {
-    _index ??= index;
-    _acc = ICPAccount.fromSeed(seed, index: index, curveType: curveType);
+  }) async {
+    final ICPAccount acc =
+        await ICPAccount.fromSeed(seed, index: index, curveType: curveType);
+    return ICPSigner._()
+      .._index = index
+      .._acc = acc;
   }
 
-  factory ICPSigner.importPhrase(
+  static Future<ICPSigner> importPhrase(
     String phrase, {
     int index = 0,
     SourceType sourceType = SourceType.II,
     CurveType curveType = CurveType.ed25519,
-  }) {
+  }) async {
     switch (sourceType) {
       case SourceType.II:
-        return ICPSigner.fromPhrase(
+        return (await ICPSigner.fromPhrase(
           phrase,
           index: HARDENED,
           icPath: IC_DERIVATION_PATH,
-        )..setSourceType(SourceType.II);
+          curveType: curveType,
+        ))
+          ..setSourceType(SourceType.II);
       case SourceType.Keysmith:
-        return ICPSigner.fromPhrase(
+        return (await ICPSigner.fromPhrase(
           phrase,
           index: index,
           icPath: IC_DERIVATION_PATH,
-        )..setSourceType(SourceType.Keysmith);
+          curveType: curveType,
+        ))
+          ..setSourceType(SourceType.Keysmith);
       case SourceType.Plug:
-        return ICPSigner.fromPhrase(
+        return (await ICPSigner.fromPhrase(
           phrase,
           index: index,
           icPath: IC_DERIVATION_PATH,
-        )..setSourceType(SourceType.Keysmith);
+          curveType: curveType,
+        ))
+          ..setSourceType(SourceType.Keysmith);
       case SourceType.Base:
-        return ICPSigner.fromPhrase(
+        return (await ICPSigner.fromPhrase(
           phrase,
           index: index,
           icPath: IC_BASE_PATH,
-        )..setSourceType(SourceType.Base);
+          curveType: curveType,
+        ))
+          ..setSourceType(SourceType.Base);
       default:
-        return ICPSigner.fromPhrase(
+        return (await ICPSigner.fromPhrase(
           phrase,
           index: HARDENED,
           icPath: IC_DERIVATION_PATH,
-        )..setSourceType(SourceType.II);
+          curveType: curveType,
+        ))
+          ..setSourceType(SourceType.II);
     }
   }
 
@@ -301,12 +319,12 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
       ? crc32Add(account.ecIdentity!.getAccountId()).toHex()
       : null;
 
-  ICPAccount hdCreate({
+  Future<ICPAccount> hdCreate({
     String passphase = "",
     int? index = 0,
     List<int>? icPath = IC_BASE_PATH,
     CurveType curveType = CurveType.ed25519,
-  }) {
+  }) async {
     return ICPAccount.fromPhrase(
       _phrase!,
       passphase: passphase,
