@@ -15,13 +15,16 @@ void main() {
 /// this test is not complete yet
 void ledgerTest() {
   group("ledger test", () {
-    const phrase =
-        'steel obey anxiety vast clever relax million girl cost pond elbow bridge hill health toilet desk sleep grid boost flavor shy cry armed mass';
+    Future<ICPSigner> getSigner() async {
+      const phrase =
+          'steel obey anxiety vast clever relax million girl cost pond elbow bridge hill health toilet desk sleep grid boost flavor shy cry armed mass';
 
-    final signer = ICPSigner.importPhrase(phrase);
+      final signer =
+          await ICPSigner.importPhrase(phrase, curveType: CurveType.secp256k1);
 
-    /// we use secp256k1 curve here
-    final identity = signer.account.ecIdentity;
+      /// we use secp256k1 curve here
+      return signer;
+    }
 
     Future<AgentFactory> getAgent() async {
       return await AgentFactory.createAgent(
@@ -30,13 +33,14 @@ void ledgerTest() {
           url:
               "http://localhost:8000/", // For Android emulator, please use 10.0.2.2 as endpoint
           idl: ledgerIdl,
-          identity: identity,
+          identity: (await getSigner()).account.ecIdentity,
           debug: true);
     }
 
     test('test fetch balance and send', () async {
+      var signer = await getSigner();
       var agent = await getAgent();
-      var someReceiver = ICPSigner.create();
+      var someReceiver = await ICPSigner.create(curveType: CurveType.secp256k1);
       var senderBalance = await Ledger.getBalance(
           agent: agent, accountId: signer.ecChecksumAddress!);
       expect(senderBalance.e8s > BigInt.zero, true);
@@ -81,9 +85,10 @@ void ledgerTest() {
     });
 
     test('latest account balance and transfer', () async {
+      var signer = await getSigner();
       print("\n ${signer.ecChecksumAddress}");
       var agent = await getAgent();
-      var someReceiver = ICPSigner.create();
+      var someReceiver = await ICPSigner.create(curveType: CurveType.secp256k1);
       var senderBalance = await Ledger.accountBalance(
           agent: agent, accountIdOrPrincipal: signer.ecChecksumAddress!);
       expect(senderBalance.e8s > BigInt.zero, true);
@@ -110,7 +115,7 @@ void ledgerTest() {
           sendOpts: SendOpts());
       print("\n---✅ sending end=====>");
       print("\n---🔢 block height: ${blockHeight.Ok}");
-      expect((blockHeight as TransferResult).Ok! >= BigInt.zero, true);
+      expect((blockHeight).Ok! >= BigInt.zero, true);
       var receiverAfterSend = await Ledger.accountBalance(
           agent: agent, accountIdOrPrincipal: someReceiver.ecChecksumAddress!);
       expect(receiverAfterSend.e8s == BigInt.from(100000000), true);
@@ -128,6 +133,7 @@ void ledgerTest() {
     });
 
     test('transfer to Canister', () async {
+      var signer = await getSigner();
       var agent = await getAgent();
       // var someReceiver = ICPSigner.create();
       var receiver_canister = 'qhbym-qaaaa-aaaaa-aaafq-cai';
@@ -156,7 +162,7 @@ void ledgerTest() {
           sendOpts: SendOpts());
       print("\n---✅ sending end=====>");
       print("\n---🔢 block height: ${blockHeight.Ok}");
-      expect((blockHeight as TransferResult).Ok! >= BigInt.zero, true);
+      expect((blockHeight).Ok! >= BigInt.zero, true);
       var receiverAfterSend = await Ledger.accountBalance(
           agent: agent, accountIdOrPrincipal: receiver_canister);
       expect(

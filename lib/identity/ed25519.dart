@@ -5,11 +5,13 @@ import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/principal/utils/sha224.dart';
 import 'package:agent_dart/wallet/keysmith.dart';
 import 'package:crypto/crypto.dart';
-import 'package:pinenacl/ed25519.dart';
+// import 'package:pinenacl/ed25519.dart';
 import 'package:agent_dart/agent/auth.dart' as auth;
 import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/utils/u8a.dart';
 import 'package:agent_dart/utils/extension.dart';
+
+import '../bridge/ffi/ffi.dart';
 
 typedef JsonnableEd25519KeyIdentity = List<String>;
 
@@ -90,18 +92,20 @@ class Ed25519PublicKey implements auth.PublicKey {
 }
 
 class Ed25519KeyIdentity extends auth.SignIdentity {
-  static Ed25519KeyIdentity generate(Uint8List? seed) {
+  static Future<Ed25519KeyIdentity> generate(Uint8List? seed) async {
     if (seed != null && seed.length != 32) {
       throw 'Ed25519 Seed needs to be 32 bytes long.';
     }
 
     Uint8List publicKey;
-    Uint8List secretKey;
+    Uint8List secretKey; // seed itself
 
-    var kp = seed == null ? SigningKey.generate() : SigningKey.fromSeed(seed);
+    var kp = seed == null
+        ? await dylib.ed25519Generate()
+        : await dylib.ed25519FromSeed(seed: seed);
 
-    publicKey = kp.publicKey.buffer.asUint8List();
-    secretKey = kp.asTypedList;
+    publicKey = kp.publicKey;
+    secretKey = kp.seed;
 
     return Ed25519KeyIdentity(
       Ed25519PublicKey.fromRaw(publicKey),
@@ -154,46 +158,40 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     return Ed25519KeyIdentity(Ed25519PublicKey.fromRaw(publicKey), privateKey);
   }
 
-  static Ed25519KeyIdentity fromSecretKey(Uint8List secretKey) {
-    final keyPair = SigningKey.fromValidBytes(secretKey);
-    final identity = Ed25519KeyIdentity.fromKeyPair(
-      keyPair.publicKey.asTypedList,
-      secretKey,
-    );
-    return identity;
-  }
-
-  static Ed25519KeyIdentityRecoveredFromII recoverFromIISeedPhrase(
-      String phrase) {
+  static Future<Ed25519KeyIdentityRecoveredFromII> recoverFromIISeedPhrase(
+      String phrase) async {
     try {
       var userNumber = extractUserNumber(phrase);
       var mne = dropLeadingUserNumber(phrase);
-      var identity = fromMnemonicWithoutValidation(mne, IC_DERIVATION_PATH);
+      var identity = await fromMnemonicWithoutValidation(
+        mne,
+        IC_DERIVATION_PATH,
+      );
       return Ed25519KeyIdentityRecoveredFromII(
-          userNumber: userNumber, identity: identity);
+        userNumber: userNumber,
+        identity: identity,
+      );
     } catch (e) {
       rethrow;
     }
   }
 
   late final Ed25519PublicKey _publicKey;
-  late final BinaryBlob _privateKey;
-  late final SigningKey _sk;
+  late final BinaryBlob _seed;
 
   // `fromRaw` and `fromDer` should be used for instantiation, not this constructor.
-  Ed25519KeyIdentity(auth.PublicKey publicKey, this._privateKey) : super() {
+  Ed25519KeyIdentity(auth.PublicKey publicKey, this._seed) : super() {
     _publicKey = Ed25519PublicKey.from(publicKey);
-    _sk = SigningKey.fromValidBytes(_privateKey);
   }
 
   /// Serialize this key to JSON.
   JsonnableEd25519KeyIdentity toJSON() {
-    return [blobToHex(_publicKey.toDer()), blobToHex(_privateKey)];
+    return [blobToHex(_publicKey.toDer()), blobToHex(_seed)];
   }
 
   /// Return a copy of the key pair.
   auth.KeyPair getKeyPair() {
-    return Ed25519KeyPair(_publicKey, _privateKey);
+    return Ed25519KeyPair(_publicKey, _seed);
   }
 
   /// Return the public key.
@@ -209,13 +207,12 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     final blob = challenge is BinaryBlob
         ? challenge
         : blobFromBuffer(challenge as ByteBuffer);
-    return Future.value(_sk.sign(blob).signature.asTypedList);
+    return Future.value(dylib.ed25519Sign(seed: _seed, message: blob));
   }
 
-  bool verify(Uint8List signature, Uint8List message) {
-    return _sk.verifyKey.verify(
-        signature: SignedMessage.fromList(signedMessage: signature).signature,
-        message: message);
+  Future<bool> verify(Uint8List signature, Uint8List message) {
+    return dylib.ed25519Verify(
+        message: message, sig: signature, pubKey: _publicKey.toRaw());
   }
 
   Uint8List get accountId => getAccountId();
@@ -267,7 +264,7 @@ const IC_DERIVATION_PATH = [44, 223, 0, 0, 0];
 /// @param derivationPath an array that is always interpreted as a hardened path.
 /// e.g. to generate m/44'/223’/0’/0’/0' the derivation path should be [44, 223, 0, 0, 0]
 /// @param skipValidation if true, validation checks on the mnemonics are skipped.
-Ed25519KeyIdentity fromMnemonicWithoutValidation(
+Future<Ed25519KeyIdentity> fromMnemonicWithoutValidation(
     String mnemonic, List<int>? derivationPath,
     {int offset = HARDENED}) {
   derivationPath ??= [];
@@ -280,7 +277,7 @@ Ed25519KeyIdentity fromMnemonicWithoutValidation(
 ///
 /// The derivation path is an array that is always interpreted as a hardened path.
 /// e.g. to generate m/44'/223’/0’/0’/0' the derivation path should be [44, 223, 0, 0, 0]
-Ed25519KeyIdentity fromSeedWithSlip0010(
+Future<Ed25519KeyIdentity> fromSeedWithSlip0010(
     Uint8List masterSeed, List<int>? derivationPath,
     {int offset = HARDENED}) {
   var chainSet = generateMasterKey(masterSeed);

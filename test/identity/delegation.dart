@@ -8,7 +8,7 @@ import 'package:agent_dart/identity/delegation.dart';
 import 'package:agent_dart/identity/ed25519.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-SignIdentity createIdentity(int seed) {
+Future<SignIdentity> createIdentity(int seed) {
   final s = Uint8List.fromList([seed, ...List.filled(31, 0)]);
   return Ed25519KeyIdentity.generate(s);
 }
@@ -22,9 +22,9 @@ void main() {
 
 void delegationTest() {
   test('delegation signs with proper keys (3)', () async {
-    final root = createIdentity(2);
-    final middle = createIdentity(1);
-    final bottom = createIdentity(0);
+    final root = await createIdentity(2);
+    final middle = await createIdentity(1);
+    final bottom = await createIdentity(0);
 
     final rootToMiddle = await DelegationChain.create(
       root,
@@ -72,9 +72,9 @@ void delegationTest() {
     expect(middleToBottom.toJSON(), result);
   });
   test('DelegationChain can be serialized to and from JSON', () async {
-    final root = createIdentity(2);
-    final middle = createIdentity(1);
-    final bottom = createIdentity(0);
+    final root = await createIdentity(2);
+    final middle = await createIdentity(1);
+    final bottom = await createIdentity(0);
 
     final rootToMiddle = await DelegationChain.create(
       root,

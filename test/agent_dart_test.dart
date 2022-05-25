@@ -6,6 +6,7 @@ import './candid/idl.dart' as candid;
 import './identity/identity.dart' as identity;
 import './principal/index.dart' as principal;
 import './wallet/signer.dart' as signer;
+import './wallet/pem.dart' as pem;
 
 void main() {
   agent.main();
@@ -14,4 +15,5 @@ void main() {
   identity.main();
   principal.main();
   signer.main();
+  pem.main();
 }

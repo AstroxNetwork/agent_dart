@@ -188,7 +188,7 @@ class AuthClient {
   }
 
   Future<void> login([AuthClientLoginOptions? options]) async {
-    key ??= Ed25519KeyIdentity.generate(null);
+    key ??= await Ed25519KeyIdentity.generate(null);
 
     // Create the URL of the IDP. (e.g. https://XXXX/#authorize)
     var payload = _createAuthPayload(options);

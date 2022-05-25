@@ -20,9 +20,10 @@ void rosettaTest() {
     const phrase =
         'steel obey anxiety vast clever relax million girl cost pond elbow bridge hill health toilet desk sleep grid boost flavor shy cry armed mass';
 
-    final signer = ICPSigner.importPhrase(phrase);
+    final signer =
+        await ICPSigner.importPhrase(phrase, curveType: CurveType.secp256k1);
 
-    var receiver = ICPSigner.fromSeed(
+    var receiver = await ICPSigner.fromSeed(
       Uint8List.fromList(List.filled(32, 0)),
       curveType: CurveType.all,
     );
