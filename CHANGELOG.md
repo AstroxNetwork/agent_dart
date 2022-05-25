@@ -1,3 +1,7 @@
+## 0.1.24+1
+- Add `cbor = false` to defaultFetch to be compatible with non-cbor request
+- Make `rosetta` working
+
 ## 0.1.24
 
 - Add `CurveType` for signers.
