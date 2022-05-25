@@ -25,18 +25,22 @@ Future<Map<String, dynamic>> defaultFetch({
   Map<String, String>? baseHeaders,
   Map<String, String>? headers,
   Duration? timeout = defaultTimeout,
+  bool cbor = true,
   dynamic body,
 }) async {
   final client = http.Client();
   try {
     var uri = Uri.parse(host ?? '$defaultHost$endpoint');
     Future<http.Response> fr;
+    var compactHeaders = {...?baseHeaders, ...?headers};
+    if (cbor) {
+      compactHeaders['Content-Type'] = 'application/cbor';
+    }
     switch (method) {
       case FetchMethod.post:
         fr = client.post(
           uri,
-          headers: {...?baseHeaders, ...?headers}..['Content-Type'] =
-              'application/cbor',
+          headers: compactHeaders,
           body: body,
         );
         break;
@@ -49,24 +53,21 @@ Future<Map<String, dynamic>> defaultFetch({
       case FetchMethod.put:
         fr = client.put(
           uri,
-          headers: {...?baseHeaders, ...?headers}..['Content-Type'] =
-              'application/cbor',
+          headers: compactHeaders,
           body: body,
         );
         break;
       case FetchMethod.delete:
         fr = client.delete(
           uri,
-          headers: {...?baseHeaders, ...?headers}..['Content-Type'] =
-              'application/cbor',
+          headers: compactHeaders,
           body: body,
         );
         break;
       case FetchMethod.patch:
         fr = client.patch(
           uri,
-          headers: {...?baseHeaders, ...?headers}..['Content-Type'] =
-              'application/cbor',
+          headers: compactHeaders,
           body: body,
         );
         break;
