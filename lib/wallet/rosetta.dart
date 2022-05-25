@@ -283,6 +283,7 @@ class RosettaApi {
       method: FetchMethod.post,
       defaultHost: host,
       baseHeaders: {'Content-Type': 'application/json;charset=utf-8'},
+      cbor: false,
       body: jsonEncode(data),
     );
     var response = FetchResponse.fromMap(res);
@@ -304,7 +305,8 @@ class RosettaApi {
   /// @returns {Promise<any>} The response body that was provided by the server.
   /// @private
   Future<rosetta.NetworkListResponse> networksList() async {
-    var result = await request('/network/list', {});
+    var result = await request('/network/list', {"metadata": {}});
+    print(result);
     return rosetta.NetworkListResponse.fromMap(result);
   }
 
