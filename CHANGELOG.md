@@ -1,6 +1,7 @@
 ## 0.1.24+1
-- Add `cbor = false` to defaultFetch to be compatible with non-cbor request
-- Make `rosetta` working
+
+- Add the `cbor` argument for `defaultFetch` to allow non-cbor requests.
+- Fix `rosetta` requests.
 
 ## 0.1.24
 
