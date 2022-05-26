@@ -9,22 +9,20 @@ An agent library built for Internet Computer, a plugin package for dart and flut
 
 ---
 ## ⚡️ Quick start 
-1. git clone
-2. install [Prerequisites](#prerequisites), make sure you run
+1. git clone and install [Prerequisites](#prerequisites), make sure you run
    ```
    flutter doctor -v
    ```
    Without errors
-3. **Manually build dependency**
+2. **Manually build dependency**
    ```
    ./scripts/bootstrap.sh
    ```
-3. To run example, follow [instructions](example/README.md) under `example` folder
-4. To run tests:
+3. To run tests:
    ```
    flutter test
    ```
-
+4. To run example, follow [instructions](example/README.md) under `example` folder
 ---
 
 ## 📃 Table of content
@@ -46,7 +44,7 @@ An agent library built for Internet Computer, a plugin package for dart and flut
 * [CMake](https://cmake.org/) v3.2.0 or later
 * [Xcode](https://developer.apple.com/xcode/) (10.12) or later (Running on macOS or iOS)
 * [Android NDK](https://developer.android.com/studio/projects/install-ndk) version `21.4.7075529` (Running on Android)
-* [Rust](https://www.rust-lang.org/) version 1.51
+* [Rust](https://www.rust-lang.org/) version 1.51+
 * [Node.js](https://nodejs.org/) v15.0 or later, TBD
 
 ---
