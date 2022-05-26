@@ -8,14 +8,14 @@ An agent library built for Internet Computer, a plugin package for dart and flut
 **Community: [https://discord.gg/aNzRuePmUY](https://discord.gg/aNzRuePmUY)** 
 
 ---
-## 🌈 Add it to your flutter app
+## ⚡️ Quick start
+### 🌈 Add it to your flutter app
 
 ```bash
 # Flutter App
 flutter pub add agent_dart
 ```
----
-## ⚡️ Quick start for development
+### 🪛 Development
 1. git clone and install [Prerequisites](#prerequisites), check your flutter env by doing:
 
    ```
@@ -34,15 +34,15 @@ flutter pub add agent_dart
 ---
 
 ## 📃 Table of content
-
-   1. [Table of content](#table-of-content)
-   2. [Prerequisites](#prerequisites)
-   3. [Resources](#resources)
-   4. [Motivation](#motivation)
-   5. [Milestones](#milestones)
-   6. [Contributing](#contributing)
-   7. [Reference and related projects](#reference-and-related-projects)
-   8. [FAQ](#faq)
+  1. [⚡️ Quick start](#️-quick-start)
+  2. [📃 Table of content](#-table-of-content)
+  3. [🚦 Prerequisites](#-prerequisites)
+  4. [🧰 Resources](#-resources)
+  5. [🧘‍♂️ Motivation](#️-motivation)
+  6. [🏆 Milestones](#-milestones)
+  7. [👨‍💻 Contributing](#-contributing)
+  8. [🔗 Reference and related projects](#-reference-and-related-projects)
+  9.  [⚠️ FAQ](#️-faq)
    
 ---
 
