@@ -3,21 +3,29 @@
 
 
 
-An agent library built for Internet Computer, a plugin package for dart and flutter apps. Developers can build ones to interact with Dfinity's blockchain directly.
+An agent library built for Internet Computer, a plugin package for dart and flutter apps. 
 
 **Community: [https://discord.gg/aNzRuePmUY](https://discord.gg/aNzRuePmUY)** 
 
 ---
-## ⚡️ Quick start 
-1. git clone and install [Prerequisites](#prerequisites), make sure you run
+## 🌈 Add it to your flutter app
+
+```bash
+# Flutter App
+flutter pub add agent_dart
+```
+---
+## ⚡️ Quick start for development
+1. git clone and install [Prerequisites](#prerequisites), check your flutter env by doing:
+
    ```
    flutter doctor -v
    ```
-   Without errors
-2. **Manually build dependency**
+2. 👉 **MUST DO: Bootstrap your project**
    ```
    ./scripts/bootstrap.sh
    ```
+
 3. To run tests:
    ```
    flutter test
@@ -29,13 +37,12 @@ An agent library built for Internet Computer, a plugin package for dart and flut
 
    1. [Table of content](#table-of-content)
    2. [Prerequisites](#prerequisites)
-   3. [Quick start](#quick-start)
+   3. [Resources](#resources)
    4. [Motivation](#motivation)
    5. [Milestones](#milestones)
-   6. [Documentation](#documentation)
-   7. [Contributing](#contributing)
-   8. [Reference and related projects](#reference-and-related-projects)
-   9. [FAQ](#faq)
+   6. [Contributing](#contributing)
+   7. [Reference and related projects](#reference-and-related-projects)
+   8. [FAQ](#faq)
    
 ---
 
@@ -47,6 +54,19 @@ An agent library built for Internet Computer, a plugin package for dart and flut
 * [Rust](https://www.rust-lang.org/) version 1.51+
 * [Node.js](https://nodejs.org/) v15.0 or later, TBD
 
+
+---
+## 🧰 Resources
+### 📖 Documentation
+- [Reference on pub.dev](https://pub.dev/documentation/agent_dart/latest/)
+- Docs site, coming in a few weeks...
+### 🔧 Helpers/Tooling
+- [candid_dart](https://github.com/AstroxNetwork/candid_dart), an automated candid builder for Dart classes
+- [agent_dart_auth](https://github.com/AstroxNetwork/agent_dart_auth), an extension plugin for authorization, used for Internet-Identity authorization. 
+### 💡 Examples
+- [simple counter](https://github.com/AstroxNetwork/agent_dart_examples/tree/main/counter), a simple counter demostrate how to use agent_dart, a backend canister within
+- [auth counter](https://github.com/AstroxNetwork/agent_dart_examples/tree/main/auth_counter), a counter needs user's authorization from Internet-Identity, demostrate how to combine with [agent_dart_auth](https://github.com/AstroxNetwork/agent_dart_auth)
+- [ledger_app](https://github.com/AstroxNetwork/agent_dart_examples/tree/main/ledger_app), a ledger app demostrate how to import seedphrase and make transactions.  
 ---
 
 ## 🧘‍♂️ Motivation
@@ -61,17 +81,12 @@ We have tried our best to migrate most interface styles just like Javascript ver
 
 ---
 ## 🏆 Milestones
-### Milestone 1: Core features/libraries migrating. ✅
-### Milestone 2: Enhanced built tool and more example apps ✅
-### Milestone 3: Documentation and community driven development 🔧
+- Milestone 1: ✅ Core features/libraries implementation. 
+- Milestone 2: ✅ Enhanced built tool and more example apps 
+- Milestone 3: 👷 Documentation and community driven development 
 
 ---
-## 📘 Documentation
-[Reference on pub.dev](https://pub.dev/documentation/agent_dart/latest/)
-### Plan for docs site
-A stand-alone docs site with guides for Dfinity Dapps made in Flutter/Dart
 
----
 ## 👨‍💻 Contributing
 
 By contributing to agent_dart, you agree that your contributions will be licensed under its MIT License.
@@ -109,11 +124,16 @@ By contributing to agent_dart, you agree that your contributions will be license
 ---
 
 ## 🔗 Reference and related projects
+Feel free to list your project here, you can submit [here]()
 
 * Official libraries from Dfinity's team:
   - [agent-rs](https://github.com/dfinity/agent-rs)
   - [agent-js](https://github.com/dfinity/agent-js)
-* other projects here
+* DApps
+  - [Distrikt](https://distrikt.io/)
+  - [ICPBox](https://www.icpbox.org/)
+* Wallets
+  - [ICWallet](https://icwallet.org/)
 
 ---
 
@@ -122,11 +142,6 @@ By contributing to agent_dart, you agree that your contributions will be license
 ### Build rust libraries for iOS/MacOS
 - All rust method have to be written inside `SwiftAgentDartPlugin.swift`, to avoid tree shaking of latest release build by XCode.
 - The `agent_dart_podspec` should change accordingly when this repo goes 1.0.0
-- On M1 chipset of MacOS, please install `rosetta 2`
-
-   ```bash
-   $ sudo softwareupdate --install-rosetta --agree-to-license
-   ```
 
 
 ### Network problem in iOS and MacOS
