@@ -8,6 +8,24 @@ An agent library built for Internet Computer, a plugin package for dart and flut
 **Community: [https://discord.gg/aNzRuePmUY](https://discord.gg/aNzRuePmUY)** 
 
 ---
+## ⚡️ Quick start 
+1. git clone
+2. install [Prerequisites](#prerequisites), make sure you run
+   ```
+   flutter doctor -v
+   ```
+   Without errors
+3. **Manually build dependency**
+   ```
+   ./scripts/bootstrap.sh
+   ```
+3. To run example, follow [instructions](example/README.md) under `example` folder
+4. To run tests:
+   ```
+   flutter test
+   ```
+
+---
 
 ## 📃 Table of content
 
@@ -23,7 +41,6 @@ An agent library built for Internet Computer, a plugin package for dart and flut
    
 ---
 
-
 ## 🚦 Prerequisites
 * [Flutter](https://flutter.dev/docs/get-started/install) version in the `agent_dart/pubspec.yaml`
 * [CMake](https://cmake.org/) v3.2.0 or later
@@ -32,20 +49,6 @@ An agent library built for Internet Computer, a plugin package for dart and flut
 * [Rust](https://www.rust-lang.org/) version 1.51
 * [Node.js](https://nodejs.org/) v15.0 or later, TBD
 
----
-## ⚡️ Quick start 
-1. git clone
-2. install [Prerequisites](#prerequisites), make sure you run
-   ```
-   flutter doctor -v
-   ```
-   Without errors
-
-3. To run example, follow [instructions](example/README.md) under `example` folder
-4. To run tests:
-   ```
-   flutter test
-   ```
 ---
 
 ## 🧘‍♂️ Motivation
@@ -60,18 +63,9 @@ We have tried our best to migrate most interface styles just like Javascript ver
 
 ---
 ## 🏆 Milestones
-### Milestone 1: Core features/libraries migrating.
-- `agent`, core library, with crypto and encoding/decoding methods , http call/query encapsulated, for interacting with canister.
-- `auth_client`, a popup window for flutter, used for getting authentication from Identity provider(eg, Internet Identity).
-- `authentication`, a library supports `auth_client`
-- `candid`, candid library, used for encoding/decoding candid data types, and used them in dart-lang.
-- `principal`, principal library, used for generate principal for many usage cases.
-- `protobuf`, protobuf library, used for interacting with `rosetta-node` in submit/query transaction
-- `utils`, common utils, including useful helpers like extension methods in dart.
-- `wallet`, wallet library, signer, rosetta, key-smith all-in-one library.
-  
-### Milestone 2: Enhanced built tool and more example apps
-### Milestone 3: Documentation and community driven development
+### Milestone 1: Core features/libraries migrating. ✅
+### Milestone 2: Enhanced built tool and more example apps ✅
+### Milestone 3: Documentation and community driven development 🔧
 
 ---
 ## 📘 Documentation
@@ -95,7 +89,7 @@ By contributing to agent_dart, you agree that your contributions will be license
 2. Build rust dependencies for all supported platform (macOS, iOS, Android, windows, linux)
 
     ```shell
-    $ sh ./scripts/clean && ./scripts/init.sh && ./scripts/build.sh
+    $ sh ./scripts/bootstrap
     ```
 
 3. Start example

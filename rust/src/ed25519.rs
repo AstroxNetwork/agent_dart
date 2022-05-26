@@ -26,8 +26,6 @@ pub fn id_sign(seed: Vec<u8>, message: Vec<u8>) -> Vec<u8> {
 }
 
 pub fn id_verify(message: Vec<u8>, sig: Vec<u8>, pub_key: Vec<u8>) -> bool {
-    // let peer_public_key =
-    //     signature::UnparsedPublicKey::new(&signature::ED25519, pub_key.as_slice());
     let peer_public_key =
         signature::UnparsedPublicKey::new(&signature::ED25519, pub_key.as_slice());
     match peer_public_key.verify(message.as_slice(), sig.as_slice()) {

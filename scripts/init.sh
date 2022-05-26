@@ -27,6 +27,8 @@ done
 # cargo install cargo-lipo && cargo install cbindgen --force
 
 
+dart pub global activate ffigen &&
+cargo install flutter_rust_bridge_codegen
 
 
 
