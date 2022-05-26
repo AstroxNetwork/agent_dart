@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:agent_dart/agent_dart.dart';
+import 'package:agent_dart/bridge/ffi/ffi_helper.dart';
 import 'package:pointycastle/api.dart' as p_api;
 import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/ecc/api.dart';
@@ -74,10 +75,11 @@ class Secp256k1KeyIdentity extends SignIdentity {
         Secp256k1PublicKey.fromRaw(publicKey), privateKey);
   }
 
-  static Secp256k1KeyIdentity fromSecretKey(Uint8List secretKey) {
+  static Future<Secp256k1KeyIdentity> fromSecretKey(Uint8List secretKey) async {
     try {
-      final publicKey = getPublicFromPrivateKey(secretKey, false);
-      final identity = Secp256k1KeyIdentity.fromKeyPair(publicKey!, secretKey);
+      final kp = await getECkeyFromPrivateKey(secretKey);
+      final identity =
+          Secp256k1KeyIdentity.fromKeyPair(kp.ecPublicKey!, kp.ecPrivateKey!);
       return identity;
     } catch (e) {
       rethrow;
@@ -123,32 +125,35 @@ class Secp256k1KeyIdentity extends SignIdentity {
   /// Signs a blob of data, with this identity's private key.
   /// @param blob - challenge to sign with this identity's secretKey, producing a signature
 
-  @override
+  // @override
+  // Future<Uint8List> sign(Uint8List blob) async {
+  //   final digest = SHA256Digest();
+  //   final signer = ECDSASigner(digest, HMac(digest, 64));
+
+  //   final key = ECPrivateKey(bytesToUnsignedInt(_privateKey), params);
+
+  //   signer.init(true, p_api.PrivateKeyParameter(key));
+  //   var sig = signer.generateSignature(blob) as ECSignature;
+  //   if (sig.s.compareTo(_halfCurveOrder) > 0) {
+  //     final canonicalisedS = params.n - sig.s;
+  //     sig = ECSignature(sig.r, canonicalisedS);
+  //   }
+  //   if (sig.r == sig.s) {
+  //     return await sign(blob);
+  //   }
+  //   var rU8a = sig.r.toU8a();
+  //   var sU8a = sig.s.toU8a();
+  //   if (rU8a.length < 32) {
+  //     rU8a = Uint8List.fromList([0, ...rU8a]);
+  //   }
+  //   if (sU8a.length < 32) {
+  //     sU8a = Uint8List.fromList([0, ...sU8a]);
+  //   }
+
+  //   return u8aConcat([rU8a, sU8a]);
+  // }
   Future<Uint8List> sign(Uint8List blob) async {
-    final digest = SHA256Digest();
-    final signer = ECDSASigner(digest, HMac(digest, 64));
-
-    final key = ECPrivateKey(bytesToUnsignedInt(_privateKey), params);
-
-    signer.init(true, p_api.PrivateKeyParameter(key));
-    var sig = signer.generateSignature(blob) as ECSignature;
-    if (sig.s.compareTo(_halfCurveOrder) > 0) {
-      final canonicalisedS = params.n - sig.s;
-      sig = ECSignature(sig.r, canonicalisedS);
-    }
-    if (sig.r == sig.s) {
-      return await sign(blob);
-    }
-    var rU8a = sig.r.toU8a();
-    var sU8a = sig.s.toU8a();
-    if (rU8a.length < 32) {
-      rU8a = Uint8List.fromList([0, ...rU8a]);
-    }
-    if (sU8a.length < 32) {
-      sU8a = Uint8List.fromList([0, ...sU8a]);
-    }
-
-    return u8aConcat([rU8a, sU8a]);
+    return await signAsync(blob, _privateKey);
   }
 }
 
@@ -177,6 +182,13 @@ Uint8List sign(String message, BinaryBlob secretKey) {
   }
 
   return u8aConcat([rU8a, sU8a]);
+}
+
+Future<Uint8List> signAsync(
+  Uint8List blob,
+  Uint8List seed,
+) async {
+  return (await dylib.secp256K1Sign(seed: seed, msg: blob)).signature!;
 }
 
 bool verify(String message, Uint8List signature, Secp256k1PublicKey publicKey) {

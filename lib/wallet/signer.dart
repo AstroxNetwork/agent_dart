@@ -73,13 +73,14 @@ class ICPAccount extends BaseAccount {
     int? index,
     CurveType curveType = CurveType.ed25519,
   }) async {
-    ECKeys keys = ecKeysfromSeed(seed, index: index ?? 0);
+    ECKeys keys = await ecKeysfromSeed(seed, index: index ?? 0);
     Ed25519KeyIdentity? identity = curveType == CurveType.secp256k1
         ? null
         : await Ed25519KeyIdentity.generate(seed);
     Secp256k1KeyIdentity? ecIdentity = curveType == CurveType.ed25519
         ? null
-        : Secp256k1KeyIdentity.fromSecretKey(keys.ecPrivateKey!);
+        : Secp256k1KeyIdentity.fromKeyPair(
+            keys.ecPublicKey!, keys.ecPrivateKey!);
     return ICPAccount(curveType: curveType)
       .._ecKeys = keys
       .._identity = identity
@@ -108,28 +109,29 @@ class ICPAccount extends BaseAccount {
     List<int>? icPath = IC_BASE_PATH,
     CurveType curveType = CurveType.ed25519,
   }) async {
-    ECKeys? keys = curveType == CurveType.ed25519
-        ? null
-        : getECKeys(phrase,
-            passphase: passphase,
-            index: index != null
-                ? index != HARDENED
-                    ? index
-                    : 0
-                : 0);
+    ECKeys? keys;
+    Secp256k1KeyIdentity? ecIdentity;
+    Ed25519KeyIdentity? identity;
 
-    var path = List<int>.from(icPath ?? IC_BASE_PATH);
-
-    Ed25519KeyIdentity? identity = curveType == CurveType.secp256k1
-        ? null
-        : await fromMnemonicWithoutValidation(
-            phrase,
-            path,
-            offset: index ?? HARDENED,
-          );
-    Secp256k1KeyIdentity? ecIdentity = curveType == CurveType.ed25519
-        ? null
-        : Secp256k1KeyIdentity.fromSecretKey(keys!.ecPrivateKey!);
+    if (curveType == CurveType.secp256k1 || curveType == CurveType.all) {
+      keys = await getECKeysAsync(phrase,
+          passphase: passphase,
+          index: index != null
+              ? index != HARDENED
+                  ? index
+                  : 0
+              : 0);
+      ecIdentity = Secp256k1KeyIdentity.fromKeyPair(
+          keys.ecPublicKey!, keys.ecPrivateKey!);
+    }
+    if (curveType == CurveType.ed25519 || curveType == CurveType.all) {
+      var path = List<int>.from(icPath ?? IC_BASE_PATH);
+      identity = await fromMnemonicWithoutValidation(
+        phrase,
+        path,
+        offset: index ?? HARDENED,
+      );
+    }
 
     return ICPAccount(curveType: curveType)
       .._ecKeys = keys

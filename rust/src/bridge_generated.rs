@@ -16,6 +16,8 @@ use flutter_rust_bridge::*;
 // Section: imports
 
 use crate::ed25519::IDResult;
+use crate::secp256k1::Secp256k1IdentityExport;
+use crate::secp256k1::Signature;
 
 // Section: wire functions
 
@@ -69,18 +71,6 @@ pub extern "C" fn wire_ed25519_from_seed(port_: i64, seed: *mut wire_uint_8_list
 }
 
 #[no_mangle]
-pub extern "C" fn wire_ed25519_generate(port_: i64) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "ed25519_generate",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || move |task_callback| Ok(ed25519_generate()),
-    )
-}
-
-#[no_mangle]
 pub extern "C" fn wire_ed25519_sign(
     port_: i64,
     seed: *mut wire_uint_8_list,
@@ -118,6 +108,83 @@ pub extern "C" fn wire_ed25519_verify(
             let api_sig = sig.wire2api();
             let api_pub_key = pub_key.wire2api();
             move |task_callback| Ok(ed25519_verify(api_message, api_sig, api_pub_key))
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn wire_secp256k1_from_seed(port_: i64, seed: *mut wire_uint_8_list) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "secp256k1_from_seed",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_seed = seed.wire2api();
+            move |task_callback| Ok(secp256k1_from_seed(api_seed))
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn wire_secp256k1_sign(
+    port_: i64,
+    seed: *mut wire_uint_8_list,
+    msg: *mut wire_uint_8_list,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "secp256k1_sign",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_seed = seed.wire2api();
+            let api_msg = msg.wire2api();
+            move |task_callback| Ok(secp256k1_sign(api_seed, api_msg))
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn wire_bip32_get_private(
+    port_: i64,
+    phrase: *mut wire_uint_8_list,
+    password: *mut wire_uint_8_list,
+    path: *mut wire_uint_8_list,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "bip32_get_private",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_phrase = phrase.wire2api();
+            let api_password = password.wire2api();
+            let api_path = path.wire2api();
+            move |task_callback| Ok(bip32_get_private(api_phrase, api_password, api_path))
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn wire_bip32_to_seed_hash(
+    port_: i64,
+    phrase: *mut wire_uint_8_list,
+    password: *mut wire_uint_8_list,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "bip32_to_seed_hash",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_phrase = phrase.wire2api();
+            let api_password = password.wire2api();
+            move |task_callback| Ok(bip32_to_seed_hash(api_phrase, api_password))
         },
     )
 }
@@ -165,6 +232,13 @@ where
     }
 }
 
+impl Wire2Api<String> for *mut wire_uint_8_list {
+    fn wire2api(self) -> String {
+        let vec: Vec<u8> = self.wire2api();
+        String::from_utf8_lossy(&vec).into_owned()
+    }
+}
+
 impl Wire2Api<u8> for u8 {
     fn wire2api(self) -> u8 {
         self
@@ -200,6 +274,24 @@ impl support::IntoDart for IDResult {
     }
 }
 impl support::IntoDartExceptPrimitive for IDResult {}
+
+impl support::IntoDart for Secp256k1IdentityExport {
+    fn into_dart(self) -> support::DartCObject {
+        vec![
+            self.private_key_hash.into_dart(),
+            self.der_encoded_public_key.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Secp256k1IdentityExport {}
+
+impl support::IntoDart for Signature {
+    fn into_dart(self) -> support::DartCObject {
+        vec![self.public_key.into_dart(), self.signature.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Signature {}
 
 // Section: executor
 

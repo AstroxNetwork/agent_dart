@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
 
   void initCounter() async {
     _counter = (await AgentFactory.create(
-      canisterId: "qaa6y-5yaaa-aaaaa-aaafa-cai",
+      canisterId: "sbzkb-zqaaa-aaaaa-aaaiq-cai",
       url:
           "http://localhost:8000", // For Android emulator, please use 10.0.2.2 as endpoint
       idl: idl,

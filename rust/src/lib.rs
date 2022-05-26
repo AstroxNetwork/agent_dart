@@ -7,4 +7,6 @@ mod bls;
 
 #[allow(dead_code)]
 mod api;
+mod bip32;
 mod ed25519;
+mod secp256k1;
