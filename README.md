@@ -9,19 +9,19 @@ An agent library built for Internet Computer, a plugin package for dart and flut
 
 ---
 ## ⚡️ Quick start
-### 🌈 Add it to your flutter app
+### For existing flutter app
 
 ```bash
 # Flutter App
 flutter pub add agent_dart
 ```
-### 🪛 Development
+### For development
 1. git clone and install [Prerequisites](#prerequisites), check your flutter env by doing:
 
    ```
    flutter doctor -v
    ```
-2. 👉 **MUST DO: Bootstrap your project**
+2. **MUST DO: Bootstrap your project**
    ```
    ./scripts/bootstrap.sh
    ```
