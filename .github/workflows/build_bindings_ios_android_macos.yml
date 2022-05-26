@@ -3,7 +3,7 @@ name: Rust Bindings for ios android and mac
 on:
   push:
     branches:
-      - feat/bindings
+      - feat/bindings+async
 
 jobs:
   ci:
@@ -119,9 +119,7 @@ jobs:
 
       - name: Execute build scripts
         run: |
-          ./scripts/clean.sh
-          ./scripts/init.sh
-          ./scripts/build.sh
+          ./scripts/bootstrap.sh
 
       - name: Run binding/crypto tests
         run: flutter test test/agent/utils/bls.dart
