@@ -11,8 +11,6 @@ public class SwiftAgentDartPlugin: NSObject, FlutterPlugin {
   }
   public func dummyMethodToEnforceBundling() {
     // dummy calls to prevent tree shaking
-    rust_cstr_free(nil);
-    bls_verify("","","");
-    bls_init();
+    dummy_method_to_enforce_bundling();
   }
 }
