@@ -22,8 +22,6 @@ abstract class AgentDart {
 
   Future<IDResult> ed25519FromSeed({required Uint8List seed, dynamic hint});
 
-  Future<IDResult> ed25519Generate({dynamic hint});
-
   Future<Uint8List> ed25519Sign(
       {required Uint8List seed, required Uint8List message, dynamic hint});
 
@@ -32,6 +30,21 @@ abstract class AgentDart {
       required Uint8List sig,
       required Uint8List pubKey,
       dynamic hint});
+
+  Future<Secp256k1IdentityExport> secp256K1FromSeed(
+      {required Uint8List seed, dynamic hint});
+
+  Future<Signature> secp256K1Sign(
+      {required Uint8List seed, required Uint8List msg, dynamic hint});
+
+  Future<Uint8List> bip32GetPrivate(
+      {required String phrase,
+      required String password,
+      required String path,
+      dynamic hint});
+
+  Future<Uint8List> bip32ToSeedHash(
+      {required String phrase, required String password, dynamic hint});
 }
 
 class IDResult {
@@ -41,6 +54,29 @@ class IDResult {
   IDResult({
     required this.seed,
     required this.publicKey,
+  });
+}
+
+class Secp256k1IdentityExport {
+  final Uint8List privateKeyHash;
+  final Uint8List derEncodedPublicKey;
+
+  Secp256k1IdentityExport({
+    required this.privateKeyHash,
+    required this.derEncodedPublicKey,
+  });
+}
+
+class Signature {
+  /// This is the DER-encoded public key.
+  final Uint8List? publicKey;
+
+  /// The signature bytes.
+  final Uint8List? signature;
+
+  Signature({
+    this.publicKey,
+    this.signature,
   });
 }
 
@@ -95,18 +131,6 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
         hint: hint,
       ));
 
-  Future<IDResult> ed25519Generate({dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_ed25519_generate(port_),
-        parseSuccessData: _wire2api_id_result,
-        constMeta: const FlutterRustBridgeTaskConstMeta(
-          debugName: "ed25519_generate",
-          argNames: [],
-        ),
-        argValues: [],
-        hint: hint,
-      ));
-
   Future<Uint8List> ed25519Sign(
           {required Uint8List seed,
           required Uint8List message,
@@ -143,7 +167,73 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
         hint: hint,
       ));
 
+  Future<Secp256k1IdentityExport> secp256K1FromSeed(
+          {required Uint8List seed, dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) =>
+            inner.wire_secp256k1_from_seed(port_, _api2wire_uint_8_list(seed)),
+        parseSuccessData: _wire2api_secp_256_k_1_identity_export,
+        constMeta: const FlutterRustBridgeTaskConstMeta(
+          debugName: "secp256k1_from_seed",
+          argNames: ["seed"],
+        ),
+        argValues: [seed],
+        hint: hint,
+      ));
+
+  Future<Signature> secp256K1Sign(
+          {required Uint8List seed, required Uint8List msg, dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => inner.wire_secp256k1_sign(
+            port_, _api2wire_uint_8_list(seed), _api2wire_uint_8_list(msg)),
+        parseSuccessData: _wire2api_signature,
+        constMeta: const FlutterRustBridgeTaskConstMeta(
+          debugName: "secp256k1_sign",
+          argNames: ["seed", "msg"],
+        ),
+        argValues: [seed, msg],
+        hint: hint,
+      ));
+
+  Future<Uint8List> bip32GetPrivate(
+          {required String phrase,
+          required String password,
+          required String path,
+          dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => inner.wire_bip32_get_private(
+            port_,
+            _api2wire_String(phrase),
+            _api2wire_String(password),
+            _api2wire_String(path)),
+        parseSuccessData: _wire2api_uint_8_list,
+        constMeta: const FlutterRustBridgeTaskConstMeta(
+          debugName: "bip32_get_private",
+          argNames: ["phrase", "password", "path"],
+        ),
+        argValues: [phrase, password, path],
+        hint: hint,
+      ));
+
+  Future<Uint8List> bip32ToSeedHash(
+          {required String phrase, required String password, dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => inner.wire_bip32_to_seed_hash(
+            port_, _api2wire_String(phrase), _api2wire_String(password)),
+        parseSuccessData: _wire2api_uint_8_list,
+        constMeta: const FlutterRustBridgeTaskConstMeta(
+          debugName: "bip32_to_seed_hash",
+          argNames: ["phrase", "password"],
+        ),
+        argValues: [phrase, password],
+        hint: hint,
+      ));
+
   // Section: api2wire
+  ffi.Pointer<wire_uint_8_list> _api2wire_String(String raw) {
+    return _api2wire_uint_8_list(utf8.encoder.convert(raw));
+  }
+
   int _api2wire_u8(int raw) {
     return raw;
   }
@@ -170,6 +260,30 @@ IDResult _wire2api_id_result(dynamic raw) {
   return IDResult(
     seed: _wire2api_uint_8_list(arr[0]),
     publicKey: _wire2api_uint_8_list(arr[1]),
+  );
+}
+
+Uint8List? _wire2api_opt_uint_8_list(dynamic raw) {
+  return raw == null ? null : _wire2api_uint_8_list(raw);
+}
+
+Secp256k1IdentityExport _wire2api_secp_256_k_1_identity_export(dynamic raw) {
+  final arr = raw as List<dynamic>;
+  if (arr.length != 2)
+    throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+  return Secp256k1IdentityExport(
+    privateKeyHash: _wire2api_uint_8_list(arr[0]),
+    derEncodedPublicKey: _wire2api_uint_8_list(arr[1]),
+  );
+}
+
+Signature _wire2api_signature(dynamic raw) {
+  final arr = raw as List<dynamic>;
+  if (arr.length != 2)
+    throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+  return Signature(
+    publicKey: _wire2api_opt_uint_8_list(arr[0]),
+    signature: _wire2api_opt_uint_8_list(arr[1]),
   );
 }
 
@@ -259,20 +373,6 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _wire_ed25519_from_seed = _wire_ed25519_from_seedPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
-  void wire_ed25519_generate(
-    int port_,
-  ) {
-    return _wire_ed25519_generate(
-      port_,
-    );
-  }
-
-  late final _wire_ed25519_generatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_ed25519_generate');
-  late final _wire_ed25519_generate =
-      _wire_ed25519_generatePtr.asFunction<void Function(int)>();
-
   void wire_ed25519_sign(
     int port_,
     ffi.Pointer<wire_uint_8_list> seed,
@@ -317,6 +417,88 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _wire_ed25519_verify = _wire_ed25519_verifyPtr.asFunction<
       void Function(int, ffi.Pointer<wire_uint_8_list>,
           ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_secp256k1_from_seed(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> seed,
+  ) {
+    return _wire_secp256k1_from_seed(
+      port_,
+      seed,
+    );
+  }
+
+  late final _wire_secp256k1_from_seedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_secp256k1_from_seed');
+  late final _wire_secp256k1_from_seed = _wire_secp256k1_from_seedPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_secp256k1_sign(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> seed,
+    ffi.Pointer<wire_uint_8_list> msg,
+  ) {
+    return _wire_secp256k1_sign(
+      port_,
+      seed,
+      msg,
+    );
+  }
+
+  late final _wire_secp256k1_signPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_secp256k1_sign');
+  late final _wire_secp256k1_sign = _wire_secp256k1_signPtr.asFunction<
+      void Function(
+          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_bip32_get_private(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> phrase,
+    ffi.Pointer<wire_uint_8_list> password,
+    ffi.Pointer<wire_uint_8_list> path,
+  ) {
+    return _wire_bip32_get_private(
+      port_,
+      phrase,
+      password,
+      path,
+    );
+  }
+
+  late final _wire_bip32_get_privatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_bip32_get_private');
+  late final _wire_bip32_get_private = _wire_bip32_get_privatePtr.asFunction<
+      void Function(int, ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_bip32_to_seed_hash(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> phrase,
+    ffi.Pointer<wire_uint_8_list> password,
+  ) {
+    return _wire_bip32_to_seed_hash(
+      port_,
+      phrase,
+      password,
+    );
+  }
+
+  late final _wire_bip32_to_seed_hashPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_bip32_to_seed_hash');
+  late final _wire_bip32_to_seed_hash = _wire_bip32_to_seed_hashPtr.asFunction<
+      void Function(
+          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list(
     int len,

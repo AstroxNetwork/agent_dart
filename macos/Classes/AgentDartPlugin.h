@@ -240,8 +240,6 @@ void wire_bls_verify(int64_t port_,
 
 void wire_ed25519_from_seed(int64_t port_, struct wire_uint_8_list *seed);
 
-void wire_ed25519_generate(int64_t port_);
-
 void wire_ed25519_sign(int64_t port_,
                        struct wire_uint_8_list *seed,
                        struct wire_uint_8_list *message);
@@ -250,6 +248,21 @@ void wire_ed25519_verify(int64_t port_,
                          struct wire_uint_8_list *message,
                          struct wire_uint_8_list *sig,
                          struct wire_uint_8_list *pub_key);
+
+void wire_secp256k1_from_seed(int64_t port_, struct wire_uint_8_list *seed);
+
+void wire_secp256k1_sign(int64_t port_,
+                         struct wire_uint_8_list *seed,
+                         struct wire_uint_8_list *msg);
+
+void wire_bip32_get_private(int64_t port_,
+                            struct wire_uint_8_list *phrase,
+                            struct wire_uint_8_list *password,
+                            struct wire_uint_8_list *path);
+
+void wire_bip32_to_seed_hash(int64_t port_,
+                             struct wire_uint_8_list *phrase,
+                             struct wire_uint_8_list *password);
 
 struct wire_uint_8_list *new_uint_8_list(int32_t len);
 
@@ -262,9 +275,12 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_bls_init);
     dummy_var ^= ((int64_t) (void*) wire_bls_verify);
     dummy_var ^= ((int64_t) (void*) wire_ed25519_from_seed);
-    dummy_var ^= ((int64_t) (void*) wire_ed25519_generate);
     dummy_var ^= ((int64_t) (void*) wire_ed25519_sign);
     dummy_var ^= ((int64_t) (void*) wire_ed25519_verify);
+    dummy_var ^= ((int64_t) (void*) wire_secp256k1_from_seed);
+    dummy_var ^= ((int64_t) (void*) wire_secp256k1_sign);
+    dummy_var ^= ((int64_t) (void*) wire_bip32_get_private);
+    dummy_var ^= ((int64_t) (void*) wire_bip32_to_seed_hash);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturnStruct);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);

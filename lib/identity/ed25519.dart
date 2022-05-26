@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
+import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/identity/der.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/principal/utils/sha224.dart';
 import 'package:agent_dart/wallet/keysmith.dart';
+import 'package:bip39/bip39.dart';
 import 'package:crypto/crypto.dart';
 // import 'package:pinenacl/ed25519.dart';
 import 'package:agent_dart/agent/auth.dart' as auth;
@@ -101,7 +104,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     Uint8List secretKey; // seed itself
 
     var kp = seed == null
-        ? await dylib.ed25519Generate()
+        ? await dylib.ed25519FromSeed(seed: getRandomValues(32))
         : await dylib.ed25519FromSeed(seed: seed);
 
     publicKey = kp.publicKey;
@@ -203,15 +206,15 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
   /// Signs a blob of data, with this identity's private key.
   /// @param challenge - challenge to sign with this identity's secretKey, producing a signature
   @override
-  Future<BinaryBlob> sign(dynamic challenge) {
+  Future<BinaryBlob> sign(dynamic challenge) async {
     final blob = challenge is BinaryBlob
         ? challenge
         : blobFromBuffer(challenge as ByteBuffer);
-    return Future.value(dylib.ed25519Sign(seed: _seed, message: blob));
+    return await dylib.ed25519Sign(seed: _seed, message: blob);
   }
 
-  Future<bool> verify(Uint8List signature, Uint8List message) {
-    return dylib.ed25519Verify(
+  Future<bool> verify(Uint8List signature, Uint8List message) async {
+    return await dylib.ed25519Verify(
         message: message, sig: signature, pubKey: _publicKey.toRaw());
   }
 
@@ -266,9 +269,9 @@ const IC_DERIVATION_PATH = [44, 223, 0, 0, 0];
 /// @param skipValidation if true, validation checks on the mnemonics are skipped.
 Future<Ed25519KeyIdentity> fromMnemonicWithoutValidation(
     String mnemonic, List<int>? derivationPath,
-    {int offset = HARDENED}) {
+    {int offset = HARDENED}) async {
   derivationPath ??= [];
-  final seed = mnemonicToSeed(mnemonic);
+  final seed = await dylib.bip32ToSeedHash(phrase: mnemonic, password: '');
   return fromSeedWithSlip0010(seed, derivationPath, offset: offset);
 }
 

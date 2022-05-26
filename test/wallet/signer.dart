@@ -26,13 +26,8 @@ void main() {
     var acc22TimePeriod = DateTime.now().millisecondsSinceEpoch -
         acc22CreateTime.millisecondsSinceEpoch;
 
-    // print(acc21TimePeriod);
-    // print(acc22TimePeriod);
-
     expect(acc21TimePeriod < acc2TimePeriod, true);
     expect(acc22TimePeriod < acc2TimePeriod, true);
-    expect(acc21TimePeriod < acc22TimePeriod, true);
-
     expect(acc2.account.identity != null, true);
     expect(acc2.account.ecIdentity != null, true);
     expect(acc21.account.ecIdentity, null);

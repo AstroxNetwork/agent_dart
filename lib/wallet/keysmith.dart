@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:agent_dart/agent_dart.dart';
+import 'package:agent_dart/bridge/ffi/ffi_helper.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:bip32/bip32.dart' as bip32;
 import "package:pointycastle/ecc/api.dart";
@@ -67,6 +68,24 @@ ECKeys getECKeys(String mnemonic, {String passphase = "", int index = 0}) {
   return ecKeysfromSeed(seed, index: index);
 }
 
+Future<ECKeys> getECKeysAsync(String phrase,
+    {String passphase = "", int index = 0}) async {
+  final prv = await dylib.bip32GetPrivate(
+      phrase: phrase, password: passphase, path: "$ICP_PATH/0/$index");
+  final kp = await dylib.secp256K1FromSeed(seed: prv);
+
+  return ECKeys(
+      ecPrivateKey: prv,
+      ecPublicKey: Secp256k1PublicKey.fromDer(kp.derEncodedPublicKey).toRaw());
+}
+
+Future<ECKeys> getECkeyFromPrivateKey(Uint8List prv) async {
+  final kp = await dylib.secp256K1FromSeed(seed: prv);
+  return ECKeys(
+      ecPrivateKey: prv,
+      ecPublicKey: Secp256k1PublicKey.fromDer(kp.derEncodedPublicKey).toRaw());
+}
+
 ECKeys ecKeysfromSeed(Uint8List seed, {int index = 0}) {
   final node = bip32.BIP32.fromSeed(seed);
 
@@ -75,7 +94,6 @@ ECKeys ecKeysfromSeed(Uint8List seed, {int index = 0}) {
   final xpub = masterPrvRaw.toBase58();
 
   final prv = masterPrv.privateKey;
-
   final pub = prv != null ? getPublicFromPrivateKey(prv, false) : null;
   final pubCompressed = prv != null ? getPublicFromPrivateKey(prv, true) : null;
 
@@ -103,6 +121,11 @@ Uint8List? getPublicFromPrivateKeyBigInt(BigInt bigint,
   } else {
     return null;
   }
+}
+
+Future<Uint8List> getDerFromFFI(Uint8List seed) async {
+  final ffiIdentity = await dylib.secp256K1FromSeed(seed: seed);
+  return ffiIdentity.derEncodedPublicKey;
 }
 
 class ECKeys {
