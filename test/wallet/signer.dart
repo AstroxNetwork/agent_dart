@@ -39,7 +39,7 @@ void main() {
     );
     expect(
       acc2.account.identity?.accountId.toHex(),
-      '7910af41c53cddb31862f0fa2c31cbd58db9645d90ffb875c7abc8c9',
+      '2636e2e67910af41c53cddb31862f0fa2c31cbd58db9645d90ffb875c7abc8c9',
     );
 
     await acc2.lock('123');
@@ -51,7 +51,7 @@ void main() {
     expect(acc2.isLocked, false);
     expect(
       acc2.account.identity?.accountId.toHex(),
-      '7910af41c53cddb31862f0fa2c31cbd58db9645d90ffb875c7abc8c9',
+      '2636e2e67910af41c53cddb31862f0fa2c31cbd58db9645d90ffb875c7abc8c9',
     );
     expect(
       acc2.account.ecKeys?.accountId!.toHex(),

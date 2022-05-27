@@ -219,15 +219,21 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
   }
 
   Uint8List get accountId => getAccountId();
-  Uint8List getAccountId() {
+  Uint8List getAccountId([Uint8List? subAccount]) {
+    if (subAccount != null && subAccount.length != 32) {
+      throw "Unacceptable sub account";
+    }
     final der = getPublicKey().toDer();
     final hash = SHA224();
     hash.update(('\x0Aaccount-id').plainToU8a());
     hash.update(Principal.selfAuthenticating(der).toBlob());
-    hash.update(Uint8List(32));
+    hash.update(subAccount ?? Uint8List(32));
     final data = hash.digest();
-    // without checksum?
-    return Uint8List.fromList(data);
+    final view = ByteData(4);
+    view.setUint32(0, getCrc32(data.buffer));
+    final checksum = view.buffer.asUint8List();
+    final bytes = Uint8List.fromList(data);
+    return Uint8List.fromList([...checksum, ...bytes]);
   }
 }
 
