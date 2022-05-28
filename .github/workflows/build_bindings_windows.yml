@@ -3,7 +3,7 @@ name: Rust Bindings for windows
 on:
   push:
     branches:
-      - feat/bindings+async
+      - feat/bindings
 
 jobs:
   ci:
