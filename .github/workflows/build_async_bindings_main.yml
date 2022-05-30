@@ -1,0 +1,153 @@
+name: Rust Bindings for ios android and mac
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/bindings+async
+
+jobs:
+  ci:
+    name: Compile, Build and Release
+    runs-on: macos-latest
+    steps:
+      - name: Cache LLVM and Clang
+        id: cache-llvm
+        uses: actions/cache@v2
+        with:
+          path: ${{ runner.temp }}/llvm/11.0
+          key: ${{ runner.os }}-cached-llvm-11.0
+
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: '11.0'
+          directory: ${{ runner.temp }}/llvm/11.0
+          cached: ${{ steps.cache-llvm.outputs.cache-hit }}
+
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+          components: rustfmt
+
+      - name: Install WASM Target
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Cache Cargo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin
+            target/aarch64-linux-android
+            target/armv7-linux-androideabi
+            target/x86_64-linux-android
+            target/i686-linux-android
+            target/aarch64-apple-ios
+            target/x86_64-apple-ios
+            target/aarch64-apple-darwin
+            target/x86_64-apple-darwin
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install Cargo Tools (cbindgen)
+        uses: actions-rs/cargo@v1
+        continue-on-error: true
+        with:
+          command: install
+          args: --force cbindgen
+
+      - name: Install Cargo Tools (lipo)
+        uses: actions-rs/cargo@v1
+        continue-on-error: true
+        with:
+          command: install
+          args: cargo-lipo
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          channel: 'stable'
+
+      - name: Run Flutter pub get
+        run: flutter pub get
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Cache NDK
+        id: cache-ndk
+        uses: actions/cache@v2
+        with:
+          path: /Users/runner/Library/Android/sdk/ndk-bundle
+          key: ${{ runner.os }}-cached-ndk
+
+      - name: Install Android NDK
+        if: steps.cache-ndk.outputs.cache-hit != 'true'
+        run: sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager ndk-bundle
+
+      - name: Set Android NDK Env
+        uses: allenevans/set-env@v2.0.0
+        with:
+          ANDROID_NDK_HOME: '/Users/runner/Library/Android/sdk/ndk-bundle'
+          NDK_HOME: '/Users/runner/Library/Android/sdk/ndk-bundle'
+
+      - name: Setup Android NDK list
+        run: |
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/aarch64-linux-android/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/arm-linux-androideabi/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/i686-linux-android/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/x86_64-linux-android/bin:$PATH" >> $GITHUB_PATH
+
+      - name: Install Android Targets
+        run: rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+
+      - name: Execute cargo
+        run: |
+          cd rust
+          cargo build
+          cargo test
+          cd ..
+
+      - name: Execute build scripts
+        run: |
+          ./scripts/init.sh 
+          ./scripts/build.sh
+
+      - name: Run binding/crypto tests
+        run: flutter test
+
+      - name: Create artifact folder
+        run: |
+          mkdir -p artifact/android/src/main/jniLibs/arm64-v8a
+          mkdir -p artifact/android/src/main/jniLibs/armeabi-v7a
+          mkdir -p artifact/android/src/main/jniLibs/x86
+          mkdir -p artifact/android/src/main/jniLibs/x86_64
+          mkdir -p artifact/ios
+          mkdir -p artifact/macos
+          mkdir -p artifact/lib/bridge/ffi
+          cp android/src/main/jniLibs/arm64-v8a/libagent_dart.so artifact/android/src/main/jniLibs/arm64-v8a/libagent_dart.so
+          cp android/src/main/jniLibs/armeabi-v7a/libagent_dart.so artifact/android/src/main/jniLibs/armeabi-v7a/libagent_dart.so
+          cp android/src/main/jniLibs/x86/libagent_dart.so artifact/android/src/main/jniLibs/x86/libagent_dart.so
+          cp android/src/main/jniLibs/x86_64/libagent_dart.so artifact/android/src/main/jniLibs/x86_64/libagent_dart.so
+          cp ios/libagent_dart.a artifact/ios/libagent_dart.a
+          cp macos/libagent_dart.a artifact/macos/libagent_dart.a
+          cp lib/bridge/ffi/bridge_generated.dart artifact/lib/bridge/ffi/bridge_generated.dart
+
+
+      - name: artifact-upload-3
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact
+          path: artifact
