@@ -47,10 +47,7 @@ const DEFAULT_INGRESS_EXPIRY_DELTA_IN_MSECS = 5 * 60 * 1000;
 // ignore: constant_identifier_names
 const IC_ROOT_KEY =
 // ignore: prefer_adjacent_string_concatenation
-    '308182301d060d2b0601040182dc7c0503010201060c2b0601040182dc7c05030201036100814' +
-        'c0e6ec71fab583b08bd81373c255c3c371b2e84863c98a4f1e08b74235d14fb5d9c0cd546d968' +
-        '5f913a0c0b2cc5341583bf4b4392e467db96d65b9bb4cb717112f8472e0d5a4d14505ffd7484' +
-        'b01291091c5f87b98883463f98091a0baaae';
+    '308182301d060d2b0601040182dc7c0503010201060c2b0601040182dc7c05030201036100814c0e6ec71fab583b08bd81373c255c3c371b2e84863c98a4f1e08b74235d14fb5d9c0cd546d9685f913a0c0b2cc5341583bf4b4392e467db96d65b9bb4cb717112f8472e0d5a4d14505ffd7484b01291091c5f87b98883463f98091a0baaae';
 
 abstract class Credentials {
   late String? name;
@@ -138,9 +135,9 @@ class HttpAgent implements Agent {
 
       /// setHost
       if (options.host != null) {
-        setHost(defaultProtocol + '://${options.host}');
+        setHost('$defaultProtocol://${options.host}');
       } else {
-        setHost(defaultProtocol + '://$defaultHost$defaultPort');
+        setHost('$defaultProtocol://$defaultHost$defaultPort');
       }
 
       /// setIdentity
@@ -150,7 +147,7 @@ class HttpAgent implements Agent {
       if (options.credentials != null) {
         var name = options.credentials?.name ?? '';
         var password = options.credentials?.password;
-        setCredentials("$name${password != null ? ':' + password : ''}");
+        setCredentials("$name${password != null ? ':$password' : ''}");
       } else {
         setCredentials("");
       }
@@ -158,7 +155,7 @@ class HttpAgent implements Agent {
       _baseHeaders = _createBaseHeaders();
     } else {
       setIdentity(Future.value(AnonymousIdentity()));
-      setHost(defaultProtocol + '://$defaultHost$defaultPort');
+      setHost('$defaultProtocol://$defaultHost$defaultPort');
       setFetch(_defaultFetch);
       setCredentials("");
       // run default headers
@@ -243,9 +240,7 @@ class HttpAgent implements Agent {
     var requestId = list[1] as Uint8List;
     if (!(response["ok"] as bool)) {
       // ignore: prefer_adjacent_string_concatenation
-      throw 'Server returned an error:\n' +
-          '  Code: ${response["statusCode"]} (${response["statusText"]})\n' +
-          '  Body: ${response["body"] is Uint8List ? (response["body"] as Uint8List).u8aToString() : response["body"]}\n';
+      throw 'Server returned an error:\n  Code: ${response["statusCode"]} (${response["statusText"]})\n  Body: ${response["body"] is Uint8List ? (response["body"] as Uint8List).u8aToString() : response["body"]}\n';
     }
 
     return CallResponseBody.fromJson({...response, "requestId": requestId});
@@ -314,9 +309,7 @@ class HttpAgent implements Agent {
 
     if (!(response["ok"] as bool)) {
       // ignore: prefer_adjacent_string_concatenation
-      throw 'Server returned an error:\n' +
-          '  Code: ${response["statusCode"]} (${response["statusText"]})\n' +
-          '  Body: ${response["body"]}\n';
+      throw 'Server returned an error:\n  Code: ${response["statusCode"]} (${response["statusText"]})\n  Body: ${response["body"]}\n';
     }
 
     final buffer = response["arrayBuffer"] as Uint8List;
@@ -365,9 +358,7 @@ class HttpAgent implements Agent {
 
     if (!(response["ok"] as bool)) {
       // ignore: prefer_adjacent_string_concatenation
-      throw 'Server returned an error:\n' +
-          '  Code: ${response["statusCode"]} (${response["statusText"]})\n' +
-          '  Body: ${response["body"]}\n';
+      throw 'Server returned an error:\n  Code: ${response["statusCode"]} (${response["statusText"]})\n  Body: ${response["body"]}\n';
     }
 
     final buffer = response["arrayBuffer"] as Uint8List;
@@ -388,9 +379,7 @@ class HttpAgent implements Agent {
 
     if (!(response["ok"] as bool)) {
       // ignore: prefer_adjacent_string_concatenation
-      throw 'Server returned an error:\n' +
-          '  Code: ${response["statusCode"]} (${response["statusText"]})\n' +
-          '  Body: ${response["body"]}\n';
+      throw 'Server returned an error:\n  Code: ${response["statusCode"]} (${response["statusText"]})\n  Body: ${response["body"]}\n';
     }
 
     final buffer = response["arrayBuffer"] as Uint8List;
@@ -400,7 +389,7 @@ class HttpAgent implements Agent {
 
   Map<String, String> _createBaseHeaders() {
     return _credentials != null && _credentials!.isNotEmpty
-        ? {"Authorization": 'Basic ' + btoa(_credentials)}
+        ? {"Authorization": 'Basic ${btoa(_credentials)}'}
         : {};
   }
 

@@ -1,6 +1,6 @@
 import 'dart:ffi';
 import 'dart:io' show Platform;
-import 'bridge_generated.dart';
+import 'ffi_bridge.dart';
 
 const libName = "agent_dart";
 const androidlibName = "lib$libName.so";

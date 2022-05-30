@@ -1,5 +1,6 @@
 #!/bin/bash
 ./scripts/clean.sh &&
+rm -rf rust/bridge &&
 rm -rf rust/headers &&
 rm -rf rust/dylib &&
 rm -rf macos/cli &&
