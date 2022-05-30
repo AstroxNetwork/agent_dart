@@ -1,2 +1,3 @@
+export 'ffi_bridge.dart';
 export 'ffi_helper.dart';
-export 'bridge_generated.dart';
+export 'ffi_bridge.dart';

@@ -1,6 +1,8 @@
 #!/bin/bash
 flutter_rust_bridge_codegen \
 -r rust/src/api.rs \
-# -d lib/bridge/ffi/bridge_generated.dart \
+-c rust/headers/bridge_generated.h \
+-d rust/bridge/ffi/bridge_generated.dart
 ## there is bug using latest generator
--c rust/headers/bridge_generated.h
+
+cp rust/bridge/ffi/bridge_generated.dart lib/bridge/ffi/ffi_bridge.dart
