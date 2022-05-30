@@ -1,18 +1,8 @@
 import 'dart:convert';
-import 'dart:math';
 import 'dart:typed_data';
 import 'package:agent_dart/agent_dart.dart';
-import 'package:agent_dart/identity/der.dart';
-import 'package:agent_dart/principal/principal.dart';
-import 'package:agent_dart/principal/utils/sha224.dart';
-import 'package:agent_dart/wallet/keysmith.dart';
-import 'package:bip39/bip39.dart';
 import 'package:crypto/crypto.dart';
-// import 'package:pinenacl/ed25519.dart';
 import 'package:agent_dart/agent/auth.dart' as auth;
-import 'package:agent_dart/agent/types.dart';
-import 'package:agent_dart/utils/u8a.dart';
-import 'package:agent_dart/utils/extension.dart';
 
 import '../bridge/ffi/ffi.dart';
 
