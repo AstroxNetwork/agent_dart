@@ -1,6 +1,7 @@
 name: Rust Bindings for ios android and mac
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - feat/bindings+async
@@ -89,7 +90,7 @@ jobs:
         id: cache-ndk
         uses: actions/cache@v2
         with:
-          path: /Users/runner/android/ndk-bundle
+          path: /Users/runner/Library/Android/sdk/ndk-bundle
           key: ${{ runner.os }}-cached-ndk
 
       - name: Install Android NDK
@@ -112,18 +113,21 @@ jobs:
       - name: Install Android Targets
         run: rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
 
-      - name: Execute cargo test
+      - name: Execute cargo
         run: |
           cd rust
+          cargo build
           cargo test
+          cd ..
 
       - name: Execute build scripts
         run: |
-          ./scripts/bootstrap
+          ./scripts/init.sh 
+          ./scripts/build.sh
 
       - name: Run binding/crypto tests
         run: flutter test
-      
+
       - name: Create artifact folder
         run: |
           mkdir -p artifact/android/src/main/jniLibs/arm64-v8a
@@ -132,12 +136,14 @@ jobs:
           mkdir -p artifact/android/src/main/jniLibs/x86_64
           mkdir -p artifact/ios
           mkdir -p artifact/macos
+          mkdir -p artifact/lib/bridge/ffi
           cp android/src/main/jniLibs/arm64-v8a/libagent_dart.so artifact/android/src/main/jniLibs/arm64-v8a/libagent_dart.so
           cp android/src/main/jniLibs/armeabi-v7a/libagent_dart.so artifact/android/src/main/jniLibs/armeabi-v7a/libagent_dart.so
           cp android/src/main/jniLibs/x86/libagent_dart.so artifact/android/src/main/jniLibs/x86/libagent_dart.so
           cp android/src/main/jniLibs/x86_64/libagent_dart.so artifact/android/src/main/jniLibs/x86_64/libagent_dart.so
           cp ios/libagent_dart.a artifact/ios/libagent_dart.a
           cp macos/libagent_dart.a artifact/macos/libagent_dart.a
+          cp lib/bridge/ffi/bridge_generated.dart artifact/lib/bridge/ffi/bridge_generated.dart
 
 
       - name: artifact-upload-3
