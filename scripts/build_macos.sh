@@ -17,4 +17,4 @@ echo "#import <FlutterMacOS/FlutterMacOS.h>
 @end" > ../macos/Classes/AgentDartPlugin.h
 cat ./headers/bridge_generated.h >> ../macos/Classes/AgentDartPlugin.h
 
-cp "./target/universal/release/lib${LIB_NAME}.a" "../macos/lib${LIB_NAME}.a"
+lipo -create -output "../macos/lib${LIB_NAME}.a" "./target/aarch64-apple-darwin/release/libagent_dart.a" "./target/x86_64-apple-darwin/release/libagent_dart.a"
