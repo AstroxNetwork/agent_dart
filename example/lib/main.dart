@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'counter.dart';
@@ -19,23 +21,21 @@ class _MyAppState extends State<MyApp> {
   bool _loading = false;
   String _status = "";
 
-  late Counter _counter;
+  Counter? _counter;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-
-    initCounter();
     loading(true);
     readCount();
   }
 
-  void initCounter() async {
+  Future<void> initCounter() async {
     _counter = (await AgentFactory.create(
       canisterId: "sbzkb-zqaaa-aaaaa-aaaiq-cai",
       url:
-          "http://localhost:8000", // For Android emulator, please use 10.0.2.2 as endpoint
+          "http://192.168.2.37:8000", // For Android emulator, please use 10.0.2.2 as endpoint
       idl: idl,
     ))
         .hook(Counter());
@@ -47,8 +47,11 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void readCount() async {
-    int c = await _counter.count();
+  Future<void> readCount() async {
+    if (_counter == null) {
+      await initCounter();
+    }
+    int c = await _counter!.count();
     loading(false);
     setState(() {
       _count = c;
@@ -57,7 +60,7 @@ class _MyAppState extends State<MyApp> {
 
   void increase() async {
     loading(true);
-    await _counter.add();
+    await _counter!.add();
     readCount();
   }
 
