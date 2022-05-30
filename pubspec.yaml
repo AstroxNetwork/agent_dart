@@ -24,7 +24,7 @@ dependencies:
   fixnum: ^1.0.1
   flutter:
     sdk: flutter
-  flutter_rust_bridge: ^1.31.0
+  flutter_rust_bridge: ^1.32.0
   flutter_web_plugins:
     sdk: flutter
   http: ^0.13.4
