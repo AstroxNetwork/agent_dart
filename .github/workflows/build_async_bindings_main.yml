@@ -114,7 +114,7 @@ jobs:
 
       - name: Execute build scripts
         run: |
-          ./scripts/bootstrap
+          ./scripts/bootstrap.sh
 
       - name: Run binding/crypto tests
         run: flutter test
