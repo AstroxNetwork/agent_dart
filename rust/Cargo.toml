@@ -13,7 +13,9 @@ bip32 = "0.4.0"
 bip39 = "1.0.1"
 ring = "0.16.11"
 k256 = { version = "0.11.2", features = ["pem"] }
-flutter_rust_bridge = "1.31.0"
+flutter_rust_bridge = "1"
 
 [profile.release]
-debug = true
+debug = false
+opt-level = "z"
+lto = true
