@@ -35,7 +35,7 @@ class _MyAppState extends State<MyApp> {
     _counter = (await AgentFactory.create(
       canisterId: "sbzkb-zqaaa-aaaaa-aaaiq-cai",
       url:
-          "http://localhost:8000", // For Android emulator, please use 10.0.2.2 as endpoint
+          "https://03af-58-62-205-141.ngrok.io", // For Android emulator, please use 10.0.2.2 as endpoint
       idl: idl,
     ))
         .hook(Counter());

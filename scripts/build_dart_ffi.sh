@@ -6,3 +6,4 @@ flutter_rust_bridge_codegen \
 ## there is bug using latest generator
 
 cp rust/bridge/ffi/bridge_generated.dart lib/bridge/ffi/ffi_bridge.dart
+# flutter pub run build_runner build
