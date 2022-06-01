@@ -22,7 +22,10 @@ void rosettaTest() {
 
     final signer = ICPSigner.importPhrase(phrase);
 
-    var receiver = ICPSigner.fromSeed(Uint8List.fromList(List.filled(32, 0)));
+    var receiver = ICPSigner.fromSeed(
+      Uint8List.fromList(List.filled(32, 0)),
+      curveType: CurveType.all,
+    );
 
     /// setup RosettaApi and init
     RosettaApi rose = RosettaApi(host: "http://127.0.0.1:8080");
@@ -91,5 +94,12 @@ void rosettaTest() {
     print("\n sender balance AFTER: ${accountBalanceAfter.toJson()}");
     // ignore: avoid_print
     print(" ------ Balance change ------ \n");
+  }, skip: true);
+  test('getTransactionByBlock', () async {
+    RosettaApi rose = RosettaApi();
+    await rose.init();
+    final txn = await rose.getTransactionByBlock(3672726);
+    expect(txn.hash,
+        '6bbdef23f7c8859e2c5e2c1a99f96c977009760b3bfebcff6d3fa986ff84ffc2');
   });
 }
