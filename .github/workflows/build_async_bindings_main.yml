@@ -3,7 +3,7 @@ name: Rust Bindings for ios android and mac
 on:
   push:
     branches:
-      - feat/bindings+async
+      - ffi-async
 
 jobs:
   ci:
@@ -111,11 +111,6 @@ jobs:
 
       - name: Install Android Targets
         run: rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
-
-      - name: Execute cargo test
-        run: |
-          cd rust
-          cargo test
 
       - name: Execute build scripts
         run: |
