@@ -4,7 +4,7 @@ import FlutterMacOS
 public class SwiftAgentDartPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     // ignore this
-    print("dummy_value=\(dummy_method_to_enforce_bundling())");
+    // print("dummy_value=\(dummy_method_to_enforce_bundling())");
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -12,6 +12,7 @@ public class SwiftAgentDartPlugin: NSObject, FlutterPlugin {
   }
   public func dummyMethodToEnforceBundling() {
     // dummy calls to prevent tree shaking
-    dummy_method_to_enforce_bundling();
+    rust_greeting("");
+    print("dummy_value=\(dummy_method_to_enforce_bundling())");
   }
 }

@@ -227,6 +227,8 @@ typedef int64_t Chunk;
 
 #define MCONST 140737475470229501
 
+char *rust_greeting(const char *to);
+
 void wire_bls_init(int64_t port_);
 
 void wire_bls_verify(int64_t port_,
