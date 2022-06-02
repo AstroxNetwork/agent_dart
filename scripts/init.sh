@@ -28,7 +28,7 @@ done
 
 # use ffigen 5.0.0
 dart pub global activate ffigen ^5.0.0 &&
-cargo install flutter_rust_bridge_codegen
+cargo install flutter_rust_bridge_codegen --force
 
 
 
