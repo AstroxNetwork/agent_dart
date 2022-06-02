@@ -317,6 +317,21 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
           lookup)
       : _lookup = lookup;
 
+  ffi.Pointer<ffi.Char> rust_greeting(
+    ffi.Pointer<ffi.Char> to,
+  ) {
+    return _rust_greeting(
+      to,
+    );
+  }
+
+  late final _rust_greetingPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<ffi.Char>)>>('rust_greeting');
+  late final _rust_greeting = _rust_greetingPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>();
+
   void wire_bls_init(
     int port_,
   ) {
