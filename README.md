@@ -11,10 +11,16 @@ An agent library built for Internet Computer, a plugin package for dart and flut
 ## ⚡️ Quick start
 ### For existing flutter app
 
-```bash
-# Flutter App
-flutter pub add agent_dart
+
+```yaml
+# For specific branch, in pubspec.yaml
+agent_dart:
+    git:
+      url: https://github.com/AstroxNetwork/agent_dart
+      ref: "ffi-async"
+
 ```
+
 ### For development
 1. git clone and install [Prerequisites](#prerequisites), check your flutter env by doing:
 
