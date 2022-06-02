@@ -1,0 +1,9 @@
+android/src/main/jniLibs/arm64-v8a/libagent_dart.so
+android/src/main/jniLibs/armeabi-v7a/libagent_dart.so
+android/src/main/jniLibs/x86/libagent_dart.so
+android/src/main/jniLibs/x86_64/libagent_dart.so
+ios/libagent_dart.a
+macos/cli/aarch64-apple-darwin/libagent_dart.dylib
+macos/cli/x86_64-apple-darwin/libagent_dart.dylib
+macos/libagent_dart.a
+rust/dylib/debug/libagent_dart.dylib
