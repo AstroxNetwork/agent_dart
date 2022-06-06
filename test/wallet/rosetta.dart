@@ -41,8 +41,7 @@ void rosettaTest() {
         null,
         null);
 
-    var accountBalance =
-        await rose.accountBalanceByAddress(signer.idChecksumAddress!);
+    var accountBalance = await rose.accountBalanceByAddress(signer.idAddress!);
 
     // ignore: avoid_print
     print("\n ------ payload ------");
@@ -79,7 +78,7 @@ void rosettaTest() {
     });
 
     var accountBalanceAfter =
-        await rose.accountBalanceByAddress(signer.idChecksumAddress!);
+        await rose.accountBalanceByAddress(signer.idAddress!);
     // ignore: avoid_print
     print("\n ------ transaction confirm ------");
     // ignore: avoid_print

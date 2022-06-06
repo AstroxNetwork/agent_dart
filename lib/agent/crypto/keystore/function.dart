@@ -408,6 +408,7 @@ Future<Uint8List> encryptCborPhrase(
   final Map<String, dynamic> kdfParams = {
     'salt': salt,
     'n': n,
+    'c': n,
     'r': 8,
     'p': 1,
     'dklen': 32
@@ -416,7 +417,6 @@ Future<Uint8List> encryptCborPhrase(
   final List<int> encodedPassword = utf8.encode(password);
   final _KeyDerivator derivator = getDerivedKey(kdf, kdfParams);
   final List<int> derivedKey = derivator.deriveKey(encodedPassword);
-
   final List<int> ciphertextBytes = _encryptPhrase(
     derivator,
     Uint8List.fromList(encodedPassword),
