@@ -306,9 +306,8 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
 
   String? get idAddress => account.identity?.getAccountId().toHex();
 
-  String? get idChecksumAddress => account.identity?.getAccountId() != null
-      ? crc32Add(account.identity!.getAccountId()).toHex()
-      : null;
+  @Deprecated("Use same accound ID scheme to idAddress")
+  String? get idChecksumAddress => idAddress;
 
   String? get ecPublicKey => account.ecIdentity?.getPublicKey().toRaw().toHex();
 
@@ -317,9 +316,8 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
 
   String? get ecAddress => account.ecIdentity?.getAccountId().toHex();
 
-  String? get ecChecksumAddress => account.ecIdentity?.getAccountId() != null
-      ? crc32Add(account.ecIdentity!.getAccountId()).toHex()
-      : null;
+  @Deprecated("Use same accound ID scheme to ecAddress")
+  String? get ecChecksumAddress => ecAddress;
 
   Future<ICPAccount> hdCreate({
     String passphase = "",

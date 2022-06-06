@@ -3,7 +3,7 @@
 
 # Change this name to the rust library name
 LIB_NAME=agent_dart
-API_LEVEL=29
+API_LEVEL=23
 # SYSTEM_ARCH=`arch`
 
 
