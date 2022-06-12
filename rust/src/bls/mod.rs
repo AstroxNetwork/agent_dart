@@ -1,5 +1,6 @@
 pub mod aes;
 pub mod arch;
+pub mod bls12381;
 pub mod gcm;
 pub mod hash256;
 pub mod hash384;
@@ -9,5 +10,3 @@ pub mod nhs;
 pub mod rand;
 pub mod sha3;
 pub mod share;
-
-pub mod bls12381;

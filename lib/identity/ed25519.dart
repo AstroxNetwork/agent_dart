@@ -94,8 +94,9 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     Uint8List secretKey; // seed itself
 
     var kp = seed == null
-        ? await dylib.ed25519FromSeed(seed: getRandomValues(32))
-        : await dylib.ed25519FromSeed(seed: seed);
+        ? await dylib.ed25519FromSeed(
+            req: ED25519FromSeedReq(seed: getRandomValues(32)))
+        : await dylib.ed25519FromSeed(req: ED25519FromSeedReq(seed: seed));
 
     publicKey = kp.publicKey;
     secretKey = kp.seed;
@@ -200,12 +201,14 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     final blob = challenge is BinaryBlob
         ? challenge
         : blobFromBuffer(challenge as ByteBuffer);
-    return await dylib.ed25519Sign(seed: _seed, message: blob);
+    return await dylib.ed25519Sign(
+        req: ED25519SignReq(seed: _seed, message: blob));
   }
 
   Future<bool> verify(Uint8List signature, Uint8List message) async {
     return await dylib.ed25519Verify(
-        message: message, sig: signature, pubKey: _publicKey.toRaw());
+        req: ED25519VerifyReq(
+            message: message, sig: signature, pubKey: _publicKey.toRaw()));
   }
 
   Uint8List get accountId => getAccountId();
@@ -267,7 +270,8 @@ Future<Ed25519KeyIdentity> fromMnemonicWithoutValidation(
     String mnemonic, List<int>? derivationPath,
     {int offset = HARDENED}) async {
   derivationPath ??= [];
-  final seed = await dylib.bip32ToSeedHash(phrase: mnemonic, password: '');
+  final seed = await dylib.mnemonicPhraseToSeed(
+      req: PhraseToSeedReq(phrase: mnemonic, password: ''));
   return fromSeedWithSlip0010(seed, derivationPath, offset: offset);
 }
 

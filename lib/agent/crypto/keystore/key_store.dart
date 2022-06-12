@@ -6,6 +6,7 @@ import 'dart:isolate';
 import 'dart:typed_data';
 import 'dart:async';
 import 'package:agent_dart/agent_dart.dart';
+import 'package:agent_dart/bridge/ffi/ffi.dart' hide SHA256;
 import 'package:agent_dart/principal/utils/sha256.dart';
 import 'package:collection/collection.dart';
 import 'package:uuid/uuid.dart';

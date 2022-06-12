@@ -1,11 +1,17 @@
+use crate::types::{Secp256k1FromSeedReq, Secp256k1SignReq, Secp256k1VerifyReq};
+use bip32::{PublicKey, PublicKeyBytes};
+use k256::ecdsa::signature::{Signer, Verifier};
+use k256::ecdsa::{signature, Signature, SigningKey, VerifyingKey};
+use k256::pkcs8::der::Decode;
+use k256::pkcs8::DecodePublicKey;
 use k256::{
-    ecdsa::{self, signature::Signer, SigningKey},
+    ecdsa,
     pkcs8::{Document, EncodePublicKey},
     SecretKey,
 };
 
 #[derive(Clone, Debug)]
-pub struct Signature {
+pub struct SignatureFFI {
     /// This is the DER-encoded public key.
     pub public_key: Option<Vec<u8>>,
     /// The signature bytes.
@@ -13,7 +19,7 @@ pub struct Signature {
 }
 
 #[derive(Clone, Debug)]
-pub struct Secp256k1Identity {
+pub struct Secp256k1FFI {
     pub private_key: SigningKey,
     pub der_encoded_public_key: Document,
 }
@@ -24,10 +30,29 @@ pub struct Secp256k1IdentityExport {
     pub der_encoded_public_key: Vec<u8>,
 }
 
-impl Secp256k1Identity {
-    pub fn from_seed(seed: Vec<u8>) -> Self {
-        match SecretKey::from_be_bytes(seed.as_slice()) {
-            Ok(sk) => Secp256k1Identity::from_private_key(sk),
+impl Secp256k1IdentityExport {
+    pub fn from_raw(raw: Secp256k1FFI) -> Self {
+        Self {
+            private_key_hash: raw.private_key.to_bytes().to_vec(),
+            der_encoded_public_key: raw.der_encoded_public_key.to_vec(),
+        }
+    }
+}
+
+impl Secp256k1FFI {
+    pub fn verify_signature(req: Secp256k1VerifyReq) -> bool {
+        let signature: Signature = signature::Signature::from_bytes(req.signature_bytes.as_slice())
+            .expect("Signature is not valid");
+
+        let verifying_key = VerifyingKey::from_public_key_der(req.public_key_bytes.as_slice())
+            .expect("VerifyingKey is not valid");
+        verifying_key
+            .verify(req.message_hash.as_slice(), &signature)
+            .is_ok()
+    }
+    pub fn from_seed(req: Secp256k1FromSeedReq) -> Self {
+        match SecretKey::from_be_bytes(req.seed.as_slice()) {
+            Ok(sk) => Secp256k1FFI::from_private_key(sk),
             Err(err) => {
                 panic!("{}", err.to_string())
             }
@@ -44,10 +69,10 @@ impl Secp256k1Identity {
             der_encoded_public_key,
         }
     }
-    pub fn sign(&self, msg: &[u8]) -> Result<Signature, String> {
+    pub fn sign(&self, req: Secp256k1SignReq) -> Result<SignatureFFI, String> {
         let ecdsa_sig: ecdsa::Signature = self
             .private_key
-            .try_sign(msg)
+            .try_sign(req.msg.as_slice())
             .map_err(|err| format!("Cannot create secp256k1 signature: {}", err))?;
         let r = ecdsa_sig.r().as_ref().to_bytes();
         let s = ecdsa_sig.s().as_ref().to_bytes();
@@ -59,18 +84,9 @@ impl Secp256k1Identity {
         bytes[32 + (32 - s.len())..].clone_from_slice(&s);
         let signature = Some(bytes.to_vec());
         let public_key = Some(self.der_encoded_public_key.as_ref().to_vec());
-        Ok(Signature {
+        Ok(SignatureFFI {
             public_key,
             signature,
         })
-    }
-}
-
-impl Secp256k1IdentityExport {
-    pub fn from_raw(raw: Secp256k1Identity) -> Self {
-        Self {
-            private_key_hash: raw.private_key.to_bytes().to_vec(),
-            der_encoded_public_key: raw.der_encoded_public_key.to_vec(),
-        }
     }
 }

@@ -35,16 +35,41 @@ Future<String> encrypt(
   };
 
   List<int> encodedPassword = utf8.encode(passphrase);
-  _KeyDerivator derivator = getDerivedKey(kdf, kdfParams);
-  List<int> derivedKey = derivator.deriveKey(encodedPassword);
 
-  List<int> ciphertextBytes = _encryptPrivateKey(derivator,
-      Uint8List.fromList(encodedPassword), Uint8List.fromList(iv), privateKey);
+  final Uint8List derivedKey;
+  final Uint8List leftBits;
+  final Uint8List rightBits;
 
-  List<int> macBuffer = derivedKey.sublist(16, 32) +
-      ciphertextBytes +
-      iv +
-      ALGO_IDENTIFIER.codeUnits;
+  if (kdf == 'scrypt') {
+    final scryptKey = await dylib.scryptDeriveKey(
+        req: ScriptDeriveReq(
+            n: kdfParams['n'],
+            p: kdfParams['p'],
+            r: kdfParams['r'],
+            password: passphrase.plainToU8a(),
+            salt: salt.toU8a()));
+
+    leftBits = scryptKey.leftBits;
+    rightBits = scryptKey.rightBits;
+    derivedKey =
+        Uint8List.fromList([...scryptKey.leftBits, ...scryptKey.rightBits]);
+  } else {
+    final scryptKey = await dylib.pbkdf2DeriveKey(
+        req: PBKDFDeriveReq(
+            c: 262144, password: passphrase.plainToU8a(), salt: salt.toU8a()));
+    leftBits = scryptKey.leftBits;
+    rightBits = scryptKey.rightBits;
+    derivedKey =
+        Uint8List.fromList([...scryptKey.leftBits, ...scryptKey.rightBits]);
+  }
+
+  List<int> ciphertextBytes = await _encryptPhraseAsync(
+      key: Uint8List.fromList(leftBits),
+      iv: Uint8List.fromList(iv),
+      message: privateKey);
+
+  List<int> macBuffer =
+      rightBits + ciphertextBytes + iv + ALGO_IDENTIFIER.codeUnits;
 
   String mac = (SHA256()
       .update(Uint8List.fromList(derivedKey))
@@ -72,17 +97,45 @@ Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
   Uint8List ciphertext = (keyStore['crypto']['ciphertext'] as String).toU8a();
   String kdf = keyStore['crypto']['kdf'];
 
-  Map<String, dynamic> kdfparams = keyStore['crypto']['kdfparams'] is String
+  Map<String, dynamic> kdfParams = keyStore['crypto']['kdfparams'] is String
       ? json.decode(keyStore['crypto']['kdfparams'])
       : keyStore['crypto']['kdfparams'];
   var cipherparams = keyStore['crypto']["cipherparams"];
   Uint8List iv = (cipherparams["iv"] as String).toU8a();
 
   List<int> encodedPassword = utf8.encode(passphrase);
-  _KeyDerivator derivator = getDerivedKey(kdf, kdfparams);
-  List<int> derivedKey = derivator.deriveKey(encodedPassword);
-  List<int> macBuffer =
-      derivedKey.sublist(16, 32) + ciphertext + iv + ALGO_IDENTIFIER.codeUnits;
+
+  final Uint8List derivedKey;
+  final Uint8List leftBits;
+  final Uint8List rightBits;
+
+  if (kdf == 'scrypt') {
+    final scryptKey = await dylib.scryptDeriveKey(
+        req: ScriptDeriveReq(
+            n: kdfParams['n'],
+            p: kdfParams['p'],
+            r: kdfParams['r'],
+            password: passphrase.plainToU8a(),
+            salt: (kdfParams["salt"] as String).toU8a()));
+
+    leftBits = scryptKey.leftBits;
+    rightBits = scryptKey.rightBits;
+    derivedKey =
+        Uint8List.fromList([...scryptKey.leftBits, ...scryptKey.rightBits]);
+  } else {
+    final scryptKey = await dylib.pbkdf2DeriveKey(
+        req: PBKDFDeriveReq(
+            c: 262144,
+            password: passphrase.plainToU8a(),
+            salt: (kdfParams["salt"] as String).toU8a()));
+    leftBits = scryptKey.leftBits;
+    rightBits = scryptKey.rightBits;
+    derivedKey =
+        Uint8List.fromList([...scryptKey.leftBits, ...scryptKey.rightBits]);
+  }
+  // return (derivedKey.toHex());
+
+  List<int> macBuffer = rightBits + ciphertext + iv + ALGO_IDENTIFIER.codeUnits;
 
   String mac = (SHA256()
       .update(Uint8List.fromList(derivedKey))
@@ -97,14 +150,12 @@ Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
     throw 'Decryption Failed';
   }
 
-  var aesKey = derivedKey.sublist(0, 16);
   var encryptedPrivateKey =
       (keyStore["crypto"]["ciphertext"] as String).toU8a();
 
-  var aes = _initCipher(false, aesKey, iv);
-
-  var privateKeyByte = aes.process(encryptedPrivateKey);
-  return privateKeyByte.toHex();
+  return (await _dercryptPhraseAsync(
+          cipherText: encryptedPrivateKey, key: leftBits, iv: iv))
+      .u8aToString();
 }
 
 Future<String> encryptPhrase(
@@ -114,9 +165,10 @@ Future<String> encryptPhrase(
 ]) async {
   Uint8List uuid = Uint8List(16);
   Uuid uuidParser = const Uuid()..v4buffer(uuid);
-
   String salt = randomAsHex(64);
+  //  String salt = Uint8List.fromList(List<int>.filled(32, 0)).toHex();
   List<int> iv = randomAsU8a(16);
+
   String kdf = 'scrypt';
   int level = 8192;
   int n = kdf == 'pbkdf2' ? 262144 : level;
@@ -139,16 +191,41 @@ Future<String> encryptPhrase(
   };
 
   List<int> encodedPassword = utf8.encode(password);
-  _KeyDerivator derivator = getDerivedKey(kdf, kdfParams);
-  List<int> derivedKey = derivator.deriveKey(encodedPassword);
 
-  List<int> ciphertextBytes = _encryptPhrase(derivator,
-      Uint8List.fromList(encodedPassword), Uint8List.fromList(iv), phrase);
+  final Uint8List derivedKey;
+  final Uint8List leftBits;
+  final Uint8List rightBits;
 
-  List<int> macBuffer = derivedKey.sublist(16, 32) +
-      ciphertextBytes +
-      iv +
-      ALGO_IDENTIFIER.codeUnits;
+  if (kdf == 'scrypt') {
+    final scryptKey = await dylib.scryptDeriveKey(
+        req: ScriptDeriveReq(
+            n: kdfParams['n'],
+            p: kdfParams['p'],
+            r: kdfParams['r'],
+            password: password.plainToU8a(),
+            salt: salt.toU8a()));
+
+    leftBits = scryptKey.leftBits;
+    rightBits = scryptKey.rightBits;
+    derivedKey =
+        Uint8List.fromList([...scryptKey.leftBits, ...scryptKey.rightBits]);
+  } else {
+    final scryptKey = await dylib.pbkdf2DeriveKey(
+        req: PBKDFDeriveReq(
+            c: 262144, password: password.plainToU8a(), salt: salt.toU8a()));
+    leftBits = scryptKey.leftBits;
+    rightBits = scryptKey.rightBits;
+    derivedKey =
+        Uint8List.fromList([...scryptKey.leftBits, ...scryptKey.rightBits]);
+  }
+
+  List<int> ciphertextBytes = await _encryptPhraseAsync(
+      key: Uint8List.fromList(leftBits),
+      iv: Uint8List.fromList(iv),
+      message: phrase);
+
+  List<int> macBuffer =
+      rightBits + ciphertextBytes + iv + ALGO_IDENTIFIER.codeUnits;
 
   String mac = (SHA256()
       .update(Uint8List.fromList(derivedKey))
@@ -172,6 +249,47 @@ Future<String> encryptPhrase(
   return result;
 }
 
+// Future<String> decryptPhrase(
+//   Map<String, dynamic> keyStore,
+//   String passphrase,
+// ) async {
+//   Uint8List ciphertext = (keyStore['crypto']['ciphertext'] as String).toU8a();
+//   String kdf = keyStore['crypto']['kdf'];
+
+//   Map<String, dynamic> kdfparams = keyStore['crypto']['kdfparams'] is String
+//       ? json.decode(keyStore['crypto']['kdfparams'])
+//       : keyStore['crypto']['kdfparams'];
+//   var cipherparams = keyStore['crypto']["cipherparams"];
+//   Uint8List iv = (cipherparams["iv"] as String).toU8a();
+
+//   List<int> encodedPassword = utf8.encode(passphrase);
+//   _KeyDerivator derivator = getDerivedKey(kdf, kdfparams);
+//   List<int> derivedKey = derivator.deriveKey(encodedPassword);
+//   List<int> macBuffer =
+//       rightBits + ciphertext + iv + ALGO_IDENTIFIER.codeUnits;
+
+//   String mac = (SHA256()
+//       .update(Uint8List.fromList(derivedKey))
+//       .update(macBuffer)
+//       .digest()
+//       .toHex());
+
+//   String macString = keyStore['crypto']['mac'];
+
+//   Function eq = const ListEquality().equals;
+//   if (!eq(mac.toUpperCase().codeUnits, macString.toUpperCase().codeUnits)) {
+//     throw 'Decryption Failed';
+//   }
+
+//   var aesKey = derivedKey.sublist(0, 16);
+//   var encryptedPhrase = (keyStore["crypto"]["ciphertext"] as String).toU8a();
+
+//   var aes = _initCipher(false, aesKey, iv);
+
+//   var privateKeyByte = aes.process(encryptedPhrase);
+//   return privateKeyByte.u8aToString();
+// }
+
 Future<String> decryptPhrase(
   Map<String, dynamic> keyStore,
   String passphrase,
@@ -179,17 +297,45 @@ Future<String> decryptPhrase(
   Uint8List ciphertext = (keyStore['crypto']['ciphertext'] as String).toU8a();
   String kdf = keyStore['crypto']['kdf'];
 
-  Map<String, dynamic> kdfparams = keyStore['crypto']['kdfparams'] is String
+  Map<String, dynamic> kdfParams = keyStore['crypto']['kdfparams'] is String
       ? json.decode(keyStore['crypto']['kdfparams'])
       : keyStore['crypto']['kdfparams'];
   var cipherparams = keyStore['crypto']["cipherparams"];
   Uint8List iv = (cipherparams["iv"] as String).toU8a();
 
   List<int> encodedPassword = utf8.encode(passphrase);
-  _KeyDerivator derivator = getDerivedKey(kdf, kdfparams);
-  List<int> derivedKey = derivator.deriveKey(encodedPassword);
-  List<int> macBuffer =
-      derivedKey.sublist(16, 32) + ciphertext + iv + ALGO_IDENTIFIER.codeUnits;
+
+  final Uint8List derivedKey;
+  final Uint8List leftBits;
+  final Uint8List rightBits;
+
+  if (kdf == 'scrypt') {
+    final scryptKey = await dylib.scryptDeriveKey(
+        req: ScriptDeriveReq(
+            n: kdfParams['n'],
+            p: kdfParams['p'],
+            r: kdfParams['r'],
+            password: passphrase.plainToU8a(),
+            salt: (kdfParams["salt"] as String).toU8a()));
+
+    leftBits = scryptKey.leftBits;
+    rightBits = scryptKey.rightBits;
+    derivedKey =
+        Uint8List.fromList([...scryptKey.leftBits, ...scryptKey.rightBits]);
+  } else {
+    final scryptKey = await dylib.pbkdf2DeriveKey(
+        req: PBKDFDeriveReq(
+            c: 262144,
+            password: passphrase.plainToU8a(),
+            salt: (kdfParams["salt"] as String).toU8a()));
+    leftBits = scryptKey.leftBits;
+    rightBits = scryptKey.rightBits;
+    derivedKey =
+        Uint8List.fromList([...scryptKey.leftBits, ...scryptKey.rightBits]);
+  }
+  // return (derivedKey.toHex());
+
+  List<int> macBuffer = rightBits + ciphertext + iv + ALGO_IDENTIFIER.codeUnits;
 
   String mac = (SHA256()
       .update(Uint8List.fromList(derivedKey))
@@ -204,13 +350,11 @@ Future<String> decryptPhrase(
     throw 'Decryption Failed';
   }
 
-  var aesKey = derivedKey.sublist(0, 16);
   var encryptedPhrase = (keyStore["crypto"]["ciphertext"] as String).toU8a();
 
-  var aes = _initCipher(false, aesKey, iv);
-
-  var privateKeyByte = aes.process(encryptedPhrase);
-  return privateKeyByte.u8aToString();
+  return (await _dercryptPhraseAsync(
+          cipherText: encryptedPhrase, key: leftBits, iv: iv))
+      .u8aToString();
 }
 
 Future<String> encodePrivateKey(
@@ -219,27 +363,7 @@ Future<String> encodePrivateKey(
   Map<String, dynamic>? options,
 ]) async {
   try {
-    final response = ReceivePort();
-
-    await Isolate.spawn(
-      _encodePrivateKey,
-      [response.sendPort, prvKey, psw, options],
-    );
-
-    return (await response.first) as String;
-  } catch (e) {
-    rethrow;
-  }
-}
-
-Future<void> _encodePrivateKey(List<dynamic> args) async {
-  try {
-    SendPort responsePort = args[0];
-    final prvKey = args[1] as String;
-    final psw = args[2] as String;
-    final options = args[3] != null ? args[3] as Map<String, dynamic> : null;
-    final encrypted = await encrypt(prvKey, psw, options);
-    Isolate.exit(responsePort, encrypted);
+    return await encrypt(prvKey, psw, options);
   } catch (e) {
     rethrow;
   }
@@ -250,30 +374,7 @@ Future<String> decodePrivateKey(
   String psw,
 ) async {
   try {
-    final response = ReceivePort();
-
-    await Isolate.spawn(
-      _decodePrivateKey,
-      [response.sendPort, keyStore, psw],
-    );
-
-    final sendPort = await response.first as SendPort;
-    final receivePort = ReceivePort();
-
-    sendPort.send([keyStore, psw, receivePort.sendPort]);
-    return (await response.first) as String;
-  } catch (e) {
-    rethrow;
-  }
-}
-
-Future<void> _decodePrivateKey(List<dynamic> args) async {
-  try {
-    SendPort responsePort = args[0];
-    final keyStore = args[1] as Map<String, dynamic>;
-    final psw = args[2] as String;
-    var decrypted = await decrypt(keyStore, psw);
-    Isolate.exit(responsePort, decrypted);
+    return await decrypt(keyStore, psw);
   } catch (e) {
     rethrow;
   }
@@ -284,27 +385,8 @@ Future<String> encodePhrase(
   String psw, [
   Map<String, dynamic>? options,
 ]) async {
-  final response = ReceivePort();
   try {
-    await Isolate.spawn(
-      _encodePhrase,
-      [response.sendPort, prvKey, psw, options],
-    );
-
-    return (await response.first) as String;
-  } catch (e) {
-    rethrow;
-  }
-}
-
-Future<void> _encodePhrase(List<dynamic> args) async {
-  try {
-    SendPort responsePort = args[0];
-    final prvKey = args[1] as String;
-    final psw = args[2] as String;
-    final options = args[3] != null ? args[3] as Map<String, dynamic> : null;
-    final encrypted = await encryptPhrase(prvKey, psw, options);
-    Isolate.exit(responsePort, encrypted);
+    return await encryptPhrase(prvKey, psw, options);
   } catch (e) {
     rethrow;
   }
@@ -314,26 +396,8 @@ Future<String> decodePhrase(
   Map<String, dynamic> keyStore,
   String psw,
 ) async {
-  final response = ReceivePort();
   try {
-    await Isolate.spawn(
-      _decodePhrase,
-      [response.sendPort, keyStore, psw],
-    );
-
-    return (await response.first) as String;
-  } catch (e) {
-    rethrow;
-  }
-}
-
-Future<void> _decodePhrase(List<dynamic> args) async {
-  try {
-    SendPort responsePort = args[0];
-    final keyStore = args[1] as Map<String, dynamic>;
-    final psw = args[2] as String;
-    final decrypted = await decryptPhrase(keyStore, psw);
-    Isolate.exit(responsePort, decrypted);
+    return await decryptPhrase(keyStore, psw);
   } catch (e) {
     rethrow;
   }
@@ -353,14 +417,39 @@ Future<String> decryptCborPhrase(List<int> bytes, String password) async {
   final recover = Map<String, dynamic>.from(cborDecode(bytes));
   final Uint8List ciphertext = Uint8List.fromList(recover['ciphertext']);
   final Uint8List iv = Uint8List.fromList(recover['cipherparams']['iv']);
-  final kdfparams = Map<String, dynamic>.from(cborDecode(recover['kdfparams']));
-
+  final kdfParams = Map<String, dynamic>.from(cborDecode(recover['kdfparams']));
+  final String kdf = Uint8List.fromList(recover["kdf"]).u8aToString();
   final List<int> encodedPassword = utf8.encode(password);
-  final derivator = getDerivedKey(
-      (Uint8List.fromList(recover['kdf'])).u8aToString(), kdfparams);
-  final List<int> derivedKey = derivator.deriveKey(encodedPassword);
+  final Uint8List derivedKey;
+  final Uint8List leftBits;
+  final Uint8List rightBits;
+
+  if (kdf == 'scrypt') {
+    final scryptKey = await dylib.scryptDeriveKey(
+        req: ScriptDeriveReq(
+            n: kdfParams['n'],
+            p: kdfParams['p'],
+            r: kdfParams['r'],
+            password: password.plainToU8a(),
+            salt: (kdfParams["salt"] as String).toU8a()));
+
+    leftBits = scryptKey.leftBits;
+    rightBits = scryptKey.rightBits;
+    derivedKey =
+        Uint8List.fromList([...scryptKey.leftBits, ...scryptKey.rightBits]);
+  } else {
+    final scryptKey = await dylib.pbkdf2DeriveKey(
+        req: PBKDFDeriveReq(
+            c: 262144,
+            password: password.plainToU8a(),
+            salt: (kdfParams["salt"] as String).toU8a()));
+    leftBits = scryptKey.leftBits;
+    rightBits = scryptKey.rightBits;
+    derivedKey =
+        Uint8List.fromList([...scryptKey.leftBits, ...scryptKey.rightBits]);
+  }
   final List<int> macBuffer =
-      derivedKey.sublist(16, 32) + ciphertext + iv + ALGO_IDENTIFIER.codeUnits;
+      rightBits + ciphertext + iv + ALGO_IDENTIFIER.codeUnits;
 
   final Uint8List mac = SHA256()
       .update(Uint8List.fromList(derivedKey))
@@ -376,13 +465,11 @@ Future<String> decryptCborPhrase(List<int> bytes, String password) async {
     throw 'Decryption Failed';
   }
 
-  final List<int> aesKey = derivedKey.sublist(0, 16);
   final Uint8List encryptedPhrase = Uint8List.fromList(recover['ciphertext']);
 
-  final CTRStreamCipher aes = _initCipher(false, aesKey, iv);
-
-  final Uint8List privateKeyByte = aes.process(encryptedPhrase);
-  return privateKeyByte.u8aToString();
+  return (await _dercryptPhraseAsync(
+          cipherText: encryptedPhrase, key: leftBits, iv: iv))
+      .u8aToString();
 }
 
 Future<Uint8List> encryptCborPhrase(
@@ -415,19 +502,42 @@ Future<Uint8List> encryptCborPhrase(
   };
 
   final List<int> encodedPassword = utf8.encode(password);
-  final _KeyDerivator derivator = getDerivedKey(kdf, kdfParams);
-  final List<int> derivedKey = derivator.deriveKey(encodedPassword);
-  final List<int> ciphertextBytes = _encryptPhrase(
-    derivator,
-    Uint8List.fromList(encodedPassword),
-    Uint8List.fromList(iv),
-    phrase,
-  );
+  final Uint8List derivedKey;
+  final Uint8List leftBits;
+  final Uint8List rightBits;
 
-  final List<int> macBuffer = derivedKey.sublist(16, 32) +
-      ciphertextBytes +
-      iv +
-      ALGO_IDENTIFIER.codeUnits;
+  if (kdf == 'scrypt') {
+    final scryptKey = await dylib.scryptDeriveKey(
+        req: ScriptDeriveReq(
+            n: kdfParams['n'],
+            p: kdfParams['p'],
+            r: kdfParams['r'],
+            password: password.plainToU8a(),
+            salt: (kdfParams["salt"] as String).toU8a()));
+
+    leftBits = scryptKey.leftBits;
+    rightBits = scryptKey.rightBits;
+    derivedKey =
+        Uint8List.fromList([...scryptKey.leftBits, ...scryptKey.rightBits]);
+  } else {
+    final scryptKey = await dylib.pbkdf2DeriveKey(
+        req: PBKDFDeriveReq(
+            c: 262144,
+            password: password.plainToU8a(),
+            salt: (kdfParams["salt"] as String).toU8a()));
+    leftBits = scryptKey.leftBits;
+    rightBits = scryptKey.rightBits;
+    derivedKey =
+        Uint8List.fromList([...scryptKey.leftBits, ...scryptKey.rightBits]);
+  }
+
+  List<int> ciphertextBytes = await _encryptPhraseAsync(
+      key: Uint8List.fromList(leftBits),
+      iv: Uint8List.fromList(iv),
+      message: phrase);
+
+  final List<int> macBuffer =
+      rightBits + ciphertextBytes + iv + ALGO_IDENTIFIER.codeUnits;
 
   final Uint8List mac = SHA256()
       .update(Uint8List.fromList(derivedKey))

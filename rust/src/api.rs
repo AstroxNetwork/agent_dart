@@ -1,50 +1,96 @@
-use super::bls::bls12381::bls::{
-    core_verify,
-    init,
-    // BLS_FAIL,
-    BLS_OK,
+use crate::bls_ffi::BlsFFI;
+use crate::ed25519::ED25519FFI;
+use crate::keyring::KeyRingFFI;
+use crate::keystore::KeystoreFFI;
+use crate::secp256k1::{Secp256k1FFI, Secp256k1IdentityExport, SignatureFFI};
+use crate::types::{
+    AesDecryptReq, AesEncryptReq, BLSVerifyReq, CreatePhraseReq, ED25519FromSeedReq, ED25519Res,
+    ED25519SignReq, ED25519VerifyReq, KeyDerivedRes, PBKDFDeriveReq, PhraseToSeedReq,
+    ScriptDeriveReq, Secp256k1FromSeedReq, Secp256k1SignReq, Secp256k1SignWithSeedReq,
+    Secp256k1VerifyReq, SeedToKeyReq, SymmError,
 };
-use crate::bip32::{bip32_get_key, bip32_to_seed};
 
-use crate::ed25519::{id_from_blob, id_sign, id_verify, IDResult};
-use crate::secp256k1::{Secp256k1Identity, Secp256k1IdentityExport, Signature};
+/// --------------------
+/// mnemonic
+/// --------------------
+/// create_phrase
+/// phrase_to_seed
+/// seed_to_key  
+
+pub fn mnemonic_phrase_to_seed(req: PhraseToSeedReq) -> Vec<u8> {
+    KeyRingFFI::phrase_to_seed(req)
+}
+
+pub fn mnemonic_seed_to_key(req: SeedToKeyReq) -> Vec<u8> {
+    KeyRingFFI::seed_to_key(req)
+}
+
+/// --------------------
+/// bls
+/// --------------------
+/// bls_init
+/// bls_verify
 
 pub fn bls_init() -> bool {
-    init() == BLS_OK
+    BlsFFI::bls_init()
 }
 
-pub fn bls_verify(sig: Vec<u8>, m: Vec<u8>, w: Vec<u8>) -> bool {
-    let verify = core_verify(sig.as_slice(), m.as_slice(), w.as_slice());
-    verify == BLS_OK
+pub fn bls_verify(req: BLSVerifyReq) -> bool {
+    BlsFFI::bls_verify(req)
 }
 
-pub fn ed25519_from_seed(seed: Vec<u8>) -> IDResult {
-    id_from_blob(seed)
+/// --------------
+/// ed25519
+/// --------------------
+/// ed25519_from_seed
+/// ed25519_sign
+/// ed25519_verify
+
+pub fn ed25519_from_seed(req: ED25519FromSeedReq) -> ED25519Res {
+    ED25519FFI::ed25519_from_blob(req)
 }
 
-pub fn ed25519_sign(seed: Vec<u8>, message: Vec<u8>) -> Vec<u8> {
-    id_sign(seed, message)
+pub fn ed25519_sign(req: ED25519SignReq) -> Vec<u8> {
+    ED25519FFI::ed25519_sign(req)
 }
 
-pub fn ed25519_verify(message: Vec<u8>, sig: Vec<u8>, pub_key: Vec<u8>) -> bool {
-    id_verify(message, sig, pub_key)
+pub fn ed25519_verify(req: ED25519VerifyReq) -> bool {
+    ED25519FFI::ed25519_verify(req)
 }
 
-pub fn secp256k1_from_seed(seed: Vec<u8>) -> Secp256k1IdentityExport {
-    Secp256k1IdentityExport::from_raw(Secp256k1Identity::from_seed(seed))
+/// ---------------------
+/// secp256k1
+/// ---------------------
+
+pub fn secp256k1_from_seed(req: Secp256k1FromSeedReq) -> Secp256k1IdentityExport {
+    Secp256k1IdentityExport::from_raw(Secp256k1FFI::from_seed(req))
 }
 
-pub fn secp256k1_sign(seed: Vec<u8>, msg: Vec<u8>) -> Signature {
-    Secp256k1Identity::from_seed(seed)
-        .sign(&msg.as_slice())
+pub fn secp256k1_sign(req: Secp256k1SignWithSeedReq) -> SignatureFFI {
+    Secp256k1FFI::from_seed(Secp256k1FromSeedReq { seed: req.seed })
+        .sign(Secp256k1SignReq { msg: req.msg })
         .unwrap()
 }
 
-pub fn bip32_get_private(phrase: String, password: String, path: String) -> Vec<u8> {
-    let seed = bip32_to_seed(phrase, password);
-    bip32_get_key(seed, path)
+pub fn secp256k1_verify(req: Secp256k1VerifyReq) -> bool {
+    Secp256k1FFI::verify_signature(req)
 }
 
-pub fn bip32_to_seed_hash(phrase: String, password: String) -> Vec<u8> {
-    bip32_to_seed(phrase, password).as_ref().to_vec()
+/// ---------------------
+/// aes
+/// ---------------------
+pub fn aes_128_ctr_encrypt(req: AesEncryptReq) -> Vec<u8> {
+    KeystoreFFI::encrypt_128_ctr(req)
+}
+
+pub fn aes_128_ctr_decrypt(req: AesDecryptReq) -> Vec<u8> {
+    KeystoreFFI::decrypt_128_ctr(req)
+}
+
+pub fn pbkdf2_derive_key(req: PBKDFDeriveReq) -> KeyDerivedRes {
+    KeystoreFFI::pbkdf2_derive_key(req)
+}
+
+pub fn scrypt_derive_key(req: ScriptDeriveReq) -> KeyDerivedRes {
+    KeystoreFFI::scrypt_derive_key(req)
 }

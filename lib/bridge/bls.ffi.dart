@@ -24,7 +24,8 @@ class FFIBls implements BaseBLS {
     try {
       // ignore: unnecessary_null_comparison
       if (dylib == null) throw "ERROR: The library is not initialized 🙁";
-      return await dylib.blsVerify(sig: sig, m: msg, w: pk);
+      return await dylib.blsVerify(
+          req: BLSVerifyReq(signature: sig, message: msg, publicKey: pk));
     } catch (e) {
       throw "Cannot verify bls_verify instance :$e";
     }
