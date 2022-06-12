@@ -41,3 +41,20 @@ List<int> _encryptPhrase(_KeyDerivator _derivator, Uint8List _password,
   var aes = _initCipher(true, aesKey, _iv);
   return aes.process(phrase.plainToU8a());
 }
+
+Future<Uint8List> _encryptPhraseAsync(
+    {required Uint8List key,
+    required Uint8List iv,
+    required String message}) async {
+  return await dylib.aes128CtrEncrypt(
+      req: AesEncryptReq(key: key, iv: iv, message: message.plainToU8a()));
+}
+
+Future<Uint8List> _dercryptPhraseAsync({
+  required Uint8List key,
+  required Uint8List iv,
+  required Uint8List cipherText,
+}) async {
+  return await dylib.aes128CtrDecrypt(
+      req: AesDecryptReq(key: key, iv: iv, cipherText: cipherText));
+}

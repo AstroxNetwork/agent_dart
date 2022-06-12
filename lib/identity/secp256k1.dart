@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:agent_dart/agent_dart.dart';
+import 'package:agent_dart/bridge/ffi/ffi.dart';
 import 'package:agent_dart/bridge/ffi/ffi_helper.dart';
 import 'package:pointycastle/api.dart' as p_api;
 import 'package:pointycastle/digests/sha256.dart';
@@ -191,7 +192,9 @@ Future<Uint8List> signAsync(
   Uint8List blob,
   Uint8List seed,
 ) async {
-  return (await dylib.secp256K1Sign(seed: seed, msg: blob)).signature!;
+  return (await dylib.secp256K1Sign(
+          req: Secp256k1SignWithSeedReq(seed: seed, msg: blob)))
+      .signature!;
 }
 
 bool verify(String message, Uint8List signature, Secp256k1PublicKey publicKey) {

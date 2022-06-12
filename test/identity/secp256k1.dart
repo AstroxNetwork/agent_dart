@@ -41,7 +41,7 @@ void secp256k1Test() {
   });
 
   test('random sign', () async {
-    for (var i = 0; i < 10; i += 1) {
+    for (var i = 0; i < 1; i += 1) {
       var mne = generateMnemonic();
       var prvR = getECKeys(mne).ecPrivateKey!;
       var wordR = msg;

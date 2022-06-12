@@ -547,6 +547,7 @@ enum ImportExportKind {
   /// [Table]
   table
 }
+
 const _importExportKindMap = {
   'function': ImportExportKind.function,
   'global': ImportExportKind.global,
