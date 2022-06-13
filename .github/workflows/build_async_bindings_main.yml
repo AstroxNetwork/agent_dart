@@ -67,12 +67,13 @@ jobs:
         continue-on-error: true
         with:
           command: install
-          args: cargo-lipo
+          args: cargo-lipo --force
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          flutter-version: '3.0.1'
+          architecture: x64
 
       - name: Run Flutter pub get
         run: flutter pub get
