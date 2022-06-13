@@ -43,7 +43,6 @@ impl KeystoreFFI {
         let cipher = Aes128::new(&key);
         let mut cipher_ctr = Aes128Ctr::from_block_cipher(cipher, &nonce);
         cipher_ctr.apply_keystream(ciphertext.as_mut_slice());
-
         ciphertext.to_vec()
     }
 
@@ -71,8 +70,8 @@ impl KeystoreFFI {
             &mut derived_key,
         )
         .expect("derived_key is long enough; qed");
-        let derived_right_bits = &derived_key[0..KEY_LENGTH_AES];
-        let derived_left_bits = &derived_key[KEY_LENGTH_AES..KEY_LENGTH];
+        let derived_left_bits = &derived_key[0..KEY_LENGTH_AES];
+        let derived_right_bits = &derived_key[KEY_LENGTH_AES..KEY_LENGTH];
         KeyDerivedRes {
             left_bits: derived_left_bits.to_vec(),
             right_bits: derived_right_bits.to_vec(),

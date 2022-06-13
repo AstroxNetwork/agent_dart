@@ -65,6 +65,7 @@ void main() {
     );
     expect(decryptedPhrase, mne2);
     var encryptedCborPhrase = await encryptCborPhrase(mne2, '123');
+
     var decryptedCborPhrase = await decryptCborPhrase(
       encryptedCborPhrase,
       '123',
