@@ -94,9 +94,10 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     Uint8List secretKey; // seed itself
 
     var kp = seed == null
-        ? await dylib.ed25519FromSeed(
-            req: ED25519FromSeedReq(seed: getRandomValues(32)))
-        : await dylib.ed25519FromSeed(req: ED25519FromSeedReq(seed: seed));
+        ? await AgentDartFFI.instance
+            .ed25519FromSeed(req: ED25519FromSeedReq(seed: getRandomValues(32)))
+        : await AgentDartFFI.instance
+            .ed25519FromSeed(req: ED25519FromSeedReq(seed: seed));
 
     publicKey = kp.publicKey;
     secretKey = kp.seed;
@@ -201,12 +202,12 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     final blob = challenge is BinaryBlob
         ? challenge
         : blobFromBuffer(challenge as ByteBuffer);
-    return await dylib.ed25519Sign(
-        req: ED25519SignReq(seed: _seed, message: blob));
+    return await AgentDartFFI.instance
+        .ed25519Sign(req: ED25519SignReq(seed: _seed, message: blob));
   }
 
   Future<bool> verify(Uint8List signature, Uint8List message) async {
-    return await dylib.ed25519Verify(
+    return await AgentDartFFI.instance.ed25519Verify(
         req: ED25519VerifyReq(
             message: message, sig: signature, pubKey: _publicKey.toRaw()));
   }
@@ -270,7 +271,7 @@ Future<Ed25519KeyIdentity> fromMnemonicWithoutValidation(
     String mnemonic, List<int>? derivationPath,
     {int offset = HARDENED}) async {
   derivationPath ??= [];
-  final seed = await dylib.mnemonicPhraseToSeed(
+  final seed = await AgentDartFFI.instance.mnemonicPhraseToSeed(
       req: PhraseToSeedReq(phrase: mnemonic, password: ''));
   return fromSeedWithSlip0010(seed, derivationPath, offset: offset);
 }

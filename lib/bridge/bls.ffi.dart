@@ -1,17 +1,13 @@
-import 'dart:ffi';
-import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:agent_dart/bridge/bls.base.dart';
-import 'package:agent_dart/utils/extension.dart';
-import 'package:ffi/ffi.dart';
 import 'ffi/ffi.dart';
 
 class FFIBls implements BaseBLS {
   late bool _isInit = false;
   @override
   Future<bool> blsInit() async {
-    _isInit = await dylib.blsInit();
+    _isInit = await AgentDartFFI.instance.blsInit();
     return _isInit;
   }
 
@@ -23,8 +19,9 @@ class FFIBls implements BaseBLS {
   ) async {
     try {
       // ignore: unnecessary_null_comparison
-      if (dylib == null) throw "ERROR: The library is not initialized 🙁";
-      return await dylib.blsVerify(
+      if (AgentDartFFI.instance == null)
+        throw "ERROR: The library is not initialized 🙁";
+      return await AgentDartFFI.instance.blsVerify(
           req: BLSVerifyReq(signature: sig, message: msg, publicKey: pk));
     } catch (e) {
       throw "Cannot verify bls_verify instance :$e";

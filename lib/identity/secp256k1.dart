@@ -3,12 +3,9 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/bridge/ffi/ffi.dart';
-import 'package:agent_dart/bridge/ffi/ffi_helper.dart';
 import 'package:pointycastle/api.dart' as p_api;
 import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/ecc/api.dart';
-import 'package:pointycastle/ecc/curves/secp256k1.dart';
-import 'package:pointycastle/ecc/ecc_fp.dart';
 import 'package:pointycastle/macs/hmac.dart';
 import 'package:pointycastle/signers/ecdsa_signer.dart';
 // ignore: implementation_imports
@@ -192,8 +189,8 @@ Future<Uint8List> signAsync(
   Uint8List blob,
   Uint8List seed,
 ) async {
-  return (await dylib.secp256K1Sign(
-          req: Secp256k1SignWithSeedReq(seed: seed, msg: blob)))
+  return (await AgentDartFFI.instance
+          .secp256K1Sign(req: Secp256k1SignWithSeedReq(seed: seed, msg: blob)))
       .signature!;
 }
 

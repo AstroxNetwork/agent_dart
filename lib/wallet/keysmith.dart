@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/bridge/ffi/ffi.dart';
-import 'package:agent_dart/bridge/ffi/ffi_helper.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:bip32/bip32.dart' as bip32;
 import "package:pointycastle/ecc/api.dart";
@@ -71,13 +70,13 @@ ECKeys getECKeys(String mnemonic, {String passphase = "", int index = 0}) {
 
 Future<ECKeys> getECKeysAsync(String phrase,
     {String passphase = "", int index = 0}) async {
-  final seed = await dylib.mnemonicPhraseToSeed(
+  final seed = await AgentDartFFI.instance.mnemonicPhraseToSeed(
       req: PhraseToSeedReq(phrase: phrase, password: passphase));
 
-  final prv = await dylib.mnemonicSeedToKey(
+  final prv = await AgentDartFFI.instance.mnemonicSeedToKey(
       req: SeedToKeyReq(seed: seed, path: "$ICP_PATH/0/$index"));
-  final kp =
-      await dylib.secp256K1FromSeed(req: Secp256k1FromSeedReq(seed: prv));
+  final kp = await AgentDartFFI.instance
+      .secp256K1FromSeed(req: Secp256k1FromSeedReq(seed: prv));
 
   return ECKeys(
       ecPrivateKey: prv,
@@ -85,8 +84,8 @@ Future<ECKeys> getECKeysAsync(String phrase,
 }
 
 Future<ECKeys> getECkeyFromPrivateKey(Uint8List prv) async {
-  final kp =
-      await dylib.secp256K1FromSeed(req: Secp256k1FromSeedReq(seed: prv));
+  final kp = await AgentDartFFI.instance
+      .secp256K1FromSeed(req: Secp256k1FromSeedReq(seed: prv));
   return ECKeys(
       ecPrivateKey: prv,
       ecPublicKey: Secp256k1PublicKey.fromDer(kp.derEncodedPublicKey).toRaw());
@@ -130,8 +129,8 @@ Uint8List? getPublicFromPrivateKeyBigInt(BigInt bigint,
 }
 
 Future<Uint8List> getDerFromFFI(Uint8List seed) async {
-  final ffiIdentity =
-      await dylib.secp256K1FromSeed(req: Secp256k1FromSeedReq(seed: seed));
+  final ffiIdentity = await AgentDartFFI.instance
+      .secp256K1FromSeed(req: Secp256k1FromSeedReq(seed: seed));
   return ffiIdentity.derEncodedPublicKey;
 }
 

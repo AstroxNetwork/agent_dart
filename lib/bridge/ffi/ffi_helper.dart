@@ -32,4 +32,20 @@ DynamicLibrary getDyLib() {
   return DynamicLibrary.open("rust/dylib/debug/lib$libName.dylib");
 }
 
-final dylib = AgentDartImpl(getDyLib());
+class AgentDartFFI {
+  static AgentDartImpl get instance => AgentDartFFI()._impl!;
+  AgentDartImpl? _impl;
+  AgentDartFFI._from(this._impl);
+
+  factory AgentDartFFI.run() {
+    return AgentDartFFI._from(AgentDartImpl(getDyLib()));
+  }
+
+  factory AgentDartFFI() => _instance;
+
+  AgentDartFFI._() {
+    _impl ??= AgentDartImpl(getDyLib());
+  }
+
+  static late final AgentDartFFI _instance = AgentDartFFI._();
+}
