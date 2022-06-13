@@ -38,10 +38,10 @@ jobs:
       - name: Install WASM Target
         run: |
           brew install filosottile/musl-cross/musl-cross
+          export CC_x86_64_unknown_linux_musl=x86_64-linux-musl-gcc
           ln -s /usr/local/opt/musl-cross/bin/x86_64-linux-musl-gcc /usr/local/bin/musl-gcc
           rustup target add wasm32-unknown-unknown
           rustup target add x86_64-unknown-linux-musl
-          alias rust-musl-builder='docker run --rm -it -v "$(pwd)":/home/rust/src ekidd/rust-musl-builder'
 
       - name: Cache Cargo
         uses: actions/cache@v2
