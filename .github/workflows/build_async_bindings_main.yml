@@ -36,7 +36,12 @@ jobs:
           components: rustfmt
 
       - name: Install WASM Target
-        run: rustup target add wasm32-unknown-unknown
+        run: |
+          brew install filosottile/musl-cross/musl-cross
+          ln -s /usr/local/opt/musl-cross/bin/x86_64-linux-musl-gcc /usr/local/bin/musl-gcc
+          rustup target add wasm32-unknown-unknown
+          rustup target add x86_64-unknown-linux-musl
+          alias rust-musl-builder='docker run --rm -it -v "$(pwd)":/home/rust/src ekidd/rust-musl-builder'
 
       - name: Cache Cargo
         uses: actions/cache@v2
@@ -117,7 +122,7 @@ jobs:
 
       - name: Execute build scripts
         run: |
-          ./scripts/bootstrap.sh
+          ./scripts/bootstrap_ci.sh
 
       - name: Run binding/crypto tests
         run: flutter test
