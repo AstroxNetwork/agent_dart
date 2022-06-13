@@ -8,7 +8,7 @@ export CC_aarch64_linux_android="${ANDROID_PREBUILD_BIN}/aarch64-linux-android${
 export AR_aarch64_linux_android="${ANDROID_PREBUILD_BIN}/aarch64-linux-android-ar" \
 export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="${ANDROID_PREBUILD_BIN}/aarch64-linux-android${API_LEVEL}-clang" \
 export TARGET_CC="${ANDROID_PREBUILD_BIN}/aarch64-linux-android${API_LEVEL}-clang" \
-export TARGET_AR"${ANDROID_PREBUILD_BIN}/aarch64-linux-android-ar" \
+export TARGET_AR="${ANDROID_PREBUILD_BIN}/aarch64-linux-android-ar" \
 cargo build --target aarch64-linux-android --release
 
 export CC_armv7_linux_androideabi="${ANDROID_PREBUILD_BIN}/armv7a-linux-androideabi${API_LEVEL}-clang" \
