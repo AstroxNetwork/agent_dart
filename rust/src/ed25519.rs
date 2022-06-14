@@ -1,5 +1,4 @@
 use crate::types::{ED25519FromSeedReq, ED25519Res, ED25519SignReq, ED25519VerifyReq};
-use ed25519_dalek::Keypair;
 use ring::{
     signature,
     signature::{Ed25519KeyPair, KeyPair},
