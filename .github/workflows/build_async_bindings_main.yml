@@ -120,7 +120,7 @@ jobs:
 
       - name: Execute build scripts
         run: |
-          ./scripts/bootstrap_ci.sh
+          ./scripts/bootstrap.sh
 
       - name: Run binding/crypto tests
         run: flutter test
