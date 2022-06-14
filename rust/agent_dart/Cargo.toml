@@ -1,0 +1,33 @@
+[package]
+name = "agent_dart"
+version = "0.0.1"
+authors = ["neeboo <ghostcorn@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "agent_dart"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+anyhow = "1.0.57"
+bip32 = "0.4.0"
+bip39 = "1.0.1"
+ed25519-compact = { path = "../rust-ed25519-compact" }
+pbkdf2 = "0.11.0"
+scrypt = "0.10.0"
+sha2 = "0.10.2"
+hmac = "0.12.1"
+aes = { version = "0.7.5", features = [ "ctr" ], default-features = false }
+k256 = { version = "0.11.2", default-features = false, features = [ "ecdsa", "sha256", "pem" ] }
+rand = "0.8.5"
+serde = { version = "1.0.137", features = ["derive"] }
+serde_json = "1.0.79"
+serde_bytes = "0.11.5"
+serde_cbor = "0.11.2"
+serde_with = "1.12.0"
+flutter_rust_bridge = "1"
+
+[profile.release]
+debug = false
+opt-level = "z"
+lto = true
