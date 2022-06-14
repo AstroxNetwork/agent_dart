@@ -12,7 +12,7 @@ crate-type = ["staticlib", "cdylib"]
 anyhow = "1.0.57"
 bip32 = "0.4.0"
 bip39 = "1.0.1"
-ed25519-compact = { path = "../rust-ed25519-compact" }
+ed_compact = { path = "../ed_compact" }
 pbkdf2 = "0.11.0"
 scrypt = "0.10.0"
 sha2 = "0.10.2"

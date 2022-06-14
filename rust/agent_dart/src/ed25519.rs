@@ -1,5 +1,5 @@
 use crate::types::{ED25519FromSeedReq, ED25519Res, ED25519SignReq, ED25519VerifyReq};
-use ed25519_compact::{KeyPair, PublicKey, Seed, Signature};
+use ed_compact::{KeyPair, PublicKey, Seed, Signature};
 
 pub struct ED25519FFI {}
 
