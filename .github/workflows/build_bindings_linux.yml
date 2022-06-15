@@ -71,7 +71,7 @@ jobs:
           bash ./scripts/build_linux.sh
 
       - name: Run binding/crypto tests
-        run: flutter test test/agent/utils/bls.dart
+        run: flutter test
 
       - name: Run git pull
         run: |
