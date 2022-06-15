@@ -1,3 +1,7 @@
+## Backlog
+We use NDK21e to build on android since latest CI build failed. 
+Might change to latest NDK once we have solution.
+
 ## 0.1.24+1
 
 - Add the `cbor` argument for `defaultFetch` to allow non-cbor requests.
