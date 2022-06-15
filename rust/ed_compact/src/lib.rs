@@ -12,7 +12,7 @@
 //! Example usage:
 //!
 //! ```rust
-//! use ed25519_compact::*;
+//! use ed_compact::*;
 //!
 //! // A message to sign and verify.
 //! let message = b"test";
