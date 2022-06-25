@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
@@ -80,7 +80,7 @@ Future<Map<String, dynamic>> defaultFetch({
 
     var response = await fr.timeout(
       timeout ?? defaultTimeout,
-      onTimeout: () => throw SocketException(
+      onTimeout: () => throw TimeoutException(
         '${host ?? '$defaultHost$endpoint'} timeout',
       ),
     );
