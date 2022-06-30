@@ -21,7 +21,7 @@ void rosettaTest() {
         'steel obey anxiety vast clever relax million girl cost pond elbow bridge hill health toilet desk sleep grid boost flavor shy cry armed mass';
 
     final signer =
-        await ICPSigner.importPhrase(phrase, curveType: CurveType.secp256k1);
+        await ICPSigner.importPhrase(phrase, curveType: CurveType.all);
 
     var receiver = await ICPSigner.fromSeed(
       Uint8List.fromList(List.filled(32, 0)),
@@ -31,19 +31,19 @@ void rosettaTest() {
     /// setup RosettaApi and init
     RosettaApi rose = RosettaApi(host: "http://127.0.0.1:8080");
     await rose.init();
-
-    /// create payload
-    final amount = BigInt.from(100000000);
-    var unsignedTransaction = await rose.transferPreCombine(
-        signer.idPublicKey!.toU8a(),
-        receiver.idAddress!.toU8a(),
-        amount,
-        null,
-        null);
+    print((await rose.blockByIndex(0)).toJson());
+    // /// create payload
+    // final amount = BigInt.from(100000000);
+    // var unsignedTransaction = await rose.transferPreCombine(
+    //     signer.idPublicKey!.toU8a(),
+    //     receiver.idAddress!.toU8a(),
+    //     amount,
+    //     null,
+    //     null);
 
     var accountBalance = await rose.accountBalanceByAddress(signer.idAddress!);
 
-    // ignore: avoid_print
+    // // ignore: avoid_print
     print("\n ------ payload ------");
     // ignore: avoid_print
     print(
@@ -53,48 +53,48 @@ void rosettaTest() {
     // ignore: avoid_print
     print("\n to :${receiver.idAddress}");
 
-    // ignore: avoid_print
-    print(
-        "\n unsignedTransaction :${jsonEncode(unsignedTransaction.toJson())}");
-    // ignore: avoid_print
-    print("\n sender_pubkey :${signer.idPublicKey}");
+    // // ignore: avoid_print
+    // print(
+    //     "\n unsignedTransaction :${jsonEncode(unsignedTransaction.toJson())}");
+    // // ignore: avoid_print
+    // print("\n sender_pubkey :${signer.idPublicKey}");
 
-    // ignore: avoid_print
-    print(" ------ payload ------ \n");
+    // // ignore: avoid_print
+    // print(" ------ payload ------ \n");
 
-    /// sign transaction, offline signer we assume
-    var signedTransaction =
-        await transferCombine(signer.account.identity!, unsignedTransaction);
+    // /// sign transaction, offline signer we assume
+    // var signedTransaction =
+    //     await transferCombine(signer.account.identity!, unsignedTransaction);
 
-    /// send transaction after
-    var txn = await rose.transfer_post_combine(signedTransaction);
+    // /// send transaction after
+    // var txn = await rose.transfer_post_combine(signedTransaction);
 
-    /// get transaction confirmed
-    var txRes = await Future.delayed(const Duration(seconds: 3), () {
-      return rose.transactions(SearchTransactionsRequest.fromMap({
-        "network_identifier": rose.networkIdentifier?.toJson(),
-        "transaction_identifier": txn.transaction_identifier.toJson() // ,
-      }));
-    });
+    // /// get transaction confirmed
+    // var txRes = await Future.delayed(const Duration(seconds: 3), () {
+    //   return rose.transactions(SearchTransactionsRequest.fromMap({
+    //     "network_identifier": rose.networkIdentifier?.toJson(),
+    //     "transaction_identifier": txn.transaction_identifier.toJson() // ,
+    //   }));
+    // });
 
-    var accountBalanceAfter =
-        await rose.accountBalanceByAddress(signer.idAddress!);
-    // ignore: avoid_print
-    print("\n ------ transaction confirm ------");
-    // ignore: avoid_print
-    print(txRes.toJson());
-    // ignore: avoid_print
-    print(" ------ transaction confirm ------ \n");
+    // var accountBalanceAfter =
+    //     await rose.accountBalanceByAddress(signer.idAddress!);
+    // // ignore: avoid_print
+    // print("\n ------ transaction confirm ------");
+    // // ignore: avoid_print
+    // print(txRes.toJson());
+    // // ignore: avoid_print
+    // print(" ------ transaction confirm ------ \n");
 
-    // ignore: avoid_print
-    print(" ------ Balance change ------ \n");
-    // ignore: avoid_print
-    print("\n sender balance BEFORE: ${accountBalance.toJson()}");
-    // ignore: avoid_print
-    print("\n sender balance AFTER: ${accountBalanceAfter.toJson()}");
-    // ignore: avoid_print
-    print(" ------ Balance change ------ \n");
-  }, skip: true);
+    // // ignore: avoid_print
+    // print(" ------ Balance change ------ \n");
+    // // ignore: avoid_print
+    // print("\n sender balance BEFORE: ${accountBalance.toJson()}");
+    // // ignore: avoid_print
+    // print("\n sender balance AFTER: ${accountBalanceAfter.toJson()}");
+    // // ignore: avoid_print
+    // print(" ------ Balance change ------ \n");
+  });
   test('getTransactionByBlock', () async {
     RosettaApi rose = RosettaApi();
     await rose.init();
