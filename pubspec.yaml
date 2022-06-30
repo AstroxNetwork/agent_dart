@@ -24,7 +24,7 @@ dependencies:
   fixnum: ^1.0.1
   flutter:
     sdk: flutter
-  flutter_rust_bridge: ^1.34.0
+  flutter_rust_bridge: 1.34.0
   flutter_web_plugins:
     sdk: flutter
   freezed_annotation: ^2.0.3
