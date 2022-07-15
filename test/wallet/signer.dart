@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:agent_dart/agent/crypto/keystore/api.dart';
 import 'package:agent_dart/agent_dart.dart';
+import 'package:agent_dart/wallet/phrase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -71,5 +72,21 @@ void main() {
       '123',
     );
     expect(decryptedCborPhrase, mne2);
+
+    final p = Phrase.fromString(mne2);
+    expect(p.mnemonic, mne2);
+    expect(p.list, stringToArr(mne2));
+
+    try {
+      Phrase.fromString(mne2.substring(0, mne2.length - 10));
+    } catch (e) {
+      expect((e as PhaseException).toString().contains("pers"), true);
+    }
+
+    try {
+      Phrase.fromString(mne2.substring(0, mne2.length - 7));
+    } catch (e) {
+      expect((e as PhaseException).toString().contains("length of 23"), true);
+    }
   });
 }
