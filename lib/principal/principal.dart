@@ -93,6 +93,7 @@ class Principal {
   final bool _isPrincipal = true;
 
   final Uint8List _arr;
+
   Principal(this._arr);
 
   bool isAnonymous() {
@@ -131,11 +132,21 @@ class Principal {
     return matches.map((e) => e.group(0)).join('-');
   }
 
-  Uint8List toAccountID() {
+  @Deprecated('Use toAccountId instead')
+  Uint8List toAccountID() => toAccountId();
+
+  Uint8List toAccountId({Uint8List? subAccount}) {
+    if (subAccount != null && subAccount.length != 32) {
+      throw ArgumentError.value(
+        subAccount,
+        'subAccount',
+        'Length is invalid, must be 32.',
+      );
+    }
     final hash = SHA224();
     hash.update(('\x0Aaccount-id').plainToU8a());
     hash.update(toBlob());
-    hash.update(Uint8List(32));
+    hash.update(subAccount ?? Uint8List(32));
     final data = hash.digest();
     final view = ByteData(4);
     view.setUint32(0, getCrc32(data.buffer));
