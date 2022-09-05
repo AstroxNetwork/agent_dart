@@ -134,7 +134,7 @@ IdentityDescriptor createIdentityDescriptor(Identity identity) {
   final identityIndicator = identity is SignIdentity
       ? {
           'type': 'PublicKeyIdentity',
-          'publicKey': identity.getPublicKey().toDer().toHex(include0x: false)
+          'publicKey': identity.getPublicKey().toDer().toHex()
         }
       : {'type': 'AnonymousIdentity'};
   return IdentityDescriptor.fromJson(identityIndicator);

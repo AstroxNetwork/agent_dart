@@ -51,7 +51,7 @@ BinaryBlob blobFromHex(String hex) {
 }
 
 String blobToHex(BinaryBlob blob) {
-  return blob.toHex(include0x: false);
+  return blob.toHex();
 }
 
 Uint8List blobToUint8Array(BinaryBlob blob) {

@@ -32,7 +32,6 @@ void ledgerTest() {
         // For Android emulator, please use 10.0.2.2 as endpoint
         idl: ledgerIdl,
         identity: (await getSigner()).account.ecIdentity,
-        debug: true,
       );
     }
 

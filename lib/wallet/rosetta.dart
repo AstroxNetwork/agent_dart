@@ -269,7 +269,6 @@ class RosettaApi {
   Future<Map<String, dynamic>> request(String url, dynamic data) async {
     var res = await defaultFetch(
       endpoint: url,
-      method: FetchMethod.post,
       defaultHost: host,
       baseHeaders: {'Content-Type': 'application/json;charset=utf-8'},
       cbor: false,

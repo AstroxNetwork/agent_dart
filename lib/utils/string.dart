@@ -6,7 +6,7 @@ import 'package:recase/recase.dart';
 import 'number.dart';
 
 String strip0xHex(String hex) {
-  if (hex.startsWith('0x', 0)) return hex.substring(2);
+  if (hex.startsWith('0x')) return hex.substring(2);
   return hex;
 }
 

@@ -98,7 +98,7 @@ ECKeys ecKeysfromSeed(Uint8List seed, {int index = 0}) {
   final xpub = masterPrvRaw.toBase58();
 
   final prv = masterPrv.privateKey;
-  final pub = prv != null ? getPublicFromPrivateKey(prv, false) : null;
+  final pub = prv != null ? getPublicFromPrivateKey(prv) : null;
   final pubCompressed = prv != null ? getPublicFromPrivateKey(prv, true) : null;
 
   return ECKeys(

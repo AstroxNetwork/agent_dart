@@ -106,7 +106,7 @@ DelegationChain createDelegationChainFromAccessToken(String accessToken) {
     throw 'Invalid hexadecimal string for accessToken.';
   }
   var strList = accessToken.split('');
-  var value = List<String>.from([], growable: true);
+  var value = List<String>.from([]);
 
   List<String> combineFunc(List<String> acc, String curr, int i) {
     var index = (i ~/ 2) | 0;
@@ -128,7 +128,7 @@ DelegationChain createDelegationChainFromAccessToken(String accessToken) {
       .map((e) => int.parse(e, radix: 16))
       .toList()
       .map((e) => String.fromCharCode(e))
-      .join('');
+      .join();
 
   return DelegationChain.fromJSON(chainJson);
 }

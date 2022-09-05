@@ -110,7 +110,7 @@ class TypeTable {
   Uint8List encode() {
     final len = lebEncode(_typs.length);
     final buf = u8aConcat(_typs);
-    final result = List<int>.from(len, growable: true)..addAll(buf);
+    final result = List<int>.from(len)..addAll(buf);
     return Uint8List.fromList(result);
   }
 
@@ -464,7 +464,7 @@ class ReservedClass extends PrimitiveType<dynamic> {
 
 bool isValidUTF8(Uint8List buf) {
   return u8aEq(
-    buf.u8aToString(useDartEncode: true).plainToU8a(useDartEncode: true),
+    buf.u8aToString().plainToU8a(useDartEncode: true),
     buf,
   );
 }
@@ -500,7 +500,7 @@ class TextClass extends PrimitiveType<String> {
     if (!isValidUTF8(Uint8List.fromList(buf))) {
       throw 'Not valid UTF8 text';
     }
-    return Uint8List.fromList(buf).u8aToString(useDartEncode: true);
+    return Uint8List.fromList(buf).u8aToString();
   }
 
   @override

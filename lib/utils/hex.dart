@@ -84,7 +84,7 @@ BigInt hexToBn(
       BigInt some = BigInt.parse(
         bn.toRadixString(2).split('').map((i) {
           return '0' == i ? 1 : 0;
-        }).join(''),
+        }).join(),
         radix: 2,
       );
       some += BigInt.one;

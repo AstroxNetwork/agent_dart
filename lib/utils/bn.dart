@@ -62,7 +62,7 @@ BigInt bitnot(BigInt bn, {int? bitLength}) {
 
   bin = bin.split('').map((i) {
     return '0' == i ? '1' : '0';
-  }).join('');
+  }).join();
 
   return BigInt.parse(prefix + bin, radix: 2) + BigInt.one;
 }
@@ -79,7 +79,7 @@ String bnToHex(
     endian: endian,
     isNegative: isNegative,
   );
-  return u8aToHex(u8a, include0x: true);
+  return u8aToHex(u8a);
 }
 
 class Options {

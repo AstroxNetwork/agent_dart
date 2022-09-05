@@ -25,10 +25,7 @@ class Secp256k1KeyPair extends KeyPair {
   const Secp256k1KeyPair({required super.publicKey, required super.secretKey});
 
   List<String> toJson() {
-    return [
-      publicKey.toDer().toHex(include0x: false),
-      secretKey.toHex(include0x: false)
-    ];
+    return [publicKey.toDer().toHex(), secretKey.toHex()];
   }
 }
 

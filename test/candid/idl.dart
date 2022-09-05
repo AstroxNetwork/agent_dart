@@ -9,7 +9,7 @@ void main() {
 }
 
 testEncode(CType type, dynamic val, String hex, String str) {
-  expect(IDL.encode([type], [val]).toHex(include0x: false), hex);
+  expect(IDL.encode([type], [val]).toHex(), hex);
 }
 
 testDecode(CType type, dynamic val, String hex, String str) {
