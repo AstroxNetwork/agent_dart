@@ -1,10 +1,7 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:agent_dart/wallet/signer.dart';
-import 'package:agent_dart/wallet/types.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/wallet/rosetta.dart';
 
 void main() {
@@ -29,7 +26,7 @@ void rosettaTest() {
     );
 
     /// setup RosettaApi and init
-    RosettaApi rose = RosettaApi(host: "http://127.0.0.1:8080");
+    RosettaApi rose = RosettaApi(host: 'http://127.0.0.1:8080');
     await rose.init();
     print((await rose.blockByIndex(0)).toJson());
     // /// create payload
@@ -42,16 +39,17 @@ void rosettaTest() {
     //     null);
 
     var accountBalance = await rose.accountBalanceByAddress(signer.idAddress!);
+    print('\n Account balance: $accountBalance');
 
     // // ignore: avoid_print
-    print("\n ------ payload ------");
+    print('\n ------ payload ------');
     // ignore: avoid_print
     print(
-        "\n from Identity: ${signer.account.getIdentity()?.getPrincipal().toText()}");
+        '\n from Identity: ${signer.account.getIdentity()?.getPrincipal().toText()}');
     // ignore: avoid_print
-    print("\n from :${signer.idAddress}");
+    print('\n from :${signer.idAddress}');
     // ignore: avoid_print
-    print("\n to :${receiver.idAddress}");
+    print('\n to :${receiver.idAddress}');
 
     // // ignore: avoid_print
     // print(

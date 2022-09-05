@@ -4,13 +4,11 @@ import 'dart:typed_data';
 
 import 'u8a.dart';
 
-// ignore: constant_identifier_names
-const FORMAT = [9, 10, 13];
-
 bool isAscii(dynamic value) {
   return value != null
-      ? !u8aToU8a(value)
-          .any((byte) => (byte >= 127) || (byte < 32 && !FORMAT.contains(byte)))
+      ? !u8aToU8a(value).any(
+          (byte) => (byte >= 127) || (byte < 32 && ![9, 10, 13].contains(byte)),
+        )
       : isString(value);
 }
 
@@ -43,7 +41,7 @@ bool isFunction(dynamic value) {
 }
 
 bool isHex(dynamic value, [int bitLength = -1, bool ignoreLength = false]) {
-  final reg = RegExp(r"^0x[a-fA-F0-9]+$");
+  final reg = RegExp(r'^0x[a-fA-F\d]+$');
   final isValidHex = value == '0x' ||
       (isString(value) && reg.allMatches(value.toString()).isNotEmpty);
   if (isValidHex && bitLength != -1) {
@@ -99,8 +97,7 @@ bool isObservable(dynamic value) {
 }
 
 bool isTestChain(String value) {
-  return value is String &&
-      value.allMatches(r"/(Development|Local Testnet)$/").isNotEmpty;
+  return RegExp(r'/(Development|Local Testnet)\$/').hasMatch(value);
 }
 
 bool isU8a(dynamic value) {

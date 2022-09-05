@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/bridge/bls.base.dart';
 import 'package:agent_dart/bridge/wasm_interop.dart';
-import 'package:agent_dart/utils/base64.dart';
 
 final wasmBytesBase64 = '''
     AGFzbQEAAAABXg9gAn9/AGABfwBgA39/fwBgAn9/AX9gAX8Bf2ADf39/AX9gBH9/f38AYAV/f39/fwBgBn9/f39/fwF/
@@ -803,8 +802,8 @@ final wasmBytesBase64 = '''
     kLWJ5AwVydXN0Yx0xLjQ5LjAgKGUxODg0YThlMyAyMDIwLTEyLTI5KQZ3YWxydXMGMC4xOC4wDHdhc20tYmluZGdlbhIw
     LjIuNzAgKGI2MzU1YzI3MCk=
 '''
-    .replaceAll(RegExp(r"\n+"), "")
-    .replaceAll(RegExp(r"\s+"), "")
+    .replaceAll(RegExp(r'\n+'), '')
+    .replaceAll(RegExp(r'\s+'), '')
     .trim()
     .replaceAll('r[^0-9a-zA-Z/+]', '');
 
@@ -813,10 +812,11 @@ final moduleBytes = base64Decode(wasmBytesBase64);
 typedef BLSVerifyFunc = int Function(int, int, int, int, int, int);
 
 class WebBls implements BaseBLS {
-  Instance? instance;
-  Uint8List? cachegetUint8Memory0;
-  late bool _isInit;
   WebBls();
+
+  Instance? instance;
+  Uint8List? cacheGetUint8Memory0;
+  late bool _isInit;
 
   Future<void> initInstance() async {
     instance = await Instance.fromBytesAsync(moduleBytes);
@@ -837,7 +837,13 @@ class WebBls implements BaseBLS {
         throw 'Cannot initialize BLS';
       }
       blsVerifyFunc = instance!.functions['bls_verify']! as int Function(
-          int, int, int, int, int, int);
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      );
     }
 
     var set0 = passArray8ToWasm0(sig, _malloc);
@@ -845,10 +851,8 @@ class WebBls implements BaseBLS {
     var set2 = passArray8ToWasm0(pk, _malloc);
 
     return blsVerifyFunc(set0.first, set0.last, set1.first, set1.last,
-                set2.first, set2.last) ==
-            0
-        ? true
-        : false;
+            set2.first, set2.last) ==
+        0;
   }
 
   Uint8List get memory =>
@@ -860,15 +864,14 @@ class WebBls implements BaseBLS {
   }
 
   Uint8List getUint8Memory0() {
-    if (cachegetUint8Memory0 == null || !u8aEq(cachegetUint8Memory0!, memory)) {
-      cachegetUint8Memory0 = memory;
+    if (cacheGetUint8Memory0 == null || !u8aEq(cacheGetUint8Memory0!, memory)) {
+      cacheGetUint8Memory0 = memory;
     }
-    return cachegetUint8Memory0!;
+    return cacheGetUint8Memory0!;
   }
 
   List<int> passArray8ToWasm0(Uint8List arg, int Function(int) malloc) {
     final ptr = malloc(arg.length * 1);
-
     getUint8Memory0().setAll((ptr ~/ 1), arg);
     return [ptr, arg.length];
   }

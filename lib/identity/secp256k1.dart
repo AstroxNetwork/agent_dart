@@ -8,6 +8,7 @@ import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/ecc/api.dart';
 import 'package:pointycastle/macs/hmac.dart';
 import 'package:pointycastle/signers/ecdsa_signer.dart';
+
 // ignore: implementation_imports
 import 'package:pointycastle/src/utils.dart' as p_utils;
 
@@ -20,14 +21,10 @@ BigInt bytesToUnsignedInt(Uint8List bytes) {
 // final ECDomainParameters params = ECCurve_secp256k1();
 final BigInt _halfCurveOrder = params.n >> 1;
 
-class Secp256k1KeyPair implements KeyPair {
-  @override
-  BinaryBlob secretKey;
-  @override
-  PublicKey publicKey;
-  Secp256k1KeyPair(this.publicKey, this.secretKey);
+class Secp256k1KeyPair extends KeyPair {
+  const Secp256k1KeyPair({required super.publicKey, required super.secretKey});
 
-  toJson() {
+  List<String> toJson() {
     return [
       publicKey.toDer().toHex(include0x: false),
       secretKey.toHex(include0x: false)
@@ -36,60 +33,67 @@ class Secp256k1KeyPair implements KeyPair {
 }
 
 class Secp256k1KeyIdentity extends SignIdentity {
-  static Secp256k1KeyIdentity fromParsedJson(JsonableSecp256k1Identity obj) {
+  // `fromRaw` and `fromDer` should be used for instantiation, not this constructor.
+  Secp256k1KeyIdentity(
+    PublicKey publicKey,
+    this._privateKey,
+  ) : _publicKey = Secp256k1PublicKey.from(publicKey);
+
+  factory Secp256k1KeyIdentity.fromParsedJson(JsonableSecp256k1Identity obj) {
     return Secp256k1KeyIdentity(
-        Secp256k1PublicKey.fromRaw(blobFromHex(obj[0])), blobFromHex(obj[1]));
+      Secp256k1PublicKey.fromRaw(blobFromHex(obj[0])),
+      blobFromHex(obj[1]),
+    );
   }
 
-  static Secp256k1KeyIdentity fromJSON(String json) {
+  factory Secp256k1KeyIdentity.fromJSON(String json) {
     final parsed = jsonDecode(json);
     if (parsed is List) {
       if (parsed[0] is String && parsed[1] is String) {
-        return fromParsedJson([parsed[0], parsed[1]]);
+        return Secp256k1KeyIdentity.fromParsedJson([parsed[0], parsed[1]]);
       }
       throw 'Deserialization error: JSON must have at least 2 items.';
     } else if (parsed is Map) {
-      var publicKey = parsed["publicKey"];
-      var _publicKey = parsed["_publicKey"];
-      var secretKey = parsed["secretKey"];
-      var _privateKey = parsed["_privateKey"];
+      var publicKey = parsed['publicKey'];
+      var dashPublicKey = parsed['_publicKey'];
+      var secretKey = parsed['secretKey'];
+      var dashPrivateKey = parsed['_privateKey'];
       final pk = publicKey != null
           ? Secp256k1PublicKey.fromRaw(Uint8List.fromList(publicKey.data))
-          : Secp256k1PublicKey.fromDer(Uint8List.fromList(_publicKey.data));
+          : Secp256k1PublicKey.fromDer(Uint8List.fromList(dashPublicKey.data));
 
       if (publicKey && secretKey && secretKey.data) {
         return Secp256k1KeyIdentity(pk, Uint8List.fromList(secretKey.data));
       }
-      if (_publicKey && _privateKey && _privateKey.data) {
-        return Secp256k1KeyIdentity(pk, Uint8List.fromList(_privateKey.data));
+      if (dashPublicKey && dashPrivateKey && dashPrivateKey.data) {
+        return Secp256k1KeyIdentity(
+            pk, Uint8List.fromList(dashPrivateKey.data));
       }
     }
-    throw "Deserialization error: Invalid JSON type for string: ${jsonEncode(json)}";
+    throw 'Deserialization error: '
+        'Invalid JSON type for string: ${jsonEncode(json)}';
   }
 
-  static Secp256k1KeyIdentity fromKeyPair(
-      BinaryBlob publicKey, BinaryBlob privateKey) {
+  factory Secp256k1KeyIdentity.fromKeyPair(
+    BinaryBlob publicKey,
+    BinaryBlob privateKey,
+  ) {
     return Secp256k1KeyIdentity(
-        Secp256k1PublicKey.fromRaw(publicKey), privateKey);
+      Secp256k1PublicKey.fromRaw(publicKey),
+      privateKey,
+    );
   }
+
+  final Secp256k1PublicKey _publicKey;
+  final BinaryBlob _privateKey;
 
   static Future<Secp256k1KeyIdentity> fromSecretKey(Uint8List secretKey) async {
-    try {
-      final kp = await getECkeyFromPrivateKey(secretKey);
-      final identity =
-          Secp256k1KeyIdentity.fromKeyPair(kp.ecPublicKey!, kp.ecPrivateKey!);
-      return identity;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  late final Secp256k1PublicKey _publicKey;
-  late final BinaryBlob _privateKey;
-
-  // `fromRaw` and `fromDer` should be used for instantiation, not this constructor.
-  Secp256k1KeyIdentity(PublicKey publicKey, this._privateKey) : super() {
-    _publicKey = Secp256k1PublicKey.from(publicKey);
+    final kp = await getECkeyFromPrivateKey(secretKey);
+    final identity = Secp256k1KeyIdentity.fromKeyPair(
+      kp.ecPublicKey!,
+      kp.ecPrivateKey!,
+    );
+    return identity;
   }
 
   /// Serialize this key to JSON.
@@ -99,7 +103,7 @@ class Secp256k1KeyIdentity extends SignIdentity {
 
   /// Return a copy of the key pair.
   Secp256k1KeyPair getKeyPair() {
-    return Secp256k1KeyPair(_publicKey, _privateKey);
+    return Secp256k1KeyPair(publicKey: _publicKey, secretKey: _privateKey);
   }
 
   /// Return the public key.
@@ -109,6 +113,7 @@ class Secp256k1KeyIdentity extends SignIdentity {
   }
 
   Uint8List get accountId => getAccountId();
+
   Uint8List getAccountId([Uint8List? subAccount]) {
     return Principal.selfAuthenticating(
       getPublicKey().toDer(),
@@ -145,8 +150,9 @@ class Secp256k1KeyIdentity extends SignIdentity {
 
   //   return u8aConcat([rU8a, sU8a]);
   // }
-  Future<Uint8List> sign(Uint8List blob) async {
-    return await signAsync(blob, _privateKey);
+  @override
+  Future<Uint8List> sign(Uint8List blob) {
+    return signAsync(blob, _privateKey);
   }
 }
 
@@ -159,8 +165,8 @@ Uint8List sign(String message, BinaryBlob secretKey) {
   signer.init(true, p_api.PrivateKeyParameter(key));
   var sig = signer.generateSignature(blob) as ECSignature;
   if (sig.s.compareTo(_halfCurveOrder) > 0) {
-    final canonicalisedS = params.n - sig.s;
-    sig = ECSignature(sig.r, canonicalisedS);
+    final canonicalizedS = params.n - sig.s;
+    sig = ECSignature(sig.r, canonicalizedS);
   }
   if (sig.r == sig.s) {
     return sign(message, secretKey);
@@ -181,40 +187,39 @@ Future<Uint8List> signAsync(
   Uint8List blob,
   Uint8List seed,
 ) async {
-  return (await AgentDartFFI.instance
-          .secp256K1Sign(req: Secp256k1SignWithSeedReq(seed: seed, msg: blob)))
-      .signature!;
+  final result = await AgentDartFFI.instance.secp256K1Sign(
+    req: Secp256k1SignWithSeedReq(seed: seed, msg: blob),
+  );
+  return result.signature!;
 }
 
 bool verify(String message, Uint8List signature, Secp256k1PublicKey publicKey) {
   final blob = message.plainToU8a(useDartEncode: true);
   final digest = SHA256Digest();
   final signer = ECDSASigner(digest, HMac(digest, 64));
-
-  var sig = ECSignature(signature.sublist(0, 32).toBn(endian: Endian.big),
-      signature.sublist(32).toBn(endian: Endian.big));
-
+  var sig = ECSignature(
+    signature.sublist(0, 32).toBn(endian: Endian.big),
+    signature.sublist(32).toBn(endian: Endian.big),
+  );
   var kpub = params.curve.decodePoint(publicKey.toRaw())!;
-
   var pub = ECPublicKey(kpub, params);
-
   signer.init(false, p_api.PublicKeyParameter(pub));
   return signer.verifySignature(blob, sig);
 }
 
 bool verifyBlob(
-    Uint8List blob, Uint8List signature, Secp256k1PublicKey publicKey) {
+  Uint8List blob,
+  Uint8List signature,
+  Secp256k1PublicKey publicKey,
+) {
   final digest = SHA256Digest();
   final signer = ECDSASigner(digest, HMac(digest, 64));
-
-  var sig = ECSignature(signature.sublist(0, 32).toBn(endian: Endian.big),
-      signature.sublist(32).toBn(endian: Endian.big));
-
+  var sig = ECSignature(
+    signature.sublist(0, 32).toBn(endian: Endian.big),
+    signature.sublist(32).toBn(endian: Endian.big),
+  );
   var kpub = params.curve.decodePoint(publicKey.toRaw())!;
-
   var pub = ECPublicKey(kpub, params);
-
   signer.init(false, p_api.PublicKeyParameter(pub));
-
   return signer.verifySignature(blob, sig);
 }

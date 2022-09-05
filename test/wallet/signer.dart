@@ -80,13 +80,13 @@ void main() {
     try {
       Phrase.fromString(mne2.substring(0, mne2.length - 10));
     } catch (e) {
-      expect((e as PhaseException).toString().contains("pers"), true);
+      expect((e as PhaseException).toString().contains('pers'), true);
     }
 
     try {
       Phrase.fromString(mne2.substring(0, mne2.length - 7));
     } catch (e) {
-      expect((e as PhaseException).toString().contains("length of 23"), true);
+      expect((e as PhaseException).toString().contains('length of 23'), true);
     }
   });
 }

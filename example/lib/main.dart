@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import 'counter.dart';
@@ -19,7 +17,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _count = 0;
   bool _loading = false;
-  String _status = "";
 
   Counter? _counter;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -34,8 +31,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> initCounter() async {
     _counter = (await AgentFactory.create(
       canisterId: "sbzkb-zqaaa-aaaaa-aaaiq-cai",
-      url:
-          "https://03af-58-62-205-141.ngrok.io", // For Android emulator, please use 10.0.2.2 as endpoint
+      url: "https://03af-58-62-205-141.ngrok.io",
+      // For Android emulator, please use 10.0.2.2 as endpoint
       idl: idl,
     ))
         .hook(Counter());
@@ -81,10 +78,8 @@ class _MyAppState extends State<MyApp> {
             Container(
               height: 30,
             ),
-            Text(_status.isEmpty ? "Please Login 👆" : _status),
-            Container(
-              height: 30,
-            ),
+            const Text('Please Login 👆'),
+            Container(height: 30),
           ]),
         ),
         floatingActionButton: FloatingActionButton(

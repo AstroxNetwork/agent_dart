@@ -1,8 +1,7 @@
+// ignore_for_file: constant_identifier_names, non_constant_identifier_names
 import 'dart:convert';
-import 'dart:math';
+import 'dart:math' as math;
 import 'dart:typed_data';
-
-// import 'dart:math';
 
 import 'package:agent_dart/agent/agent.dart';
 import 'package:agent_dart/principal/principal.dart' as principal;
@@ -10,58 +9,43 @@ import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/utils/map.dart';
 import 'package:agent_dart/utils/number.dart';
 import 'package:agent_dart/utils/u8a.dart';
-// import 'package:agent_dart/agent_dart.dart';
 
 typedef Pipe<T> = BufferPipe<T>;
 typedef PrincipalId = principal.Principal;
 
 class IDLTypeIds {
-  // ignore: constant_identifier_names
+  const IDLTypeIds._();
+
   static const Null = -1;
 
-  // ignore: constant_identifier_names
   static const Bool = -2;
 
-  // ignore: constant_identifier_names
   static const Nat = -3;
 
-  // ignore: constant_identifier_names
   static const Int = -4;
 
-  // ignore: constant_identifier_names
   static const Float32 = -13;
 
-  // ignore: constant_identifier_names
   static const Float64 = -14;
 
-  // ignore: constant_identifier_names
   static const Text = -15;
 
-  // ignore: constant_identifier_names
   static const Reserved = -16;
 
-  // ignore: constant_identifier_names
   static const Empty = -17;
 
-  // ignore: constant_identifier_names
   static const Opt = -18;
 
-  // ignore: constant_identifier_names
   static const Vector = -19;
 
-  // ignore: constant_identifier_names
   static const Record = -20;
 
-  // ignore: constant_identifier_names
   static const Variant = -21;
 
-  // ignore: constant_identifier_names
   static const Func = -22;
 
-  // ignore: constant_identifier_names
   static const Service = -23;
 
-  // ignore: constant_identifier_names
   static const Principal = -24;
 }
 
@@ -276,7 +260,7 @@ abstract class PrimitiveType<T> extends CType<T> {
   @override
   CType checkType(CType t) {
     if (name != t.name) {
-      throw "type mismatch: type on the wire ${t.name}, expect type $name";
+      throw 'type mismatch: type on the wire ${t.name}, expect type $name';
     }
     return t;
   }
@@ -298,7 +282,7 @@ class ConstructType<T> extends CType<T> {
       }
       return ty;
     }
-    throw "type mismatch: type on the wire ${t.name}, expect type $name";
+    throw 'type mismatch: type on the wire ${t.name}, expect type $name';
   }
 
   @override
@@ -405,7 +389,7 @@ class BoolClass extends PrimitiveType<bool> {
   }
 
   @override
-  get name => "bool";
+  get name => 'bool';
 }
 
 // ignore: prefer_void_to_null
@@ -519,7 +503,7 @@ class TextClass extends PrimitiveType<String> {
   get name => 'text';
 
   @override
-  String valueToString(String x) => '"' + x + '"';
+  String valueToString(String x) => '"$x"';
 }
 
 class IntClass extends PrimitiveType {
@@ -591,13 +575,13 @@ class NatClass extends PrimitiveType {
 }
 
 class FloatClass extends PrimitiveType<num> {
-  late final int _bits;
-
   FloatClass(this._bits) : super() {
     if (_bits != 32 && _bits != 64) {
       throw 'not a valid float type';
     }
   }
+
+  late final int _bits;
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -652,11 +636,10 @@ class FloatClass extends PrimitiveType<num> {
 }
 
 class FixedIntClass extends PrimitiveType {
+  FixedIntClass(this._bits) : super();
   late final int _bits;
 
   int get bits => _bits;
-
-  FixedIntClass(this._bits) : super();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -699,23 +682,22 @@ class FixedIntClass extends PrimitiveType {
   @override
   Uint8List encodeValue(dynamic x) {
     assert((x is int || x is BigInt),
-        "value with ${x.runtimeType} has to be int or BigInt");
+        'value with ${x.runtimeType} has to be int or BigInt');
     return writeIntLE(x, (_bits / 8).ceil());
   }
 
   @override
-  String get name => "int$_bits";
+  String get name => 'int$_bits';
 
   @override
   String valueToString(dynamic x) => x.toString();
 }
 
 class FixedNatClass extends PrimitiveType<dynamic> {
+  FixedNatClass(this._bits) : super();
   late final int _bits;
 
   int get bits => _bits;
-
-  FixedNatClass(this._bits) : super();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -758,7 +740,7 @@ class FixedNatClass extends PrimitiveType<dynamic> {
   }
 
   @override
-  get name => "nat$_bits";
+  get name => 'nat$_bits';
 
   @override
   String valueToString(dynamic x) {
@@ -767,14 +749,14 @@ class FixedNatClass extends PrimitiveType<dynamic> {
 }
 
 class VecClass<T> extends ConstructType<List<T>> {
+  VecClass(this._type);
+
   // ignore: prefer_final_fields
   bool _blobOptimization = false;
 
   late final CType<T> _type;
 
   CType<T> get type => _type;
-
-  VecClass(this._type);
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -826,24 +808,24 @@ class VecClass<T> extends ConstructType<List<T>> {
   }
 
   @override
-  get name => "vec ${_type.name}";
+  get name => 'vec ${_type.name}';
 
   @override
-  String display() => "vec ${_type.display()}";
+  String display() => 'vec ${_type.display()}';
 
   @override
   String valueToString(List<T> x) {
     final elements = x.map((e) => _type.valueToString(e));
-    return 'vec {' + elements.join('; ') + '}';
+    return 'vec {${elements.join('; ')}}';
   }
 }
 
 class OptClass<T> extends ConstructType<List> {
+  OptClass(this._type);
+
   late final CType<T> _type;
 
   CType<T> get type => _type;
-
-  OptClass(this._type);
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -895,26 +877,22 @@ class OptClass<T> extends ConstructType<List> {
   }
 
   @override
-  get name => "opt ${_type.name}";
+  get name => 'opt ${_type.name}';
 
   @override
-  String display() => "opt ${_type.display()}";
+  String display() => 'opt ${_type.display()}';
 
   @override
   String valueToString(List x) {
     if (x.isEmpty) {
       return 'null';
     } else {
-      return "opt ${_type.valueToString(x[0])}";
+      return 'opt ${_type.valueToString(x[0])}';
     }
   }
 }
 
 class RecordClass extends ConstructType<Map> {
-  late final List<MapEntry> _fields;
-
-  List<MapEntry> get fields => _fields;
-
   RecordClass(Map? fields) {
     fields ??= Map.from({});
     _fields = (Map.from(fields)).entries.toList();
@@ -922,11 +900,15 @@ class RecordClass extends ConstructType<Map> {
         _fields.every((element) =>
             (element.key is String && element.key != null) ||
             (element.key == null)),
-        "Currently we only support Map<String,dynamic> as input");
+        'Currently we only support Map<String,dynamic> as input');
     _fields.sort((a, b) =>
         idlLabelToId((a.key).toString()).toInt() -
         idlLabelToId((b.key).toString()).toInt());
   }
+
+  late final List<MapEntry> _fields;
+
+  List<MapEntry> get fields => _fields;
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -939,7 +921,7 @@ class RecordClass extends ConstructType<Map> {
       var key = _fields[i].key;
       var type = _fields[i].value;
 
-      if (key != "_${i}_") {
+      if (key != '_${i}_') {
         return null;
       }
       res.add(type);
@@ -1057,17 +1039,17 @@ Map makeMap(List<CType> components) {
 }
 
 class TupleClass<T extends List> extends ConstructType<List> {
-  late final List<CType> _components;
-  late final List<MapEntry> _fields;
-
-  List<MapEntry> get fields => _fields;
-
   TupleClass(List<CType> components) : super() {
     _components = components;
     _fields = (Map.from(makeMap(components))).entries.toList();
     _fields.sort(
         (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt());
   }
+
+  late final List<CType> _components;
+  late final List<MapEntry> _fields;
+
+  List<MapEntry> get fields => _fields;
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -1156,13 +1138,13 @@ class TupleClass<T extends List> extends ConstructType<List> {
 }
 
 class VariantClass extends ConstructType<Map<String, dynamic>> {
-  late final List<MapEntry<String, CType<dynamic>>> _fields;
-
   VariantClass(Map<String, CType> fields) : super() {
     _fields = fields.entries.toList();
     _fields.sort(
         (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt());
   }
+
+  late final List<MapEntry<String, CType<dynamic>>> _fields;
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -1239,7 +1221,7 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
 
   @override
   String get name {
-    final fields = _fields.map((entry) => entry.key + ':' + entry.value.name);
+    final fields = _fields.map((entry) => '${entry.key}:${entry.value.name}');
     return "variant {${fields.join('; ')}}";
   }
 
@@ -1248,7 +1230,7 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
     final fields = _fields.map(
       (entry) =>
           entry.key +
-          (entry.value.name == 'null' ? '' : ":${entry.value.display()}"),
+          (entry.value.name == 'null' ? '' : ':${entry.value.display()}'),
     );
     return "variant {${fields.join('; ')}}";
   }
@@ -1261,9 +1243,9 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
       if (x.containsKey(name)) {
         final value = type.valueToString(x[name]);
         if (value == 'null') {
-          return "variant {$name}";
+          return 'variant {$name}';
         } else {
-          return "variant {$name=$value}";
+          return 'variant {$name=$value}';
         }
       }
     }
@@ -1320,12 +1302,12 @@ class RecClass<T> extends ConstructType<T> {
   }
 
   @override
-  get name => "rec_$_id";
+  get name => 'rec_$_id';
 
   @override
   display() {
     _checkType();
-    return "μ$name.${_type!.name}";
+    return 'μ$name.${_type!.name}';
   }
 
   @override
@@ -1394,24 +1376,18 @@ class PrincipalClass extends PrimitiveType<PrincipalId> {
 
 // [PrincipalId, string]
 class FuncClass extends ConstructType<List> {
+  FuncClass(this.argTypes, this.retTypes, this.annotations) : super();
+
   static argsToString(List<CType> types, List v) {
     if (types.length != v.length) {
       throw 'arity mismatch';
     }
-    return '(' +
-        types
-            .asMap()
-            .entries
-            .map((entry) => entry.value.valueToString(v[entry.key]))
-            .join(', ') +
-        ')';
+    return '(${types.asMap().entries.map((entry) => entry.value.valueToString(v[entry.key])).join(', ')})';
   }
 
   final List<CType> argTypes;
   final List<CType> retTypes;
   final List<String> annotations;
-
-  FuncClass(this.argTypes, this.retTypes, this.annotations) : super();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -1495,8 +1471,8 @@ class FuncClass extends ConstructType<List> {
   get name {
     final args = argTypes.map((arg) => arg.name).join(', ');
     final rets = retTypes.map((arg) => arg.name).join(', ');
-    final annon = ' ' + annotations.join(' ');
-    return "($args) -> ($rets)$annon";
+    final annon = ' ${annotations.join(' ')}';
+    return '($args) -> ($rets)$annon';
   }
 
   @override
@@ -1509,8 +1485,8 @@ class FuncClass extends ConstructType<List> {
   String display() {
     final args = argTypes.map((arg) => arg.display()).join(', ');
     final rets = retTypes.map((arg) => arg.display()).join(', ');
-    final annon = ' ' + annotations.join(' ');
-    return "($args) → ($rets)$annon";
+    final annon = ' ${annotations.join(' ')}';
+    return '($args) → ($rets)$annon';
   }
 
   Uint8List encodeAnnotation(String ann) {
@@ -1525,16 +1501,16 @@ class FuncClass extends ConstructType<List> {
 }
 
 class ServiceClass extends ConstructType<PrincipalId> {
-  late final List<MapEntry<String, FuncClass>> _fields;
-
-  List<MapEntry<String, FuncClass>> get fields => _fields;
-
-  ServiceClass(Map<String, FuncClass> fields) : super() {
+  ServiceClass(Map<String, FuncClass> fields) {
     _fields = (fields.entries).toList();
     _fields.sort((a, b) =>
         idlLabelToId(a.key.toString()).toInt() -
         idlLabelToId(b.key.toString()).toInt());
   }
+
+  late final List<MapEntry<String, FuncClass>> _fields;
+
+  List<MapEntry<String, FuncClass>> get fields => _fields;
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -1554,7 +1530,7 @@ class ServiceClass extends ConstructType<PrincipalId> {
     return u8aConcat([
       Uint8List.fromList([1]),
       len,
-      buf
+      buf,
     ]);
   }
 
@@ -1582,7 +1558,7 @@ class ServiceClass extends ConstructType<PrincipalId> {
 
   @override
   get name {
-    final fields = _fields.map((entry) => entry.key + ':' + entry.value.name);
+    final fields = _fields.map((entry) => '${entry.key}:${entry.value.name}');
     return "service {${fields.join('; ')}}";
   }
 
@@ -1597,7 +1573,7 @@ class ServiceClass extends ConstructType<PrincipalId> {
 /// @returns {string}
 String toReadableString(dynamic x) {
   if (x is BigInt) {
-    return "BigInt($x)";
+    return 'BigInt($x)';
   } else if (x is Map) {
     return jsonEncode(makeBigIntToString(x));
   } else {
@@ -1620,7 +1596,8 @@ BinaryBlob idlEncode(List<CType> argTypes, List args) {
   final magic = magicNumber.plainToU8a(useDartEncode: true);
   final table = typeTable.encode();
   final len = lebEncode(args.length);
-  final typs = u8aConcat(argTypes.map((t) => t.encodeType(typeTable)).toList());
+  final types =
+      u8aConcat(argTypes.map((t) => t.encodeType(typeTable)).toList());
   final vals = u8aConcat(
     zipWith<CType<dynamic>, dynamic, dynamic>(argTypes, args, (t, x) {
       var buf = tryToJson(t, x);
@@ -1628,27 +1605,28 @@ BinaryBlob idlEncode(List<CType> argTypes, List args) {
         return buf;
       }
       if (!t.covariant(x)) {
-        throw "Invalid ${t.display()} argument: ${toReadableString(x)}";
+        throw 'Invalid ${t.display()} argument: ${toReadableString(x)}';
       }
       return t.encodeValue(x);
     }),
   );
 
-  return u8aConcat([magic, table, len, typs, vals]);
+  return u8aConcat([magic, table, len, types, vals]);
 }
 
 /// Decode a binary value
 /// @param retTypes - Types expected in the buffer.
 /// @param bytes - hex-encoded string, or buffer.
-/// @returns Value deserialised to JS type
+/// @returns Value deserialized to JS type
 List idlDecode(List<CType> retTypes, Uint8List bytes) {
   final b = Pipe(bytes);
 
   if (bytes.lengthInBytes < magicNumber.length) {
     throw 'Message length smaller than magic number';
   }
-  final magic =
-      Uint8List.fromList(safeRead(b, magicNumber.length)).u8aToString();
+  final magic = Uint8List.fromList(
+    safeRead(b, magicNumber.length),
+  ).u8aToString();
 
   if (magic != magicNumber) {
     throw 'Wrong magic number: $magic';
@@ -1665,57 +1643,49 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
       switch (ty) {
         case IDLTypeIds.Opt:
         case IDLTypeIds.Vector:
-          {
-            var t = slebDecode(pipe).toInt();
-            typeTable.add([ty, t]);
-            break;
-          }
+          var t = slebDecode(pipe).toInt();
+          typeTable.add([ty, t]);
+          break;
         case IDLTypeIds.Record:
         case IDLTypeIds.Variant:
-          {
-            var fields = List.from([]);
-            var objectLength = lebDecode(pipe).toInt();
-            // ignore: prefer_typing_uninitialized_variables
-            var prevHash;
-            while (objectLength-- > 0) {
-              var hash = lebDecode(pipe).toInt();
-              if (hash >= pow(2, 32)) {
-                throw 'field id out of 32-bit range';
-              }
-              if (prevHash is num && prevHash >= hash) {
-                throw 'field id collision or not sorted';
-              }
-              prevHash = hash;
-              var t = slebDecode(pipe).toInt();
-              fields.add([hash, t]);
+          var fields = List.from([]);
+          var objectLength = lebDecode(pipe).toInt();
+          // ignore: prefer_typing_uninitialized_variables
+          var prevHash;
+          while (objectLength-- > 0) {
+            var hash = lebDecode(pipe).toInt();
+            if (hash >= math.pow(2, 32)) {
+              throw 'field id out of 32-bit range';
             }
-            typeTable.add([ty, fields]);
-            break;
+            if (prevHash is num && prevHash >= hash) {
+              throw 'field id collision or not sorted';
+            }
+            prevHash = hash;
+            var t = slebDecode(pipe).toInt();
+            fields.add([hash, t]);
           }
+          typeTable.add([ty, fields]);
+          break;
         case IDLTypeIds.Func:
-          {
-            for (var k = 0; k < 2; k++) {
-              var funcLength = lebDecode(pipe).toInt();
-              while (funcLength-- > 0) {
-                slebDecode(pipe);
-              }
-            }
-            var annLen = lebDecode(pipe).toInt();
-            safeRead(pipe, annLen);
-            typeTable.add([ty, null]);
-            break;
-          }
-        case IDLTypeIds.Service:
-          {
-            var servLength = lebDecode(pipe).toInt();
-            while (servLength-- > 0) {
-              var l = lebDecode(pipe).toInt();
-              safeRead(pipe, l);
+          for (var k = 0; k < 2; k++) {
+            var funcLength = lebDecode(pipe).toInt();
+            while (funcLength-- > 0) {
               slebDecode(pipe);
             }
-            typeTable.add([ty, null]);
-            break;
           }
+          var annLen = lebDecode(pipe).toInt();
+          safeRead(pipe, annLen);
+          typeTable.add([ty, null]);
+          break;
+        case IDLTypeIds.Service:
+          var servLength = lebDecode(pipe).toInt();
+          while (servLength-- > 0) {
+            var l = lebDecode(pipe).toInt();
+            safeRead(pipe, l);
+            slebDecode(pipe);
+          }
+          typeTable.add([ty, null]);
+          break;
         default:
           throw 'Illegal op_code: $ty';
       }
@@ -1809,7 +1779,7 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
         {
           var fields = <String, CType>{};
           for (var e in entry[1] as List) {
-            var name = "_${e[0].toString()}_";
+            var name = '_${e[0].toString()}_';
             fields[name] = getType(e[1] as int);
           }
           var record = Record(fields);
@@ -1824,7 +1794,7 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
         {
           var fields = <String, CType>{};
           for (var e in entry[1] as List) {
-            var name = "_${e[0]}_";
+            var name = '_${e[0]}_';
             fields[name] = getType(e[1] as int);
           }
           return Variant(fields);
@@ -1867,88 +1837,60 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
 }
 
 class IDL {
-// ignore: non_constant_identifier_names
   static final Empty = EmptyClass();
 
-// ignore: non_constant_identifier_names
   static final Reserved = ReservedClass();
 
-// ignore: non_constant_identifier_names
   static final Bool = BoolClass();
 
-// ignore: non_constant_identifier_names
   static final Null = NullClass();
 
-// ignore: non_constant_identifier_names
   static final Text = TextClass();
 
-// ignore: non_constant_identifier_names
   static final Int = IntClass();
 
-// ignore: non_constant_identifier_names
   static final Nat = NatClass();
 
-// ignore: non_constant_identifier_names
   static final Float32 = FloatClass(32);
 
-// ignore: non_constant_identifier_names
   static final Float64 = FloatClass(64);
 
-// ignore: non_constant_identifier_names
   static final Int8 = FixedIntClass(8);
 
-// ignore: non_constant_identifier_names
   static final Int16 = FixedIntClass(16);
 
-// ignore: non_constant_identifier_names
   static final Int32 = FixedIntClass(32);
 
-// ignore: non_constant_identifier_names
   static final Int64 = FixedIntClass(64);
 
-// ignore: non_constant_identifier_names
   static final Nat8 = FixedNatClass(8);
 
-// ignore: non_constant_identifier_names
   static final Nat16 = FixedNatClass(16);
 
-// ignore: non_constant_identifier_names
   static final Nat32 = FixedNatClass(32);
 
-// ignore: non_constant_identifier_names
   static final Nat64 = FixedNatClass(64);
 
-// ignore: non_constant_identifier_names
   static final Principal = PrincipalClass();
 
-  // ignore: constant_identifier_names
-
-  // ignore: non_constant_identifier_names
   static TupleClass<List<CType>> Tuple(List<CType> components) =>
       TupleClass(components);
 
-  // ignore: non_constant_identifier_names
   static VecClass<T> Vec<T>(CType<T> type) => VecClass(type);
 
-  // ignore: non_constant_identifier_names
   static OptClass Opt<T>(CType<T> type) => OptClass(type);
 
-  // ignore: non_constant_identifier_names
   static RecordClass Record(Map? fields) => RecordClass(fields);
 
-  // ignore: non_constant_identifier_names
   static VariantClass Variant(Map<String, CType<dynamic>> fields) =>
       VariantClass(fields);
 
-  // ignore: non_constant_identifier_names
   static RecClass Rec() => RecClass();
 
-  // ignore: non_constant_identifier_names
   static FuncClass Func(List<CType<dynamic>> argTypes,
           List<CType<dynamic>> retTypes, List<String> annotations) =>
       FuncClass(argTypes, retTypes, annotations);
 
-  // ignore: non_constant_identifier_names
   static ServiceClass Service(Map<String, FuncClass> fields) =>
       ServiceClass(fields);
 

@@ -1,7 +1,7 @@
 part of 'key_store.dart';
 
-// ignore: constant_identifier_names
-const String ALGO_IDENTIFIER = 'aes-128-ctr';
+
+const String _algoIdentifier = 'aes-128-ctr';
 
 Future<String> encrypt(
   String privateKey,
@@ -35,13 +35,14 @@ Future<String> encrypt(
   };
 
   final deriveKeyResult = await nativeDeriveKey(
-      kdf: kdf,
-      iv: iv,
-      message: privateKey,
-      useCipherText: null,
-      kdfParams: kdfParams,
-      passphrase: passphrase,
-      salt: salt);
+    kdf: kdf,
+    iv: iv,
+    message: privateKey,
+    useCipherText: null,
+    kdfParams: kdfParams,
+    passphrase: passphrase,
+    salt: salt,
+  );
 
   Map<String, dynamic> map = {
     'crypto': {
@@ -66,33 +67,37 @@ Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
   Map<String, dynamic> kdfParams = keyStore['crypto']['kdfparams'] is String
       ? json.decode(keyStore['crypto']['kdfparams'])
       : keyStore['crypto']['kdfparams'];
-  var cipherparams = keyStore['crypto']["cipherparams"];
-  Uint8List iv = (cipherparams["iv"] as String).toU8a();
+  var cipherparams = keyStore['crypto']['cipherparams'];
+  Uint8List iv = (cipherparams['iv'] as String).toU8a();
 
   final deriveKeyResult = await nativeDeriveKey(
-      kdf: kdf,
-      iv: iv,
-      message: null,
-      useCipherText: ciphertext,
-      kdfParams: kdfParams,
-      passphrase: passphrase,
-      salt: (kdfParams["salt"] as String).replaceAll("0x", ""));
+    kdf: kdf,
+    iv: iv,
+    message: null,
+    useCipherText: ciphertext,
+    kdfParams: kdfParams,
+    passphrase: passphrase,
+    salt: (kdfParams['salt'] as String).replaceAll('0x', ''),
+  );
 
   String macString = keyStore['crypto']['mac'];
 
   Function eq = const ListEquality().equals;
-  if (!eq(deriveKeyResult.mac.toUpperCase().codeUnits,
-      macString.toUpperCase().codeUnits)) {
+  if (!eq(
+    deriveKeyResult.mac.toUpperCase().codeUnits,
+    macString.toUpperCase().codeUnits,
+  )) {
     throw 'Decryption Failed';
   }
 
   var encryptedPrivateKey =
-      (keyStore["crypto"]["ciphertext"] as String).toU8a();
+      (keyStore['crypto']['ciphertext'] as String).toU8a();
 
   return (await _decryptPhraseAsync(
-          cipherText: encryptedPrivateKey,
-          key: deriveKeyResult.leftBits,
-          iv: iv))
+    cipherText: encryptedPrivateKey,
+    key: deriveKeyResult.leftBits,
+    iv: iv,
+  ))
       .u8aToString();
 }
 
@@ -129,13 +134,14 @@ Future<String> encryptPhrase(
   };
 
   final deriveKeyResult = await nativeDeriveKey(
-      kdf: kdf,
-      iv: iv,
-      message: phrase,
-      useCipherText: null,
-      kdfParams: kdfParams,
-      passphrase: password,
-      salt: (kdfParams["salt"] as String).replaceAll("0x", ""));
+    kdf: kdf,
+    iv: iv,
+    message: phrase,
+    useCipherText: null,
+    kdfParams: kdfParams,
+    passphrase: password,
+    salt: (kdfParams['salt'] as String).replaceAll('0x', ''),
+  );
 
   Map<String, dynamic> map = {
     'crypto': {
@@ -204,30 +210,36 @@ Future<String> decryptPhrase(
   Map<String, dynamic> kdfParams = keyStore['crypto']['kdfparams'] is String
       ? json.decode(keyStore['crypto']['kdfparams'])
       : keyStore['crypto']['kdfparams'];
-  var cipherparams = keyStore['crypto']["cipherparams"];
-  Uint8List iv = (cipherparams["iv"] as String).toU8a();
+  var cipherparams = keyStore['crypto']['cipherparams'];
+  Uint8List iv = (cipherparams['iv'] as String).toU8a();
 
   final deriveKeyResult = await nativeDeriveKey(
-      kdf: kdf,
-      iv: iv,
-      message: null,
-      useCipherText: ciphertext,
-      kdfParams: kdfParams,
-      passphrase: passphrase,
-      salt: (kdfParams["salt"] as String).replaceAll("0x", ""));
+    kdf: kdf,
+    iv: iv,
+    message: null,
+    useCipherText: ciphertext,
+    kdfParams: kdfParams,
+    passphrase: passphrase,
+    salt: (kdfParams['salt'] as String).replaceAll('0x', ''),
+  );
 
   String macString = keyStore['crypto']['mac'];
 
   Function eq = const ListEquality().equals;
-  if (!eq(deriveKeyResult.mac.toUpperCase().codeUnits,
-      macString.toUpperCase().codeUnits)) {
+  if (!eq(
+    deriveKeyResult.mac.toUpperCase().codeUnits,
+    macString.toUpperCase().codeUnits,
+  )) {
     throw 'Decryption Failed';
   }
 
-  var encryptedPhrase = (keyStore["crypto"]["ciphertext"] as String).toU8a();
+  var encryptedPhrase = (keyStore['crypto']['ciphertext'] as String).toU8a();
 
   return (await _decryptPhraseAsync(
-          cipherText: encryptedPhrase, key: deriveKeyResult.leftBits, iv: iv))
+    cipherText: encryptedPhrase,
+    key: deriveKeyResult.leftBits,
+    iv: iv,
+  ))
       .u8aToString();
 }
 
@@ -293,21 +305,25 @@ Future<String> decryptCborPhrase(List<int> bytes, String password) async {
 
   final Uint8List iv = Uint8List.fromList(recover['cipherparams']['iv']);
   final kdfParams = Map<String, dynamic>.from(cborDecode(recover['kdfparams']));
-  final String kdf = Uint8List.fromList(recover["kdf"]).u8aToString();
+  final String kdf = Uint8List.fromList(recover['kdf']).u8aToString();
 
   final deriveKeyResult = await nativeDeriveKey(
-      kdf: kdf,
-      iv: iv,
-      message: null,
-      useCipherText: ciphertext,
-      kdfParams: kdfParams,
-      passphrase: password,
-      salt: (kdfParams["salt"] as String).replaceAll("0x", ""));
+    kdf: kdf,
+    iv: iv,
+    message: null,
+    useCipherText: ciphertext,
+    kdfParams: kdfParams,
+    passphrase: password,
+    salt: (kdfParams['salt'] as String).replaceAll('0x', ''),
+  );
 
-  final Uint8List macFromRecover =
-      Uint8List.fromList(u8aToU8a((recover['mac'] as List).map((ele) {
-    return int.parse(ele.toString());
-  }).toList()));
+  final Uint8List macFromRecover = Uint8List.fromList(
+    u8aToU8a(
+      (recover['mac'] as List).map((ele) {
+        return int.parse(ele.toString());
+      }).toList(),
+    ),
+  );
 
   if (!u8aEq(deriveKeyResult.mac.toU8a(), macFromRecover)) {
     throw 'Decryption Failed';
@@ -316,7 +332,10 @@ Future<String> decryptCborPhrase(List<int> bytes, String password) async {
   final Uint8List encryptedPhrase = Uint8List.fromList(recover['ciphertext']);
 
   return (await _decryptPhraseAsync(
-          cipherText: encryptedPhrase, key: deriveKeyResult.leftBits, iv: iv))
+    cipherText: encryptedPhrase,
+    key: deriveKeyResult.leftBits,
+    iv: iv,
+  ))
       .u8aToString();
 }
 
@@ -350,20 +369,19 @@ Future<Uint8List> encryptCborPhrase(
   };
 
   final deriveKeyResult = await nativeDeriveKey(
-      kdf: kdf,
-      iv: iv,
-      message: phrase,
-      useCipherText: null,
-      kdfParams: kdfParams,
-      passphrase: password,
-      salt: salt);
+    kdf: kdf,
+    iv: iv,
+    message: phrase,
+    useCipherText: null,
+    kdfParams: kdfParams,
+    passphrase: password,
+    salt: salt,
+  );
 
   return cborEncode({
     'ciphertext': deriveKeyResult.cipherText,
-    'cipherparams': {
-      'iv': iv,
-    },
-    'cipher': ALGO_IDENTIFIER.plainToU8a(),
+    'cipherparams': {'iv': iv},
+    'cipher': _algoIdentifier.plainToU8a(),
     'kdf': kdf.plainToU8a(),
     'kdfparams': cborEncode(kdfParams),
     'mac': deriveKeyResult.mac.toU8a(),

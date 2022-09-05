@@ -10,7 +10,7 @@ void base32Test() {
   test('base32Decode', () {
     expect(
         base32Decode('irswgzloorzgc3djpjssazlwmvzhs5dinfxgoijb').u8aToString(),
-        "Decentralize everything!!");
+        'Decentralize everything!!');
   });
 
   test('base32Encode', () {

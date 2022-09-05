@@ -8,34 +8,45 @@ import 'utils/sha224.dart';
 
 export 'utils/utils.dart';
 
-// ignore: constant_identifier_names
-const SELF_AUTHENTICATING_SUFFIX = 2;
-// ignore: constant_identifier_names
-const ANONYMOUS_SUFFIX = 4;
+const _suffixSelfAuthenticating = 2;
+const _suffixAnonymous = 4;
+const _maxLengthInBytes = 29;
+const _typeOpaque = 1;
 
-// ignore: constant_identifier_names
-const MAX_LENGTH_IN_BYTES = 29;
-
-// ignore: constant_identifier_names
-const TYPE_OPAQUE = 1;
-
-Uint8List fromHexString(String hexString) => Uint8List.fromList(
-        (RegExp(r'.{1,2}').allMatches(hexString).toList()).map<int>((byte) {
+Uint8List fromHexString(String hexString) {
+  return Uint8List.fromList(
+    (RegExp(r'.{1,2}').allMatches(hexString).toList()).map<int>((byte) {
       return int.parse(byte.group(0)!, radix: 16);
-    }).toList());
+    }).toList(),
+  );
+}
 
-String toHexString(Uint8List bytes) => bytes.fold<String>(
-    '', (str, byte) => str + byte.toRadixString(16).padLeft(2, '0'));
+String toHexString(Uint8List bytes) {
+  return bytes.fold(
+    '',
+    (str, byte) => str + byte.toRadixString(16).padLeft(2, '0'),
+  );
+}
 
 class Principal {
-  static Principal anonymous() {
-    var u8a = Uint8List.fromList([ANONYMOUS_SUFFIX]);
-    return Principal(u8a);
+  Principal(this._arr);
+
+  factory Principal.create(int uSize, Uint8List data) {
+    if (uSize > data.length) {
+      throw 'uSize must within data length.';
+    }
+    return Principal.fromBlob(data.sublist(0, uSize));
   }
+
+  factory Principal.anonymous() {
+    return Principal(Uint8List.fromList([_suffixAnonymous]));
+  }
+
+  final Uint8List _arr;
 
   static Principal selfAuthenticating(Uint8List publicKey) {
     var sha = sha224Hash(publicKey.buffer);
-    var u8a = Uint8List.fromList([...sha, SELF_AUTHENTICATING_SUFFIX]);
+    var u8a = Uint8List.fromList([...sha, _suffixSelfAuthenticating]);
     return Principal(u8a);
   }
 
@@ -82,22 +93,8 @@ class Principal {
     return Principal(arr);
   }
 
-  factory Principal.create(int uSize, Uint8List data) {
-    if (uSize > data.length) {
-      throw 'uSize must within data length';
-    }
-    return Principal.fromBlob(data.sublist(0, uSize));
-  }
-
-  // ignore: unused_field
-  final bool _isPrincipal = true;
-
-  final Uint8List _arr;
-
-  Principal(this._arr);
-
   bool isAnonymous() {
-    return _arr.lengthInBytes == 1 && _arr[0] == ANONYMOUS_SUFFIX;
+    return _arr.lengthInBytes == 1 && _arr[0] == _suffixAnonymous;
   }
 
   Uint8List toUint8Array() {
@@ -123,11 +120,11 @@ class Principal {
     final array = Uint8List.fromList([...checksum, ...bytes]);
 
     final result = base32Encode(array);
-    var reg = RegExp(r".{1,5}");
+    var reg = RegExp(r'.{1,5}');
     final matches = reg.allMatches(result);
     if (matches.isEmpty) {
       // This should only happen if there's no character, which is unreachable.
-      throw "no character found";
+      throw 'no character found';
     }
     return matches.map((e) => e.group(0)).join('-');
   }
@@ -170,21 +167,16 @@ class Principal {
   }
 
   @override
-  // ignore: unnecessary_overrides
-  int get hashCode => super.hashCode;
+  int get hashCode => _arr.hashCode;
 }
 
 class CanisterId extends Principal {
-  // static CanisterId ic_00() {
-  //   return CanisterId(Principal.selfAuthenticating('0'.toU8a()));
-  // }
-
   CanisterId(Principal pid) : super(pid.toBlob());
 
   static CanisterId fromU64(int val) {
     // It is important to use big endian here to ensure that the generated
     // `PrincipalId`s still maintain ordering.
-    var data = List.generate(MAX_LENGTH_IN_BYTES, (index) => 0);
+    var data = List.generate(_maxLengthInBytes, (index) => 0);
 
     // Specify explicitly the length, so as to assert at compile time that a u64
     // takes exactly 8 bytes
@@ -207,9 +199,10 @@ class CanisterId extends Principal {
 
     var blobLength = 8 /* the u64 */ + 1 /* the last 0x01 */;
 
-    data[blobLength] = TYPE_OPAQUE;
+    data[blobLength] = _typeOpaque;
     return CanisterId(
-        Principal.create(blobLength + 1, Uint8List.fromList(data)));
+      Principal.create(blobLength + 1, Uint8List.fromList(data)),
+    );
     // Self(PrincipalId::new_opaque_from_array(data, blob_length))
   }
 }

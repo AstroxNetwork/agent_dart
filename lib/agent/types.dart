@@ -4,7 +4,7 @@ import 'package:agent_dart/utils/extension.dart';
 
 import 'utils/leb128.dart';
 
-// ignore: constant_identifier_names
+
 enum BlobType { binary, der, nonce, requestId }
 
 abstract class BaseBlob {
@@ -21,7 +21,7 @@ typedef Nonce = BinaryBlob;
 typedef RequestId = BinaryBlob;
 
 extension ExtBinaryBlob on BinaryBlob {
-  String get name => "__BLOB";
+  String get name => '__BLOB';
   BlobType get blobType => BlobType.binary;
   int get byteLength => lengthInBytes;
   static Uint8List from(Uint8List other) => Uint8List.fromList(other);

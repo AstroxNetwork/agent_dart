@@ -5,101 +5,122 @@ import 'package:agent_dart/principal/principal.dart';
 /// Codes used by the replica for rejecting a message.
 /// See {@link https://sdk.dfinity.org/docs/interface-spec/#reject-codes | the interface spec}.
 class ReplicaRejectCode {
-  // ignore: constant_identifier_names
-  static const SysFatal = 1;
-  // ignore: constant_identifier_names
-  static const SysTransient = 2;
-  // ignore: constant_identifier_names
-  static const DestinationInvalid = 3;
-  // ignore: constant_identifier_names
-  static const CanisterReject = 4;
-  // ignore: constant_identifier_names
-  static const CanisterError = 5;
+  const ReplicaRejectCode._();
+
+  static const sysFatal = 1;
+  static const sysTransient = 2;
+  static const destinationInvalid = 3;
+  static const canisterReject = 4;
+  static const canisterError = 5;
 }
 
 /// Options when doing a {@link Agent.readState} call.
 class ReadStateOptions {
+  const ReadStateOptions({required this.paths});
+
   /// A list of paths to read the state of.
-  late List<List<BinaryBlob>> paths;
+  final List<List<BinaryBlob>> paths;
 }
 
 // export type QueryResponse = QueryResponseReplied | QueryResponseRejected;
 
 class QueryResponseStatus {
-  // ignore: constant_identifier_names
-  static const Replied = 'replied';
-  // ignore: constant_identifier_names
-  static const Rejected = 'rejected';
+  const QueryResponseStatus._();
+
+  static const replied = 'replied';
+  static const rejected = 'rejected';
 }
 
 abstract class QueryResponseBase {
-  late String status;
+  const QueryResponseBase({required this.status});
+
+  final String status;
 }
 
 abstract class QueryResponse extends QueryResponseBase {
-  Reply? reply;
-  // ignore: non_constant_identifier_names
-  int? reject_code;
-  // ignore: non_constant_identifier_names
-  String? reject_message;
+  const QueryResponse({
+    this.reply,
+    this.rejectCode,
+    this.rejectMessage,
+    required super.status,
+  });
+
+  final Reply? reply;
+  final int? rejectCode;
+  final String? rejectMessage;
 }
 
 class Reply {
-  BinaryBlob? arg;
+  const Reply(this.arg);
+
+  final BinaryBlob? arg;
 }
 
 class QueryResponseReplied extends QueryResponseBase {
-  @override
-  // ignore: overridden_fields
-  final String status = QueryResponseStatus.Replied;
-  Reply? reply;
+  const QueryResponseReplied({super.status = QueryResponseStatus.replied});
 }
 
 class QueryResponseRejected extends QueryResponseBase {
-  @override
-  // ignore: overridden_fields
-  final String status = QueryResponseStatus.Rejected;
-  // ignore: non_constant_identifier_names
-  int? reject_code;
-  // ignore: non_constant_identifier_names
-  String? reject_message;
+  const QueryResponseRejected({
+    this.rejectCode,
+    this.rejectMessage,
+    super.status = QueryResponseStatus.rejected,
+  });
+
+  final int? rejectCode;
+  final String? rejectMessage;
 }
 
 /// Options when doing a {@link Agent.query} call.
 class QueryFields {
+  const QueryFields({required this.methodName, this.arg});
+
   /// The method name to call.
-  late String methodName;
+  final String methodName;
 
   /// A binary encoded argument. This is already encoded and will be sent as is.
-  late BinaryBlob? arg;
+  final BinaryBlob? arg;
 }
 
 /// Options when doing a {@link Agent.call} call.
 class CallOptions {
+  const CallOptions({
+    required this.methodName,
+    required this.arg,
+    this.effectiveCanisterId,
+  });
+
   /// The method name to call.
-  late String methodName;
+  final String methodName;
 
   /// A binary encoded argument. This is already encoded and will be sent as is.
-  late BinaryBlob arg;
+  final BinaryBlob arg;
 
-  /// An effective canister ID, used for routing. This should only be mentioned if
-  /// it's different from the canister ID.
-  Principal? effectiveCanisterId;
+  /// An effective canister ID, used for routing. This should only be mentioned
+  /// if it's different from the canister ID.
+  final Principal? effectiveCanisterId;
 }
 
 abstract class ReadStateResponse {
-  late BinaryBlob certificate;
+  const ReadStateResponse({required this.certificate});
+
+  final BinaryBlob certificate;
 }
 
 abstract class ResponseBody {
-  bool? ok;
-  int? status;
-  String? statusText;
+  const ResponseBody({this.ok, this.status, this.statusText});
+
+  final bool? ok;
+  final int? status;
+  final String? statusText;
 }
 
 abstract class SubmitResponse {
-  RequestId? requestId;
-  ResponseBody? response;
+  const SubmitResponse({this.requestId, this.response});
+
+  final RequestId? requestId;
+  final ResponseBody? response;
+
   Map<String, dynamic> toJson();
 }
 
@@ -117,11 +138,17 @@ abstract class Agent {
   /// but the certificate might contain less information than requested.
   /// @param effectiveCanisterId A Canister ID related to this call.
   /// @param options The options for this call.
-  Future<ReadStateResponse> readState(Principal effectiveCanisterId,
-      ReadStateOptions options, Identity? identity);
+  Future<ReadStateResponse> readState(
+    Principal effectiveCanisterId,
+    ReadStateOptions options,
+    Identity? identity,
+  );
 
   Future<SubmitResponse> call(
-      Principal canisterId, CallOptions fields, Identity? identity);
+    Principal canisterId,
+    CallOptions fields,
+    Identity? identity,
+  );
 
   /// Query the status endpoint of the replica. This normally has a few fields that
   /// corresponds to the version of the replica, its root public key, and any other
@@ -139,7 +166,10 @@ abstract class Agent {
   ///     failed. If the query itself failed but no protocol errors happened, the response will
   ///     be of type QueryResponseRejected.
   Future<QueryResponse> query(
-      Principal canisterId, QueryFields options, Identity? identity);
+    Principal canisterId,
+    QueryFields options,
+    Identity? identity,
+  );
 
   /// By default, the agent is configured to talk to the main Internet Computer,
   /// and verifies responses using a hard-coded public key.

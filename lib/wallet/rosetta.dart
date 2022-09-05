@@ -14,40 +14,33 @@ import 'types.dart' as rosetta;
 
 /// Types of Rosetta API errors.
 
-enum TransactionErrorType {
-  // ignore: constant_identifier_names
-  NotFound,
-  // ignore: constant_identifier_names
-  Timeout,
-  // ignore: constant_identifier_names
-  NetworkError
-}
+enum TransactionErrorType { notFound, timeout, networkError }
 
 /// Describes the cause of a Rosetta API error.
 class TransactionError extends TypeError {
+  TransactionError(dynamic message, int status, {Map? detail}) : super() {
+    switch (status) {
+      case 408:
+        errorType = TransactionErrorType.timeout;
+        break;
+      case 500:
+        errorType = TransactionErrorType.notFound;
+        break;
+      default:
+        errorType = TransactionErrorType.networkError;
+        break;
+    }
+    throw {
+      'message': Error.safeToString(message),
+      'status': errorType,
+      'detail': detail
+    };
+  }
+
   /// Create a TransactionError.
   /// @param {String} message An error message describing the error.
   /// @param {Number} status number The HTTP response status.
   late TransactionErrorType errorType;
-
-  TransactionError(dynamic message, int status, {Map? detail}) : super() {
-    switch (status) {
-      case 408:
-        errorType = TransactionErrorType.Timeout;
-        break;
-      case 500:
-        errorType = TransactionErrorType.NotFound;
-        break;
-      default:
-        errorType = TransactionErrorType.NetworkError;
-        break;
-    }
-    throw {
-      "message": Error.safeToString(message),
-      "status": errorType,
-      "detail": detail
-    };
-  }
 }
 
 /// Contains information about a transaction.
@@ -56,23 +49,17 @@ class RosettaTransaction extends rosetta.Transaction {
   /// @param {Any} rosettaTransaction The Rosetta Transaction object of the transaction.
   /// @param {Number} blockIndex The index of the block containing the transaction.
   /// milliseconds since the Unix Epoch.
-  int blockIndex;
-  late String hash;
-  late String type;
-  late String? status;
-  late String? account1Address;
-  late String? account2Address;
-  late BigInt? amount;
-  late BigInt? fee;
-  late BigInt? memo;
-  late DateTime? timestamp;
-
-  RosettaTransaction(rosetta.Transaction rosettaTransaction, this.blockIndex)
-      : super(rosettaTransaction.transaction_identifier,
-            rosettaTransaction.operations, rosettaTransaction.metadata) {
-    hash = rosettaTransaction.transaction_identifier.hash;
+  RosettaTransaction(
+    rosetta.Transaction rosettaTransaction,
+    this.blockIndex,
+  ) : super(
+          rosettaTransaction.transactionIdentifier,
+          rosettaTransaction.operations,
+          rosettaTransaction.metadata,
+        ) {
+    hash = rosettaTransaction.transactionIdentifier.hash;
     var timestampMs =
-        BigInt.from(rosettaTransaction.metadata?["timestamp"] as int) ~/
+        BigInt.from(rosettaTransaction.metadata?['timestamp'] as int) ~/
             BigInt.from(1000000);
     timestamp = DateTime.fromMillisecondsSinceEpoch(timestampMs.toInt());
     var operations = rosettaTransaction.operations;
@@ -80,11 +67,11 @@ class RosettaTransaction extends rosetta.Transaction {
       type = operations[0].type;
       status = operations[0].status;
       account1Address = operations[0].account?.address;
-
       amount = operations[0].amount != null
           ? BigInt.parse(operations[0].amount!.value)
           : null;
-      // Negate amount for TRANSACTION and BURN, so that they appear in the UI as positive values.
+      // Negate amount for TRANSACTION and BURN,
+      // so that they appear in the UI as positive values.
       if ((operations[0].type == 'TRANSACTION' ||
               operations[0].type == 'BURN') &&
           amount! != BigInt.zero) {
@@ -108,22 +95,34 @@ class RosettaTransaction extends rosetta.Transaction {
           : null;
     } else {
       fee = BigInt.zero;
-      memo = rosettaTransaction.metadata?["memo"] != null
-          ? BigInt.parse(rosettaTransaction.metadata?["memo"] as String)
+      memo = rosettaTransaction.metadata?['memo'] != null
+          ? BigInt.parse(rosettaTransaction.metadata?['memo'] as String)
           : null;
     }
   }
+
+  int blockIndex;
+  late String hash;
+  late String type;
+  late String? status;
+  late String? account1Address;
+  late String? account2Address;
+  late BigInt? amount;
+  late BigInt? fee;
+  late BigInt? memo;
+  late DateTime? timestamp;
 }
 
 /// Manages Rosetta API calls.
 class RosettaApi {
   /// Create a RosettaApi.
+  RosettaApi({this.host = 'https://rosetta-api.internetcomputer.org'});
+
+  final String host;
+
   rosetta.NetworkIdentifier? networkIdentifier;
   BigInt? suggestedFee;
   rosetta.Currency? currency;
-  String host;
-
-  RosettaApi({this.host = "https://rosetta-api.internetcomputer.org"});
 
   Future<void> init() async {
     await getNetworkIdentifier();
@@ -132,9 +131,10 @@ class RosettaApi {
 
   Future<void> getNetworkIdentifier() async {
     var networkList = await networksList();
-    networkIdentifier = (networkList.network_identifiers).singleWhere(
-        (rosetta.NetworkIdentifier id) => id.blockchain == 'Internet Computer',
-        orElse: () => throw 'No Identifier found');
+    networkIdentifier = (networkList.networkIdentifiers).singleWhere(
+      (rosetta.NetworkIdentifier id) => id.blockchain == 'Internet Computer',
+      orElse: () => throw 'No Identifier found',
+    );
   }
 
   /// Return the ICP account balance of the specified account.
@@ -142,34 +142,27 @@ class RosettaApi {
   /// @returns {Promise<BigNumber|TransactionError>} The ICP account balance of the specified account, or
   /// a TransactionError for error.
   Future<BigInt> getAccountBalance(accountAddress) async {
-    try {
-      final response = await accountBalanceByAddress(accountAddress);
-      return BigInt.parse(response.balances[0].value);
-    } catch (error) {
-      rethrow;
-    }
+    final response = await accountBalanceByAddress(accountAddress);
+    return BigInt.parse(response.balances[0].value);
   }
 
   /// Return the latest block index.
   /// @returns {Promise<number>} The latest block index, or a TransactionError for error.
   Future<int> getLastBlockIndex() async {
-    try {
-      final response = await networkStatus();
-      return response.current_block_identifier.index;
-    } catch (error) {
-      rethrow;
-    }
+    final response = await networkStatus();
+    return response.currentBlockIdentifier.index;
   }
 
   Future<void> getSuggestedFee() async {
     if (networkIdentifier != null) {
       var req = rosetta.ConstructionMetadataRequest.fromMap(
-          {"network_identifier": networkIdentifier!.toJson()});
+        {'network_identifier': networkIdentifier!.toJson()},
+      );
       var meta = await metadata(req);
-      final fee = meta.suggested_fee?.singleWhere(
-          (element) => element.currency.symbol == "ICP",
-          orElse: () => throw "Cannot find ICP fee");
-
+      final fee = meta.suggestedFee?.singleWhere(
+        (element) => element.currency.symbol == 'ICP',
+        orElse: () => throw 'Cannot find ICP fee',
+      );
       if (fee != null) {
         suggestedFee = BigInt.parse(fee.value);
         currency = fee.currency;
@@ -182,19 +175,14 @@ class RosettaApi {
   /// @returns {Transaction|null} The Transaction object with the specified hash, or a TransactionError
   /// for error.
   Future<RosettaTransaction> getTransaction(String transactionHash) async {
-    try {
-      final responseTransactions = await transactionsByHash(transactionHash);
-      if (responseTransactions.transactions.isEmpty) {
-        throw TransactionError('Transaction not found.', 500);
-      }
-
-      return RosettaTransaction(
-          responseTransactions.transactions[0].transaction,
-          responseTransactions.transactions[0].block_identifier.index);
-    } catch (error) {
-      //console.log(error);
-      rethrow;
+    final responseTransactions = await transactionsByHash(transactionHash);
+    if (responseTransactions.transactions.isEmpty) {
+      throw TransactionError('Transaction not found.', 500);
     }
+    return RosettaTransaction(
+      responseTransactions.transactions[0].transaction,
+      responseTransactions.transactions[0].blockIdentifier.index,
+    );
   }
 
   /// Return an array of Transaction objects based on the specified parameters, or an empty array if
@@ -206,32 +194,30 @@ class RosettaApi {
   /// @returns {Promise<Array<Transaction>|null>} An array of Transaction objects, or a TransactionError
   /// for error.
   Future<List<RosettaTransaction>> getTransactions(
-      int limit, int maxBlockIndex, int offset) async {
-    try {
-      // This function can be simplified once /search/transactions supports using the properties
-      // max_block, offset, and limit.
-      int blockIndex;
-      if (maxBlockIndex > 0) {
-        blockIndex = maxBlockIndex;
-      } else {
-        // Get the latest block index.
-        final response = await networkStatus();
-        blockIndex = response.current_block_identifier.index;
-      }
-      if (offset > 0) {
-        blockIndex = max(blockIndex - offset, -1);
-      }
-
-      final transactionCount = min(limit, blockIndex + 1);
-      final transactions = <RosettaTransaction>[];
-      for (var i = 0; i < transactionCount; i++) {
-        transactions.add(await getTransactionByBlock(blockIndex - i));
-      }
-      return transactions;
-    } catch (error) {
-      //console.log(error);
-      rethrow;
+    int limit,
+    int maxBlockIndex,
+    int offset,
+  ) async {
+    // This function can be simplified once search/transactions supports using
+    // the properties [maxBlockIndex], [offset], and [limit].
+    int blockIndex;
+    if (maxBlockIndex > 0) {
+      blockIndex = maxBlockIndex;
+    } else {
+      // Get the latest block index.
+      final response = await networkStatus();
+      blockIndex = response.currentBlockIdentifier.index;
     }
+    if (offset > 0) {
+      blockIndex = max(blockIndex - offset, -1);
+    }
+
+    final transactionCount = min(limit, blockIndex + 1);
+    final transactions = <RosettaTransaction>[];
+    for (var i = 0; i < transactionCount; i++) {
+      transactions.add(await getTransactionByBlock(blockIndex - i));
+    }
+    return transactions;
   }
 
   /// Return an array of Transaction objects based on the specified parameters, or an empty array if
@@ -246,7 +232,7 @@ class RosettaApi {
       final transactions = response.transactions
           .map((rosetta.BlockTransaction blockTransaction) {
         return RosettaTransaction(blockTransaction.transaction,
-            blockTransaction.block_identifier.index);
+            blockTransaction.blockIdentifier.index);
       }).toList();
 
       return transactions.reversed.toList();
@@ -268,7 +254,7 @@ class RosettaApi {
     if (block != null) {
       return RosettaTransaction(block.transactions[0], blockIndex);
     } else {
-      throw TransactionError("Block is not found $blockIndex", 500);
+      throw TransactionError('Block is not found $blockIndex', 500);
     }
   }
 
@@ -305,21 +291,21 @@ class RosettaApi {
   /// @returns {Promise<any>} The response body that was provided by the server.
   /// @private
   Future<rosetta.NetworkListResponse> networksList() async {
-    var result = await request('/network/list', {"metadata": {}});
+    var result = await request('/network/list', {'metadata': {}});
     return rosetta.NetworkListResponse.fromMap(result);
   }
 
   Future<rosetta.ConstructionMetadataResponse> metadata(
       rosetta.ConstructionMetadataRequest req) async {
-    assert(networkIdentifier != null, "Cannot get networkIdentifier");
-    var result = await request("/construction/metadata", req.toJson());
+    assert(networkIdentifier != null, 'Cannot get networkIdentifier');
+    var result = await request('/construction/metadata', req.toJson());
     return rosetta.ConstructionMetadataResponse.fromMap(result);
   }
 
   Future<rosetta.ConstructionPayloadsResponse> payloads(
       rosetta.ConstructionPayloadsRequest req) async {
-    assert(networkIdentifier != null, "Cannot get networkIdentifier");
-    var result = await request("/construction/payloads", req.toJson());
+    assert(networkIdentifier != null, 'Cannot get networkIdentifier');
+    var result = await request('/construction/payloads', req.toJson());
     return rosetta.ConstructionPayloadsResponse.fromMap(result);
   }
 
@@ -327,11 +313,11 @@ class RosettaApi {
   /// @returns {Promise<any>} The response body that was provided by the server.
   /// @private
   Future<rosetta.NetworkStatusResponse> networkStatus() async {
-    assert(networkIdentifier != null, "Cannot get networkIdentifier");
+    assert(networkIdentifier != null, 'Cannot get networkIdentifier');
     var result = await request(
         '/network/status',
         rosetta.NetworkRequest.fromMap(
-            {"network_identifier": networkIdentifier}).toJson());
+            {'network_identifier': networkIdentifier}).toJson());
     return rosetta.NetworkStatusResponse.fromMap(result);
   }
 
@@ -341,10 +327,10 @@ class RosettaApi {
   /// @private
   Future<rosetta.AccountBalanceResponse> accountBalanceByAddress(
       String accountAddress) async {
-    assert(networkIdentifier != null, "Cannot get networkIdentifier");
+    assert(networkIdentifier != null, 'Cannot get networkIdentifier');
     var result = await request('/account/balance', {
-      "network_identifier": networkIdentifier,
-      "account_identifier": {"address": accountAddress}
+      'network_identifier': networkIdentifier,
+      'account_identifier': {'address': accountAddress}
     });
     return rosetta.AccountBalanceResponse.fromMap(result);
   }
@@ -355,10 +341,10 @@ class RosettaApi {
   /// @returns {Promise<any>} The response body that was provided by the server.
   /// @private
   Future<rosetta.BlockResponse> blockByIndex(int blockIndex) async {
-    assert(networkIdentifier != null, "Cannot get networkIdentifier");
+    assert(networkIdentifier != null, 'Cannot get networkIdentifier');
     var result = await request('/block', {
-      "network_identifier": networkIdentifier,
-      "block_identifier": {"index": blockIndex}
+      'network_identifier': networkIdentifier,
+      'block_identifier': {'index': blockIndex}
     });
     return rosetta.BlockResponse.fromMap(result);
   }
@@ -370,10 +356,10 @@ class RosettaApi {
   /// @private
   Future<rosetta.SearchTransactionsResponse> transactionsByAccount(
       String accountAddress) async {
-    assert(networkIdentifier != null, "Cannot get networkIdentifier");
+    assert(networkIdentifier != null, 'Cannot get networkIdentifier');
     var result = await request('/search/transactions', {
-      "network_identifier": networkIdentifier,
-      "account_identifier": {"address": accountAddress}
+      'network_identifier': networkIdentifier,
+      'account_identifier': {'address': accountAddress}
     });
     return rosetta.SearchTransactionsResponse.fromMap(result);
   }
@@ -384,10 +370,10 @@ class RosettaApi {
   /// @private
   Future<rosetta.SearchTransactionsResponse> transactionsByHash(
       String transactionHash) async {
-    assert(networkIdentifier != null, "Cannot get networkIdentifier");
+    assert(networkIdentifier != null, 'Cannot get networkIdentifier');
     var result = await request('/search/transactions', {
-      "network_identifier": networkIdentifier,
-      "transaction_identifier": {"hash": transactionHash}
+      'network_identifier': networkIdentifier,
+      'transaction_identifier': {'hash': transactionHash}
     });
     return rosetta.SearchTransactionsResponse.fromMap(result);
   }
@@ -398,14 +384,14 @@ class RosettaApi {
   /// @private
   Future<rosetta.SearchTransactionsResponse> transactions(
       rosetta.SearchTransactionsRequest req) async {
-    assert(networkIdentifier != null, "Cannot get networkIdentifier");
+    assert(networkIdentifier != null, 'Cannot get networkIdentifier');
     var result = await request('/search/transactions', req.toJson());
     return rosetta.SearchTransactionsResponse.fromMap(result);
   }
 
   Future<rosetta.TransactionIdentifierResponse> submit(
       rosetta.ConstructionSubmitRequest req) async {
-    var result = await request("/construction/submit", req.toJson());
+    var result = await request('/construction/submit', req.toJson());
     return rosetta.TransactionIdentifierResponse.fromMap(result);
   }
 
@@ -415,79 +401,73 @@ class RosettaApi {
       BigInt count,
       BigInt? maxFee,
       Map<String, dynamic>? opt) async {
-    assert(networkIdentifier != null, "Cannot get networkIdentifier");
+    assert(networkIdentifier != null, 'Cannot get networkIdentifier');
 
     var netId = networkIdentifier;
 
     var oper1 = rosetta.Operation.fromMap(
       {
-        "operation_identifier": {"index": 0},
-        "type": "TRANSACTION",
-        "account": {
-          "address": getAccountIdFromEd25519PublicKey(srcPub).toHex()
+        'operation_identifier': {'index': 0},
+        'type': 'TRANSACTION',
+        'account': {
+          'address': getAccountIdFromEd25519PublicKey(srcPub).toHex()
         },
-        "amount": {
-          "value": "-${count.toRadixString(10)}",
-          "currency": currency?.toJson(),
+        'amount': {
+          'value': '-${count.toRadixString(10)}',
+          'currency': currency?.toJson(),
         },
       },
     ).toJson();
     var oper2 = rosetta.Operation.fromMap(
       {
-        "operation_identifier": {"index": 1},
-        "type": "TRANSACTION",
-        "account": {
-          "address": crc32Add(destAddr).toHex(),
+        'operation_identifier': {'index': 1},
+        'type': 'TRANSACTION',
+        'account': {
+          'address': crc32Add(destAddr).toHex(),
         },
-        "amount": {
-          "value": count.toRadixString(10),
-          "currency": currency?.toJson(),
+        'amount': {
+          'value': count.toRadixString(10),
+          'currency': currency?.toJson(),
         },
       },
     ).toJson();
     var oper3 = rosetta.Operation.fromMap(
       {
-        "operation_identifier": {"index": 2},
-        "type": "FEE",
-        "account": {
-          "address": getAccountIdFromEd25519PublicKey(srcPub).toHex()
+        'operation_identifier': {'index': 2},
+        'type': 'FEE',
+        'account': {
+          'address': getAccountIdFromEd25519PublicKey(srcPub).toHex()
         },
-        "amount": {
-          "value":
-              "-${maxFee?.toRadixString(10) ?? suggestedFee?.toRadixString(10)}",
-          "currency": currency?.toJson(),
+        'amount': {
+          'value':
+              '-${maxFee?.toRadixString(10) ?? suggestedFee?.toRadixString(10)}',
+          'currency': currency?.toJson(),
         },
       },
     ).toJson();
     var metaResult = await metadata(rosetta.ConstructionMetadataRequest.fromMap(
-        {"network_identifier": netId?.toJson()}));
+        {'network_identifier': netId?.toJson()}));
     var meta = {...metaResult.metadata, ...?opt};
 
-    var _payloads = rosetta.ConstructionPayloadsRequest.fromMap({
-      "network_identifier": netId?.toJson(),
-      "operations": [oper1, oper2, oper3],
-      "metadata": meta,
-      "public_keys": [
-        {
-          "hex_bytes": srcPub.toHex(),
-          "curve_type": "edwards25519",
-        },
+    var request = rosetta.ConstructionPayloadsRequest.fromMap({
+      'network_identifier': netId?.toJson(),
+      'operations': [oper1, oper2, oper3],
+      'metadata': meta,
+      'public_keys': [
+        {'hex_bytes': srcPub.toHex(), 'curve_type': 'edwards25519'},
       ],
     });
-
-    // print(jsonEncode(_payloads.toJson()));
-
-    return await payloads(_payloads);
+    return await payloads(request);
   }
 
-  // ignore: non_constant_identifier_names
-  Future<rosetta.TransactionIdentifierResponse> transfer_post_combine(
-      CombineSignedTransactionResult combineRes) async {
-    assert(networkIdentifier != null, "Cannot get networkIdentifier");
+  Future<rosetta.TransactionIdentifierResponse> transferPostCombine(
+    CombineSignedTransactionResult combineRes,
+  ) async {
+    assert(networkIdentifier != null, 'Cannot get networkIdentifier');
 
     return submit(rosetta.ConstructionSubmitRequest.fromMap({
-      "network_identifier": networkIdentifier?.toJson(),
-      "signed_transaction": combineRes.signedTransaction,
+      'network_identifier': networkIdentifier?.toJson(),
+      'signed_transaction': combineRes.signedTransaction,
     }));
   }
 }
@@ -496,22 +476,22 @@ Future<CombineSignedTransactionResult> transferCombine(
     Ed25519KeyIdentity identity, rosetta.SignablePayload payloadsRes) async {
   var signatures = [];
   for (var p in payloadsRes.payloads) {
-    var hexBytes = blobToHex(await identity.sign(blobFromHex(p.hex_bytes)));
+    var hexBytes = blobToHex(await identity.sign(blobFromHex(p.hexBytes)));
 
     var signedPayload = {
-      "signing_payload": p.toJson(),
-      "public_key": {
-        "hex_bytes": identity.getPublicKey().rawKey.toHex(),
-        "curve_type": "edwards25519",
+      'signing_payload': p.toJson(),
+      'public_key': {
+        'hex_bytes': identity.getPublicKey().rawKey.toHex(),
+        'curve_type': 'edwards25519',
       },
-      "signature_type": "ed25519",
-      "hex_bytes": hexBytes,
+      'signature_type': 'ed25519',
+      'hex_bytes': hexBytes,
     };
     signatures.add(signedPayload);
   }
   return combine(rosetta.ConstructionCombineRequestPart.fromMap({
-    "signatures": signatures,
-    "unsigned_transaction": payloadsRes.unsigned_transaction,
+    'signatures': signatures,
+    'unsigned_transaction': payloadsRes.unsignedTransaction,
   }));
 }
 
@@ -519,22 +499,22 @@ Future<CombineSignedTransactionResult> ecTransferCombine(
     Secp256k1KeyIdentity identity, rosetta.SignablePayload payloadsRes) async {
   var signatures = [];
   for (var p in payloadsRes.payloads) {
-    var hexBytes = blobToHex(await identity.sign(blobFromHex(p.hex_bytes)));
+    var hexBytes = blobToHex(await identity.sign(blobFromHex(p.hexBytes)));
 
     var signedPayload = {
-      "signing_payload": p.toJson(),
-      "public_key": {
-        "hex_bytes": identity.getPublicKey().rawKey.toHex(),
-        "curve_type": "secp256k1",
+      'signing_payload': p.toJson(),
+      'public_key': {
+        'hex_bytes': identity.getPublicKey().rawKey.toHex(),
+        'curve_type': 'secp256k1',
       },
-      "signature_type": "ecdsa",
-      "hex_bytes": hexBytes,
+      'signature_type': 'ecdsa',
+      'hex_bytes': hexBytes,
     };
     signatures.add(signedPayload);
   }
   return combine(rosetta.ConstructionCombineRequestPart.fromMap({
-    "signatures": signatures,
-    "unsigned_transaction": payloadsRes.unsigned_transaction,
+    'signatures': signatures,
+    'unsigned_transaction': payloadsRes.unsignedTransaction,
   }));
 }
 
@@ -546,60 +526,60 @@ CombineSignedTransactionResult combine(
   Map<String, rosetta.Signature> signaturesBySigData =
       <String, rosetta.Signature>{};
   for (var sig in req.signatures) {
-    signaturesBySigData.putIfAbsent(sig.signing_payload.hex_bytes, () => sig);
+    signaturesBySigData.putIfAbsent(sig.signingPayload.hexBytes, () => sig);
   }
 
-  var unsignedTransaction = cborDecode<Map>(req.unsigned_transaction.toU8a());
+  var unsignedTransaction = cborDecode<Map>(req.unsignedTransaction.toU8a());
 
   assert(req.signatures.length ==
-      unsignedTransaction["ingress_expiries"]?.length * 2);
-  assert((unsignedTransaction["updates"] as List).length == 1);
+      unsignedTransaction['ingress_expiries']?.length * 2);
+  assert((unsignedTransaction['updates'] as List).length == 1);
 
   var envelopes = [];
-  for (var updateItem in unsignedTransaction["updates"]) {
+  for (var updateItem in unsignedTransaction['updates']) {
     var reqType = updateItem[0];
 
     var update = updateItem[1];
     var requestEnvelopes = [];
 
-    for (var ingressExpiry in unsignedTransaction["ingress_expiries"]) {
-      update["ingress_expiry"] = BigInt.from(ingressExpiry).toInt();
+    for (var ingressExpiry in unsignedTransaction['ingress_expiries']) {
+      update['ingress_expiry'] = BigInt.from(ingressExpiry).toInt();
 
-      var readState = make_read_state_from_update(update);
+      var readState = makeReadStateFromUpdate(update);
 
       var transactionSignature = signaturesBySigData[
-          blobToHex(make_sig_data(HttpCanisterUpdate_id(update)))];
+          blobToHex(makeSignatureData(httpCanisterUpdateId(update)))];
 
-      var readStateSignature = signaturesBySigData[blobToHex(make_sig_data(
-          HttpReadState_representation_independent_hash(readState)))];
+      var readStateSignature = signaturesBySigData[blobToHex(makeSignatureData(
+          httpReadStateRepresentationIndependantHash(readState)))];
 
       var envelope = {
-        "content": {
-          "request_type": "call",
+        'content': {
+          'request_type': 'call',
           ...update,
         },
-        "sender_pubkey": Ed25519PublicKey.fromRaw(
-                blobFromHex(transactionSignature!.public_key.hex_bytes))
+        'sender_pubkey': Ed25519PublicKey.fromRaw(
+                blobFromHex(transactionSignature!.publicKey.hexBytes))
             .toDer(),
-        "sender_sig": blobFromHex(transactionSignature.hex_bytes),
-        "sender_delegation": null,
+        'sender_sig': blobFromHex(transactionSignature.hexBytes),
+        'sender_delegation': null,
       };
 
       // envelope.content.encodeCBOR = cbor.Encoder.encodeIndefinite;
 
       var readStateEnvelope = {
-        "content": {
-          "request_type": "read_state",
+        'content': {
+          'request_type': 'read_state',
           ...readState,
         },
-        "sender_pubkey": Ed25519PublicKey.fromRaw(
-                blobFromHex(readStateSignature!.public_key.hex_bytes))
+        'sender_pubkey': Ed25519PublicKey.fromRaw(
+                blobFromHex(readStateSignature!.publicKey.hexBytes))
             .toDer(),
-        "sender_sig": blobFromHex(readStateSignature.hex_bytes),
-        "sender_delegation": null,
+        'sender_sig': blobFromHex(readStateSignature.hexBytes),
+        'sender_delegation': null,
       };
       requestEnvelopes
-          .add({"update": envelope, "read_state": readStateEnvelope});
+          .add({'update': envelope, 'read_state': readStateEnvelope});
     }
     envelopes.add([reqType, requestEnvelopes]);
   }
@@ -611,9 +591,9 @@ CombineSignedTransactionResult combine(
 }
 
 class CombineSignedTransactionResult {
-  String signedTransaction;
+  const CombineSignedTransactionResult(this.signedTransaction);
 
-  CombineSignedTransactionResult(this.signedTransaction);
+  final String signedTransaction;
 }
 
 const tweetNaclSignedPubLength = 32;
@@ -623,22 +603,22 @@ Map<String, dynamic> transactionDecoder(String txnHash) {
   assert(envelopes.length == 1);
 
   var envelope = envelopes[0][0];
-  assert(envelope["content"]["request_type"] == "call");
-  assert(envelope["content"]["method_name"] == "send_pb");
-  var content = envelope["content"] as Map;
-  var senderPubkey = envelope["sender_pubkey"];
-  var sendArgs = SendRequest.fromBuffer(content["arg"]);
-  var senderAddress = Principal.fromBlob(Uint8List.fromList(content["sender"]));
+  assert(envelope['content']['request_type'] == 'call');
+  assert(envelope['content']['method_name'] == 'send_pb');
+  var content = envelope['content'] as Map;
+  var senderPubkey = envelope['sender_pubkey'];
+  var sendArgs = SendRequest.fromBuffer(content['arg']);
+  var senderAddress = Principal.fromBlob(Uint8List.fromList(content['sender']));
   final hash = SHA224()
     ..update(('\x0Aaccount-id').plainToU8a())
     ..update(senderAddress.toBlob())
     ..update(Uint8List(32));
   return {
-    "from": hash.digest(),
-    "to": Uint8List.fromList(sendArgs.to.hash.sublist(4)),
-    "amount": BigInt.parse(sendArgs.payment.receiverGets.e8s.toRadixString(10)),
-    "fee": BigInt.parse(sendArgs.maxFee.e8s.toRadixString(10)),
-    "sender_pubkey": Uint8List.fromList(senderPubkey).sublist(
+    'from': hash.digest(),
+    'to': Uint8List.fromList(sendArgs.to.hash.sublist(4)),
+    'amount': BigInt.parse(sendArgs.payment.receiverGets.e8s.toRadixString(10)),
+    'fee': BigInt.parse(sendArgs.maxFee.e8s.toRadixString(10)),
+    'sender_pubkey': Uint8List.fromList(senderPubkey).sublist(
         (Uint8List.fromList(senderPubkey)).byteLength -
             tweetNaclSignedPubLength),
   };

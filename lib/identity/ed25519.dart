@@ -8,14 +8,10 @@ import '../bridge/ffi/ffi.dart';
 
 typedef JsonnableEd25519KeyIdentity = List<String>;
 
-class Ed25519KeyPair implements auth.KeyPair {
-  @override
-  BinaryBlob secretKey;
-  @override
-  auth.PublicKey publicKey;
-  Ed25519KeyPair(this.publicKey, this.secretKey);
+class Ed25519KeyPair extends auth.KeyPair {
+  Ed25519KeyPair({required super.publicKey, required super.secretKey});
 
-  toJson() {
+  List<String> toJson() {
     return [
       publicKey.toDer().toHex(include0x: false),
       secretKey.toHex(include0x: false)
@@ -24,6 +20,13 @@ class Ed25519KeyPair implements auth.KeyPair {
 }
 
 class Ed25519PublicKey implements auth.PublicKey {
+  /// `fromRaw` and `fromDer` should be used for instantiation,
+  /// not this constructor.
+  Ed25519PublicKey(this.rawKey) : derKey = Ed25519PublicKey.derEncode(rawKey);
+
+  final BinaryBlob rawKey;
+  final DerEncodedBlob derKey;
+
   static Ed25519PublicKey from(auth.PublicKey key) {
     return Ed25519PublicKey.fromDer(key.toDer());
   }
@@ -36,42 +39,32 @@ class Ed25519PublicKey implements auth.PublicKey {
     return Ed25519PublicKey(Ed25519PublicKey.derDecode(derKey));
   }
 
-  // The length of Ed25519 public keys is always 32 bytes.
-  // ignore: non_constant_identifier_names
-  static int RAW_KEY_LENGTH = 32;
+  /// The length of Ed25519 public keys is always 32 bytes.
+  static int rawKeyLength = 32;
 
-  // Adding this prefix to a raw public key is sufficient to DER-encode it.
-  // See https://github.com/dfinity/agent-js/issues/42#issuecomment-716356288
-  // ignore: non_constant_identifier_names
-  static Uint8List DER_PREFIX = Uint8List.fromList([
+  /// Adding this prefix to a raw public key is sufficient to DER-encode it.
+  /// See https://github.com/dfinity/agent-js/issues/42#issuecomment-716356288
+  static Uint8List derPrefix = Uint8List.fromList([
     ...[48, 42], // SEQUENCE
     ...[48, 5], // SEQUENCE
     ...[6, 3], // OBJECT
     ...[43, 101, 112], // Ed25519 OID
     ...[3], // OBJECT
-    ...[Ed25519PublicKey.RAW_KEY_LENGTH + 1], // BIT STRING
+    ...[Ed25519PublicKey.rawKeyLength + 1], // BIT STRING
     ...[0], // 'no padding'
   ]);
 
   static DerEncodedBlob derEncode(BinaryBlob publicKey) {
-    return wrapDER(publicKey.buffer, ED25519_OID);
+    return wrapDER(publicKey.buffer, oidEd25519);
   }
 
   static BinaryBlob derDecode(BinaryBlob key) {
-    final unwrapped = unwrapDER(key.buffer, ED25519_OID);
-    if (unwrapped.length != RAW_KEY_LENGTH) {
+    final unwrapped = unwrapDER(key.buffer, oidEd25519);
+    if (unwrapped.length != rawKeyLength) {
       throw 'An Ed25519 public key must be exactly 32bytes long';
     }
 
     return unwrapped;
-  }
-
-  late BinaryBlob rawKey;
-  late DerEncodedBlob derKey;
-
-  // `fromRaw` and `fromDer` should be used for instantiation, not this constructor.
-  Ed25519PublicKey(this.rawKey) {
-    derKey = Ed25519PublicKey.derEncode(rawKey);
   }
 
   @override
@@ -85,6 +78,11 @@ class Ed25519PublicKey implements auth.PublicKey {
 }
 
 class Ed25519KeyIdentity extends auth.SignIdentity {
+  // `fromRaw` and `fromDer` should be used for instantiation, not this constructor.
+  Ed25519KeyIdentity(auth.PublicKey publicKey, this._seed) : super() {
+    _publicKey = Ed25519PublicKey.from(publicKey);
+  }
+
   static Future<Ed25519KeyIdentity> generate(Uint8List? seed) async {
     if (seed != null && seed.length != 32) {
       throw 'Ed25519 Seed needs to be 32 bytes long.';
@@ -126,23 +124,23 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
       }
     } else if (parsed is Map) {
       final reParsed = Map<String, List>.from(jsonDecode(json));
-      var publicKey = reParsed["publicKey"];
-      var _publicKey = reParsed["_publicKey"];
-      var secretKey = reParsed["secretKey"];
-      var _privateKey = reParsed["_privateKey"];
+      var publicKey = reParsed['publicKey'];
+      var dashPublicKey = reParsed['_publicKey'];
+      var secretKey = reParsed['secretKey'];
+      var dashPrivateKey = reParsed['_privateKey'];
 
       final pk = publicKey != null
           ? Ed25519PublicKey.fromRaw(
               Uint8List.fromList(List<int>.from(publicKey)))
           : Ed25519PublicKey.fromDer(
-              Uint8List.fromList(List<int>.from(_publicKey!)));
+              Uint8List.fromList(List<int>.from(dashPublicKey!)));
 
       if (publicKey != null && secretKey != null) {
         return Ed25519KeyIdentity(
             pk, Uint8List.fromList(List<int>.from(secretKey)));
-      } else if (_publicKey != null && _privateKey != null) {
+      } else if (dashPublicKey != null && dashPrivateKey != null) {
         return Ed25519KeyIdentity(
-            pk, Uint8List.fromList(List<int>.from(_privateKey)));
+            pk, Uint8List.fromList(List<int>.from(dashPrivateKey)));
       }
     }
     throw 'Deserialization error: Invalid JSON type for string: ${jsonEncode(json)}';
@@ -160,7 +158,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
       var mne = dropLeadingUserNumber(phrase);
       var identity = await fromMnemonicWithoutValidation(
         mne,
-        IC_DERIVATION_PATH,
+        icDerivationPath,
       );
       return Ed25519KeyIdentityRecoveredFromII(
         userNumber: userNumber,
@@ -174,11 +172,6 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
   late final Ed25519PublicKey _publicKey;
   late final BinaryBlob _seed;
 
-  // `fromRaw` and `fromDer` should be used for instantiation, not this constructor.
-  Ed25519KeyIdentity(auth.PublicKey publicKey, this._seed) : super() {
-    _publicKey = Ed25519PublicKey.from(publicKey);
-  }
-
   /// Serialize this key to JSON.
   JsonnableEd25519KeyIdentity toJSON() {
     return [blobToHex(_publicKey.toDer()), blobToHex(_seed)];
@@ -186,7 +179,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
 
   /// Return a copy of the key pair.
   auth.KeyPair getKeyPair() {
-    return Ed25519KeyPair(_publicKey, _seed);
+    return Ed25519KeyPair(publicKey: _publicKey, secretKey: _seed);
   }
 
   /// Return the public key.
@@ -213,6 +206,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
   }
 
   Uint8List get accountId => getAccountId();
+
   Uint8List getAccountId([Uint8List? subAccount]) {
     return Principal.selfAuthenticating(
       getPublicKey().toDer(),
@@ -221,30 +215,23 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
 }
 
 class Ed25519KeyIdentityRecoveredFromII {
+  Ed25519KeyIdentityRecoveredFromII({required this.identity, this.userNumber});
+
   final BigInt? userNumber;
   final Ed25519KeyIdentity identity;
-  Ed25519KeyIdentityRecoveredFromII({required this.identity, this.userNumber});
 }
 
-///
 /// The following part is ported from InternetIdentity service. It's main purpose is to `recover` an identity that registered.
 /// These truths are covered.
 /// - It generates masterseed using Bip39 and sha512
 /// - Then use derivationPath matches to m/44'/223’/0’/0’/0'
 /// - Then use Ed25519KeyIdentity.to generate a new identity.
-/// - Internet Identity service then use the generated identity as a binding to originial identity.
+/// - Internet Identity service then use the generated identity as a binding to original identity.
 /// - So the phrases that generated can be saved to a new location, then combined with a device number to recover
 
-// ignore: constant_identifier_names
-const HARDENED = 0x80000000;
-// ignore: constant_identifier_names
-const IC_BASE_PATH = [
-  44,
-  223,
-  0,
-];
-// ignore: constant_identifier_names
-const IC_DERIVATION_PATH = [44, 223, 0, 0, 0];
+const hardened = 0x80000000;
+const icBasePath = [44, 223, 0];
+const icDerivationPath = [44, 223, 0, 0, 0];
 
 /// Create an Ed25519 based on a mnemonic phrase according to SLIP 0010:
 /// https://github.com/satoshilabs/slips/blob/master/slip-0010.md
@@ -257,11 +244,14 @@ const IC_DERIVATION_PATH = [44, 223, 0, 0, 0];
 /// e.g. to generate m/44'/223’/0’/0’/0' the derivation path should be [44, 223, 0, 0, 0]
 /// @param skipValidation if true, validation checks on the mnemonics are skipped.
 Future<Ed25519KeyIdentity> fromMnemonicWithoutValidation(
-    String mnemonic, List<int>? derivationPath,
-    {int offset = HARDENED}) async {
+  String mnemonic,
+  List<int>? derivationPath, {
+  int offset = hardened,
+}) async {
   derivationPath ??= [];
   final seed = await AgentDartFFI.instance.mnemonicPhraseToSeed(
-      req: PhraseToSeedReq(phrase: mnemonic, password: ''));
+    req: PhraseToSeedReq(phrase: mnemonic, password: ''),
+  );
   return fromSeedWithSlip0010(seed, derivationPath, offset: offset);
 }
 
@@ -272,7 +262,7 @@ Future<Ed25519KeyIdentity> fromMnemonicWithoutValidation(
 /// e.g. to generate m/44'/223’/0’/0’/0' the derivation path should be [44, 223, 0, 0, 0]
 Future<Ed25519KeyIdentity> fromSeedWithSlip0010(
     Uint8List masterSeed, List<int>? derivationPath,
-    {int offset = HARDENED}) {
+    {int offset = hardened}) {
   var chainSet = generateMasterKey(masterSeed);
   var slipSeed = chainSet.first;
   var chainCode = chainSet.last;
@@ -322,7 +312,7 @@ Uint8List toBigEndianArray(int n) {
 }
 
 String dropLeadingUserNumber(String s) {
-  final i = s.indexOf(" ");
+  final i = s.indexOf(' ');
   if (i != -1 && parseUserNumber(s.substring(0, i)) != null) {
     return s.substring(i + 1);
   } else {
@@ -345,7 +335,7 @@ BigInt? parseUserNumber(String s) {
 }
 
 BigInt? extractUserNumber(String s) {
-  final i = s.indexOf(" ");
+  final i = s.indexOf(' ');
   if (i != -1 && parseUserNumber(s.substring(0, i)) != null) {
     return parseUserNumber(s.substring(0, i));
   } else {

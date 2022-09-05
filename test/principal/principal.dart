@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:agent_dart/principal/principal.dart';
 
@@ -37,6 +35,6 @@ void principalTest() {
 
   test('errors out on parsing invalid characters', () {
     expect(() => Principal.fromText('Hello world!'),
-        throwsA(assertionThrowsContains("Invalid character")));
+        throwsA(assertionThrowsContains('Invalid character')));
   });
 }

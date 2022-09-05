@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:agent_dart/agent/auth.dart';
 import 'package:agent_dart/authentication/authentication.dart';
 import 'package:agent_dart/identity/delegation.dart';
-import 'package:agent_dart/identity/identity.dart';
+import 'package:agent_dart/identity/ed25519.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Future<SignIdentity> createIdentity(int seed) async {

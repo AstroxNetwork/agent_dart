@@ -59,18 +59,18 @@ void hashTest() {
 
   test('requestIdOf', () async {
     final request = {
-      "request_type": 'call',
-      "method_name": 'hello',
+      'request_type': 'call',
+      'method_name': 'hello',
 
       // 0x00000000000004D2
       // \x00\x00\x00\x00\x00\x00\x04\xD2
       // 0   0   0   0   0   0   4   210
-      "canister_id": BinaryBlob.fromList([0, 0, 0, 0, 0, 0, 4, 210]),
+      'canister_id': BinaryBlob.fromList([0, 0, 0, 0, 0, 0, 4, 210]),
 
       // DIDL\x00\xFD*
       // D   I   D   L   \x00  \253  *
       // 68  73  68  76  0     253   42
-      "arg": BinaryBlob.fromList([68, 73, 68, 76, 0, 253, 42]),
+      'arg': BinaryBlob.fromList([68, 73, 68, 76, 0, 253, 42]),
     };
 
     final requestId = requestIdOf(request);

@@ -10,16 +10,22 @@ final domainSeparator = '\x0Aic-request'.plainToU8a();
 
 /// A Key Pair, containing a secret and public key.
 abstract class KeyPair {
-  late BinaryBlob secretKey;
-  late PublicKey publicKey;
+  const KeyPair({required this.secretKey, required this.publicKey});
+
+  final BinaryBlob secretKey;
+  final PublicKey publicKey;
 }
 
 abstract class PublicKey {
+  const PublicKey();
+
   // Get the public key bytes encoded with DER.
   DerEncodedBlob toDer();
 }
 
 abstract class Identity {
+  const Identity();
+
   /// Get the principal represented by this identity. Normally should be a
   /// `Principal.selfAuthenticating()`.
   Principal getPrincipal();
@@ -55,22 +61,23 @@ abstract class SignIdentity implements Identity {
   @override
   Future<dynamic> transformRequest(HttpAgentRequest request) async {
     var body = request.body;
-
     var requestId = requestIdOf(body.toJson());
-
     return {
       ...request.toJson(),
-      "body": {
-        "content": (request).body.toJson(),
-        "sender_pubkey": getPublicKey().toDer(),
-        "sender_sig":
-            await sign(u8aConcat([domainSeparator, requestId.buffer])),
+      'body': {
+        'content': (request).body.toJson(),
+        'sender_pubkey': getPublicKey().toDer(),
+        'sender_sig': await sign(
+          u8aConcat([domainSeparator, requestId.buffer]),
+        ),
       },
     };
   }
 }
 
 class AnonymousIdentity implements Identity {
+  const AnonymousIdentity();
+
   @override
   Principal getPrincipal() => Principal.anonymous();
 
@@ -78,7 +85,7 @@ class AnonymousIdentity implements Identity {
   Future<Map<String, dynamic>> transformRequest(HttpAgentRequest request) {
     return Future.value({
       ...request.toJson(),
-      "body": {"content": request.body.toJson()}
+      'body': {'content': request.body.toJson()}
     });
   }
 }
@@ -100,54 +107,48 @@ class AnonymousIdentity implements Identity {
 /// @param identity - identity describe in returned descriptor
 
 class IdentityDescriptor {
-  late String type;
-  late String? publicKey;
-  IdentityDescriptor({required this.type, this.publicKey});
+  const IdentityDescriptor({required this.type, this.publicKey});
+
   factory IdentityDescriptor.fromJson(Map<String, dynamic> json) {
-    var descriptor =
-        IdentityDescriptor(type: json["type"] ?? "AnonymousIdentity");
-    if (json["publicKey"] != null) {
-      descriptor.publicKey = json["publicKey"];
-    }
-    return descriptor;
+    return IdentityDescriptor(
+      type: json['type'] ?? 'AnonymousIdentity',
+      publicKey: json['publicKey'],
+    );
   }
+
+  final String type;
+  final String? publicKey;
+
   Map<String, dynamic> toJson() {
     if (publicKey == null) {
       return {
-        "type": type,
+        'type': type,
       };
     } else {
-      return {"type": type, "publicKey": publicKey};
+      return {'type': type, 'publicKey': publicKey};
     }
   }
 }
 
-IdentityDescriptor createIdentityDescriptor(
-  Identity identity,
-) {
+IdentityDescriptor createIdentityDescriptor(Identity identity) {
   final identityIndicator = identity is SignIdentity
       ? {
-          "type": 'PublicKeyIdentity',
-          "publicKey": identity.getPublicKey().toDer().toHex(include0x: false)
+          'type': 'PublicKeyIdentity',
+          'publicKey': identity.getPublicKey().toDer().toHex(include0x: false)
         }
-      : {"type": 'AnonymousIdentity'};
+      : {'type': 'AnonymousIdentity'};
   return IdentityDescriptor.fromJson(identityIndicator);
 }
 
 /// Type Guard for whether the unknown value is an IdentityDescriptor or not.
 /// @param value - value to type guard
-bool isIdentityDescriptor(
-  dynamic value,
-) {
+bool isIdentityDescriptor(dynamic value) {
   if (value is IdentityDescriptor) {
     switch (value.type) {
       case 'AnonymousIdentity':
         return true;
       case 'PublicKeyIdentity':
-        if (value.publicKey! is String) {
-          return false;
-        }
-        return true;
+        return value.publicKey is! String;
     }
   }
   return false;
