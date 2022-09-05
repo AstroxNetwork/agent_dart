@@ -1,14 +1,17 @@
 // ignore: file_names
 part of 'key_store.dart';
 
-abstract class _KeyDerivator {
+abstract class KeyDerivator {
   Uint8List deriveKey(List<int> password);
 
   String getName();
+
   Map<String, dynamic> encode();
 }
 
-class _PBDKDF2KeyDerivator extends _KeyDerivator {
+class _PBDKDF2KeyDerivator extends KeyDerivator {
+  _PBDKDF2KeyDerivator(this.iterations, this.salt, this.dklen);
+
   final int iterations;
   final Uint8List salt;
   final int dklen;
@@ -16,8 +19,6 @@ class _PBDKDF2KeyDerivator extends _KeyDerivator {
   /// The docs (https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition)
   /// say that HMAC with SHA-256 is the only mac supported at the moment
   static final Mac mac = HMac(SHA256Digest(), 64);
-
-  _PBDKDF2KeyDerivator(this.iterations, this.salt, this.dklen);
 
   @override
   Uint8List deriveKey(List<int> password) {
@@ -39,18 +40,18 @@ class _PBDKDF2KeyDerivator extends _KeyDerivator {
 
   @override
   String getName() {
-    return "pbkdf2";
+    return 'pbkdf2';
   }
 }
 
-class _ScryptKeyDerivator extends _KeyDerivator {
+class _ScryptKeyDerivator extends KeyDerivator {
+  _ScryptKeyDerivator(this.dklen, this.n, this.r, this.p, this.salt);
+
   final int dklen;
   final int n;
   final int r;
   final int p;
   final List<int> salt;
-
-  _ScryptKeyDerivator(this.dklen, this.n, this.r, this.p, this.salt);
 
   @override
   Uint8List deriveKey(List<int> password) {
@@ -63,14 +64,14 @@ class _ScryptKeyDerivator extends _KeyDerivator {
   @override
   Map<String, dynamic> encode() {
     return {
-      "dklen": dklen,
-      "n": n,
-      "r": r,
-      "p": p,
-      "salt": Uint8List.fromList(salt).toHex(),
+      'dklen': dklen,
+      'n': n,
+      'r': r,
+      'p': p,
+      'salt': Uint8List.fromList(salt).toHex(),
     };
   }
 
   @override
-  String getName() => "scrypt";
+  String getName() => 'scrypt';
 }

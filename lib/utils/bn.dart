@@ -6,54 +6,50 @@ import 'number.dart';
 import 'u8a.dart';
 
 BigInt bnToBn(dynamic value) {
-  try {
-    if (value == null) {
-      return BigInt.zero;
-    }
-    BigInt? result;
-    if (value is BigInt) {
-      return value;
-    } else if (value is int) {
-      return BigInt.from(value);
-    } else if (isHex(value)) {
-      return hexToBn(value.toString());
-    } else if (value is Map<String, dynamic>) {
-      return compactToBn(value);
-    } else if (value is String && !isHex(value)) {
-      result = BigInt.tryParse(value, radix: 10);
-    }
-    if (result != null) {
-      return result;
-    }
-    throw "failed converting:'$value' to BigInt";
-  } catch (e) {
-    throw "$e";
+  if (value == null) {
+    return BigInt.zero;
   }
+  BigInt? result;
+  if (value is BigInt) {
+    return value;
+  } else if (value is int) {
+    return BigInt.from(value);
+  } else if (isHex(value)) {
+    return hexToBn(value.toString());
+  } else if (value is Map<String, dynamic>) {
+    return compactToBn(value);
+  } else if (value is String && !isHex(value)) {
+    result = BigInt.tryParse(value, radix: 10);
+  }
+  if (result != null) {
+    return result;
+  }
+  throw "failed converting:'$value' to BigInt";
 }
 
 BigInt compactToBn(Map<String, dynamic> value) {
-  var toBnTrue = value.containsKey("toBn") && isFunction(value['toBn']);
+  var toBnTrue = value.containsKey('toBn') && isFunction(value['toBn']);
   var toBigIntTrue =
-      value.containsKey("toBigInt") && isFunction(value['toBigInt']);
+      value.containsKey('toBigInt') && isFunction(value['toBigInt']);
   if (toBnTrue && !toBigIntTrue) {
-    return (value["toBn"] as Function).call();
+    return (value['toBn'] as Function).call();
   }
   if (!toBnTrue && toBigIntTrue) {
-    return (value["toBigInt"] as Function).call();
+    return (value['toBigInt'] as Function).call();
   }
 
-  throw "toBn or toBigInt function not found";
+  throw 'toBn or toBigInt function not found';
 }
 
 BigInt bitnot(BigInt bn, {int? bitLength}) {
   // JavaScript's bitwise not doesn't work on negative BigInts (bn = ~bn; // WRONG!)
   // so we manually implement our own two's compliment (flip bits, add one)
   bn = -bn;
-  var bin = (bn).toRadixString(2).replaceAll("-", "");
+  var bin = (bn).toRadixString(2).replaceAll('-', '');
 
   var prefix = '';
   while (bin.length % 8 != 0) {
-    bin = '0' + bin;
+    bin = '0$bin';
   }
 
   if ('1' == bin[0] && bin.substring(1).contains('1')) {
@@ -71,23 +67,34 @@ BigInt bitnot(BigInt bn, {int? bitLength}) {
   return BigInt.parse(prefix + bin, radix: 2) + BigInt.one;
 }
 
-String bnToHex(BigInt bn,
-    {int bitLength = -1, Endian endian = Endian.big, bool isNegative = false}) {
-  var u8a =
-      bnToU8a(bn, bitLength: bitLength, endian: endian, isNegative: isNegative);
+String bnToHex(
+  BigInt bn, {
+  int bitLength = -1,
+  Endian endian = Endian.big,
+  bool isNegative = false,
+}) {
+  var u8a = bnToU8a(
+    bn,
+    bitLength: bitLength,
+    endian: endian,
+    isNegative: isNegative,
+  );
   return u8aToHex(u8a, include0x: true);
 }
 
 class Options {
-  int? bitLength;
-  Endian? endian;
-  bool? isNegative;
+  const Options({this.bitLength, this.endian, this.isNegative});
+  final int? bitLength;
+  final Endian? endian;
+  final bool? isNegative;
 }
 
-Uint8List bnToU8a(BigInt? value,
-    {int bitLength = -1,
-    Endian endian = Endian.little,
-    bool isNegative = false}) {
+Uint8List bnToU8a(
+  BigInt? value, {
+  int bitLength = -1,
+  Endian endian = Endian.little,
+  bool isNegative = false,
+}) {
   BigInt valueBn = bnToBn(value);
   int byteLength;
   if (bitLength == -1) {

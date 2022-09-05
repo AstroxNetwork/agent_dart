@@ -45,10 +45,9 @@ BinaryBlob hashValue(dynamic value) {
     return hash(concat(vals));
   } else if (value is Principal) {
     return hash(value.toUint8Array());
-  } else if (value is Map && (value as ToHashable).toHash is Function) {
-    return hashValue((value as ToHashable).toHash());
-    // ignore: todo
-    // TODO This should be move to a specific async method as the webauthn flow required
+  } else if (value is ToHashable) {
+    return hashValue(value.toHash());
+    // TODO: This should be move to a specific async method as the webauthn flow required
     // the flow to be synchronous to ensure Safari touch id works.
     // } else if (value instanceof Promise) {
     //   return value.then(x => hashValue(x));

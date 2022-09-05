@@ -7,7 +7,7 @@ import 'extension.dart';
 
 class TooShortHrp implements Exception {
   @override
-  String toString() => "The human readable part should have non zero length.";
+  String toString() => 'The human readable part should have non zero length.';
 }
 
 class TooLong implements Exception {
@@ -16,7 +16,7 @@ class TooLong implements Exception {
   final int length;
 
   @override
-  String toString() => "The bech32 string is too long: $length (>90)";
+  String toString() => 'The bech32 string is too long: $length (>90)';
 }
 
 class OutOfRangeHrpCharacters implements Exception {
@@ -26,7 +26,7 @@ class OutOfRangeHrpCharacters implements Exception {
 
   @override
   String toString() =>
-      "The human readable part contains invalid characters: $hpr";
+      'The human readable part contains invalid characters: $hpr';
 }
 
 class MixedCase implements Exception {
@@ -36,7 +36,7 @@ class MixedCase implements Exception {
 
   @override
   String toString() =>
-      "The human readable part is mixed case, should either be all lower or all upper case: $hpr";
+      'The human readable part is mixed case, should either be all lower or all upper case: $hpr';
 }
 
 class OutOfBoundChars implements Exception {
@@ -45,7 +45,7 @@ class OutOfBoundChars implements Exception {
   final String char;
 
   @override
-  String toString() => "A character is undefined in bech32: $char";
+  String toString() => 'A character is undefined in bech32: $char';
 }
 
 class InvalidSeparator implements Exception {
@@ -59,17 +59,17 @@ class InvalidSeparator implements Exception {
 
 class InvalidAddress implements Exception {
   @override
-  String toString() => "";
+  String toString() => '';
 }
 
 class InvalidChecksum implements Exception {
   @override
-  String toString() => "Checksum verification failed";
+  String toString() => 'Checksum verification failed';
 }
 
 class TooShortChecksum implements Exception {
   @override
-  String toString() => "Checksum is shorter than 6 characters";
+  String toString() => 'Checksum is shorter than 6 characters';
 }
 
 class InvalidHrp implements Exception {
@@ -83,7 +83,7 @@ class InvalidProgramLength implements Exception {
   final String reason;
 
   @override
-  String toString() => "Program length is invalid: $reason";
+  String toString() => 'Program length is invalid: $reason';
 }
 
 class InvalidWitnessVersion implements Exception {
@@ -92,7 +92,7 @@ class InvalidWitnessVersion implements Exception {
   final int version;
 
   @override
-  String toString() => "Witness version $version > 16";
+  String toString() => 'Witness version $version > 16';
 }
 
 class InvalidPadding implements Exception {
@@ -101,7 +101,7 @@ class InvalidPadding implements Exception {
   final String reason;
 
   @override
-  String toString() => "Invalid padding: $reason";
+  String toString() => 'Invalid padding: $reason';
 }
 
 const Bech32Codec bech32 = Bech32Codec();
@@ -270,41 +270,41 @@ class Bech32 {
   final List<int> data;
 }
 
-const String separator = "1";
+const String separator = '1';
 
 const List<String> charset = [
-  "q",
-  "p",
-  "z",
-  "r",
-  "y",
-  "9",
-  "x",
-  "8",
-  "g",
-  "f",
-  "2",
-  "t",
-  "v",
-  "d",
-  "w",
-  "0",
-  "s",
-  "3",
-  "j",
-  "n",
-  "5",
-  "4",
-  "k",
-  "h",
-  "c",
-  "e",
-  "6",
-  "m",
-  "u",
-  "a",
-  "7",
-  "l",
+  'q',
+  'p',
+  'z',
+  'r',
+  'y',
+  '9',
+  'x',
+  '8',
+  'g',
+  'f',
+  '2',
+  't',
+  'v',
+  'd',
+  'w',
+  '0',
+  's',
+  '3',
+  'j',
+  'n',
+  '5',
+  '4',
+  'k',
+  'h',
+  'c',
+  'e',
+  '6',
+  'm',
+  'u',
+  'a',
+  '7',
+  'l',
 ];
 
 const List<int> generator = [
@@ -378,16 +378,16 @@ List<int> _convertBits(List<int> data, int from, int to, {bool pad = true}) {
       result.add((acc << (to - bits)) & maxv);
     }
   } else if (bits >= from) {
-    throw InvalidPadding("illegal zero padding");
+    throw InvalidPadding('illegal zero padding');
   } else if (((acc << (to - bits)) & maxv) != 0) {
-    throw InvalidPadding("non zero");
+    throw InvalidPadding('non zero');
   }
 
   return result;
 }
 
-// ignore: constant_identifier_names
-const String HRP = 'icp';
+
+const String _hrp = 'icp';
 
 String toBech32Address(String address) {
   if (address.length == 64) {
@@ -399,7 +399,7 @@ String toBech32Address(String address) {
     5,
   );
 
-  var b32Class = Bech32(HRP, addrBz);
+  var b32Class = Bech32(_hrp, addrBz);
 
   return bech32.encode(b32Class);
 }
@@ -410,7 +410,7 @@ String fromBech32Address(String address) {
     var hrp = res.hrp;
     var data = res.data;
 
-    if (hrp != HRP) {
+    if (hrp != _hrp) {
       throw InvalidHrp();
     }
 

@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:agent_dart/utils/number.dart';
 import 'package:crypto/crypto.dart';
+
 // ignore: implementation_imports
 import 'package:crypto/src/digest_sink.dart';
 
@@ -11,13 +11,10 @@ Uint8List sha256Hash(ByteBuffer buf) {
 }
 
 class SHA256 {
-  late DigestSink ds;
-  late ByteConversionSink sha;
+  SHA256();
 
-  SHA256() {
-    ds = DigestSink();
-    sha = sha256.startChunkedConversion(ds);
-  }
+  late final ds = DigestSink();
+  late final sha = sha256.startChunkedConversion(ds);
 
   SHA256 update(List<int> bytes) {
     sha.add(bytes);

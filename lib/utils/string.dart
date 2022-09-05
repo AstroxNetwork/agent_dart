@@ -20,7 +20,7 @@ String toHex(dynamic msg) {
 
 String zero2(word) {
   if (word.length == 1) {
-    return '0' + word;
+    return '0$word';
   } else {
     return word;
   }
@@ -31,8 +31,8 @@ Uint8List stringToU8a(String msg, {String? enc, bool useDartEncode = true}) {
     if (enc == 'hex') {
       msg = strip0xHex(msg);
       List<int> hexRes = [];
-      msg = msg.replaceAll(RegExp("[^a-z0-9]"), '');
-      if (msg.length % 2 != 0) msg = '0' + msg;
+      msg = msg.replaceAll(RegExp('[^a-z0-9]'), '');
+      if (msg.length % 2 != 0) msg = '0$msg';
       for (var i = 0; i < msg.length; i += 2) {
         var cul = msg[i] + msg[i + 1];
         var result = int.parse(cul, radix: 16);
@@ -69,11 +69,7 @@ Uint8List textEncoder(String value) {
 }
 
 String textDecoder(Uint8List value) {
-  var _value = '';
-  for (var i = 0; i < value.length; i += 1) {
-    _value = _value + String.fromCharCode(value[i]);
-  }
-  return _value;
+  return value.fold('', (p, e) => p += String.fromCharCode(e));
 }
 
 String plainTextToHex(String plainText) {
@@ -82,7 +78,7 @@ String plainTextToHex(String plainText) {
 }
 
 String hexToPlainText(String hex) {
-  return utf8.decode(stringToU8a(hex, enc: "hex"));
+  return utf8.decode(stringToU8a(hex, enc: 'hex'));
 }
 
 // Converts the hexadecimal string, which can be prefixed with 0x, to a byte
@@ -115,5 +111,5 @@ String stringShorten(String value, {int prefixLength = 6}) {
   var firstPart = value.substring(0, prefixLength);
   var secondPart = value.substring(secStart, tLength);
 
-  return "$firstPart…$secondPart";
+  return '$firstPart…$secondPart';
 }

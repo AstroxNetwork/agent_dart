@@ -1,4 +1,16 @@
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  exclude:
+    - 'lib/protobuf/**.dart'
+
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
+linter:
+  rules:
+    avoid_print: false
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    prefer_single_quotes: true
+    sort_constructors_first: true
+    sort_unnamed_constructors_first: true

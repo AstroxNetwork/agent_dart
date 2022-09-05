@@ -6,38 +6,24 @@ import 'package:agent_dart/identity/identity.dart';
 import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/utils/extension.dart';
 
-import 'hashing.dart';
 import 'keysmith.dart';
 import 'rosetta.dart';
 import 'types.dart';
 
 typedef SigningCallback = void Function([dynamic data]);
 
-enum SignType {
-  ecdsa,
-  ed25519,
-}
+enum SignType { ecdsa, ed25519 }
 
-enum SourceType {
-  II,
-  Plug,
-  Keysmith,
-  Base,
-}
+enum SourceType { ii, plug, keySmith, base }
 
-enum CurveType {
-  secp256k1,
-  ed25519,
-  all,
-}
+enum CurveType { secp256k1, ed25519, all }
 
 abstract class Signer<T extends SignablePayload, R> {
+  const Signer();
+
   bool? get isLocked;
 
-  Future<void>? unlock(
-    String passphrase, {
-    String? keystore,
-  });
+  Future<void>? unlock(String passphrase, {String? keystore});
 
   Future<void>? lock(String? passphrase);
 
@@ -49,11 +35,13 @@ abstract class Signer<T extends SignablePayload, R> {
 }
 
 abstract class BaseSigner<T extends BaseAccount, R extends SignablePayload, E>
-    extends Signer<R, E> {}
-
-// class ICPWallet with Signer {}
+    extends Signer<R, E> {
+  const BaseSigner();
+}
 
 abstract class BaseAccount {
+  const BaseAccount();
+
   Ed25519KeyIdentity? getIdentity();
 
   Secp256k1KeyIdentity? getEcIdentity();
@@ -64,34 +52,12 @@ abstract class BaseAccount {
 }
 
 class ICPAccount extends BaseAccount {
-  ICPAccount({
-    CurveType curveType = CurveType.ed25519,
-  }) : _curveType = curveType;
-
-  static Future<ICPAccount> fromSeed(
-    Uint8List seed, {
-    int? index,
-    CurveType curveType = CurveType.ed25519,
-  }) async {
-    ECKeys keys = await ecKeysfromSeed(seed, index: index ?? 0);
-    Ed25519KeyIdentity? identity = curveType == CurveType.secp256k1
-        ? null
-        : await Ed25519KeyIdentity.generate(seed);
-    Secp256k1KeyIdentity? ecIdentity = curveType == CurveType.ed25519
-        ? null
-        : Secp256k1KeyIdentity.fromKeyPair(
-            keys.ecPublicKey!, keys.ecPrivateKey!);
-    return ICPAccount(curveType: curveType)
-      .._ecKeys = keys
-      .._identity = identity
-      .._ecIdentity = ecIdentity
-      .._phrase = '';
-  }
+  ICPAccount({this.curveType = CurveType.ed25519});
 
   bool isLocked = false;
   String? _keystore;
   String? _phrase;
-  final CurveType _curveType;
+  final CurveType curveType;
 
   Ed25519KeyIdentity? get identity => _identity;
   Ed25519KeyIdentity? _identity;
@@ -102,11 +68,33 @@ class ICPAccount extends BaseAccount {
   ECKeys? get ecKeys => _ecKeys;
   ECKeys? _ecKeys;
 
+  static Future<ICPAccount> fromSeed(
+    Uint8List seed, {
+    int? index,
+    CurveType curveType = CurveType.ed25519,
+  }) async {
+    ECKeys keys = ecKeysfromSeed(seed, index: index ?? 0);
+    final Ed25519KeyIdentity? identity = curveType == CurveType.secp256k1
+        ? null
+        : await Ed25519KeyIdentity.generate(seed);
+    final Secp256k1KeyIdentity? ecIdentity = curveType == CurveType.ed25519
+        ? null
+        : Secp256k1KeyIdentity.fromKeyPair(
+            keys.ecPublicKey!,
+            keys.ecPrivateKey!,
+          );
+    return ICPAccount(curveType: curveType)
+      .._ecKeys = keys
+      .._identity = identity
+      .._ecIdentity = ecIdentity
+      .._phrase = '';
+  }
+
   static Future<ICPAccount> fromPhrase(
     String phrase, {
-    String passphase = "",
+    String passphrase = '',
     int? index,
-    List<int>? icPath = IC_BASE_PATH,
+    List<int>? icPath = icBasePath,
     CurveType curveType = CurveType.ed25519,
   }) async {
     ECKeys? keys;
@@ -114,22 +102,26 @@ class ICPAccount extends BaseAccount {
     Ed25519KeyIdentity? identity;
 
     if (curveType == CurveType.secp256k1 || curveType == CurveType.all) {
-      keys = await getECKeysAsync(phrase,
-          passphase: passphase,
-          index: index != null
-              ? index != HARDENED
-                  ? index
-                  : 0
-              : 0);
+      keys = await getECKeysAsync(
+        phrase,
+        passphase: passphrase,
+        index: index != null
+            ? index != hardened
+                ? index
+                : 0
+            : 0,
+      );
       ecIdentity = Secp256k1KeyIdentity.fromKeyPair(
-          keys.ecPublicKey!, keys.ecPrivateKey!);
+        keys.ecPublicKey!,
+        keys.ecPrivateKey!,
+      );
     }
     if (curveType == CurveType.ed25519 || curveType == CurveType.all) {
-      var path = List<int>.from(icPath ?? IC_BASE_PATH);
+      var path = List<int>.from(icPath ?? icBasePath);
       identity = await fromMnemonicWithoutValidation(
         phrase,
         path,
-        offset: index ?? HARDENED,
+        offset: index ?? hardened,
       );
     }
 
@@ -155,7 +147,7 @@ class ICPAccount extends BaseAccount {
   ECKeys? getEcKeys() => _ecKeys;
 
   Future<void> lock(String? passphrase) async {
-    _keystore = await encodePhrase(_phrase!, passphrase ?? "");
+    _keystore = await encodePhrase(_phrase!, passphrase ?? '');
     _phrase = null;
     _ecKeys = null;
     _identity = null;
@@ -169,7 +161,7 @@ class ICPAccount extends BaseAccount {
         if (keystore != null) {
           _keystore = keystore;
         } else {
-          throw "keystore file is not found";
+          throw 'keystore file is not found';
         }
       }
       final phrase = await decodePhrase(
@@ -179,8 +171,8 @@ class ICPAccount extends BaseAccount {
       var newIcp = await ICPAccount.fromPhrase(
         phrase,
         index: 0,
-        icPath: IC_BASE_PATH,
-        curveType: _curveType,
+        icPath: icBasePath,
+        curveType: curveType,
       );
       _phrase = phrase;
       _ecKeys = newIcp._ecKeys;
@@ -190,8 +182,8 @@ class ICPAccount extends BaseAccount {
       newIcp._identity = null;
       isLocked = false;
     } catch (e) {
-      throw "Cannot unlock account with password $passphrase "
-          "and keystore $_keystore";
+      throw 'Cannot unlock account with password $passphrase '
+          'and keystore $_keystore';
     }
   }
 }
@@ -199,21 +191,23 @@ class ICPAccount extends BaseAccount {
 class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
     CombineSignedTransactionResult> {
   ICPSigner._();
+
   static Future<ICPSigner> create({
     CurveType curveType = CurveType.ed25519,
-  }) =>
-      ICPSigner.fromPhrase(generateMnemonic(), curveType: curveType);
+  }) {
+    return ICPSigner.fromPhrase(generateMnemonic(), curveType: curveType);
+  }
 
   static Future<ICPSigner> fromPhrase(
     String phrase, {
-    String passphase = "",
+    String passphrase = '',
     int? index = 0,
-    List<int>? icPath = IC_BASE_PATH,
+    List<int>? icPath = icBasePath,
     CurveType curveType = CurveType.ed25519,
   }) async {
     final ICPAccount acc = await ICPAccount.fromPhrase(
       phrase,
-      passphase: passphase,
+      passphrase: passphrase,
       index: index,
       icPath: icPath,
       curveType: curveType,
@@ -229,8 +223,11 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
     int? index = 0,
     CurveType curveType = CurveType.ed25519,
   }) async {
-    final ICPAccount acc =
-        await ICPAccount.fromSeed(seed, index: index, curveType: curveType);
+    final ICPAccount acc = await ICPAccount.fromSeed(
+      seed,
+      index: index,
+      curveType: curveType,
+    );
     return ICPSigner._()
       .._index = index
       .._acc = acc;
@@ -239,50 +236,50 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
   static Future<ICPSigner> importPhrase(
     String phrase, {
     int index = 0,
-    SourceType sourceType = SourceType.II,
+    SourceType sourceType = SourceType.ii,
     CurveType curveType = CurveType.ed25519,
   }) async {
     switch (sourceType) {
-      case SourceType.II:
+      case SourceType.ii:
         return (await ICPSigner.fromPhrase(
           phrase,
-          index: HARDENED,
-          icPath: IC_DERIVATION_PATH,
+          index: hardened,
+          icPath: icDerivationPath,
           curveType: curveType,
         ))
-          ..setSourceType(SourceType.II);
-      case SourceType.Keysmith:
-        return (await ICPSigner.fromPhrase(
-          phrase,
-          index: index,
-          icPath: IC_DERIVATION_PATH,
-          curveType: curveType,
-        ))
-          ..setSourceType(SourceType.Keysmith);
-      case SourceType.Plug:
+          ..setSourceType(SourceType.ii);
+      case SourceType.keySmith:
         return (await ICPSigner.fromPhrase(
           phrase,
           index: index,
-          icPath: IC_DERIVATION_PATH,
+          icPath: icDerivationPath,
           curveType: curveType,
         ))
-          ..setSourceType(SourceType.Keysmith);
-      case SourceType.Base:
+          ..setSourceType(SourceType.keySmith);
+      case SourceType.plug:
         return (await ICPSigner.fromPhrase(
           phrase,
           index: index,
-          icPath: IC_BASE_PATH,
+          icPath: icDerivationPath,
           curveType: curveType,
         ))
-          ..setSourceType(SourceType.Base);
+          ..setSourceType(SourceType.keySmith);
+      case SourceType.base:
+        return (await ICPSigner.fromPhrase(
+          phrase,
+          index: index,
+          icPath: icBasePath,
+          curveType: curveType,
+        ))
+          ..setSourceType(SourceType.base);
       default:
         return (await ICPSigner.fromPhrase(
           phrase,
-          index: HARDENED,
-          icPath: IC_DERIVATION_PATH,
+          index: hardened,
+          icPath: icDerivationPath,
           curveType: curveType,
         ))
-          ..setSourceType(SourceType.II);
+          ..setSourceType(SourceType.ii);
     }
   }
 
@@ -306,7 +303,7 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
 
   String? get idAddress => account.identity?.getAccountId().toHex();
 
-  @Deprecated("Use same accound ID scheme to idAddress")
+  @Deprecated('Use idAddress instead')
   String? get idChecksumAddress => idAddress;
 
   String? get ecPublicKey => account.ecIdentity?.getPublicKey().toRaw().toHex();
@@ -316,18 +313,18 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
 
   String? get ecAddress => account.ecIdentity?.getAccountId().toHex();
 
-  @Deprecated("Use same accound ID scheme to ecAddress")
+  @Deprecated('Use ecAddress instead')
   String? get ecChecksumAddress => ecAddress;
 
   Future<ICPAccount> hdCreate({
-    String passphase = "",
+    String passphrase = '',
     int? index = 0,
-    List<int>? icPath = IC_BASE_PATH,
+    List<int>? icPath = icBasePath,
     CurveType curveType = CurveType.ed25519,
-  }) async {
+  }) {
     return ICPAccount.fromPhrase(
       _phrase!,
-      passphase: passphase,
+      passphrase: passphrase,
       index: _index!,
       icPath: icPath,
       curveType: curveType,
@@ -342,19 +339,16 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
   bool? get isLocked => _acc.isLocked;
 
   @override
-  Future<void>? lock(String? passphrase) async {
-    await _acc.lock(passphrase);
+  Future<void> lock(String? passphrase) {
+    return _acc.lock(passphrase);
   }
 
   @override
-  Future<void>? unlock(
+  Future<void> unlock(
     String passphrase, {
     String? keystore,
-  }) async {
-    await _acc.unlock(
-      passphrase,
-      keystore: keystore,
-    );
+  }) {
+    return _acc.unlock(passphrase, keystore: keystore);
   }
 
   @override
@@ -363,25 +357,20 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
     SignType? signType = SignType.ed25519,
     SigningCallback? callback,
   }) async {
-    try {
-      if (signType == SignType.ed25519) {
-        var res = await transferCombine(
-          account.identity!,
-          payload,
-        );
-        return res;
-      }
-      if (signType == SignType.ecdsa) {
-        var res = await ecTransferCombine(
-          account.ecIdentity!,
-          payload,
-        );
-        return res;
-      } else {
-        throw "Signtype $signType is not supported";
-      }
-    } catch (e) {
-      rethrow;
+    if (signType == SignType.ed25519) {
+      var res = await transferCombine(
+        account.identity!,
+        payload,
+      );
+      return res;
     }
+    if (signType == SignType.ecdsa) {
+      var res = await ecTransferCombine(
+        account.ecIdentity!,
+        payload,
+      );
+      return res;
+    }
+    throw UnsupportedError('Sign type $signType is not supported.');
   }
 }

@@ -17,11 +17,11 @@ class ActorCallError extends AgentError {
     String methodName,
     String type, //: 'query' | 'update'
     Map<String, String> props,
-  ) : super() {
-    String e = [
-      "Call failed:",
-      "  Canister: ${canisterId.toText()}",
-      "  Method: $methodName ($type)",
+  ) {
+    final e = [
+      'Call failed:',
+      '  Canister: ${canisterId.toText()}',
+      '  Method: $methodName ($type)',
       ...(props.entries).map((n) => "  '${n.key}': ${jsonEncode(props[n])}"),
     ].join('\n');
     throw e;
@@ -33,13 +33,18 @@ class QueryCallRejectedError extends ActorCallError {
     Principal canisterId,
     String methodName,
     QueryResponseRejected result,
-  ) : super(canisterId, methodName, 'query', {
-          "Status": result.status,
-          "Code": result.reject_code != null
-              ? result.reject_code.toString()
-              : "Unknown Code '${result.reject_code}'",
-          "Message": result.reject_message ?? "",
-        });
+  ) : super(
+          canisterId,
+          methodName,
+          'query',
+          {
+            'Status': result.status,
+            'Code': result.rejectCode != null
+                ? result.rejectCode.toString()
+                : "Unknown Code '${result.rejectCode}'",
+            'Message': result.rejectMessage ?? '',
+          },
+        );
 }
 
 class UpdateCallRejectedError extends ActorCallError {
@@ -56,6 +61,22 @@ class UpdateCallRejectedError extends ActorCallError {
 }
 
 class CallConfig {
+  CallConfig({
+    this.agent,
+    this.pollingStrategyFactory,
+    this.canisterId,
+    this.effectiveCanisterId,
+  });
+
+  factory CallConfig.fromMap(Map<String, dynamic> map) {
+    return CallConfig(
+      agent: map['agent'],
+      pollingStrategyFactory: map['pollingStrategyFactory'],
+      canisterId: map['canisterId'],
+      effectiveCanisterId: map['effectiveCanisterId'],
+    );
+  }
+
   /// An agent to use in this call, otherwise the actor or call will try to discover the
   /// agent to use.
   Agent? agent;
@@ -70,31 +91,42 @@ class CallConfig {
   /// The effective canister ID. This should almost always be ignored.
   Principal? effectiveCanisterId;
 
-  CallConfig(
-      {this.agent,
-      this.pollingStrategyFactory,
-      this.canisterId,
-      this.effectiveCanisterId});
-
-  factory CallConfig.fromMap(Map<String, dynamic> map) {
-    return CallConfig(
-        agent: map["agent"],
-        pollingStrategyFactory: map["pollingStrategyFactory"],
-        canisterId: map["canisterId"],
-        effectiveCanisterId: map["effectiveCanisterId"]);
-  }
   Map<String, dynamic> toJson() {
     return {
-      "agent": agent,
-      "pollingStrategyFactory": pollingStrategyFactory,
-      "canisterId": canisterId,
-      "effectiveCanisterId": effectiveCanisterId
+      'agent': agent,
+      'pollingStrategyFactory': pollingStrategyFactory,
+      'canisterId': canisterId,
+      'effectiveCanisterId': effectiveCanisterId
     };
   }
 }
 
 /// Configuration that can be passed to customize the Actor behaviour.
 class ActorConfig extends CallConfig {
+  ActorConfig({
+    Agent? agent,
+    PollStrategyFactory? pollingStrategyFactory,
+    Principal? canisterId,
+    Principal? effectiveCanisterId,
+    this.callTransform,
+    this.queryTransform,
+  }) : super(
+          agent: agent,
+          pollingStrategyFactory: pollingStrategyFactory,
+          canisterId: canisterId,
+          effectiveCanisterId: effectiveCanisterId,
+        );
+
+  factory ActorConfig.fromMap(Map map) {
+    return ActorConfig()
+      ..callTransform = map['callTransform']
+      ..queryTransform = map['queryTransform']
+      ..agent = map['agent']
+      ..pollingStrategyFactory = map['pollingStrategyFactory']
+      ..canisterId = map['canisterId']
+      ..effectiveCanisterId = map['effectiveCanisterId'];
+  }
+
   /// An override function for update calls' CallConfig. This will be called on every calls.
   CallConfig Function(
     String methodName,
@@ -109,35 +141,12 @@ class ActorConfig extends CallConfig {
     CallConfig callConfig,
   )? queryTransform;
 
-  ActorConfig(
-      {Agent? agent,
-      PollStrategyFactory? pollingStrategyFactory,
-      Principal? canisterId,
-      Principal? effectiveCanisterId,
-      this.callTransform,
-      this.queryTransform})
-      : super(
-            agent: agent,
-            pollingStrategyFactory: pollingStrategyFactory,
-            canisterId: canisterId,
-            effectiveCanisterId: effectiveCanisterId);
-
-  factory ActorConfig.fromMap(Map map) {
-    return ActorConfig()
-      ..callTransform = map["callTransform"]
-      ..queryTransform = map["queryTransform"]
-      ..agent = map["agent"]
-      ..pollingStrategyFactory = map["pollingStrategyFactory"]
-      ..canisterId = map["canisterId"]
-      ..effectiveCanisterId = map["effectiveCanisterId"];
-  }
-
   @override
   Map<String, dynamic> toJson() {
     return {
       ...super.toJson(),
-      "callTransform": callTransform,
-      "queryTransform": queryTransform
+      'callTransform': callTransform,
+      'queryTransform': queryTransform
     };
   }
 }
@@ -158,12 +167,11 @@ class ActorConfig extends CallConfig {
 // }
 
 class CanisterInstallMode {
-  // ignore: constant_identifier_names
-  static const Install = 'install';
-  // ignore: constant_identifier_names
-  static const Reinstall = 'reinstall';
-  // ignore: constant_identifier_names
-  static const Upgrade = 'upgrade';
+  const CanisterInstallMode._();
+
+  static const install = 'install';
+  static const reinstall = 'reinstall';
+  static const upgrade = 'upgrade';
 }
 
 /* Internal metadata for actors. It's an enhanced version of ActorConfig with
@@ -171,21 +179,26 @@ class CanisterInstallMode {
  * a Principal type.
  */
 class ActorMetadata {
-  Service? service;
-  Agent? agent;
-  ActorConfig? config;
+  const ActorMetadata({this.service, this.agent, this.config});
+
+  final Service? service;
+  final Agent? agent;
+  final ActorConfig? config;
 }
 
 class FieldOptions {
-  late BinaryBlob module;
-  String? mode;
-  BinaryBlob? arg;
-  FieldOptions(this.module, {this.mode, this.arg});
+  const FieldOptions(this.module, {this.mode, this.arg});
+
   factory FieldOptions.fromMap(Map<String, dynamic> map) {
-    return FieldOptions(map["module"], mode: map["mode"], arg: map["arg"]);
+    return FieldOptions(map['module'], mode: map['mode'], arg: map['arg']);
   }
-  toJson() {
-    return {"module": module, "mode": mode, "arg": arg};
+
+  final BinaryBlob module;
+  final String? mode;
+  final BinaryBlob? arg;
+
+  Map<String, dynamic> toJson() {
+    return {'module': module, 'mode': mode, 'arg': arg};
   }
 }
 
@@ -194,6 +207,10 @@ class FieldOptions {
 /// An actor base class. An actor is an object containing only functions that will
 /// return a promise. These functions are derived from the IDL definition.
 class Actor {
+  const Actor(this.metadata);
+
+  final ActorMetadata metadata;
+
   /// Get the Agent class this Actor would call, or undefined if the Actor would use
   /// the default agent (global.ic.agent).
   /// @param actor The actor to get the agent of.
@@ -215,7 +232,7 @@ class Actor {
     FieldOptions fields,
     ActorConfig config,
   ) async {
-    final mode = fields.mode ?? CanisterInstallMode.Install;
+    final mode = fields.mode ?? CanisterInstallMode.install;
     // Need to transform the arg into a number array.
     final arg = fields.arg != null
         ? Uint8List.fromList([...?fields.arg])
@@ -227,12 +244,12 @@ class Actor {
 
     final canister = getManagementCanister(config);
 
-    await canister.getFunc("install_code")!.call([
+    await canister.getFunc('install_code')!.call([
       {
-        "mode": {mode: null},
-        "arg": arg,
-        "wasm_module": wasmModule,
-        "canister_id": canisterId,
+        'mode': {mode: null},
+        'arg': arg,
+        'wasm_module': wasmModule,
+        'canister_id': canisterId,
       }
     ]);
   }
@@ -242,12 +259,12 @@ class Actor {
       config ?? CallConfig(),
     );
     ActorMethod? func =
-        canister.getFunc("provisional_create_canister_with_cycles");
+        canister.getFunc('provisional_create_canister_with_cycles');
     // ignore: prefer_typing_uninitialized_variables
     var result;
     if (func != null) {
       result = await func.call([
-        {"amount": [], "settings": []}
+        {'amount': [], 'settings': []}
       ]);
     }
 
@@ -287,31 +304,33 @@ class Actor {
     );
   }
 
-  static const String metadataSymbol = "ic-agent-metadata";
-  ActorMetadata metadata;
-  Actor(this.metadata);
+  static const String metadataSymbol = 'ic-agent-metadata';
 }
 
 class CanisterActor extends Actor {
-  // [x: string]: ActorMethod;
-  Map<String, ActorMethod> methodMap = <String, ActorMethod>{};
-  CanisterActor(ActorConfig config, Service service)
-      : super(ActorMetadata()
-          ..config = config
-          ..service = service) {
+  CanisterActor(
+    ActorConfig config,
+    Service service,
+  ) : super(ActorMetadata(service: service, config: config)) {
     var fields = service.fields;
     for (var e in fields) {
       methodMap.putIfAbsent(
-          e.key, () => _createActorMethod(this, e.key, e.value));
+        e.key,
+        () => _createActorMethod(this, e.key, e.value),
+      );
     }
   }
+
+  // [x: string]: ActorMethod;
+  final Map<String, ActorMethod> methodMap = <String, ActorMethod>{};
 
   ActorMethod? getFunc(String method) {
     return methodMap[method];
   }
 
   static CanisterActor Function(ActorConfig config) withService(
-          Service service) =>
+    Service service,
+  ) =>
       (ActorConfig config) => CanisterActor(config, service);
 }
 
@@ -335,12 +354,13 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
     caller = (CallConfig options, List args) async {
       // First, if there's a config transformation, call it.
       var presetOption = actor.metadata.config!.queryTransform?.call(
-          methodName,
-          args,
-          CallConfig.fromMap({
-            ...actor.metadata.config!.toJson(),
-            ...options.toJson(),
-          }));
+        methodName,
+        args,
+        CallConfig.fromMap({
+          ...actor.metadata.config!.toJson(),
+          ...options.toJson(),
+        }),
+      );
 
       var newOptions = CallConfig.fromMap({
         ...options.toJson(),
@@ -350,26 +370,27 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
       final agent =
           newOptions.agent ?? actor.metadata.config!.agent; // getDefaultAgent()
       final cid = Principal.from(
-          newOptions.canisterId ?? actor.metadata.config!.canisterId);
+        newOptions.canisterId ?? actor.metadata.config!.canisterId,
+      );
       final arg = IDL.encode(func.argTypes, args);
 
       final result = await agent!.query(
-          cid,
-          QueryFields()
-            ..arg = arg
-            ..methodName = methodName,
-          null);
+        cid,
+        QueryFields(arg: arg, methodName: methodName),
+        null,
+      );
 
       switch (result.status) {
-        case QueryResponseStatus.Rejected:
+        case QueryResponseStatus.rejected:
           throw QueryCallRejectedError(
-              cid,
-              methodName,
-              QueryResponseRejected()
-                ..reject_code = result.reject_code
-                ..reject_message = result.reject_message);
-
-        case QueryResponseStatus.Replied:
+            cid,
+            methodName,
+            QueryResponseRejected(
+              rejectCode: result.rejectCode,
+              rejectMessage: result.rejectMessage,
+            ),
+          );
+        case QueryResponseStatus.replied:
           return decodeReturnValue(func.retTypes, result.reply!.arg!);
       }
     };
@@ -377,12 +398,13 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
     caller = (CallConfig options, List args) async {
       // First, if there's a config transformation, call it.
       var presetOption = actor.metadata.config!.queryTransform?.call(
-          methodName,
-          args,
-          CallConfig.fromMap({
-            ...actor.metadata.config!.toJson(),
-            ...options.toJson(),
-          }));
+        methodName,
+        args,
+        CallConfig.fromMap({
+          ...actor.metadata.config!.toJson(),
+          ...options.toJson(),
+        }),
+      );
 
       var newOptions = CallConfig.fromMap({
         ...options.toJson(),
@@ -412,12 +434,14 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
       final arg = IDL.encode(func.argTypes, args);
       // final { requestId, response } =
       final result = await agent!.call(
-          cid,
-          CallOptions()
-            ..methodName = methodName
-            ..arg = arg
-            ..effectiveCanisterId = ecid,
-          null);
+        cid,
+        CallOptions(
+          methodName: methodName,
+          arg: arg,
+          effectiveCanisterId: ecid,
+        ),
+        null,
+      );
 
       var response = result.response!;
       var requestId = result.requestId!;
@@ -428,8 +452,12 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
 
       final pollStrategy = pollingStrategyFactory();
 
-      final responseBytes =
-          await pollForResponse(agent, ecid, requestId, pollStrategy);
+      final responseBytes = await pollForResponse(
+        agent,
+        ecid,
+        requestId,
+        pollStrategy,
+      );
 
       if (responseBytes.isNotEmpty) {
         return decodeReturnValue(func.retTypes, responseBytes);
@@ -446,18 +474,25 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
 }
 
 class ActorMethod {
+  const ActorMethod(this.caller);
+
   final MethodCaller? caller;
-  ActorMethod(this.caller);
+
   static Future<dynamic> handlerCall(
-          MethodCaller caller, List<dynamic> args, CallConfig? withOptions) =>
+    MethodCaller caller,
+    List<dynamic> args,
+    CallConfig? withOptions,
+  ) =>
       caller(withOptions ?? CallConfig(), args);
+
   Future<dynamic> call(List<dynamic>? args) async {
     return caller!(CallConfig(), args ?? []);
   }
 
-  // ignore: non_constant_identifier_names
-  Future<dynamic> WithOptions(
-          CallConfig withOptions, List<dynamic>? args) async =>
+  Future<dynamic> withOptions(
+    CallConfig withOptions,
+    List<dynamic>? args,
+  ) async =>
       caller!(withOptions, args ?? []);
 }
 

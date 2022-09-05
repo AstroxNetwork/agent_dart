@@ -1,3 +1,4 @@
+// ignore_for_file: sort_constructors_first, library_private_types_in_public_api
 /// Dart wrapper for WebAssembly JavaScript API
 @JS()
 library wasm_interop;
@@ -85,7 +86,7 @@ class Module {
 
   static Future<Module> _fromBytesOrBufferAsync(Object bytesOrBuffer) =>
       promiseToFuture<_Module>(_compile(bytesOrBuffer))
-          .then((_module) => Module._(_module))
+          .then((module) => Module._(module))
           .catchError(
               (Object e) => throw CompileError(getProperty(e, 'message')),
               test: (e) => instanceof(e, _compileError));
@@ -216,7 +217,7 @@ class Instance {
           Object? importObject}) =>
       promiseToFuture<_Instance>(_instantiateModule(
               module.jsObject, _reifyImports(importMap, importObject)))
-          .then((_instance) => Instance._(_instance, module))
+          .then((instance) => Instance._(instance, module))
           .catchError((Object e) {
         if (instanceof(e, _compileError)) {
           throw CompileError(getProperty(e, 'message'));
@@ -250,8 +251,8 @@ class Instance {
           Object bytesOrBuffer, Object imports) =>
       promiseToFuture<_WebAssemblyInstantiatedSource>(
               _instantiate(bytesOrBuffer, imports))
-          .then((_source) =>
-              Instance._(_source.instance, Module._(_source.module)))
+          .then((source) =>
+              Instance._(source.instance, Module._(source.module)))
           .catchError((Object e) {
         if (instanceof(e, _compileError)) {
           throw CompileError(getProperty(e, 'message'));

@@ -15,8 +15,8 @@ num idlHash(String s) {
 }
 
 num idlLabelToId(String label) {
-  final reg1 = RegExp(r"^_\d+_$");
-  final reg2 = RegExp(r"^_0x[0-9a-fA-F]+_$");
+  final reg1 = RegExp(r'^_\d+_$');
+  final reg2 = RegExp(r'^_0x[0-9a-fA-F]+_$');
 
   if (reg1.hasMatch(label) || reg2.hasMatch(label)) {
     final lb = label.substring(1, label.length - 1);

@@ -1,10 +1,5 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
-import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/identity/secp256k1.dart';
-import 'package:agent_dart/utils/extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // import 'package:agent_dart/utils/extension.dart';
@@ -83,10 +78,12 @@ void secp256k1Test() {
 
   test('ffi', () async {
     final mnemonic = generateMnemonic();
-    final seed = mnemonicToSeed(mnemonic, passphrase: "");
+    final seed = mnemonicToSeed(mnemonic, passphrase: '');
     final keys = ecKeysfromSeed(seed, index: 0);
     final derExpect = Secp256k1PublicKey.fromRaw(keys.ecPublicKey!).toDer();
     expect(
-        derExpect.toHex(), (await getDerFromFFI(keys.ecPrivateKey!)).toHex());
+      derExpect.toHex(),
+      (await getDerFromFFI(keys.ecPrivateKey!)).toHex(),
+    );
   });
 }

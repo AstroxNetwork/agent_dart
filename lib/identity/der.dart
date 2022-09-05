@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:typed_data/typed_buffers.dart';
-
 bool bufEquals(ByteBuffer b1, ByteBuffer b2) {
   if (b1.lengthInBytes != b2.lengthInBytes) return false;
   final u1 = Uint8List.fromList(b1.asUint8List());
@@ -21,9 +19,8 @@ int encodeLenBytes(int len) {
     return 3;
   } else if (len <= 0xffffff) {
     return 4;
-  } else {
-    throw 'Length too long (> 4 bytes)';
   }
+  throw 'Length too long (> 4 bytes)';
 }
 
 int encodeLen(Uint8List buf, int offset, int len) {
@@ -45,22 +42,31 @@ int encodeLen(Uint8List buf, int offset, int len) {
     buf[offset + 2] = len >> 8;
     buf[offset + 3] = len;
     return 4;
-  } else {
-    throw 'Length too long (> 4 bytes)';
   }
+  throw 'Length too long (> 4 bytes)';
 }
 
 int decodeLenBytes(Uint8List buf, int offset) {
-  if (buf[offset] < 0x80) return 1;
-  if (buf[offset] == 0x80) throw 'Invalid length 0';
-  if (buf[offset] == 0x81) return 2;
-  if (buf[offset] == 0x82) return 3;
-  if (buf[offset] == 0x83) return 4;
+  if (buf[offset] < 0x80) {
+    return 1;
+  }
+  if (buf[offset] == 0x80) {
+    throw 'Invalid length 0';
+  }
+  if (buf[offset] == 0x81) {
+    return 2;
+  }
+  if (buf[offset] == 0x82) {
+    return 3;
+  }
+  if (buf[offset] == 0x83) {
+    return 4;
+  }
   throw 'Length too long (> 4 bytes)';
 }
 
 /// A DER encoded `SEQUENCE(OID)` for DER-encoded-COSE
-final DER_COSE_OID = Uint8List.fromList([
+final oisCOSEDer = Uint8List.fromList([
   ...[0x30, 0x0c], // SEQUENCE
   ...[0x06, 0x0a], // OID with 10 bytes
   ...[
@@ -78,7 +84,7 @@ final DER_COSE_OID = Uint8List.fromList([
 ]);
 
 /// A DER encoded `SEQUENCE(OID)` for the Ed25519 algorithm
-final ED25519_OID = Uint8List.fromList([
+final oidEd25519 = Uint8List.fromList([
   ...[0x30, 0x05], // SEQUENCE
   ...[0x06, 0x03], // OID with 3 bytes
   ...[0x2b, 0x65, 0x70], // id-Ed25519 OID
@@ -127,7 +133,9 @@ Uint8List unwrapDER(ByteBuffer derEncoded, Uint8List oid) {
 
   final buf = Uint8List.fromList(derEncoded.asUint8List());
   check(int n, String msg) {
-    if (buf[offset++] != n) throw 'Expected: ' + msg;
+    if (buf[offset++] != n) {
+      throw 'Expected: $msg';
+    }
   }
 
   check(0x30, 'sequence');

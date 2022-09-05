@@ -9,310 +9,356 @@ import 'package:agent_dart/principal/principal.dart';
 import 'api.dart';
 
 class ProxyMessageKind {
-  // ignore: constant_identifier_names
-  static const Error = 'err';
-  // ignore: constant_identifier_names
-  static const GetPrincipal = 'gp';
-  // ignore: constant_identifier_names
-  static const GetPrincipalResponse = 'gpr';
-  // ignore: constant_identifier_names
-  static const Query = 'q';
-  // ignore: constant_identifier_names
-  static const QueryResponse = 'qr';
-  // ignore: constant_identifier_names
-  static const Call = 'c';
-  // ignore: constant_identifier_names
-  static const CallResponse = 'cr';
-  // ignore: constant_identifier_names
-  static const ReadState = 'rs';
-  // ignore: constant_identifier_names
-  static const ReadStateResponse = 'rsr';
-  // ignore: constant_identifier_names
-  static const Status = 's';
-  // ignore: constant_identifier_names
-  static const StatusResponse = 'sr';
+  const ProxyMessageKind._();
+
+  static const error = 'err';
+  static const getPrincipal = 'gp';
+  static const getPrincipalResponse = 'gpr';
+  static const query = 'q';
+  static const queryResponse = 'qr';
+  static const call = 'c';
+  static const callResponse = 'cr';
+  static const readState = 'rs';
+  static const readStateResponse = 'rsr';
+  static const status = 's';
+  static const statusResponse = 'sr';
 }
 
 abstract class ProxyMessageBase {
-  late int? id;
-  late String? type;
+  const ProxyMessageBase({this.id, this.type});
+
+  final int? id;
+  final String? type;
 }
 
 class ProxyMessage<T> extends ProxyMessageBase {
-  dynamic error;
-  T? response;
-  List<dynamic>? args;
+  const ProxyMessage({
+    this.error,
+    this.response,
+    this.args,
+    super.id,
+    super.type,
+  });
+
+  final dynamic error;
+  final T? response;
+  final List<dynamic>? args;
 
   Map<String, dynamic> toJson() {
     return {
-      "id": id,
-      "type": type,
-      "response": response,
-      "error": error,
-      "args": args
+      'id': id,
+      'type': type,
+      'response': response,
+      'error': error,
+      'args': args,
     };
   }
 }
 
-class ProxyMessageError extends ProxyMessage {
-  @override
-  // ignore: overridden_fields
-  String? type = ProxyMessageKind.Error;
-  @override
-  dynamic error;
-  ProxyMessageError();
+class ProxyMessageError<T> extends ProxyMessage<T> {
+  const ProxyMessageError({
+    super.error,
+    super.response,
+    super.args,
+    super.id,
+    super.type = ProxyMessageKind.error,
+  });
 
   factory ProxyMessageError.fromJson(Map json) {
-    return ProxyMessageError()
-      ..id = json["id"]
-      ..type = json["type"]
-      ..error = json["error"]
-      ..response = json["response"]
-      ..args = json["args"];
+    return ProxyMessageError(
+      error: json['error'],
+      response: json['response'],
+      args: json['args'],
+      id: json['id'],
+      type: json['type'],
+    );
   }
 }
 
 class ProxyMessageGetPrincipal extends ProxyMessage {
-  @override
-  // ignore: overridden_fields
-  String? type = ProxyMessageKind.GetPrincipal;
-  ProxyMessageGetPrincipal();
+  const ProxyMessageGetPrincipal({
+    super.error,
+    super.response,
+    super.args,
+    super.id,
+    super.type = ProxyMessageKind.getPrincipal,
+  });
 
   factory ProxyMessageGetPrincipal.fromJson(Map json) {
-    return ProxyMessageGetPrincipal()
-      ..id = json["id"]
-      ..type = json["type"]
-      ..error = json["error"]
-      ..response = json["response"]
-      ..args = json["args"];
+    return ProxyMessageGetPrincipal(
+      error: json['error'],
+      response: json['response'],
+      args: json['args'],
+      id: json['id'],
+      type: json['type'],
+    );
   }
 }
 
 class ProxyMessageGetPrincipalResponse extends ProxyMessage<String> {
-  @override
-  // ignore: overridden_fields
-  String? type = ProxyMessageKind.GetPrincipalResponse;
-  @override
-  String? response;
-  ProxyMessageGetPrincipalResponse();
+  const ProxyMessageGetPrincipalResponse({
+    super.response,
+    super.id,
+    super.type = ProxyMessageKind.getPrincipalResponse,
+  });
 
   factory ProxyMessageGetPrincipalResponse.fromJson(Map json) {
-    return ProxyMessageGetPrincipalResponse()
-      ..id = json["id"] as int
-      ..type = json["type"] as String
-      ..response = json["response"] as String;
+    return ProxyMessageGetPrincipalResponse(
+      response: json['response'],
+      id: json['id'],
+      type: json['type'],
+    );
   }
 }
 
 class ProxyMessageQuery extends ProxyMessage {
-  @override
-  // ignore: overridden_fields
-  String? type = ProxyMessageKind.Query;
-  @override
-  // ignore: overridden_fields
-  List<dynamic>? args; //: [string, QueryFields];
-  ProxyMessageQuery();
+  //: [string, QueryFields];
+  const ProxyMessageQuery({
+    super.error,
+    super.response,
+    super.args,
+    super.id,
+    super.type = ProxyMessageKind.query,
+  });
+
   factory ProxyMessageQuery.fromJson(Map json) {
-    return ProxyMessageQuery()
-      ..id = json["id"]
-      ..type = json["type"]
-      ..error = json["error"]
-      ..response = json["response"]
-      ..args = json["args"];
+    return ProxyMessageQuery(
+      error: json['error'],
+      response: json['response'],
+      args: json['args'],
+      id: json['id'],
+      type: json['type'],
+    );
   }
 }
 
 class ProxyMessageQueryResponse extends ProxyMessage<QueryResponse> {
-  @override
-  // ignore: overridden_fields
-  String? type = ProxyMessageKind.QueryResponse;
-  @override
-  // ignore: overridden_fields
-  QueryResponse? response;
-  ProxyMessageQueryResponse();
+  const ProxyMessageQueryResponse({
+    super.error,
+    super.response,
+    super.args,
+    super.id,
+    super.type = ProxyMessageKind.queryResponse,
+  });
+
   factory ProxyMessageQueryResponse.fromJson(Map json) {
-    return ProxyMessageQueryResponse()
-      ..id = json["id"]
-      ..type = json["type"]
-      ..error = json["error"]
-      ..response = json["response"]
-      ..args = json["args"];
+    return ProxyMessageQueryResponse(
+      error: json['error'],
+      response: json['response'],
+      args: json['args'],
+      id: json['id'],
+      type: json['type'],
+    );
   }
 }
 
 class ProxyMessageCall extends ProxyMessage {
-  @override
-  // ignore: overridden_fields
-  String? type = ProxyMessageKind.Call;
-  @override
-  List<dynamic>? args;
-  ProxyMessageCall();
+  const ProxyMessageCall({
+    super.error,
+    super.response,
+    super.args,
+    super.id,
+    super.type = ProxyMessageKind.call,
+  });
+
   factory ProxyMessageCall.fromJson(Map json) {
-    return ProxyMessageCall()
-      ..id = json["id"]
-      ..type = json["type"]
-      ..error = json["error"]
-      ..response = json["response"]
-      ..args = json["args"];
-  } //: [string, CallOptions];
+    return ProxyMessageCall(
+      error: json['error'],
+      response: json['response'],
+      args: json['args'],
+      id: json['id'],
+      type: json['type'],
+    );
+  }
 }
 
 class ProxyMessageCallResponse extends ProxyMessage<SubmitResponse> {
-  @override
-  // ignore: overridden_fields
-  String? type = ProxyMessageKind.CallResponse;
-  @override
-  // ignore: overridden_fields
-  SubmitResponse? response;
-  ProxyMessageCallResponse();
+  const ProxyMessageCallResponse({
+    super.error,
+    super.response,
+    super.args,
+    super.id,
+    super.type = ProxyMessageKind.callResponse,
+  });
+
   factory ProxyMessageCallResponse.fromJson(Map json) {
-    return ProxyMessageCallResponse()
-      ..id = json["id"]
-      ..type = json["type"]
-      ..error = json["error"]
-      ..response = json["response"]
-      ..args = json["args"];
+    return ProxyMessageCallResponse(
+      error: json['error'],
+      response: json['response'],
+      args: json['args'],
+      id: json['id'],
+      type: json['type'],
+    );
   }
 }
 
 class ProxyMessageReadState extends ProxyMessage {
-  @override
-  // ignore: overridden_fields
-  String? type = ProxyMessageKind.ReadState;
-  @override
-  // ignore: overridden_fields
-  List<dynamic>? args;
-  ProxyMessageReadState();
+  const ProxyMessageReadState({
+    super.error,
+    super.response,
+    super.args,
+    super.id,
+    super.type = ProxyMessageKind.readState,
+  });
+
   factory ProxyMessageReadState.fromJson(Map json) {
-    return ProxyMessageReadState()
-      ..id = json["id"]
-      ..type = json["type"]
-      ..error = json["error"]
-      ..response = json["response"]
-      ..args = json["args"];
-  } //: [string, ReadStateOptions];
+    return ProxyMessageReadState(
+      error: json['error'],
+      response: json['response'],
+      args: json['args'],
+      id: json['id'],
+      type: json['type'],
+    );
+  }
 }
 
 class ProxyMessageReadStateResponse extends ProxyMessage<ReadStateResponse> {
-  @override
-  // ignore: overridden_fields
-  String? type = ProxyMessageKind.ReadStateResponse;
-  @override
-  ReadStateResponse? response;
-  ProxyMessageReadStateResponse();
+  const ProxyMessageReadStateResponse({
+    super.error,
+    super.response,
+    super.args,
+    super.id,
+    super.type = ProxyMessageKind.readStateResponse,
+  });
+
   factory ProxyMessageReadStateResponse.fromJson(Map json) {
-    return ProxyMessageReadStateResponse()
-      ..id = json["id"]
-      ..type = json["type"]
-      ..error = json["error"]
-      ..response = json["response"]
-      ..args = json["args"];
+    return ProxyMessageReadStateResponse(
+      error: json['error'],
+      response: json['response'],
+      args: json['args'],
+      id: json['id'],
+      type: json['type'],
+    );
   }
 }
 
 class ProxyMessageStatus extends ProxyMessage {
-  @override
-  // ignore: overridden_fields
-  String? type = ProxyMessageKind.Status;
-  ProxyMessageStatus();
+  const ProxyMessageStatus({
+    super.error,
+    super.response,
+    super.args,
+    super.id,
+    super.type = ProxyMessageKind.status,
+  });
+
   factory ProxyMessageStatus.fromJson(Map json) {
-    return ProxyMessageStatus()
-      ..id = json["id"]
-      ..type = json["type"]
-      ..error = json["error"]
-      ..response = json["response"]
-      ..args = json["args"];
+    return ProxyMessageStatus(
+      error: json['error'],
+      response: json['response'],
+      args: json['args'],
+      id: json['id'],
+      type: json['type'],
+    );
   }
 }
 
 class ProxyMessageStatusResponse extends ProxyMessage<Map> {
-  @override
-  // ignore: overridden_fields
-  String? type = ProxyMessageKind.StatusResponse;
-  @override
-  // ignore: overridden_fields
-  Map? response;
-  ProxyMessageStatusResponse();
+  const ProxyMessageStatusResponse({
+    super.error,
+    super.response,
+    super.args,
+    super.id,
+    super.type = ProxyMessageKind.statusResponse,
+  });
+
   factory ProxyMessageStatusResponse.fromJson(Map json) {
-    return ProxyMessageStatusResponse()
-      ..id = json["id"]
-      ..type = json["type"]
-      ..error = json["error"]
-      ..response = json["response"]
-      ..args = json["args"];
+    return ProxyMessageStatusResponse(
+      error: json['error'],
+      response: json['response'],
+      args: json['args'],
+      id: json['id'],
+      type: json['type'],
+    );
   }
 }
 
 class ProxyStubAgent {
+  const ProxyStubAgent(this._frontend, this._agent);
+
   final void Function(ProxyMessage msg) _frontend;
   final Agent _agent;
-  ProxyStubAgent(this._frontend, this._agent);
 
   void onmessage(ProxyMessage msg) {
     switch (msg.type) {
-      case ProxyMessageKind.GetPrincipal:
+      case ProxyMessageKind.getPrincipal:
         _agent.getPrincipal().then((response) {
-          _frontend(ProxyMessageGetPrincipalResponse.fromJson({
-            "id": msg.id,
-            "type": ProxyMessageKind.GetPrincipalResponse,
-            "response": response.toText(),
-          }));
+          _frontend(
+            ProxyMessageGetPrincipalResponse.fromJson({
+              'id': msg.id,
+              'type': ProxyMessageKind.getPrincipalResponse,
+              'response': response.toText(),
+            }),
+          );
         });
         break;
-      case ProxyMessageKind.Query:
-        _agent.query(msg.args?[0], msg.args?[1], msg.args?[2]).then((response) {
-          _frontend(ProxyMessageQueryResponse.fromJson({
-            "id": msg.id,
-            "type": ProxyMessageKind.QueryResponse,
-            "response": response,
-          }));
+      case ProxyMessageKind.query:
+        _agent
+            .query(
+          msg.args?[0],
+          msg.args?[1],
+          msg.args?[2],
+        )
+            .then((response) {
+          _frontend(
+            ProxyMessageQueryResponse.fromJson({
+              'id': msg.id,
+              'type': ProxyMessageKind.queryResponse,
+              'response': response,
+            }),
+          );
         });
         break;
-      case ProxyMessageKind.Call:
+      case ProxyMessageKind.call:
         _agent.call(msg.args?[0], msg.args?[1], msg.args?[2]).then((response) {
-          _frontend(ProxyMessageCallResponse.fromJson({
-            "id": msg.id,
-            "type": ProxyMessageKind.CallResponse,
-            "response": response,
-          }));
+          _frontend(
+            ProxyMessageCallResponse.fromJson({
+              'id': msg.id,
+              'type': ProxyMessageKind.callResponse,
+              'response': response,
+            }),
+          );
         });
         break;
-      case ProxyMessageKind.ReadState:
+      case ProxyMessageKind.readState:
         _agent
             .readState(msg.args?[0], msg.args?[1], msg.args?[2])
             .then((response) {
-          _frontend(ProxyMessageReadStateResponse.fromJson({
-            "id": msg.id,
-            "type": ProxyMessageKind.ReadStateResponse,
-            "response": response,
-          }));
+          _frontend(
+            ProxyMessageReadStateResponse.fromJson({
+              'id': msg.id,
+              'type': ProxyMessageKind.readStateResponse,
+              'response': response,
+            }),
+          );
         });
         break;
-      case ProxyMessageKind.Status:
+      case ProxyMessageKind.status:
         _agent.status().then((response) {
-          _frontend(ProxyMessageStatusResponse.fromJson({
-            "id": msg.id,
-            "type": ProxyMessageKind.StatusResponse,
-            "response": response,
-          }));
+          _frontend(
+            ProxyMessageStatusResponse.fromJson({
+              'id': msg.id,
+              'type': ProxyMessageKind.statusResponse,
+              'response': response,
+            }),
+          );
         });
         break;
-
       default:
-        throw "Invalid message received: ${jsonEncode(msg)}";
+        throw 'Invalid message received: ${jsonEncode(msg)}';
     }
   }
 }
 
 class ProxyAgent implements Agent {
-  int _nextId = 0;
-  final Map<int, Promise> _pendingCalls = <int, Promise>{};
-  @override
-  BinaryBlob? rootKey;
+  ProxyAgent(this._backend);
 
   final void Function(ProxyMessage msg) _backend;
 
-  ProxyAgent(this._backend);
+  final Map<int, Promise> _pendingCalls = <int, Promise>{};
+  int _nextId = 0;
+
+  @override
+  BinaryBlob? rootKey;
 
   void onmessage(ProxyMessage msg) {
     final id = msg.id;
@@ -325,25 +371,27 @@ class ProxyAgent implements Agent {
     final resolve = maybePromise.resolve;
     final reject = maybePromise.reject;
     switch (msg.type) {
-      case ProxyMessageKind.Error:
+      case ProxyMessageKind.error:
         return reject(msg.error);
-      case ProxyMessageKind.GetPrincipalResponse:
-      case ProxyMessageKind.CallResponse:
-      case ProxyMessageKind.QueryResponse:
-      case ProxyMessageKind.ReadStateResponse:
-      case ProxyMessageKind.StatusResponse:
+      case ProxyMessageKind.getPrincipalResponse:
+      case ProxyMessageKind.callResponse:
+      case ProxyMessageKind.queryResponse:
+      case ProxyMessageKind.readStateResponse:
+      case ProxyMessageKind.statusResponse:
         return resolve(msg.response);
       default:
-        throw "Invalid message being sent to ProxyAgent: ${jsonEncode(msg)}";
+        throw 'Invalid message being sent to ProxyAgent: ${jsonEncode(msg)}';
     }
   }
 
   @override
   Future<Principal> getPrincipal() async {
-    return _sendAndWait(ProxyMessageGetPrincipal.fromJson({
-      "id": _nextId++,
-      "type": ProxyMessageKind.GetPrincipal,
-    })).then((principal) {
+    return _sendAndWait(
+      ProxyMessageGetPrincipal.fromJson({
+        'id': _nextId++,
+        'type': ProxyMessageKind.getPrincipal,
+      }),
+    ).then((principal) {
       if (principal is! String) {
         throw 'Invalid principal received.';
       }
@@ -353,43 +401,57 @@ class ProxyAgent implements Agent {
 
   @override
   Future<ReadStateResponse> readState(
-      Principal canisterId, ReadStateOptions fields, Identity? identity) {
-    return _sendAndWait(ProxyMessageReadStateResponse.fromJson({
-      "id": _nextId++,
-      "type": ProxyMessageKind.ReadState,
-      "args": [
-        canisterId is Principal ? canisterId.toString() : canisterId,
-        fields
-      ],
-    }));
+    Principal canisterId,
+    ReadStateOptions fields,
+    Identity? identity,
+  ) {
+    return _sendAndWait(
+      ProxyMessageReadStateResponse.fromJson({
+        'id': _nextId++,
+        'type': ProxyMessageKind.readState,
+        'args': [canisterId.toString(), fields],
+      }),
+    );
   }
 
   @override
   Future<SubmitResponse> call(
-      Principal canisterId, CallOptions fields, Identity? identity) {
-    return _sendAndWait(ProxyMessageCallResponse.fromJson({
-      "id": _nextId++,
-      "type": ProxyMessageKind.Call,
-      "args": [canisterId.toString(), fields],
-    }));
+    Principal canisterId,
+    CallOptions fields,
+    Identity? identity,
+  ) {
+    return _sendAndWait(
+      ProxyMessageCallResponse.fromJson({
+        'id': _nextId++,
+        'type': ProxyMessageKind.call,
+        'args': [canisterId.toString(), fields],
+      }),
+    );
   }
 
   @override
   Future<Map> status() {
-    return _sendAndWait(ProxyMessageStatus.fromJson({
-      "id": _nextId++,
-      "type": ProxyMessageKind.Status,
-    }));
+    return _sendAndWait(
+      ProxyMessageStatus.fromJson({
+        'id': _nextId++,
+        'type': ProxyMessageKind.status,
+      }),
+    );
   }
 
   @override
   Future<QueryResponse> query(
-      Principal canisterId, QueryFields fields, Identity? identity) {
-    return _sendAndWait(ProxyMessageQueryResponse.fromJson({
-      "id": _nextId++,
-      "type": ProxyMessageKind.Query,
-      "args": [canisterId.toString(), fields],
-    }));
+    Principal canisterId,
+    QueryFields fields,
+    Identity? identity,
+  ) {
+    return _sendAndWait(
+      ProxyMessageQueryResponse.fromJson({
+        'id': _nextId++,
+        'type': ProxyMessageKind.query,
+        'args': [canisterId.toString(), fields],
+      }),
+    );
   }
 
   Future<T> _sendAndWait<T>(ProxyMessage msg) async {
@@ -409,7 +471,7 @@ class ProxyAgent implements Agent {
   @override
   Future<BinaryBlob> fetchRootKey() async {
     // Hex-encoded version of the replica root key
-    rootKey = (await status())["root_key"] as Uint8List;
+    rootKey = (await status())['root_key'] as Uint8List;
     return Future.value(rootKey);
   }
 }
@@ -418,7 +480,8 @@ typedef PromiseResolve = Future Function(dynamic value);
 typedef PromiseReject = Future Function(dynamic value);
 
 class Promise<T> {
-  void Function(Object, [StackTrace?]) reject;
-  void Function([FutureOr<T>?]) resolve;
-  Promise(this.resolve, this.reject);
+  const Promise(this.resolve, this.reject);
+
+  final void Function(Object, [StackTrace?]) reject;
+  final void Function([FutureOr<T>?]) resolve;
 }

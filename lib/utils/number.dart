@@ -5,15 +5,19 @@ import 'package:convert/convert.dart';
 BigInt decodeBigInt(List<int> bytes, {Endian endian = Endian.little}) {
   BigInt result = BigInt.from(0);
   for (int i = 0; i < bytes.length; i++) {
-    result += BigInt.from(
-            bytes[endian == Endian.little ? i : bytes.length - i - 1]) <<
-        (8 * i);
+    final newValue = BigInt.from(
+      bytes[endian == Endian.little ? i : bytes.length - i - 1],
+    );
+    result += newValue << (8 * i);
   }
   return result;
 }
 
-Uint8List encodeBigInt(BigInt number,
-    {Endian endian = Endian.little, int? bitLength}) {
+Uint8List encodeBigInt(
+  BigInt number, {
+  Endian endian = Endian.little,
+  int? bitLength,
+}) {
   var bl = (bitLength != null) ? bitLength : number.bitLength;
   int size = (bl + 7) >> 3;
   var result = Uint8List(size);
@@ -35,8 +39,12 @@ Uint8List encodeBigInt(BigInt number,
 /// with zeroes. Note that [forcePadLen] refers to the string length, meaning
 /// that one byte has a length of 2. When [include0x] is set to true, the
 /// output wil have "0x" prepended to it after any padding is done.
-String numberToHex(dynamic number,
-    {bool pad = false, bool include0x = false, int? forcePadLen}) {
+String numberToHex(
+  dynamic number, {
+  bool pad = false,
+  bool include0x = false,
+  int? forcePadLen,
+}) {
   String toHexSimple() {
     if (number is int) {
       return number.toRadixString(16);
@@ -48,9 +56,9 @@ String numberToHex(dynamic number,
   }
 
   var hexString = toHexSimple();
-  if (pad && !hexString.length.isEven) hexString = "0$hexString";
-  if (forcePadLen != null) hexString = hexString.padLeft(forcePadLen, "0");
-  if (include0x) hexString = "0x$hexString";
+  if (pad && !hexString.length.isEven) hexString = '0$hexString';
+  if (forcePadLen != null) hexString = hexString.padLeft(forcePadLen, '0');
+  if (include0x) hexString = '0x$hexString';
 
   return hexString;
 }
@@ -63,7 +71,7 @@ String numberToHex(dynamic number,
 /// of even length. If [include0x] is set, it will prefix "0x" to the hexadecimal
 /// representation.
 String bytesToHex(List<int> bytes, {bool include0x = false}) {
-  return (include0x ? "0x" : "") + hex.encode(bytes);
+  return (include0x ? '0x' : '') + hex.encode(bytes);
 }
 
 ///Converts the bytes from that list (big endian) to a BigInt.

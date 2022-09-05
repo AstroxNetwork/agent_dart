@@ -8,19 +8,19 @@ import 'package:agent_dart/utils/u8a.dart';
 
 // import 'package:laksadart/laksadart.dart';
 
-// ignore: constant_identifier_names
-const DEFAULT_LENGTH = 32;
+const _defaultLength = 32;
 
 final bn53 = BigInt.parse(
-    '11111111111111111111111111111111111111111111111111111',
-    radix: 2);
+  '11111111111111111111111111111111111111111111111111111',
+  radix: 2,
+);
 
 class DartRandom {
-  Random dartRandom;
-
   DartRandom(this.dartRandom);
 
-  String get algorithmName => "DartRandom";
+  Random dartRandom;
+
+  String get algorithmName => 'DartRandom';
 
   BigInt nextBigInteger(int bitLength) {
     int fullBytes = bitLength ~/ 8;
@@ -57,7 +57,7 @@ class DartRandom {
   int nextUint8() => dartRandom.nextInt(pow(2, 8).toInt());
 }
 
-Uint8List getRandomValues([int length = DEFAULT_LENGTH]) {
+Uint8List getRandomValues([int length = _defaultLength]) {
   DartRandom rn = DartRandom(Random.secure());
   var entropy = rn.nextBigInteger(length * 8).toRadixString(16);
 
@@ -73,7 +73,7 @@ Uint8List getRandomValues([int length = DEFAULT_LENGTH]) {
   return randomPers.toU8a();
 }
 
-Uint8List randomAsU8a([int length = DEFAULT_LENGTH]) {
+Uint8List randomAsU8a([int length = _defaultLength]) {
   return getRandomValues(length);
 }
 

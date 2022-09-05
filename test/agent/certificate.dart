@@ -77,13 +77,13 @@ void hashTest() {
     );
   });
   test('pruned hash tree', () async {
-    final cborEncode =
-        // ignore: prefer_adjacent_string_concatenation
-        ('83018301830241618301820458201b4feff9bef8131788b0c9dc6dbad6e81e524249c879e9f1' +
-                '0f71ce3749f5a63883024179820345776f726c6483024162820458207b32ac0c6ba8ce35ac' +
-                '82c255fc7906f7fc130dab2a090f80fe12f9c2cae83ba6830182045820ec8324b8a1f1ac16' +
-                'bd2e806edba78006479c9877fed4eb464a25485465af601d830241648203476d6f726e696e67')
-            .toU8a();
+    const value =
+        '83018301830241618301820458201b4feff9bef8131788b0c9dc6dbad6e81e524249c8'
+        '79e9f10f71ce3749f5a63883024179820345776f726c6483024162820458207b32ac0c'
+        '6ba8ce35ac82c255fc7906f7fc130dab2a090f80fe12f9c2cae83ba6830182045820ec'
+        '8324b8a1f1ac16bd2e806edba78006479c9877fed4eb464a25485465af601d83024164'
+        '8203476d6f726e696e67';
+    final cborEncode = value.toU8a();
     final expected = [
       1,
       [
@@ -96,7 +96,8 @@ void hashTest() {
             [
               4,
               pruned(
-                  '1b4feff9bef8131788b0c9dc6dbad6e81e524249c879e9f10f71ce3749f5a638')
+                '1b4feff9bef8131788b0c9dc6dbad6e81e524249c879e9f10f71ce3749f5a638',
+              )
             ],
             [
               2,
@@ -111,7 +112,8 @@ void hashTest() {
           [
             4,
             pruned(
-                '7b32ac0c6ba8ce35ac82c255fc7906f7fc130dab2a090f80fe12f9c2cae83ba6')
+              '7b32ac0c6ba8ce35ac82c255fc7906f7fc130dab2a090f80fe12f9c2cae83ba6',
+            )
           ],
         ],
       ],
@@ -120,7 +122,8 @@ void hashTest() {
         [
           4,
           pruned(
-              'ec8324b8a1f1ac16bd2e806edba78006479c9877fed4eb464a25485465af601d')
+            'ec8324b8a1f1ac16bd2e806edba78006479c9877fed4eb464a25485465af601d',
+          )
         ],
         [
           2,
@@ -151,7 +154,8 @@ void hashTest() {
             [
               4,
               pruned(
-                  '1b4feff9bef8131788b0c9dc6dbad6e81e524249c879e9f10f71ce3749f5a638')
+                '1b4feff9bef8131788b0c9dc6dbad6e81e524249c879e9f10f71ce3749f5a638',
+              )
             ],
             [
               2,
@@ -166,7 +170,8 @@ void hashTest() {
           [
             4,
             pruned(
-                '7b32ac0c6ba8ce35ac82c255fc7906f7fc130dab2a090f80fe12f9c2cae83ba6')
+              '7b32ac0c6ba8ce35ac82c255fc7906f7fc130dab2a090f80fe12f9c2cae83ba6',
+            )
           ],
         ],
       ],
@@ -175,7 +180,8 @@ void hashTest() {
         [
           4,
           pruned(
-              'ec8324b8a1f1ac16bd2e806edba78006479c9877fed4eb464a25485465af601d')
+            'ec8324b8a1f1ac16bd2e806edba78006479c9877fed4eb464a25485465af601d',
+          )
         ],
         [
           2,
@@ -185,11 +191,12 @@ void hashTest() {
       ],
     ];
     expect(
-        lookupPath([
-          'a'.plainToU8a(useDartEncode: true),
-          'a'.plainToU8a(useDartEncode: true)
-        ], tree),
-        null);
+      lookupPath([
+        'a'.plainToU8a(useDartEncode: true),
+        'a'.plainToU8a(useDartEncode: true)
+      ], tree),
+      null,
+    );
 
     expect(
       lookupPath([
@@ -202,8 +209,10 @@ void hashTest() {
     expect(lookupPath(['ax'.plainToU8a(useDartEncode: true)], tree), null);
     expect(lookupPath(['b'.plainToU8a(useDartEncode: true)], tree), null);
     expect(lookupPath(['bb'.plainToU8a(useDartEncode: true)], tree), null);
-    expect(lookupPath(['d'.plainToU8a(useDartEncode: true)], tree),
-        'morning'.plainToU8a(useDartEncode: true));
+    expect(
+      lookupPath(['d'.plainToU8a(useDartEncode: true)], tree),
+      'morning'.plainToU8a(useDartEncode: true),
+    );
     expect(lookupPath(['e'.plainToU8a(useDartEncode: true)], tree), null);
   });
 }

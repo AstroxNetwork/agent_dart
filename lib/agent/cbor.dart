@@ -9,16 +9,13 @@ import 'types.dart';
 
 abstract class ExtraEncoder<T> {
   String get name;
+
   bool match(dynamic value);
+
   void write(cbor.Encoder encoder, T value);
 }
 
 class SelfDescribeEncoder extends cbor.Encoder {
-  late final cbor.Output _out;
-  final Set<ExtraEncoder> _encoders = {};
-
-  // late cbor.BuilderHook _builderHook;
-
   SelfDescribeEncoder(this._out) : super(_out) {
     var valBuff = Uint8Buffer();
     var hList = Uint8List.fromList([0xd9, 0xd9, 0xf7]);
@@ -26,7 +23,12 @@ class SelfDescribeEncoder extends cbor.Encoder {
     addBuilderOutput(valBuff);
     // _builderHook = _hook;
   }
+
   SelfDescribeEncoder.noHead(this._out) : super(_out);
+
+  // late cbor.BuilderHook _builderHook;
+  late final cbor.Output _out;
+  final Set<ExtraEncoder> _encoders = {};
 
   addEncoder<T>(ExtraEncoder encoder) {
     _encoders.add(encoder);
@@ -80,7 +82,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
   void serializeData(dynamic data) {
     if (writeExtra(data) == true) {
       return;
-    } else if (data is ToCBorable) {
+    } else if (data is ToCborable) {
       data.write(this);
     } else if (data is Map) {
       serializeMap(data);
@@ -191,10 +193,10 @@ class SelfDescribeEncoder extends cbor.Encoder {
 }
 
 class PrincipalEncoder extends ExtraEncoder<Principal> {
+  PrincipalEncoder() : super();
+
   @override
   String get name => 'Principal';
-
-  PrincipalEncoder() : super();
 
   @override
   bool match(dynamic value) {
@@ -210,10 +212,10 @@ class PrincipalEncoder extends ExtraEncoder<Principal> {
 }
 
 class BufferEncoder extends ExtraEncoder<BinaryBlob> {
+  BufferEncoder() : super();
+
   @override
   String get name => 'Buffer';
-
-  BufferEncoder() : super();
 
   @override
   bool match(dynamic value) {
@@ -229,10 +231,10 @@ class BufferEncoder extends ExtraEncoder<BinaryBlob> {
 }
 
 class ByteBufferEncoder extends ExtraEncoder<ByteBuffer> {
+  ByteBufferEncoder() : super();
+
   @override
   String get name => 'ByteBuffer';
-
-  ByteBufferEncoder() : super();
 
   @override
   bool match(dynamic value) {
@@ -248,10 +250,10 @@ class ByteBufferEncoder extends ExtraEncoder<ByteBuffer> {
 }
 
 class BigIntEncoder extends ExtraEncoder<BigInt> {
+  BigIntEncoder() : super();
+
   @override
   String get name => 'BigInt';
-
-  BigIntEncoder() : super();
 
   @override
   bool match(dynamic value) {
@@ -264,7 +266,9 @@ class BigIntEncoder extends ExtraEncoder<BigInt> {
   }
 }
 
-abstract class ToCBorable {
+abstract class ToCborable {
+  const ToCborable();
+
   void write(cbor.Encoder encoder);
 }
 
@@ -310,25 +314,15 @@ T cborDecode<T>(List<int> value) {
       ..addAll(value);
     cbor.Input input = cbor.Input(buffer);
     final cbor.Listener listener = cbor.ListenerStack();
-    final _decodeStack = cbor.DecodeStack();
+    final decodeStack = cbor.DecodeStack();
     listener.itemStack.clear();
     cbor.Decoder decoder = cbor.Decoder.withListener(input, listener);
     decoder.run();
-
-    List<dynamic>? getDecodedData() {
-      try {
-        _decodeStack.build(listener.itemStack);
-        return _decodeStack.walk();
-      } catch (e) {
-        rethrow;
-      }
-    }
-
-    // print(getDecodedData());
-
-    return getDecodedData()![0] as T;
+    decodeStack.build(listener.itemStack);
+    final walked = decodeStack.walk();
+    return walked![0] as T;
   } catch (e) {
-    throw "Can not decode with cbor :$e";
+    throw 'Can not decode with cbor :$e';
   }
 }
 
@@ -336,15 +330,14 @@ ByteBuffer serializeValue(int major, int minor, String val) {
   // Remove everything that's not an hexadecimal character. These are not
   // considered errors since the value was already validated and they might
   // be number decimals or sign.
-  var value = val.replaceAll('r[^0-9a-fA-F]', "");
+  var value = val.replaceAll('r[^0-9a-fA-F]', '');
   // Create the buffer from the value with left padding with 0.
   final length = math.pow(2, minor - 24).toInt();
-
-  var temp = value
-      .substring(value.length <= length * 2 ? 0 : value.length - length * 2);
-  var prefix = "0" * (2 * length - temp.length);
+  var temp = value.substring(
+    value.length <= length * 2 ? 0 : value.length - length * 2,
+  );
+  var prefix = '0' * (2 * length - temp.length);
   value = prefix + temp;
-
   var bytes = [(major << 5) + minor];
   var arr = <int>[];
   for (var i = 0; i < value.length; i += 2) {

@@ -75,7 +75,8 @@ Future<Map<String, dynamic>> defaultFetch({
       case FetchMethod.options:
       case FetchMethod.trace:
         throw UnimplementedError(
-            "Unsupported http request method: `${method.name.toUpperCase()}`.");
+          'Unsupported http request method: `${method.name.toUpperCase()}`.',
+        );
     }
 
     var response = await fr.timeout(
@@ -84,18 +85,18 @@ Future<Map<String, dynamic>> defaultFetch({
         '${host ?? '$defaultHost$endpoint'} timeout',
       ),
     );
-    if (response.headers["content-type"] != null &&
-        response.headers["content-type"]!.split(",").length > 1) {
-      var actualHeader = response.headers["content-type"]!.split(",").first;
-      response.headers["content-type"] = actualHeader;
+    if (response.headers['content-type'] != null &&
+        response.headers['content-type']!.split(',').length > 1) {
+      var actualHeader = response.headers['content-type']!.split(',').first;
+      response.headers['content-type'] = actualHeader;
     }
     client.close();
     return {
-      "body": response.body,
-      "ok": response.statusCode >= 200 && response.statusCode < 300,
-      "statusCode": response.statusCode,
-      "statusText": response.reasonPhrase ?? '',
-      "arrayBuffer": response.bodyBytes,
+      'body': response.body,
+      'ok': response.statusCode >= 200 && response.statusCode < 300,
+      'statusCode': response.statusCode,
+      'statusText': response.reasonPhrase ?? '',
+      'arrayBuffer': response.bodyBytes,
     };
   } catch (e) {
     client.close();
@@ -114,11 +115,11 @@ class FetchResponse {
 
   factory FetchResponse.fromMap(Map<String, dynamic> map) {
     return FetchResponse(
-      map["body"],
-      map["ok"],
-      map["statusCode"],
-      map["statusText"],
-      map["arrayBuffer"],
+      map['body'],
+      map['ok'],
+      map['statusCode'],
+      map['statusText'],
+      map['arrayBuffer'],
     );
   }
 
@@ -130,11 +131,11 @@ class FetchResponse {
 
   Map<String, dynamic> toJson() {
     return {
-      "body": body,
-      "ok": ok,
-      "statusCode": statusCode,
-      "statusText": statusText,
-      "arrayBuffer": arrayBuffer
+      'body': body,
+      'ok': ok,
+      'statusCode': statusCode,
+      'statusText': statusText,
+      'arrayBuffer': arrayBuffer
     };
   }
 }

@@ -18,7 +18,7 @@ class AgentFactory {
       Identity? identity,
       bool? debug = true}) {
     _setCanisterId(canisterId);
-    _identity = identity ?? AnonymousIdentity();
+    _identity = identity ?? const AnonymousIdentity();
     _idl = idl;
     _debug = debug ?? true;
     _initAgent(url);

@@ -1,90 +1,87 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart/identity/ed25519.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/agent/agent.dart';
 import 'package:agent_dart/utils/u8a.dart';
 import 'package:cbor/cbor.dart';
-import 'package:typed_data/typed_buffers.dart';
 
 final authDelegationDomainSeparator =
-    ('\x1Aic-request-auth-delegation').plainToU8a();
-final requestDomainSeparator = ('\x0Aic-request').plainToU8a();
+    '\x1Aic-request-auth-delegation'.plainToU8a();
+final requestDomainSeparator = '\x0Aic-request'.plainToU8a();
 
-class Delegation extends ToCBorable {
+class Delegation extends ToCborable {
+  const Delegation(this.pubkey, this.expiration, this.targets);
+
+  factory Delegation.fromMap(Map map) {
+    return Delegation(
+      map['pubkey'] is String
+          ? (map['pubkey'] as String).toU8a()
+          : Uint8List.fromList(map['pubkey']),
+      map['expiration'] is BigInt
+          ? map['expiration']
+          : (map['expiration'] as String).hexToBn(),
+      map['targets'] != null
+          ? (map['targets'] as List).map((e) => Principal.fromHex(e)).toList()
+          : null,
+    );
+  }
+
   final BinaryBlob pubkey;
   final BigInt expiration;
-  List<Principal>? targets;
-  Delegation(
-    this.pubkey,
-    this.expiration,
-    this.targets,
-  );
+  final List<Principal>? targets;
 
   @override
   void write(Encoder encoder) {
-    var targetLists = targets?.map((e) => e.toUint8Array()).toList() ?? [];
-
-    var _targets = targets != null ? {"targets": targetLists} : {};
-    var res = {"pubkey": pubkey, "expiration": expiration.toInt(), ..._targets};
-
+    var res = {
+      'pubkey': pubkey,
+      'expiration': expiration.toInt(),
+      if (targets != null)
+        'targets': targets?.map((e) => e.toUint8Array()).toList(),
+    };
     encoder.writeMap(res);
   }
 
   Map<String, dynamic> toJSON() => {
-        "expiration": expiration.toHex().hexStripPrefix(),
-        "pubkey": pubkey.toHex(),
-        "targets": targets?.map((e) => e.toHex()).toList(),
+        'expiration': expiration.toHex().hexStripPrefix(),
+        'pubkey': pubkey.toHex(),
+        'targets': targets?.map((e) => e.toHex()).toList(),
       }..removeWhere((key, value) => value == null);
 
   Map<String, dynamic> toMap() => {
-        "expiration": expiration,
-        "pubkey": pubkey,
-        "targets": targets,
+        'expiration': expiration,
+        'pubkey': pubkey,
+        'targets': targets,
       }..removeWhere((key, value) => value == null);
-
-  factory Delegation.fromMap(Map map) {
-    return Delegation(
-        map["pubkey"] is String
-            ? (map["pubkey"] as String).toU8a()
-            : Uint8List.fromList(map["pubkey"]),
-        map["expiration"] is BigInt
-            ? map["expiration"]
-            : (map["expiration"] as String).hexToBn(),
-        map["targets"] != null
-            ? (map["targets"] as List).map((e) => Principal.fromHex(e)).toList()
-            : null);
-  }
 }
 
 class SignedDelegation {
-  final Delegation? delegation;
-  final BinaryBlob? signature;
-  SignedDelegation({this.delegation, this.signature});
+  const SignedDelegation({this.delegation, this.signature});
+
   factory SignedDelegation.fromMap(Map<String, dynamic> map) {
     return SignedDelegation(
-        delegation: map["delegation"] is Delegation
-            ? map["delegation"]
-            : Delegation.fromMap(map["delegation"]),
-        signature: map['signature'] is String
-            ? (map["signature"] as String).toU8a()
-            : Uint8List.fromList(map["signature"]));
+      delegation: map['delegation'] is Delegation
+          ? map['delegation']
+          : Delegation.fromMap(map['delegation']),
+      signature: map['signature'] is String
+          ? (map['signature'] as String).toU8a()
+          : Uint8List.fromList(map['signature']),
+    );
   }
+
+  final Delegation? delegation;
+  final BinaryBlob? signature;
+
   Map<String, dynamic> toMap() {
-    return {
-      //
-      "delegation": delegation,
-      "signature": signature
-    };
+    return {'delegation': delegation, 'signature': signature};
   }
 
   Map<String, dynamic> toJson() {
     return {
       //
-      "delegation": delegation?.toJSON(),
-      "signature": signature?.toHex()
+      'delegation': delegation?.toJSON(),
+      'signature': signature?.toHex()
     };
   }
 }
@@ -96,7 +93,7 @@ Future<SignedDelegation> _createSingleDelegation(
   DateTime expiration,
   List<Principal>? targets,
 ) async {
-  Delegation delegation = Delegation(
+  final Delegation delegation = Delegation(
     to.toDer(),
     BigInt.from(expiration.millisecondsSinceEpoch) *
         BigInt.from(1000000), // In nanoseconds.
@@ -109,7 +106,8 @@ Future<SignedDelegation> _createSingleDelegation(
   // a user gesture if you await an async call thats not fetch, xhr, or setTimeout.
 
   final challenge = u8aConcat(
-      [authDelegationDomainSeparator, requestIdOf(delegation.toMap())]);
+    [authDelegationDomainSeparator, requestIdOf(delegation.toMap())],
+  );
 
   final signature = await from.sign(challenge);
 
@@ -121,19 +119,21 @@ Future<SignedDelegation> _createSingleDelegation(
   // print("=========");
 
   return SignedDelegation.fromMap({
-    "delegation": delegation,
-    "signature": signature,
+    'delegation': delegation,
+    'signature': signature,
   });
 }
 
 class IJsonnableDelegationChain {
-  String publicKey;
-  List<SignedDelegation> deligations;
-  IJsonnableDelegationChain(this.publicKey, this.deligations);
-  toJson() {
+  const IJsonnableDelegationChain(this.publicKey, this.delegations);
+
+  final String publicKey;
+  final List<SignedDelegation> delegations;
+
+  Map<String, dynamic> toJson() {
     return {
-      "publicKey": publicKey,
-      "deligations": deligations.map((e) => e.toJson()).toList()
+      'publicKey': publicKey,
+      'delegations': delegations.map((e) => e.toJson()).toList()
     };
   }
 }
@@ -142,6 +142,40 @@ class IJsonnableDelegationChain {
 /// This is the object to serialize and pass to a DelegationIdentity. It does not keep any
 /// private keys.
 class DelegationChain {
+  const DelegationChain(this.delegations, this.publicKey);
+
+  /// Creates a DelegationChain object from a JSON string.
+  ///
+  /// @param json The JSON string to parse.
+  factory DelegationChain.fromJSON(dynamic obj) {
+    var json = obj is String
+        ? Map<String, dynamic>.from(jsonDecode(obj))
+        : Map<String, dynamic>.from(obj);
+    if (json['delegations'] is! List) {
+      throw 'Invalid delegations.';
+    }
+    var publicKey = json['publicKey'] as String;
+    var delegations = json['delegations'] as List<dynamic>;
+    final parsedDelegations = delegations.map((map) {
+      var signedDelegation = SignedDelegation.fromMap(map);
+      final delegation = signedDelegation.delegation,
+          signature = signedDelegation.signature;
+      var pubkey = delegation?.pubkey,
+          expiration = delegation?.expiration,
+          targets = delegation?.targets;
+      return SignedDelegation.fromMap({
+        'delegation': Delegation(
+          pubkey!,
+          expiration!,
+          // expiration in JSON is an hexa string (See toJSON() below).
+          targets,
+        ),
+        'signature': signature,
+      });
+    }).toList();
+    return DelegationChain(parsedDelegations, blobFromHex(publicKey));
+  }
+
   /// Create a delegation chain between two (or more) keys. By default, the expiration time
   /// will be very short (15 minutes).
   ///
@@ -151,7 +185,7 @@ class DelegationChain {
   /// @example
   /// const rootKey = createKey();
   /// const middleKey = createKey();
-  /// const bottomeKey = createKey();
+  /// const bottomKey = createKey();
   ///
   /// const rootToMiddle = await DelegationChain.create(
   ///   root, middle.getPublicKey(), Date.parse('2100-01-01'),
@@ -172,56 +206,25 @@ class DelegationChain {
   /// @param options.previous - Another DelegationChain that this chain should start with.
   /// @param options.targets - targets that scope the delegation (e.g. Canister Principals)
   static Future<DelegationChain> create(
-      SignIdentity from, PublicKey to, DateTime? expiration,
-      {DelegationChain? previous, List<Principal>? targets}) async {
+    SignIdentity from,
+    PublicKey to,
+    DateTime? expiration, {
+    DelegationChain? previous,
+    List<Principal>? targets,
+  }) async {
     expiration ??= DateTime.fromMillisecondsSinceEpoch(
-        DateTime.now().millisecondsSinceEpoch + 15 * 60 * 1000);
-    final delegation =
-        await _createSingleDelegation(from, to, expiration, targets);
-
+      DateTime.now().millisecondsSinceEpoch + 15 * 60 * 1000,
+    );
+    final delegation = await _createSingleDelegation(
+      from,
+      to,
+      expiration,
+      targets,
+    );
     return DelegationChain(
       [...(previous?.delegations ?? []), delegation],
       previous?.publicKey ?? from.getPublicKey().toDer(),
     );
-  }
-
-  /// Creates a DelegationChain object from a JSON string.
-  ///
-  /// @param json The JSON string to parse.
-  factory DelegationChain.fromJSON(dynamic obj) {
-    var json = obj is String
-        ? Map<String, dynamic>.from(jsonDecode(obj))
-        : Map<String, dynamic>.from(obj);
-    if (json["delegations"] is! List) {
-      throw 'Invalid delegations.';
-    }
-
-    var publicKey = json["publicKey"] as String;
-    var delegations = json["delegations"] as List<dynamic>;
-
-    final parsedDelegations = delegations.map((map) {
-      var signedDelegation = SignedDelegation.fromMap(map);
-      final delegation = signedDelegation.delegation,
-          signature = signedDelegation.signature;
-      var pubkey = delegation?.pubkey,
-          expiration = delegation?.expiration,
-          targets = delegation?.targets;
-
-      if (targets != null && (targets is! List)) {
-        throw 'Invalid targets.';
-      }
-
-      return SignedDelegation.fromMap({
-        "delegation": Delegation(
-          pubkey!,
-          expiration!, // expiration in JSON is an hexa string (See toJSON() below).
-          targets,
-        ),
-        "signature": signature,
-      });
-    }).toList();
-
-    return DelegationChain(parsedDelegations, blobFromHex(publicKey));
   }
 
   /// Creates a DelegationChain object from a list of delegations and a DER-encoded public key.
@@ -238,17 +241,12 @@ class DelegationChain {
   final List<SignedDelegation> delegations;
   final DerEncodedBlob publicKey;
 
-  DelegationChain(
-    this.delegations,
-    this.publicKey,
-  );
-
-  toJSON() {
+  Map<String, dynamic> toJSON() {
     return {
-      "delegations": delegations.map((signedDelegation) {
-        return signedDelegation.toJson();
-      }).toList(),
-      "publicKey": publicKey.toHex(),
+      'delegations': delegations
+          .map((signedDelegation) => signedDelegation.toJson())
+          .toList(),
+      'publicKey': publicKey.toHex(),
     };
   }
 }
@@ -258,6 +256,11 @@ class DelegationChain {
 /// originalKey is the identity that is being borrowed. More identities can be used
 /// in the middle to delegate.
 class DelegationIdentity extends SignIdentity {
+  DelegationIdentity(this._inner, this._delegation);
+
+  final SignIdentity _inner;
+  final DelegationChain _delegation;
+
   /// Create a delegation without having access to delegateKey.
   ///
   /// @param key The key used to sign the reqyests.
@@ -269,17 +272,7 @@ class DelegationIdentity extends SignIdentity {
     return DelegationIdentity(key, delegation);
   }
 
-  final SignIdentity _inner;
-  final DelegationChain _delegation;
-
-  DelegationIdentity(
-    this._inner,
-    this._delegation,
-  ) : super();
-
-  DelegationChain getDelegation() {
-    return _delegation;
-  }
+  DelegationChain getDelegation() => _delegation;
 
   @override
   PublicKey getPublicKey() {
@@ -296,24 +289,23 @@ class DelegationIdentity extends SignIdentity {
 
     return {
       ...request.toJson(),
-      "body": {
-        "content": request.body.toJson(),
-        "sender_sig":
+      'body': {
+        'content': request.body.toJson(),
+        'sender_sig':
             await sign(u8aConcat([requestDomainSeparator, requestId])),
-        "sender_delegation":
+        'sender_delegation':
             _delegation.delegations.map((e) => e.toMap()).toList(),
-        "sender_pubkey": _delegation.publicKey,
+        'sender_pubkey': _delegation.publicKey,
       },
     };
   }
 }
 
 class DelegationIdentityPublicKey extends PublicKey {
+  const DelegationIdentityPublicKey(this._result);
+
   final DerEncodedBlob _result;
-  DelegationIdentityPublicKey(this._result);
 
   @override
-  DerEncodedBlob toDer() {
-    return _result;
-  }
+  DerEncodedBlob toDer() => _result;
 }
