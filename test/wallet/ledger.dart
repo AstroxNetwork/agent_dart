@@ -36,16 +36,17 @@ void ledgerTest() {
     }
 
     test('test fetch balance and send', () async {
-      var signer = await getSigner();
-      var agent = await getAgent();
-      var someReceiver = await ICPSigner.create(curveType: CurveType.secp256k1);
-      var senderBalance =
+      final signer = await getSigner();
+      final agent = await getAgent();
+      final someReceiver =
+          await ICPSigner.create(curveType: CurveType.secp256k1);
+      final senderBalance =
           await Ledger.getBalance(agent: agent, accountId: signer.ecAddress!);
       expect(senderBalance.e8s > BigInt.zero, true);
       print('\n----- test fetch balance and send -----');
       print('\n---👩 sender Balance before send:');
       print(senderBalance.e8s);
-      var receiverBeforeSend = await Ledger.accountBalance(
+      final receiverBeforeSend = await Ledger.accountBalance(
         agent: agent,
         accountIdOrPrincipal: someReceiver.ecAddress!,
       );
@@ -60,7 +61,7 @@ void ledgerTest() {
       print('to:      ${someReceiver.ecAddress}');
 
       print('\n---🤔 sending start=====>');
-      var blockHeight = await Ledger.send(
+      final blockHeight = await Ledger.send(
         agent: agent,
         to: someReceiver.ecAddress!,
         amount: BigInt.from(100000000),
@@ -69,14 +70,14 @@ void ledgerTest() {
       print('\n---✅ sending end=====>');
       print('\n---🔢 block height: $blockHeight');
       expect(blockHeight >= BigInt.zero, true);
-      var receiverAfterSend = await Ledger.accountBalance(
+      final receiverAfterSend = await Ledger.accountBalance(
         agent: agent,
         accountIdOrPrincipal: someReceiver.ecAddress!,
       );
       expect(receiverAfterSend.e8s == BigInt.from(100000000), true);
       print('\n---🧑 receiver balance after send:');
       print(receiverAfterSend.e8s);
-      var senderBalanceAfter = await Ledger.accountBalance(
+      final senderBalanceAfter = await Ledger.accountBalance(
         agent: agent,
         accountIdOrPrincipal: signer.ecAddress!,
       );
@@ -91,11 +92,12 @@ void ledgerTest() {
     });
 
     test('latest account balance and transfer', () async {
-      var signer = await getSigner();
+      final signer = await getSigner();
       print('\n ${signer.ecAddress}');
-      var agent = await getAgent();
-      var someReceiver = await ICPSigner.create(curveType: CurveType.secp256k1);
-      var senderBalance = await Ledger.accountBalance(
+      final agent = await getAgent();
+      final someReceiver =
+          await ICPSigner.create(curveType: CurveType.secp256k1);
+      final senderBalance = await Ledger.accountBalance(
         agent: agent,
         accountIdOrPrincipal: signer.ecAddress!,
       );
@@ -103,7 +105,7 @@ void ledgerTest() {
       print('\n----- test fetch balance and send -----');
       print('\n---👩 sender Balance before send:');
       print(senderBalance.e8s);
-      var receiverBeforeSend = await Ledger.accountBalance(
+      final receiverBeforeSend = await Ledger.accountBalance(
         agent: agent,
         accountIdOrPrincipal: someReceiver.ecAddress!,
       );
@@ -118,7 +120,7 @@ void ledgerTest() {
       print('to:      ${someReceiver.ecAddress}');
 
       print('\n---🤔 sending start=====>');
-      var blockHeight = await Ledger.transfer(
+      final blockHeight = await Ledger.transfer(
         agent: agent,
         to: someReceiver.ecAddress!,
         amount: BigInt.from(100000000),
@@ -127,14 +129,14 @@ void ledgerTest() {
       print('\n---✅ sending end=====>');
       print('\n---🔢 block height: ${blockHeight.ok}');
       expect((blockHeight).ok! >= BigInt.zero, true);
-      var receiverAfterSend = await Ledger.accountBalance(
+      final receiverAfterSend = await Ledger.accountBalance(
         agent: agent,
         accountIdOrPrincipal: someReceiver.ecAddress!,
       );
       expect(receiverAfterSend.e8s == BigInt.from(100000000), true);
       print('\n---🧑 receiver balance after send:');
       print(receiverAfterSend.e8s);
-      var senderBalanceAfter = await Ledger.accountBalance(
+      final senderBalanceAfter = await Ledger.accountBalance(
         agent: agent,
         accountIdOrPrincipal: signer.ecAddress!,
       );
@@ -149,11 +151,11 @@ void ledgerTest() {
     });
 
     test('transfer to Canister', () async {
-      var signer = await getSigner();
-      var agent = await getAgent();
+      final signer = await getSigner();
+      final agent = await getAgent();
       // var someReceiver = ICPSigner.create();
-      var receiverCanister = 'qhbym-qaaaa-aaaaa-aaafq-cai';
-      var senderBalance = await Ledger.accountBalance(
+      const receiverCanister = 'qhbym-qaaaa-aaaaa-aaafq-cai';
+      final senderBalance = await Ledger.accountBalance(
         agent: agent,
         accountIdOrPrincipal: signer.ecAddress!,
       );
@@ -161,7 +163,7 @@ void ledgerTest() {
       print('\n----- test fetch balance and send -----');
       print('\n---👩 sender Balance before send:');
       print(senderBalance.e8s);
-      var receiverBeforeSend = await Ledger.accountBalance(
+      final receiverBeforeSend = await Ledger.accountBalance(
         agent: agent,
         accountIdOrPrincipal: receiverCanister,
       );
@@ -175,7 +177,7 @@ void ledgerTest() {
       print('to:      $receiverCanister');
 
       print('\n---🤔 sending start=====>');
-      var blockHeight = await Ledger.transfer(
+      final blockHeight = await Ledger.transfer(
         agent: agent,
         to: receiverCanister,
         amount: BigInt.from(100000000),
@@ -184,7 +186,7 @@ void ledgerTest() {
       print('\n---✅ sending end=====>');
       print('\n---🔢 block height: ${blockHeight.ok}');
       expect((blockHeight).ok! >= BigInt.zero, true);
-      var receiverAfterSend = await Ledger.accountBalance(
+      final receiverAfterSend = await Ledger.accountBalance(
         agent: agent,
         accountIdOrPrincipal: receiverCanister,
       );
@@ -195,7 +197,7 @@ void ledgerTest() {
       );
       print('\n---🧑 receiver balance after send:');
       print(receiverAfterSend.e8s);
-      var senderBalanceAfter = await Ledger.accountBalance(
+      final senderBalanceAfter = await Ledger.accountBalance(
         agent: agent,
         accountIdOrPrincipal: signer.ecAddress!,
       );

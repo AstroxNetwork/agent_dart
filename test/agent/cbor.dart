@@ -13,7 +13,7 @@ void main() {
 
 void cborTest() {
   test('encode decode', () {
-    var input = {
+    final input = {
       'a': 1,
       'b': 'two',
       'c': Uint8List.fromList([3]),

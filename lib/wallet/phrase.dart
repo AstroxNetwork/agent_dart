@@ -11,8 +11,8 @@ class Phrase {
   factory Phrase.fromString(String phrase) {
     // assert(validateMnemonic(phrase), "Mnemonic Phrase is not valid");
     final arr = stringToArr(phrase);
-    var invalidWords = <String>[];
-    for (var word in arr) {
+    final invalidWords = <String>[];
+    for (final word in arr) {
       final found = wordList.any(
         (element) => element == word,
       );

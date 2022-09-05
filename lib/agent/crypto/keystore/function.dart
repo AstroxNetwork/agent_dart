@@ -7,11 +7,11 @@ Future<String> encrypt(
   String passphrase, [
   Map<String, dynamic>? options,
 ]) async {
-  Uint8List uuid = Uint8List(16);
-  Uuid uuidParser = const Uuid()..v4buffer(uuid);
+  final Uint8List uuid = Uint8List(16);
+  final Uuid uuidParser = const Uuid()..v4buffer(uuid);
 
-  String salt = randomAsHex(64);
-  List<int> iv = randomAsU8a(16);
+  final String salt = randomAsHex(64);
+  final List<int> iv = randomAsU8a(16);
   String kdf = 'scrypt';
   int level = 8192;
   int n = kdf == 'pbkdf2' ? 262144 : level;
@@ -25,7 +25,7 @@ Future<String> encrypt(
     n = kdf == 'pbkdf2' ? 262144 : level;
   }
 
-  Map<String, dynamic> kdfParams = {
+  final Map<String, dynamic> kdfParams = {
     'salt': salt,
     'n': n,
     'r': 8,
@@ -43,7 +43,7 @@ Future<String> encrypt(
     salt: salt,
   );
 
-  Map<String, dynamic> map = {
+  final Map<String, dynamic> map = {
     'crypto': {
       'cipher': 'aes-128-ctr',
       'cipherparams': {'iv': Uint8List.fromList(iv).toHex()},
@@ -55,19 +55,21 @@ Future<String> encrypt(
     'id': uuidParser.v4buffer(uuid),
     'version': 3,
   };
-  String result = json.encode(map);
+  final String result = json.encode(map);
   return result;
 }
 
 Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
-  Uint8List ciphertext = (keyStore['crypto']['ciphertext'] as String).toU8a();
-  String kdf = keyStore['crypto']['kdf'];
+  final Uint8List ciphertext =
+      (keyStore['crypto']['ciphertext'] as String).toU8a();
+  final String kdf = keyStore['crypto']['kdf'];
 
-  Map<String, dynamic> kdfParams = keyStore['crypto']['kdfparams'] is String
-      ? json.decode(keyStore['crypto']['kdfparams'])
-      : keyStore['crypto']['kdfparams'];
-  var cipherparams = keyStore['crypto']['cipherparams'];
-  Uint8List iv = (cipherparams['iv'] as String).toU8a();
+  final Map<String, dynamic> kdfParams =
+      keyStore['crypto']['kdfparams'] is String
+          ? json.decode(keyStore['crypto']['kdfparams'])
+          : keyStore['crypto']['kdfparams'];
+  final cipherparams = keyStore['crypto']['cipherparams'];
+  final Uint8List iv = (cipherparams['iv'] as String).toU8a();
 
   final deriveKeyResult = await nativeDeriveKey(
     kdf: kdf,
@@ -79,9 +81,9 @@ Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
     salt: (kdfParams['salt'] as String).replaceAll('0x', ''),
   );
 
-  String macString = keyStore['crypto']['mac'];
+  final String macString = keyStore['crypto']['mac'];
 
-  Function eq = const ListEquality().equals;
+  final Function eq = const ListEquality().equals;
   if (!eq(
     deriveKeyResult.mac.toUpperCase().codeUnits,
     macString.toUpperCase().codeUnits,
@@ -89,7 +91,7 @@ Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
     throw 'Decryption Failed';
   }
 
-  var encryptedPrivateKey =
+  final encryptedPrivateKey =
       (keyStore['crypto']['ciphertext'] as String).toU8a();
 
   return (await _decryptPhraseAsync(
@@ -105,11 +107,11 @@ Future<String> encryptPhrase(
   String password, [
   Map<String, dynamic>? options,
 ]) async {
-  Uint8List uuid = Uint8List(16);
-  Uuid uuidParser = const Uuid()..v4buffer(uuid);
-  String salt = randomAsHex(64);
+  final Uint8List uuid = Uint8List(16);
+  final Uuid uuidParser = const Uuid()..v4buffer(uuid);
+  final String salt = randomAsHex(64);
   //  String salt = Uint8List.fromList(List<int>.filled(32, 0)).toHex();
-  List<int> iv = randomAsU8a(16);
+  final List<int> iv = randomAsU8a(16);
 
   String kdf = 'scrypt';
   int level = 8192;
@@ -124,7 +126,7 @@ Future<String> encryptPhrase(
     n = kdf == 'pbkdf2' ? 262144 : level;
   }
 
-  Map<String, dynamic> kdfParams = {
+  final Map<String, dynamic> kdfParams = {
     'salt': salt,
     'n': n,
     'r': 8,
@@ -142,7 +144,7 @@ Future<String> encryptPhrase(
     salt: (kdfParams['salt'] as String).replaceAll('0x', ''),
   );
 
-  Map<String, dynamic> map = {
+  final Map<String, dynamic> map = {
     'crypto': {
       'cipher': 'aes-128-ctr',
       'cipherparams': {'iv': Uint8List.fromList(iv).toHex()},
@@ -154,7 +156,7 @@ Future<String> encryptPhrase(
     'id': uuidParser.v4buffer(uuid),
     'version': 3,
   };
-  String result = json.encode(map);
+  final String result = json.encode(map);
   return result;
 }
 
@@ -203,14 +205,16 @@ Future<String> decryptPhrase(
   Map<String, dynamic> keyStore,
   String passphrase,
 ) async {
-  Uint8List ciphertext = (keyStore['crypto']['ciphertext'] as String).toU8a();
-  String kdf = keyStore['crypto']['kdf'];
+  final Uint8List ciphertext =
+      (keyStore['crypto']['ciphertext'] as String).toU8a();
+  final String kdf = keyStore['crypto']['kdf'];
 
-  Map<String, dynamic> kdfParams = keyStore['crypto']['kdfparams'] is String
-      ? json.decode(keyStore['crypto']['kdfparams'])
-      : keyStore['crypto']['kdfparams'];
-  var cipherparams = keyStore['crypto']['cipherparams'];
-  Uint8List iv = (cipherparams['iv'] as String).toU8a();
+  final Map<String, dynamic> kdfParams =
+      keyStore['crypto']['kdfparams'] is String
+          ? json.decode(keyStore['crypto']['kdfparams'])
+          : keyStore['crypto']['kdfparams'];
+  final cipherparams = keyStore['crypto']['cipherparams'];
+  final Uint8List iv = (cipherparams['iv'] as String).toU8a();
 
   final deriveKeyResult = await nativeDeriveKey(
     kdf: kdf,
@@ -222,9 +226,9 @@ Future<String> decryptPhrase(
     salt: (kdfParams['salt'] as String).replaceAll('0x', ''),
   );
 
-  String macString = keyStore['crypto']['mac'];
+  final String macString = keyStore['crypto']['mac'];
 
-  Function eq = const ListEquality().equals;
+  final Function eq = const ListEquality().equals;
   if (!eq(
     deriveKeyResult.mac.toUpperCase().codeUnits,
     macString.toUpperCase().codeUnits,
@@ -232,7 +236,7 @@ Future<String> decryptPhrase(
     throw 'Decryption Failed';
   }
 
-  var encryptedPhrase = (keyStore['crypto']['ciphertext'] as String).toU8a();
+  final encryptedPhrase = (keyStore['crypto']['ciphertext'] as String).toU8a();
 
   return (await _decryptPhraseAsync(
     cipherText: encryptedPhrase,

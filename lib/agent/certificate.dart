@@ -151,7 +151,7 @@ class Certificate {
     final sig = cert.signature;
     final key = extractDER(derKey);
     final msg = u8aConcat([domainSep('ic-state-root'), rootHash]);
-    var res = await bls.blsVerify(key, sig!, msg);
+    final res = await bls.blsVerify(key, sig!, msg);
     verified = res;
     return res;
   }
@@ -299,7 +299,7 @@ List<List> flattenForks(List t) {
     case NodeId.empty:
       return [];
     case NodeId.fork:
-      var res = flattenForks(t[1] as List);
+      final res = flattenForks(t[1] as List);
       res.addAll(flattenForks(t[2] as List));
       return res;
     default:
@@ -311,9 +311,9 @@ List? findLabel(Uint8List l, List<List> trees) {
   if (trees.isEmpty) {
     return null;
   }
-  for (var t in trees) {
+  for (final t in trees) {
     if (t[0] == NodeId.labeled) {
-      var p =
+      final p =
           t[1] is Uint8List ? t[1] : (t[1] as Uint8Buffer).buffer.asUint8List();
       if (u8aEq(l, p)) {
         return t[2] as List;

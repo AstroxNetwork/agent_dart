@@ -20,7 +20,7 @@ String hexStripPrefix(String value) {
   if (hexHasPrefix(value)) {
     return value.substring(2);
   }
-  var reg = RegExp(r'^[a-fA-F\d]+$');
+  final reg = RegExp(r'^[a-fA-F\d]+$');
   if (reg.hasMatch(value)) {
     return value;
   }
@@ -35,7 +35,7 @@ BigInt hexToBn(
   if (value == null) return BigInt.from(0);
   if (isNegative == false) {
     if (isHex(value)) {
-      var sValue = value is num
+      final sValue = value is num
           ? int.parse(value.toString(), radix: 10).toRadixString(16)
           : value;
       if (endian == Endian.big) {
@@ -51,7 +51,7 @@ BigInt hexToBn(
         );
       }
     }
-    var sValue = value is num
+    final sValue = value is num
         ? int.parse(value.toString(), radix: 10).toRadixString(16)
         : value;
     if (endian == Endian.big) {
@@ -103,16 +103,16 @@ Uint8List hexToU8a(String value, [int bitLength = -1]) {
   if (!isHex(value) && !isHexString(value)) {
     throw 'Error: Expected hex value to convert, found $value';
   }
-  var newValue = hexStripPrefix(value);
-  var valLength = newValue.length / 2;
-  var bufLength = (bitLength == -1 ? valLength : bitLength / 8).ceil();
-  var result = Uint8List(bufLength);
-  var offset = max(0, bufLength - valLength).toInt();
+  final newValue = hexStripPrefix(value);
+  final valLength = newValue.length / 2;
+  final bufLength = (bitLength == -1 ? valLength : bitLength / 8).ceil();
+  final result = Uint8List(bufLength);
+  final offset = max(0, bufLength - valLength).toInt();
   for (var index = 0; index < bufLength - offset; index++) {
-    var subStart = index * 2;
-    var subEnd =
+    final subStart = index * 2;
+    final subEnd =
         subStart + 2 <= newValue.length ? subStart + 2 : newValue.length;
-    var arrIndex = index + offset;
+    final arrIndex = index + offset;
     result[arrIndex] = int.parse(
       newValue.substring(subStart, subEnd),
       radix: 16,
@@ -122,9 +122,9 @@ Uint8List hexToU8a(String value, [int bitLength = -1]) {
 }
 
 Uint8List hexToU8aStream(String value) {
-  var newValue = hexStripPrefix(value);
+  final newValue = hexStripPrefix(value);
   final results = Uint8List((newValue.length / 2).ceil());
-  var controller = StreamController<List<int>>(sync: true);
+  final controller = StreamController<List<int>>(sync: true);
   controller.stream.listen((data) {
     results.setAll(0, data);
   });
@@ -141,7 +141,7 @@ String hexAddPrefix(String? value) {
   if (value != null && hexHasPrefix(value)) {
     return value;
   }
-  var prefix = (value != null && value.length % 2 == 1) ? '0' : '';
+  final prefix = (value != null && value.length % 2 == 1) ? '0' : '';
   return "0x$prefix${value ?? ''}";
 }
 
@@ -150,8 +150,8 @@ String hexFixLength(
   int bitLength = -1,
   bool withPadding = false,
 ]) {
-  var strLength = (bitLength / 4).ceil();
-  var hexLength = strLength + 2;
+  final strLength = (bitLength / 4).ceil();
+  final hexLength = strLength + 2;
   // ignore: prefer_typing_uninitialized_variables
   var beforeAdd;
 
@@ -161,10 +161,10 @@ String hexFixLength(
     beforeAdd = hexStripPrefix(value);
   } else {
     if ((value.length > hexLength)) {
-      var stripped = hexStripPrefix(value);
+      final stripped = hexStripPrefix(value);
       beforeAdd = stripped.substring(stripped.length - 1 * strLength);
     } else {
-      var stripped2 = "${'0' * strLength}${hexStripPrefix(value)}";
+      final stripped2 = "${'0' * strLength}${hexStripPrefix(value)}";
       beforeAdd = stripped2.substring(stripped2.length - 1 * strLength);
     }
   }

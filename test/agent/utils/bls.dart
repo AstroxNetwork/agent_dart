@@ -14,7 +14,7 @@ void blsTest() {
     const sig =
         'b89e13a212c830586eaa9ad53946cd968718ebecc27eda849d9232673dcd4f440e8b5df39bf14a88048c15e16cbcaabe';
     const msg = 'hello';
-    BaseBLS bls = BaseBLS();
+    final BaseBLS bls = BaseBLS();
     expect(
       await bls.blsVerify(pk.toU8a(), sig.toU8a(), msg.plainToU8a()),
       true,

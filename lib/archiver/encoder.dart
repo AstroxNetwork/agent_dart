@@ -14,7 +14,7 @@ class ZipSigningBlock {
   void write(OutputStreamBase output) {
     output.writeUint32(getSize());
 
-    for (var sb in signingBlocks) {
+    for (final sb in signingBlocks) {
       output.writeUint32(sb.getSize()); // Uint64?? 4 bytes
       writeID(output); // 4 bytes
       sb.write(output);
@@ -25,7 +25,7 @@ class ZipSigningBlock {
 
   int getSize() {
     var size = 0;
-    for (var sb in signingBlocks) {
+    for (final sb in signingBlocks) {
       size += (sb.getSize() + 12); // Uint64 should + 32
     }
 
@@ -107,9 +107,9 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
     int? level,
     bool followLinks = true,
   }) async {
-    List files = dir.listSync(recursive: true, followLinks: followLinks);
-    var futures = <Future<void>>[];
-    for (var file in files) {
+    final List files = dir.listSync(recursive: true, followLinks: followLinks);
+    final futures = <Future<void>>[];
+    for (final file in files) {
       if (file is! File) {
         continue;
       }
@@ -129,8 +129,8 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
 
   @override
   Future<void> addFile(File file, [String? filename, int? level = gzip]) async {
-    var fileStream = InputFileStream(file.path);
-    var archiveFile = ArchiveFile.stream(
+    final fileStream = InputFileStream(file.path);
+    final archiveFile = ArchiveFile.stream(
       filename ?? path.basename(file.path),
       file.lengthSync(),
       fileStream,

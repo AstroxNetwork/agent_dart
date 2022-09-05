@@ -28,8 +28,8 @@ BigInt bnToBn(dynamic value) {
 }
 
 BigInt compactToBn(Map<String, dynamic> value) {
-  var toBnTrue = value.containsKey('toBn') && isFunction(value['toBn']);
-  var toBigIntTrue =
+  final toBnTrue = value.containsKey('toBn') && isFunction(value['toBn']);
+  final toBigIntTrue =
       value.containsKey('toBigInt') && isFunction(value['toBigInt']);
   if (toBnTrue && !toBigIntTrue) {
     return (value['toBn'] as Function).call();
@@ -73,7 +73,7 @@ String bnToHex(
   Endian endian = Endian.big,
   bool isNegative = false,
 }) {
-  var u8a = bnToU8a(
+  final u8a = bnToU8a(
     bn,
     bitLength: bitLength,
     endian: endian,
@@ -95,7 +95,7 @@ Uint8List bnToU8a(
   Endian endian = Endian.little,
   bool isNegative = false,
 }) {
-  BigInt valueBn = bnToBn(value);
+  final BigInt valueBn = bnToBn(value);
   int byteLength;
   if (bitLength == -1) {
     byteLength = (valueBn.bitLength / 8).ceil();
@@ -113,7 +113,7 @@ Uint8List bnToU8a(
 
   // print((0x80 & valueBn.toInt()) > 0);
 
-  var newU8a = encodeBigInt(
+  final newU8a = encodeBigInt(
     isNegative
         ? (0x80 & valueBn.toInt()) > 0
             ? bitnot(valueBn, bitLength: byteLength * 8)
@@ -123,7 +123,7 @@ Uint8List bnToU8a(
     bitLength: byteLength * 8,
   );
 
-  var ret = Uint8List(byteLength);
+  final ret = Uint8List(byteLength);
 
   ret.setAll(0, newU8a);
   return ret;
@@ -150,7 +150,7 @@ BigInt bnSqrt(BigInt bn) {
 }
 
 BigInt newtonIteration(BigInt n, BigInt x0) {
-  var x1 = (BigInt.from(n / x0) + x0) >> 1;
+  final x1 = (BigInt.from(n / x0) + x0) >> 1;
   if (x0 == x1 || x0 == (x1 - BigInt.from(1))) {
     return x0;
   }

@@ -114,8 +114,8 @@ class HttpAgent implements Agent {
 
       /// setCredential
       if (options.credentials != null) {
-        var name = options.credentials?.name ?? '';
-        var password = options.credentials?.password;
+        final name = options.credentials?.name ?? '';
+        final password = options.credentials?.password;
         setCredentials("$name${password != null ? ':$password' : ''}");
       } else {
         setCredentials('');
@@ -199,14 +199,14 @@ class HttpAgent implements Agent {
     // ignore: unnecessary_null_comparison
     final sender = id != null ? id.getPrincipal() : Principal.anonymous();
 
-    CallRequest submit = CallRequest()
+    final CallRequest submit = CallRequest()
       ..canisterId = canister
       ..methodName = fields.methodName
       ..arg = fields.arg
       ..sender = sender
       ..ingressExpiry = Expiry(_defaultIngressExpiryDeltaInMilliseconds);
 
-    var rsRequest = HttpAgentCallRequest()
+    final rsRequest = HttpAgentCallRequest()
       ..endpoint = Endpoint.call
       ..body = submit
       ..request = {
@@ -216,11 +216,11 @@ class HttpAgent implements Agent {
           ..._baseHeaders,
         },
       };
-    var transformedRequest = await _transform(rsRequest);
+    final transformedRequest = await _transform(rsRequest);
 
-    var newTransformed = await id!.transformRequest(transformedRequest);
-    var body = cbor.cborEncode(newTransformed['body']);
-    var list = await Future.wait([
+    final newTransformed = await id!.transformRequest(transformedRequest);
+    final body = cbor.cborEncode(newTransformed['body']);
+    final list = await Future.wait([
       _fetch!(
         endpoint: '/api/v2/canister/${ecid.toText()}/call',
         method: FetchMethod.post,
@@ -230,8 +230,8 @@ class HttpAgent implements Agent {
       Future.value(requestIdOf(submit.toJson()))
     ]);
 
-    var response = list[0] as Map<String, dynamic>;
-    var requestId = list[1] as Uint8List;
+    final response = list[0] as Map<String, dynamic>;
+    final requestId = list[1] as Uint8List;
     if (!(response['ok'] as bool)) {
       // ignore: prefer_adjacent_string_concatenation
       throw 'Server returned an error:\n'
@@ -245,7 +245,7 @@ class HttpAgent implements Agent {
   @override
   Future<BinaryBlob> fetchRootKey() async {
     if (_rootKeyFetched == false) {
-      var key =
+      final key =
           (((await status())['root_key']) as Uint8Buffer).buffer.asUint8List();
       // Hex-encoded version of the replica root key
       rootKey = blobFromUint8Array(key);
@@ -275,14 +275,14 @@ class HttpAgent implements Agent {
     final id = (identity ?? await _identity);
     final sender = id?.getPrincipal() ?? Principal.anonymous();
 
-    var requestBody = QueryRequest()
+    final requestBody = QueryRequest()
       ..canisterId = canister
       ..methodName = options.methodName
       ..arg = options.arg!
       ..sender = sender
       ..ingressExpiry = Expiry(_defaultIngressExpiryDeltaInMilliseconds);
 
-    var rsRequest = HttpAgentQueryRequest()
+    final rsRequest = HttpAgentQueryRequest()
       ..endpoint = Endpoint.query
       ..body = requestBody
       ..request = {
@@ -290,11 +290,11 @@ class HttpAgent implements Agent {
         'headers': {'Content-Type': 'application/cbor', ..._baseHeaders},
       };
 
-    var transformedRequest = await _transform(rsRequest);
-    Map<String, dynamic> newTransformed =
+    final transformedRequest = await _transform(rsRequest);
+    final Map<String, dynamic> newTransformed =
         await id!.transformRequest(transformedRequest);
 
-    var body = cbor.cborEncode(newTransformed['body']);
+    final body = cbor.cborEncode(newTransformed['body']);
 
     final response = await _fetch!(
       endpoint: '/api/v2/canister/${canister.toText()}/query',
@@ -326,12 +326,12 @@ class HttpAgent implements Agent {
     final id = (identity ?? await _identity);
     final sender = id?.getPrincipal() ?? Principal.anonymous();
 
-    var requestBody = ReadStateRequest()
+    final requestBody = ReadStateRequest()
       ..paths = fields.paths
       ..sender = sender
       ..ingressExpiry = Expiry(_defaultIngressExpiryDeltaInMilliseconds);
 
-    var rsRequest = HttpAgentReadStateRequest()
+    final rsRequest = HttpAgentReadStateRequest()
       ..endpoint = Endpoint.readState
       ..body = requestBody
       ..request = {
@@ -339,12 +339,12 @@ class HttpAgent implements Agent {
         'headers': {'Content-Type': 'application/cbor', ..._baseHeaders},
       };
 
-    var transformedRequest = await _transform(rsRequest);
+    final transformedRequest = await _transform(rsRequest);
     final newTransformed = await id!.transformRequest(
       transformedRequest,
     );
 
-    var body = cbor.cborEncode(newTransformed['body']);
+    final body = cbor.cborEncode(newTransformed['body']);
     final response = await _fetch!(
       endpoint: '/api/v2/canister/$canister/read_state',
       method: FetchMethod.post,
@@ -369,7 +369,7 @@ class HttpAgent implements Agent {
 
   @override
   Future<Map> status() async {
-    var response = await _fetch!(
+    final response = await _fetch!(
       endpoint: '/api/v2/status',
       headers: {},
       method: FetchMethod.get,
@@ -411,7 +411,7 @@ class HttpAgent implements Agent {
   Future<HttpAgentRequest> _transform(HttpAgentRequest request) {
     var p = Future.value(request);
 
-    for (var fn in _pipeline) {
+    for (final fn in _pipeline) {
       p = p.then((r) => fn.call(r).then((r2) => r2 ?? r));
     }
     return p;

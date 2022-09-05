@@ -30,9 +30,9 @@ Future<Map<String, dynamic>> defaultFetch({
 }) async {
   final client = http.Client();
   try {
-    var uri = Uri.parse(host ?? '$defaultHost$endpoint');
+    final uri = Uri.parse(host ?? '$defaultHost$endpoint');
     Future<http.Response> fr;
-    var compactHeaders = {...?baseHeaders, ...?headers};
+    final compactHeaders = {...?baseHeaders, ...?headers};
     if (cbor) {
       compactHeaders['Content-Type'] = 'application/cbor';
     }
@@ -79,7 +79,7 @@ Future<Map<String, dynamic>> defaultFetch({
         );
     }
 
-    var response = await fr.timeout(
+    final response = await fr.timeout(
       timeout ?? defaultTimeout,
       onTimeout: () => throw SocketException(
         '${host ?? '$defaultHost$endpoint'} timeout',
@@ -87,7 +87,7 @@ Future<Map<String, dynamic>> defaultFetch({
     );
     if (response.headers['content-type'] != null &&
         response.headers['content-type']!.split(',').length > 1) {
-      var actualHeader = response.headers['content-type']!.split(',').first;
+      final actualHeader = response.headers['content-type']!.split(',').first;
       response.headers['content-type'] = actualHeader;
     }
     client.close();

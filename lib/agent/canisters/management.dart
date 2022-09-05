@@ -14,7 +14,7 @@ CanisterActor getManagementCanister(CallConfig config) {
     return CallConfig()..effectiveCanisterId = effectiveCanisterId;
   }
 
-  var newConfig = ActorConfig()
+  final newConfig = ActorConfig()
     ..agent = config.agent
     ..pollingStrategyFactory = config.pollingStrategyFactory
     ..effectiveCanisterId = config.effectiveCanisterId

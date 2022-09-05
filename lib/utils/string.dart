@@ -30,21 +30,21 @@ Uint8List stringToU8a(String msg, {String? enc, bool useDartEncode = true}) {
   if (useDartEncode == false) {
     if (enc == 'hex') {
       msg = strip0xHex(msg);
-      List<int> hexRes = [];
+      final List<int> hexRes = [];
       msg = msg.replaceAll(RegExp('[^a-z0-9]'), '');
       if (msg.length % 2 != 0) msg = '0$msg';
       for (var i = 0; i < msg.length; i += 2) {
-        var cul = msg[i] + msg[i + 1];
-        var result = int.parse(cul, radix: 16);
+        final cul = msg[i] + msg[i + 1];
+        final result = int.parse(cul, radix: 16);
         hexRes.add(result);
       }
       return Uint8List.fromList(hexRes);
     } else {
-      List<int> noHexRes = [];
+      final List<int> noHexRes = [];
       for (var i = 0; i < msg.length; i++) {
-        var c = msg.codeUnitAt(i);
-        var hi = c >> 8;
-        var lo = c & 0xff;
+        final c = msg.codeUnitAt(i);
+        final hi = c >> 8;
+        final lo = c & 0xff;
         if (hi > 0) {
           noHexRes.add(hi);
           noHexRes.add(lo);
@@ -73,7 +73,7 @@ String textDecoder(Uint8List value) {
 }
 
 String plainTextToHex(String plainText) {
-  var u8a = stringToU8a(plainText);
+  final u8a = stringToU8a(plainText);
   return bytesToHex(u8a);
 }
 
@@ -106,10 +106,10 @@ String stringShorten(String value, {int prefixLength = 6}) {
     return value.toString();
   }
 
-  var tLength = value.length;
-  var secStart = value.length - prefixLength;
-  var firstPart = value.substring(0, prefixLength);
-  var secondPart = value.substring(secStart, tLength);
+  final tLength = value.length;
+  final secStart = value.length - prefixLength;
+  final firstPart = value.substring(0, prefixLength);
+  final secondPart = value.substring(secStart, tLength);
 
   return '$firstPart…$secondPart';
 }

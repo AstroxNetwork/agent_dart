@@ -824,7 +824,7 @@ class WebBls implements BaseBLS {
 
   @override
   Future<bool> blsInit() async {
-    var blsInitFunc = instance!.functions['bls_init']! as int Function();
+    final blsInitFunc = instance!.functions['bls_init']! as int Function();
     return _isInit = blsInitFunc() == 0 ? true : false;
   }
 
@@ -846,9 +846,9 @@ class WebBls implements BaseBLS {
       );
     }
 
-    var set0 = passArray8ToWasm0(sig, _malloc);
-    var set1 = passArray8ToWasm0(msg, _malloc);
-    var set2 = passArray8ToWasm0(pk, _malloc);
+    final set0 = passArray8ToWasm0(sig, _malloc);
+    final set1 = passArray8ToWasm0(msg, _malloc);
+    final set2 = passArray8ToWasm0(pk, _malloc);
 
     return blsVerifyFunc(
           set0.first,
@@ -865,7 +865,7 @@ class WebBls implements BaseBLS {
       instance!.memories['memory']!.jsObject.buffer.asUint8List();
 
   int _malloc(int a) {
-    var mal = instance!.functions['__wbindgen_malloc']! as int Function(int);
+    final mal = instance!.functions['__wbindgen_malloc']! as int Function(int);
     return mal(a);
   }
 

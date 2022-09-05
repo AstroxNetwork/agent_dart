@@ -2,16 +2,16 @@ part of 'key_store.dart';
 
 /// getDerivedKey by ``kdf`` type
 KeyDerivator getDerivedKey(String kdf, Map<String, dynamic> params) {
-  var salt = (params['salt'] as String).toU8a();
+  final salt = (params['salt'] as String).toU8a();
   if (kdf == 'pbkdf2') {
-    var c = params['c'];
-    var dklen = params['dklen'];
+    final c = params['c'];
+    final dklen = params['dklen'];
     return _PBDKDF2KeyDerivator(c, salt, dklen);
   } else if (kdf == 'scrypt') {
-    var n = params['n'];
-    var r = params['r'];
-    var p = params['p'];
-    var dklen = params['dklen'];
+    final n = params['n'];
+    final r = params['r'];
+    final p = params['p'];
+    final dklen = params['dklen'];
     return _ScryptKeyDerivator(dklen, n, r, p, salt);
   } else {
     throw ArgumentError('Only pbkdf2 and scrypt are supported');
@@ -82,7 +82,7 @@ Future<NativeDeriveKeyResult> nativeDeriveKey({
     );
   }
 
-  List<int> cipherText = useCipherText != null
+  final List<int> cipherText = useCipherText != null
       ? useCipherText.toList()
       : await _encryptPhraseAsync(
           key: Uint8List.fromList(leftBits),
@@ -90,9 +90,10 @@ Future<NativeDeriveKeyResult> nativeDeriveKey({
           message: message!,
         );
 
-  List<int> macBuffer = rightBits + cipherText + iv + _algoIdentifier.codeUnits;
+  final List<int> macBuffer =
+      rightBits + cipherText + iv + _algoIdentifier.codeUnits;
 
-  String mac = (SHA256()
+  final String mac = (SHA256()
       .update(Uint8List.fromList(derivedKey))
       .update(macBuffer)
       .digest()

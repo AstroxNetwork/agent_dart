@@ -9,13 +9,14 @@ void main() {
 }
 
 void secp256k1Test() {
-  var prv = '4af1bceebf7f3634ec3cff8a2c38e51178d5d4ce585c52d6043e5e2cc3418bb0';
-  var msg = 'Hello World';
+  const prv =
+      '4af1bceebf7f3634ec3cff8a2c38e51178d5d4ce585c52d6043e5e2cc3418bb0';
+  const msg = 'Hello World';
 
   test('sign', () async {
-    var res = sign(msg, prv.toU8a());
+    final res = sign(msg, prv.toU8a());
     expect(res.length, 64);
-    var isValid = verify(
+    final isValid = verify(
       msg,
       res,
       Secp256k1PublicKey.from(
@@ -25,9 +26,9 @@ void secp256k1Test() {
     expect(isValid, true);
   });
   test('sign', () async {
-    var res = await signAsync(msg.plainToU8a(), prv.toU8a());
+    final res = await signAsync(msg.plainToU8a(), prv.toU8a());
     expect(res.length, 64);
-    var isValid = verify(
+    final isValid = verify(
       msg,
       res,
       Secp256k1PublicKey.from(
@@ -39,16 +40,16 @@ void secp256k1Test() {
 
   test('random sign', () async {
     for (var i = 0; i < 1; i += 1) {
-      var mne = generateMnemonic();
-      var prvR = getECKeys(mne).ecPrivateKey!;
-      var wordR = msg;
-      var res = sign(
+      final mne = generateMnemonic();
+      final prvR = getECKeys(mne).ecPrivateKey!;
+      const wordR = msg;
+      final res = sign(
         wordR,
         prvR,
       );
       expect(res.length, 64);
 
-      var isValid = verify(
+      final isValid = verify(
         wordR,
         res,
         Secp256k1PublicKey.from(
@@ -57,19 +58,19 @@ void secp256k1Test() {
       );
       expect(isValid, true);
 
-      var prvR2 = (await getECKeysAsync(mne)).ecPrivateKey!;
+      final prvR2 = (await getECKeysAsync(mne)).ecPrivateKey!;
 
       expect(prvR.toHex(), prvR2.toHex());
-      var wordR2 = msg;
+      const wordR2 = msg;
 
-      var res2 = await signAsync(
+      final res2 = await signAsync(
         wordR2.plainToU8a(),
         prvR2,
       );
       expect(res2.length, 64);
       expect(res.toHex(), res2.toHex());
 
-      var isValid2 = verify(
+      final isValid2 = verify(
         wordR2,
         res2,
         Secp256k1PublicKey.from(

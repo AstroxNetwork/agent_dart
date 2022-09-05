@@ -36,7 +36,7 @@ Uint8List u8aToU8a(dynamic value, {bool useDartEncode = true}) {
 }
 
 Uint8List u8aConcat(List<dynamic> list) {
-  var u8as =
+  final u8as =
       List<Uint8List>.generate(list.length, (index) => Uint8List.fromList([]));
 
   for (var i = 0; i < list.length; i += 1) {
@@ -90,7 +90,7 @@ List<Uint8List> u8aSorted(List<Uint8List> u8as) {
       } else if (b[i] == null) {
         return 1;
       }
-      var cmp = a[i] - b[i];
+      final cmp = a[i] - b[i];
       if (cmp != 0) {
         return cmp;
       }

@@ -7,7 +7,7 @@ import 'package:agent_dart/identity/ed25519.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Future<SignIdentity> createIdentity(int seed) async {
-  var seed1 = List.filled(32, 0);
+  final seed1 = List.filled(32, 0);
   seed1[0] = seed;
   return Ed25519KeyIdentity.generate(Uint8List.fromList(seed1));
 }

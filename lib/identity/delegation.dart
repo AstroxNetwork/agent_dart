@@ -34,7 +34,7 @@ class Delegation extends ToCborable {
 
   @override
   void write(Encoder encoder) {
-    var res = {
+    final res = {
       'pubkey': pubkey,
       'expiration': expiration.toInt(),
       if (targets != null)
@@ -148,19 +148,19 @@ class DelegationChain {
   ///
   /// @param json The JSON string to parse.
   factory DelegationChain.fromJSON(dynamic obj) {
-    var json = obj is String
+    final json = obj is String
         ? Map<String, dynamic>.from(jsonDecode(obj))
         : Map<String, dynamic>.from(obj);
     if (json['delegations'] is! List) {
       throw 'Invalid delegations.';
     }
-    var publicKey = json['publicKey'] as String;
-    var delegations = json['delegations'] as List<dynamic>;
+    final publicKey = json['publicKey'] as String;
+    final delegations = json['delegations'] as List<dynamic>;
     final parsedDelegations = delegations.map((map) {
-      var signedDelegation = SignedDelegation.fromMap(map);
+      final signedDelegation = SignedDelegation.fromMap(map);
       final delegation = signedDelegation.delegation,
           signature = signedDelegation.signature;
-      var pubkey = delegation?.pubkey,
+      final pubkey = delegation?.pubkey,
           expiration = delegation?.expiration,
           targets = delegation?.targets;
       return SignedDelegation.fromMap({
@@ -284,8 +284,8 @@ class DelegationIdentity extends SignIdentity {
 
   @override
   Future<dynamic> transformRequest(HttpAgentRequest request) async {
-    var body = request.body;
-    var requestId = requestIdOf(body.toJson());
+    final body = request.body;
+    final requestId = requestIdOf(body.toJson());
 
     return {
       ...request.toJson(),

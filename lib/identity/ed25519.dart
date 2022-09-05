@@ -88,7 +88,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     Uint8List publicKey;
     Uint8List secretKey; // seed itself
 
-    var kp = seed == null
+    final kp = seed == null
         ? await AgentDartFFI.instance
             .ed25519FromSeed(req: ED25519FromSeedReq(seed: getRandomValues()))
         : await AgentDartFFI.instance
@@ -121,10 +121,10 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
       }
     } else if (parsed is Map) {
       final reParsed = Map<String, List>.from(jsonDecode(json));
-      var publicKey = reParsed['publicKey'];
-      var dashPublicKey = reParsed['_publicKey'];
-      var secretKey = reParsed['secretKey'];
-      var dashPrivateKey = reParsed['_privateKey'];
+      final publicKey = reParsed['publicKey'];
+      final dashPublicKey = reParsed['_publicKey'];
+      final secretKey = reParsed['secretKey'];
+      final dashPrivateKey = reParsed['_privateKey'];
 
       final pk = publicKey != null
           ? Ed25519PublicKey.fromRaw(
@@ -160,9 +160,9 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     String phrase,
   ) async {
     try {
-      var userNumber = extractUserNumber(phrase);
-      var mne = dropLeadingUserNumber(phrase);
-      var identity = await fromMnemonicWithoutValidation(
+      final userNumber = extractUserNumber(phrase);
+      final mne = dropLeadingUserNumber(phrase);
+      final identity = await fromMnemonicWithoutValidation(
         mne,
         icDerivationPath,
       );
@@ -275,14 +275,14 @@ Future<Ed25519KeyIdentity> fromSeedWithSlip0010(
   List<int>? derivationPath, {
   int offset = hardened,
 }) {
-  var chainSet = generateMasterKey(masterSeed);
+  final chainSet = generateMasterKey(masterSeed);
   var slipSeed = chainSet.first;
   var chainCode = chainSet.last;
 
   derivationPath ??= [];
 
   for (var i = 0; i < derivationPath.length; i++) {
-    var newSet = derive(slipSeed, chainCode, derivationPath[i] | offset);
+    final newSet = derive(slipSeed, chainCode, derivationPath[i] | offset);
     slipSeed = newSet.first;
     chainCode = newSet.last;
   }
@@ -290,11 +290,11 @@ Future<Ed25519KeyIdentity> fromSeedWithSlip0010(
 }
 
 Set<Uint8List> generateMasterKey(Uint8List seed) {
-  var hmacSha512 = Hmac(
+  final hmacSha512 = Hmac(
     sha512,
     'ed25519 seed'.plainToU8a(useDartEncode: true),
   ); // HMAC-SHA512
-  var h = hmacSha512.convert(seed);
+  final h = hmacSha512.convert(seed);
   final slipSeed = Uint8List.fromList(h.bytes.sublist(0, 32));
   final chainCode = Uint8List.fromList(h.bytes.sublist(32));
   return {slipSeed, chainCode};

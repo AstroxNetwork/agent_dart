@@ -17,8 +17,8 @@ abstract class ExtraEncoder<T> {
 
 class SelfDescribeEncoder extends cbor.Encoder {
   SelfDescribeEncoder(this._out) : super(_out) {
-    var valBuff = Uint8Buffer();
-    var hList = Uint8List.fromList([0xd9, 0xd9, 0xf7]);
+    final valBuff = Uint8Buffer();
+    final hList = Uint8List.fromList([0xd9, 0xd9, 0xf7]);
     valBuff.addAll(hList);
     addBuilderOutput(valBuff);
     // _builderHook = _hook;
@@ -42,7 +42,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
     // ignore: prefer_typing_uninitialized_variables
     ExtraEncoder? chosenEncoder;
 
-    for (var encoder in _encoders) {
+    for (final encoder in _encoders) {
       if (chosenEncoder == null) {
         if (encoder.match(value)) {
           chosenEncoder = encoder;
@@ -69,7 +69,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
     // final builder = cbor.MapBuilder.builder();
     writeTypeValue(cbor.majorTypeMap, map.length);
     final entries = map.entries;
-    for (var entry in entries) {
+    for (final entry in entries) {
       if (entry.key is String) {
         writeString(entry.key);
       } else if (entry.key is int) {
@@ -130,7 +130,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
   }
 
   bool writeExtra(dynamic data) {
-    var extraEnc = getEncoderFor(data);
+    final extraEnc = getEncoderFor(data);
     if (extraEnc != null) {
       extraEnc.write(this, data);
       return true;
@@ -171,8 +171,8 @@ class SelfDescribeEncoder extends cbor.Encoder {
       // an integer it must be greater than 2*32 so encode as 64 bit.
       final bignum = BigInt.from(value);
       if (kIsWeb) {
-        var data = serializeValue(0, 27, bignum.toRadixString(16));
-        var buf = Uint8Buffer();
+        final data = serializeValue(0, 27, bignum.toRadixString(16));
+        final buf = Uint8Buffer();
         buf.addAll(data.asUint8List());
         addBuilderOutput(buf);
       } else if (bignum.isValidInt) {
@@ -205,7 +205,7 @@ class PrincipalEncoder extends ExtraEncoder<Principal> {
 
   @override
   void write(cbor.Encoder encoder, Principal value) {
-    var valBuff = Uint8Buffer();
+    final valBuff = Uint8Buffer();
     valBuff.addAll(value.toUint8Array());
     encoder.writeBytes(valBuff);
   }
@@ -224,7 +224,7 @@ class BufferEncoder extends ExtraEncoder<BinaryBlob> {
 
   @override
   void write(cbor.Encoder encoder, BinaryBlob value) {
-    var valBuff = Uint8Buffer();
+    final valBuff = Uint8Buffer();
     valBuff.addAll(value);
     encoder.writeBytes(valBuff);
   }
@@ -243,7 +243,7 @@ class ByteBufferEncoder extends ExtraEncoder<ByteBuffer> {
 
   @override
   void write(cbor.Encoder encoder, ByteBuffer value) {
-    var valBuff = Uint8Buffer();
+    final valBuff = Uint8Buffer();
     valBuff.addAll(value.asUint8List());
     encoder.writeBytes(valBuff);
   }
@@ -303,7 +303,7 @@ SelfDescribeEncoder initCborSerializerNoHead() {
 }
 
 BinaryBlob cborEncode(dynamic value, {SelfDescribeEncoder? withSerializer}) {
-  var serializer = withSerializer ?? initCborSerializer();
+  final serializer = withSerializer ?? initCborSerializer();
   serializer.serialize(value);
   return Uint8List.fromList(serializer._out.getData());
 }
@@ -312,11 +312,11 @@ T cborDecode<T>(List<int> value) {
   try {
     final buffer = value is Uint8Buffer ? value : Uint8Buffer()
       ..addAll(value);
-    cbor.Input input = cbor.Input(buffer);
+    final cbor.Input input = cbor.Input(buffer);
     final cbor.Listener listener = cbor.ListenerStack();
     final decodeStack = cbor.DecodeStack();
     listener.itemStack.clear();
-    cbor.Decoder decoder = cbor.Decoder.withListener(input, listener);
+    final cbor.Decoder decoder = cbor.Decoder.withListener(input, listener);
     decoder.run();
     decodeStack.build(listener.itemStack);
     final walked = decodeStack.walk();
@@ -333,13 +333,13 @@ ByteBuffer serializeValue(int major, int minor, String val) {
   var value = val.replaceAll('r[^0-9a-fA-F]', '');
   // Create the buffer from the value with left padding with 0.
   final length = math.pow(2, minor - 24).toInt();
-  var temp = value.substring(
+  final temp = value.substring(
     value.length <= length * 2 ? 0 : value.length - length * 2,
   );
-  var prefix = '0' * (2 * length - temp.length);
+  final prefix = '0' * (2 * length - temp.length);
   value = prefix + temp;
-  var bytes = [(major << 5) + minor];
-  var arr = <int>[];
+  final bytes = [(major << 5) + minor];
+  final arr = <int>[];
   for (var i = 0; i < value.length; i += 2) {
     arr.add(int.parse(value.substring(i, i + 2), radix: 16));
   }

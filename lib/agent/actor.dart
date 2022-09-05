@@ -258,7 +258,7 @@ class Actor {
     final canister = getManagementCanister(
       config ?? CallConfig(),
     );
-    ActorMethod? func =
+    final ActorMethod? func =
         canister.getFunc('provisional_create_canister_with_cycles');
     // ignore: prefer_typing_uninitialized_variables
     var result;
@@ -268,7 +268,7 @@ class Actor {
       ]);
     }
 
-    var canisterId = Principal.from(result['canister_id']);
+    final canisterId = Principal.from(result['canister_id']);
 
     return canisterId;
   }
@@ -312,8 +312,8 @@ class CanisterActor extends Actor {
     ActorConfig config,
     Service service,
   ) : super(ActorMetadata(service: service, config: config)) {
-    var fields = service.fields;
-    for (var e in fields) {
+    final fields = service.fields;
+    for (final e in fields) {
       methodMap.putIfAbsent(
         e.key,
         () => _createActorMethod(this, e.key, e.value),
@@ -353,7 +353,7 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
   if (func.annotations.contains('query')) {
     caller = (CallConfig options, List args) async {
       // First, if there's a config transformation, call it.
-      var presetOption = actor.metadata.config!.queryTransform?.call(
+      final presetOption = actor.metadata.config!.queryTransform?.call(
         methodName,
         args,
         CallConfig.fromMap({
@@ -362,7 +362,7 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
         }),
       );
 
-      var newOptions = CallConfig.fromMap({
+      final newOptions = CallConfig.fromMap({
         ...options.toJson(),
         ...presetOption != null ? presetOption.toJson() : {},
       });
@@ -397,7 +397,7 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
   } else {
     caller = (CallConfig options, List args) async {
       // First, if there's a config transformation, call it.
-      var presetOption = actor.metadata.config!.queryTransform?.call(
+      final presetOption = actor.metadata.config!.queryTransform?.call(
         methodName,
         args,
         CallConfig.fromMap({
@@ -406,7 +406,7 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
         }),
       );
 
-      var newOptions = CallConfig.fromMap({
+      final newOptions = CallConfig.fromMap({
         ...options.toJson(),
         ...presetOption != null ? presetOption.toJson() : {},
       });
@@ -443,8 +443,8 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
         null,
       );
 
-      var response = result.response!;
-      var requestId = result.requestId!;
+      final response = result.response!;
+      final requestId = result.requestId!;
 
       if (!response.ok!) {
         throw UpdateCallRejectedError(cid, methodName, result, requestId);
@@ -469,7 +469,7 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
     };
   }
 
-  var handler = ActorMethod(caller);
+  final handler = ActorMethod(caller);
   return handler;
 }
 

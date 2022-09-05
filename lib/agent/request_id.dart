@@ -65,22 +65,22 @@ BinaryBlob hashValue(dynamic value) {
 }
 
 int compareLists<T extends Comparable<T>>(List<T> a, List<T> b) {
-  var aLength = a.length;
-  var bLength = b.length;
-  var minLength = aLength < bLength ? aLength : bLength;
+  final aLength = a.length;
+  final bLength = b.length;
+  final minLength = aLength < bLength ? aLength : bLength;
   for (var i = 0; i < minLength; i++) {
-    var result = a[i].compareTo(b[i]);
+    final result = a[i].compareTo(b[i]);
     if (result != 0) return result;
   }
   return aLength - bLength;
 }
 
 int compareListsBy<T>(List<T> a, List<T> b, int Function(T a, T b) compare) {
-  var aLength = a.length;
-  var bLength = b.length;
-  var minLength = aLength < bLength ? aLength : bLength;
+  final aLength = a.length;
+  final bLength = b.length;
+  final minLength = aLength < bLength ? aLength : bLength;
   for (var i = 0; i < minLength; i++) {
-    var result = compare(a[i], b[i]);
+    final result = compare(a[i], b[i]);
     if (result != 0) return result;
   }
   return aLength - bLength;
@@ -113,7 +113,7 @@ RequestId requestIdOf(Map<String, dynamic> request) {
     return k1.compare(k2, (a, b) => a.compare(b, (c, d) => c - d));
   });
 
-  var concatenated = u8aConcat(hashed.map((d) => u8aConcat(d)).toList());
+  final concatenated = u8aConcat(hashed.map((d) => u8aConcat(d)).toList());
 
   return RequestId.fromList(hash(concatenated));
 }

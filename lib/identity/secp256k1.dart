@@ -51,10 +51,10 @@ class Secp256k1KeyIdentity extends SignIdentity {
       }
       throw 'Deserialization error: JSON must have at least 2 items.';
     } else if (parsed is Map) {
-      var publicKey = parsed['publicKey'];
-      var dashPublicKey = parsed['_publicKey'];
-      var secretKey = parsed['secretKey'];
-      var dashPrivateKey = parsed['_privateKey'];
+      final publicKey = parsed['publicKey'];
+      final dashPublicKey = parsed['_publicKey'];
+      final secretKey = parsed['secretKey'];
+      final dashPrivateKey = parsed['_privateKey'];
       final pk = publicKey != null
           ? Secp256k1PublicKey.fromRaw(Uint8List.fromList(publicKey.data))
           : Secp256k1PublicKey.fromDer(Uint8List.fromList(dashPublicKey.data));
@@ -196,12 +196,12 @@ bool verify(String message, Uint8List signature, Secp256k1PublicKey publicKey) {
   final blob = message.plainToU8a(useDartEncode: true);
   final digest = SHA256Digest();
   final signer = ECDSASigner(digest, HMac(digest, 64));
-  var sig = ECSignature(
+  final sig = ECSignature(
     signature.sublist(0, 32).toBn(endian: Endian.big),
     signature.sublist(32).toBn(endian: Endian.big),
   );
-  var kpub = params.curve.decodePoint(publicKey.toRaw())!;
-  var pub = ECPublicKey(kpub, params);
+  final kpub = params.curve.decodePoint(publicKey.toRaw())!;
+  final pub = ECPublicKey(kpub, params);
   signer.init(false, p_api.PublicKeyParameter(pub));
   return signer.verifySignature(blob, sig);
 }
@@ -213,12 +213,12 @@ bool verifyBlob(
 ) {
   final digest = SHA256Digest();
   final signer = ECDSASigner(digest, HMac(digest, 64));
-  var sig = ECSignature(
+  final sig = ECSignature(
     signature.sublist(0, 32).toBn(endian: Endian.big),
     signature.sublist(32).toBn(endian: Endian.big),
   );
-  var kpub = params.curve.decodePoint(publicKey.toRaw())!;
-  var pub = ECPublicKey(kpub, params);
+  final kpub = params.curve.decodePoint(publicKey.toRaw())!;
+  final pub = ECPublicKey(kpub, params);
   signer.init(false, p_api.PublicKeyParameter(pub));
   return signer.verifySignature(blob, sig);
 }

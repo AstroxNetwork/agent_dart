@@ -623,8 +623,8 @@ class FloatClass extends PrimitiveType<num> {
   @override
   Uint8List encodeValue(x) {
     // const buf = Buffer.allocUnsafe(this._bits / 8);
-    var length = (_bits / 8).ceil();
-    var byte = ByteData(length);
+    final length = (_bits / 8).ceil();
+    final byte = ByteData(length);
 
     _bits == 32
         ? byte.setFloat32(0, x is! double ? x.toDouble() : x, Endian.little)
@@ -667,7 +667,7 @@ class FixedIntClass extends PrimitiveType {
   @override
   dynamic decodeValue(Pipe x, CType t) {
     checkType(t);
-    BigInt num = readIntLE(x, (_bits / 8).ceil());
+    final BigInt num = readIntLE(x, (_bits / 8).ceil());
 
     if (_bits <= 32) {
       return num.toInt();
@@ -776,7 +776,7 @@ class VecClass<T> extends ConstructType<List<T>> {
 
   @override
   Uint8List encodeValue(dynamic x) {
-    var len = lebEncode(x.length);
+    final len = lebEncode(x.length);
     if (_blobOptimization) {
       return u8aConcat([len, Uint8List.fromList(x as List<int>)]);
     }
@@ -797,15 +797,15 @@ class VecClass<T> extends ConstructType<List<T>> {
 
   @override
   List<T> decodeValue(Pipe x, CType t) {
-    var vec = checkType(t);
+    final vec = checkType(t);
     if (vec is! VecClass) {
       throw 'Not a vector type';
     } else {
-      var len = lebDecode(x).toInt();
+      final len = lebDecode(x).toInt();
       if (_blobOptimization) {
         return [...x.read(len) as List<T>];
       }
-      var rets = <T>[];
+      final rets = <T>[];
       for (var i = 0; i < len; i++) {
         rets.add(_type.decodeValue(x, (vec).type));
       }
@@ -929,8 +929,8 @@ class RecordClass extends ConstructType<Map> {
   List<CType>? tryAsTuple() {
     final res = <CType>[];
     for (var i = 0; i < _fields.length; i++) {
-      var key = _fields[i].key;
-      var type = _fields[i].value;
+      final key = _fields[i].key;
+      final type = _fields[i].value;
 
       if (key != '_${i}_') {
         return null;
@@ -944,8 +944,8 @@ class RecordClass extends ConstructType<Map> {
   bool covariant(dynamic x) {
     return (x is Map &&
         _fields.every((entry) {
-          var k = entry.key;
-          var t = entry.value;
+          final k = entry.key;
+          final t = entry.value;
 
           if (!x.containsKey(k)) {
             throw "Record is missing key '$k'.";
@@ -960,7 +960,7 @@ class RecordClass extends ConstructType<Map> {
 
     final bufs =
         zipWith<MapEntry, dynamic, Uint8List>(_fields, values, (entry, d) {
-      var t = entry.value;
+      final t = entry.value;
       return tryToJson(t, d) ?? t.encodeValue(d);
     });
     return u8aConcat(bufs);
@@ -968,7 +968,7 @@ class RecordClass extends ConstructType<Map> {
 
   @override
   void _buildTypeTableImpl(TypeTable typeTable) {
-    for (var entry in _fields) {
+    for (final entry in _fields) {
       entry.value.buildTypeTable(typeTable);
     }
     final opCode = slebEncode(IDLTypeIds.Record);
@@ -990,12 +990,12 @@ class RecordClass extends ConstructType<Map> {
     if (record is RecordClass || record is TupleClass) {
       final r = {};
       var idx = 0;
-      var fields = (record is RecordClass)
+      final fields = (record is RecordClass)
           ? record.fields
           : (record as TupleClass).fields;
-      for (var entry in fields) {
-        var hash = entry.key;
-        var type = entry.value;
+      for (final entry in fields) {
+        final hash = entry.key;
+        final type = entry.value;
         // [hash, type]
         if (idx >= _fields.length ||
             idlLabelToId(_fields[idx].key) != idlLabelToId(hash)) {
@@ -1003,9 +1003,8 @@ class RecordClass extends ConstructType<Map> {
           entry.value.decodeValue(x, type);
           continue;
         }
-        var expectedEntry = _fields[idx];
-
-        var expectKey = expectedEntry.key, expectType = expectedEntry.value;
+        final expectedEntry = _fields[idx];
+        final expectKey = expectedEntry.key, expectType = expectedEntry.value;
         r[expectKey] = expectType.decodeValue(x, type);
         idx++;
       }
@@ -1045,8 +1044,8 @@ class RecordClass extends ConstructType<Map> {
 
 Map makeMap(List<CType> components) {
   final x = {};
-  for (var e in components) {
-    var i = components.indexOf(e);
+  for (final e in components) {
+    final i = components.indexOf(e);
     (x['_${i}_'] = e);
   }
   return x;
@@ -1095,7 +1094,7 @@ class TupleClass<T extends List> extends ConstructType<List> {
 
   @override
   void _buildTypeTableImpl(TypeTable typeTable) {
-    for (var entry in _fields) {
+    for (final entry in _fields) {
       entry.value.buildTypeTable(typeTable);
     }
     final opCode = slebEncode(IDLTypeIds.Record);
@@ -1119,11 +1118,11 @@ class TupleClass<T extends List> extends ConstructType<List> {
     if (tuple._components.length < _components.length) {
       throw 'tuple mismatch';
     }
-    var res = [];
-    for (var entry in tuple._components.asMap().entries) {
+    final res = [];
+    for (final entry in tuple._components.asMap().entries) {
       //[i, wireType]
-      var i = entry.key;
-      var wireType = entry.value;
+      final i = entry.key;
+      final wireType = entry.value;
 
       if (i >= _components.length) {
         // skip value
@@ -1190,8 +1189,8 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
   @override
   Uint8List encodeValue(Map<String, dynamic> x) {
     for (var i = 0; i < _fields.length; i++) {
-      var name = _fields[i].key;
-      var t = _fields[i].value;
+      final name = _fields[i].key;
+      final t = _fields[i].value;
       if (x.containsKey(name)) {
         final idx = lebEncode(i);
         return u8aConcat(
@@ -1204,8 +1203,8 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
 
   @override
   void _buildTypeTableImpl(TypeTable typeTable) {
-    for (var entry in _fields) {
-      var type = entry.value;
+    for (final entry in _fields) {
+      final type = entry.value;
       type.buildTypeTable(typeTable);
     }
     final opCode = slebEncode(IDLTypeIds.Variant);
@@ -1230,9 +1229,9 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
       throw 'Invalid variant index: $idx';
     }
     final entry = variant._fields[idx];
-    var wireHash = entry.key, wireType = entry.value;
-    for (var fEntry in _fields) {
-      var key = fEntry.key, expectType = fEntry.value;
+    final wireHash = entry.key, wireType = entry.value;
+    for (final fEntry in _fields) {
+      final key = fEntry.key, expectType = fEntry.value;
       if (idlLabelToId(wireHash) == idlLabelToId(key)) {
         final value = expectType.decodeValue(x, wireType);
         return {key: value};
@@ -1259,8 +1258,8 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
 
   @override
   String valueToString(Map<String, dynamic> x) {
-    for (var fEntry in _fields) {
-      var name = fEntry.key, type = fEntry.value;
+    for (final fEntry in _fields) {
+      final name = fEntry.key, type = fEntry.value;
       // eslint-disable-next-line
       if (x.containsKey(name)) {
         final value = type.valueToString(x[name]);
@@ -1450,10 +1449,10 @@ class FuncClass extends ConstructType<List> {
 
   @override
   void _buildTypeTableImpl(TypeTable typeTable) {
-    for (var argT in argTypes) {
+    for (final argT in argTypes) {
       argT.buildTypeTable(typeTable);
     }
-    for (var argR in retTypes) {
+    for (final argR in retTypes) {
       argR.buildTypeTable(typeTable);
     }
 
@@ -1501,7 +1500,7 @@ class FuncClass extends ConstructType<List> {
 
   @override
   String valueToString(x) {
-    var principal = x[0] as PrincipalId, str = x[1] as String;
+    final principal = x[0] as PrincipalId, str = x[1] as String;
     return "func '${principal.toText()}'.$str";
   }
 
@@ -1562,13 +1561,13 @@ class ServiceClass extends ConstructType<PrincipalId> {
 
   @override
   void _buildTypeTableImpl(TypeTable typeTable) {
-    for (var entry in _fields) {
+    for (final entry in _fields) {
       entry.value.buildTypeTable(typeTable);
     }
     final opCode = slebEncode(IDLTypeIds.Service);
     final len = lebEncode(_fields.length);
     final meths = _fields.map((entry) {
-      var label = entry.key, func = entry.value;
+      final label = entry.key, func = entry.value;
       final labelBuf = label.plainToU8a(useDartEncode: true);
       final labelLen = lebEncode(labelBuf.length);
       return u8aConcat([labelLen, labelBuf, func.encodeType(typeTable)]);
@@ -1615,18 +1614,19 @@ BinaryBlob idlEncode(List<CType> argTypes, List args) {
   }
 
   final typeTable = TypeTable();
-  for (var t in argTypes) {
+  for (final t in argTypes) {
     t.buildTypeTable(typeTable);
   }
 
   final magic = magicNumber.plainToU8a(useDartEncode: true);
   final table = typeTable.encode();
   final len = lebEncode(args.length);
-  final types =
-      u8aConcat(argTypes.map((t) => t.encodeType(typeTable)).toList());
+  final types = u8aConcat(
+    argTypes.map((t) => t.encodeType(typeTable)).toList(),
+  );
   final vals = u8aConcat(
     zipWith<CType<dynamic>, dynamic, dynamic>(argTypes, args, (t, x) {
-      var buf = tryToJson(t, x);
+      final buf = tryToJson(t, x);
       if (buf != null) {
         return buf;
       }
@@ -1661,25 +1661,25 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
   // : [Array<[IDLTypeIds, any]>, number[]]
   List<dynamic> readTypeTable(Pipe pipe) {
     // Array<[IDLTypeIds, any]>;
-    var typeTable = [];
-    var len = lebDecode(pipe).toInt();
+    final typeTable = [];
+    final len = lebDecode(pipe).toInt();
 
     for (var i = 0; i < len; i++) {
-      var ty = slebDecode(pipe).toInt();
+      final ty = slebDecode(pipe).toInt();
       switch (ty) {
         case IDLTypeIds.Opt:
         case IDLTypeIds.Vector:
-          var t = slebDecode(pipe).toInt();
+          final t = slebDecode(pipe).toInt();
           typeTable.add([ty, t]);
           break;
         case IDLTypeIds.Record:
         case IDLTypeIds.Variant:
-          var fields = List.from([]);
+          final fields = List.from([]);
           var objectLength = lebDecode(pipe).toInt();
           // ignore: prefer_typing_uninitialized_variables
           var prevHash;
           while (objectLength-- > 0) {
-            var hash = lebDecode(pipe).toInt();
+            final hash = lebDecode(pipe).toInt();
             if (hash >= math.pow(2, 32)) {
               throw 'field id out of 32-bit range';
             }
@@ -1687,7 +1687,7 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
               throw 'field id collision or not sorted';
             }
             prevHash = hash;
-            var t = slebDecode(pipe).toInt();
+            final t = slebDecode(pipe).toInt();
             fields.add([hash, t]);
           }
           typeTable.add([ty, fields]);
@@ -1699,14 +1699,14 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
               slebDecode(pipe);
             }
           }
-          var annLen = lebDecode(pipe).toInt();
+          final annLen = lebDecode(pipe).toInt();
           safeRead(pipe, annLen);
           typeTable.add([ty, null]);
           break;
         case IDLTypeIds.Service:
           var servLength = lebDecode(pipe).toInt();
           while (servLength-- > 0) {
-            var l = lebDecode(pipe).toInt();
+            final l = lebDecode(pipe).toInt();
             safeRead(pipe, l);
             slebDecode(pipe);
           }
@@ -1717,23 +1717,23 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
       }
     }
 
-    var rawList = <int>[];
-    var length = lebDecode(pipe).toInt();
+    final rawList = <int>[];
+    final length = lebDecode(pipe).toInt();
     for (var i = 0; i < length; i++) {
       rawList.add(slebDecode(pipe).toInt());
     }
     return [typeTable, rawList];
   }
 
-  var typeTableRead = readTypeTable(b);
+  final typeTableRead = readTypeTable(b);
 
-  var rawTable = typeTableRead[0] as List<dynamic>; //Array<[IDLTypeIds, any]>
-  var rawTypes = typeTableRead[1] as List<int>;
+  final rawTable = typeTableRead[0] as List<dynamic>; //Array<[IDLTypeIds, any]>
+  final rawTypes = typeTableRead[1] as List<int>;
   if (rawTypes.length < retTypes.length) {
     throw 'Wrong number of return values';
   }
 
-  var table = rawTable.map((_) => RecClass()).toList();
+  final table = rawTable.map((_) => RecClass()).toList();
 
   CType getType(int t) {
     if (t < -24) {
@@ -1793,23 +1793,23 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
     switch (entry[0]) {
       case IDLTypeIds.Vector:
         {
-          var ty = getType(entry[1]);
+          final ty = getType(entry[1]);
           return Vec(ty);
         }
       case IDLTypeIds.Opt:
         {
-          var ty = getType(entry[1]);
+          final ty = getType(entry[1]);
           return Opt(ty);
         }
       case IDLTypeIds.Record:
         {
-          var fields = <String, CType>{};
-          for (var e in entry[1] as List) {
-            var name = '_${e[0].toString()}_';
+          final fields = <String, CType>{};
+          for (final e in entry[1] as List) {
+            final name = '_${e[0].toString()}_';
             fields[name] = getType(e[1] as int);
           }
-          var record = Record(fields);
-          var tuple = record.tryAsTuple();
+          final record = Record(fields);
+          final tuple = record.tryAsTuple();
           if (tuple is List<CType>) {
             return Tuple(tuple);
           } else {
@@ -1818,9 +1818,9 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
         }
       case IDLTypeIds.Variant:
         {
-          var fields = <String, CType>{};
-          for (var e in entry[1] as List) {
-            var name = '_${e[0]}_';
+          final fields = <String, CType>{};
+          for (final e in entry[1] as List) {
+            final name = '_${e[0]}_';
             fields[name] = getType(e[1] as int);
           }
           return Variant(fields);
@@ -1846,7 +1846,7 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
   final types = rawTypes.map((t) => getType(t)).toList();
 
   final output = retTypes.asMap().entries.map((entry) {
-    var result = entry.value.decodeValue(b, types[entry.key]);
+    final result = entry.value.decodeValue(b, types[entry.key]);
     return result;
   }).toList();
 

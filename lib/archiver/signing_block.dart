@@ -26,7 +26,7 @@ class SigningBlock {
 
   int messageBlocksSize() {
     var size = 0;
-    for (var block in messageBlocks) {
+    for (final block in messageBlocks) {
       size += block.size;
     }
     return size;
@@ -34,7 +34,7 @@ class SigningBlock {
 
   int signatureBlocksSize() {
     var size = 0;
-    for (var block in signatureBlocks) {
+    for (final block in signatureBlocks) {
       size += block.size;
     }
     return size;
@@ -42,7 +42,7 @@ class SigningBlock {
 
   int publicKeyBlocksSize() {
     var size = 0;
-    for (var block in publicKeyBlocks) {
+    for (final block in publicKeyBlocks) {
       size += block.size;
     }
     return size;
@@ -62,21 +62,21 @@ class SigningBlock {
     // size of message
     output.writeUint32(messageBlocksSize());
     // content of message
-    for (var msgBlock in messageBlocks) {
+    for (final msgBlock in messageBlocks) {
       msgBlock.write(output);
     }
 
     // size of sigtnaure
     output.writeUint32(signatureBlocksSize());
     // content of signature
-    for (var sigBlock in signatureBlocks) {
+    for (final sigBlock in signatureBlocks) {
       sigBlock.write(output);
     }
 
     // size of publicKey
     output.writeUint32(publicKeyBlocksSize());
     // content of publicKey
-    for (var pubBlock in publicKeyBlocks) {
+    for (final pubBlock in publicKeyBlocks) {
       pubBlock.write(output);
     }
   }
@@ -122,7 +122,7 @@ class PublicKeyBlock {
   int get size => 4 + publicKey.toDer().lengthInBytes;
 
   void write(OutputStreamBase output) {
-    var publicKeyInDer = publicKey.toDer();
+    final publicKeyInDer = publicKey.toDer();
     output.writeUint32(publicKeyInDer.lengthInBytes);
     output.writeBytes(publicKeyInDer);
   }

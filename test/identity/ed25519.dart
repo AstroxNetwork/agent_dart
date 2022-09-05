@@ -78,7 +78,7 @@ void ed25519Test() {
     },
   ];
   test('DER encoding of ED25519 keys', () async {
-    for (var pair in testVectors) {
+    for (final pair in testVectors) {
       final publicKey = Ed25519PublicKey.fromRaw(blobFromHex(pair[0]));
       final expectedDerPublicKey = blobFromHex(pair[1]);
       expect(publicKey.toDer(), expectedDerPublicKey);
@@ -86,7 +86,7 @@ void ed25519Test() {
   });
 
   test('DER decoding of ED25519 keys', () async {
-    for (var pair in testVectors) {
+    for (final pair in testVectors) {
       final derPublicKey = blobFromHex(pair[1]);
       final expectedPublicKey = blobFromHex(pair[0]);
       expect(Ed25519PublicKey.fromDer(derPublicKey).toRaw(), expectedPublicKey);
@@ -171,13 +171,13 @@ void ed25519Test() {
   });
 
   test('derive Ed25519 via SLIP 0010', () async {
-    for (var testVector in testVectorsSLIP10) {
+    for (final testVector in testVectorsSLIP10) {
       final seedBlob = blobFromHex(testVector['seed'] as String);
       final expectedPrivateKey =
           blobFromHex(testVector['privateKey'] as String);
       final expectedPublicKey = blobFromHex(testVector['publicKey'] as String);
 
-      var identity = await fromSeedWithSlip0010(
+      final identity = await fromSeedWithSlip0010(
         seedBlob,
         testVector['derivationPath'] as List<int>?,
       );
@@ -194,8 +194,8 @@ void ed25519Test() {
   test('can sign and verify', () async {
     final key = await Ed25519KeyIdentity.generate(null);
     final msg = 'hello world'.plainToU8a();
-    var signedBytes = await key.sign(msg);
-    var verifyResult = await key.verify(signedBytes, msg);
+    final signedBytes = await key.sign(msg);
+    final verifyResult = await key.verify(signedBytes, msg);
     expect(verifyResult, true);
   });
 }

@@ -20,13 +20,13 @@ void rosettaTest() {
     final signer =
         await ICPSigner.importPhrase(phrase, curveType: CurveType.all);
 
-    var receiver = await ICPSigner.fromSeed(
+    final receiver = await ICPSigner.fromSeed(
       Uint8List.fromList(List.filled(32, 0)),
       curveType: CurveType.all,
     );
 
     /// setup RosettaApi and init
-    RosettaApi rose = RosettaApi(host: 'http://127.0.0.1:8080');
+    final RosettaApi rose = RosettaApi(host: 'http://127.0.0.1:8080');
     await rose.init();
     print((await rose.blockByIndex(0)).toJson());
     // /// create payload
@@ -38,7 +38,8 @@ void rosettaTest() {
     //     null,
     //     null);
 
-    var accountBalance = await rose.accountBalanceByAddress(signer.idAddress!);
+    final accountBalance =
+        await rose.accountBalanceByAddress(signer.idAddress!);
     print('\n Account balance: $accountBalance');
 
     // // ignore: avoid_print
@@ -95,7 +96,7 @@ void rosettaTest() {
     // print(" ------ Balance change ------ \n");
   });
   test('getTransactionByBlock', () async {
-    RosettaApi rose = RosettaApi();
+    final RosettaApi rose = RosettaApi();
     await rose.init();
     final txn = await rose.getTransactionByBlock(3672726);
     expect(

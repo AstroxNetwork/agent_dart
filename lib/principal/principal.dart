@@ -45,8 +45,8 @@ class Principal {
   final Uint8List _arr;
 
   static Principal selfAuthenticating(Uint8List publicKey) {
-    var sha = sha224Hash(publicKey.buffer);
-    var u8a = Uint8List.fromList([...sha, _suffixSelfAuthenticating]);
+    final sha = sha224Hash(publicKey.buffer);
+    final u8a = Uint8List.fromList([...sha, _suffixSelfAuthenticating]);
     return Principal(u8a);
   }
 
@@ -120,7 +120,7 @@ class Principal {
     final array = Uint8List.fromList([...checksum, ...bytes]);
 
     final result = base32Encode(array);
-    var reg = RegExp(r'.{1,5}');
+    final reg = RegExp(r'.{1,5}');
     final matches = reg.allMatches(result);
     if (matches.isEmpty) {
       // This should only happen if there's no character, which is unreachable.
@@ -176,12 +176,12 @@ class CanisterId extends Principal {
   static CanisterId fromU64(int val) {
     // It is important to use big endian here to ensure that the generated
     // `PrincipalId`s still maintain ordering.
-    var data = List.generate(_maxLengthInBytes, (index) => 0);
+    final data = List.generate(_maxLengthInBytes, (index) => 0);
 
     // Specify explicitly the length, so as to assert at compile time that a u64
     // takes exactly 8 bytes
     // let val: [u8; 8] = val.to_be_bytes();
-    var valU8a = val.toU8a(bitLength: 64);
+    final valU8a = val.toU8a(bitLength: 64);
 
     // for-loops in const fn are not supported
     data[0] = valU8a[0];
@@ -197,7 +197,7 @@ class CanisterId extends Principal {
     // to create a sub category that could be used in future.
     data[8] = 0x01;
 
-    var blobLength = 8 /* the u64 */ + 1 /* the last 0x01 */;
+    const blobLength = 8 /* the u64 */ + 1 /* the last 0x01 */;
 
     data[blobLength] = _typeOpaque;
     return CanisterId(

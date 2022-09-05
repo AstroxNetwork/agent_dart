@@ -73,7 +73,7 @@ class ICPAccount extends BaseAccount {
     int? index,
     CurveType curveType = CurveType.ed25519,
   }) async {
-    ECKeys keys = ecKeysfromSeed(seed, index: index ?? 0);
+    final ECKeys keys = ecKeysfromSeed(seed, index: index ?? 0);
     final Ed25519KeyIdentity? identity = curveType == CurveType.secp256k1
         ? null
         : await Ed25519KeyIdentity.generate(seed);
@@ -117,7 +117,7 @@ class ICPAccount extends BaseAccount {
       );
     }
     if (curveType == CurveType.ed25519 || curveType == CurveType.all) {
-      var path = List<int>.from(icPath ?? icBasePath);
+      final path = List<int>.from(icPath ?? icBasePath);
       identity = await fromMnemonicWithoutValidation(
         phrase,
         path,
@@ -168,7 +168,7 @@ class ICPAccount extends BaseAccount {
         jsonDecode(_keystore!),
         passphrase,
       );
-      var newIcp = await ICPAccount.fromPhrase(
+      final newIcp = await ICPAccount.fromPhrase(
         phrase,
         index: 0,
         curveType: curveType,
@@ -356,14 +356,14 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
     SigningCallback? callback,
   }) async {
     if (signType == SignType.ed25519) {
-      var res = await transferCombine(
+      final res = await transferCombine(
         account.identity!,
         payload,
       );
       return res;
     }
     if (signType == SignType.ecdsa) {
-      var res = await ecTransferCombine(
+      final res = await ecTransferCombine(
         account.ecIdentity!,
         payload,
       );

@@ -31,8 +31,8 @@ class Expiry extends ToCborable {
   @override
   void write(cbor.Encoder encoder) {
     if (kIsWeb) {
-      var data = serializeValue(0, 27, _value.toRadixString(16));
-      var buf = Uint8Buffer();
+      final data = serializeValue(0, 27, _value.toRadixString(16));
+      final buf = Uint8Buffer();
       buf.addAll(data.asUint8List());
       encoder.addBuilderOutput(buf);
     } else {

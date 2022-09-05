@@ -38,7 +38,7 @@ void delegationTest() {
       previous: rootToMiddle,
     );
 
-    var result = {
+    final result = {
       'delegations': [
         {
           'delegation': {
@@ -94,7 +94,7 @@ void delegationTest() {
 
     // print(rootToMiddleJson);
     // All strings in the JSON should be hex so it is clear how to decode this as different versions of `toJSON` evolve.
-    var revived = jsonDecode(
+    final revived = jsonDecode(
       rootToMiddleJson,
       reviver: (key, value) {
         if (value is String) {

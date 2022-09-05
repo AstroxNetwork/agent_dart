@@ -32,7 +32,7 @@ class AgentFactory {
     Identity? identity,
     bool? debug = true,
   }) async {
-    var agentFactory = AgentFactory(
+    final agentFactory = AgentFactory(
       canisterId: canisterId,
       url: url,
       idl: idl,
@@ -59,10 +59,10 @@ class AgentFactory {
   String get agentUrl => _url;
 
   Future<void> initAgent(String url) async {
-    var uri = Uri.parse(url);
-    var port = ':${uri.port}';
-    var protocol = uri.scheme;
-    var host = uri.host;
+    final uri = Uri.parse(url);
+    final port = ':${uri.port}';
+    final protocol = uri.scheme;
+    final host = uri.host;
     _agent = HttpAgent(
       defaultProtocol: protocol,
       defaultHost: host,
