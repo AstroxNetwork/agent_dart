@@ -16,22 +16,24 @@ void secp256k1Test() {
     var res = sign(msg, prv.toU8a());
     expect(res.length, 64);
     var isValid = verify(
-        msg,
-        res,
-        Secp256k1PublicKey.from(
-            (await Secp256k1KeyIdentity.fromSecretKey(prv.toU8a()))
-                .getPublicKey()));
+      msg,
+      res,
+      Secp256k1PublicKey.from(
+        (await Secp256k1KeyIdentity.fromSecretKey(prv.toU8a())).getPublicKey(),
+      ),
+    );
     expect(isValid, true);
   });
   test('sign', () async {
     var res = await signAsync(msg.plainToU8a(), prv.toU8a());
     expect(res.length, 64);
     var isValid = verify(
-        msg,
-        res,
-        Secp256k1PublicKey.from(
-            (await Secp256k1KeyIdentity.fromSecretKey(prv.toU8a()))
-                .getPublicKey()));
+      msg,
+      res,
+      Secp256k1PublicKey.from(
+        (await Secp256k1KeyIdentity.fromSecretKey(prv.toU8a())).getPublicKey(),
+      ),
+    );
     expect(isValid, true);
   });
 
@@ -47,10 +49,12 @@ void secp256k1Test() {
       expect(res.length, 64);
 
       var isValid = verify(
-          wordR,
-          res,
-          Secp256k1PublicKey.from(
-              (await Secp256k1KeyIdentity.fromSecretKey(prvR)).getPublicKey()));
+        wordR,
+        res,
+        Secp256k1PublicKey.from(
+          (await Secp256k1KeyIdentity.fromSecretKey(prvR)).getPublicKey(),
+        ),
+      );
       expect(isValid, true);
 
       var prvR2 = (await getECKeysAsync(mne)).ecPrivateKey!;
@@ -66,11 +70,12 @@ void secp256k1Test() {
       expect(res.toHex(), res2.toHex());
 
       var isValid2 = verify(
-          wordR2,
-          res2,
-          Secp256k1PublicKey.from(
-              (await Secp256k1KeyIdentity.fromSecretKey(prvR2))
-                  .getPublicKey()));
+        wordR2,
+        res2,
+        Secp256k1PublicKey.from(
+          (await Secp256k1KeyIdentity.fromSecretKey(prvR2)).getPublicKey(),
+        ),
+      );
 
       expect(isValid2, true);
     }

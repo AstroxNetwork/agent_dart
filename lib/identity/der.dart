@@ -142,7 +142,9 @@ Uint8List unwrapDER(ByteBuffer derEncoded, Uint8List oid) {
   offset += decodeLenBytes(buf, offset);
 
   if (!bufEquals(
-      buf.sublist(offset, offset + oid.lengthInBytes).buffer, oid.buffer)) {
+    buf.sublist(offset, offset + oid.lengthInBytes).buffer,
+    oid.buffer,
+  )) {
     throw 'Not the expected OID.';
   }
   offset += oid.lengthInBytes;

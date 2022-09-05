@@ -850,8 +850,14 @@ class WebBls implements BaseBLS {
     var set1 = passArray8ToWasm0(msg, _malloc);
     var set2 = passArray8ToWasm0(pk, _malloc);
 
-    return blsVerifyFunc(set0.first, set0.last, set1.first, set1.last,
-            set2.first, set2.last) ==
+    return blsVerifyFunc(
+          set0.first,
+          set0.last,
+          set1.first,
+          set1.last,
+          set2.first,
+          set2.last,
+        ) ==
         0;
   }
 

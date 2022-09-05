@@ -3,6 +3,7 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   exclude:
     - 'lib/protobuf/**.dart'
+    - 'rust/bridge/ffi/**.dart'
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
@@ -12,5 +13,6 @@ linter:
     prefer_const_constructors: true
     prefer_const_declarations: true
     prefer_single_quotes: true
+    require_trailing_commas: true
     sort_constructors_first: true
     sort_unnamed_constructors_first: true

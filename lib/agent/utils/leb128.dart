@@ -167,7 +167,8 @@ BigInt readUIntLE(BufferPipe pipe, int byteLength) {
 BigInt readIntLE(BufferPipe pipe, int byteLength) {
   var val = readUIntLE(pipe, byteLength);
   final mul = BigInt.from(2).pow(
-      (BigInt.from(8) * BigInt.from(byteLength - 1) + BigInt.from(7)).toInt());
+    (BigInt.from(8) * BigInt.from(byteLength - 1) + BigInt.from(7)).toInt(),
+  );
   if (val >= mul) {
     val -= mul * BigInt.from(2);
   }

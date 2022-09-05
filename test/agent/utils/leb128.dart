@@ -24,19 +24,23 @@ void leb128Test() {
       'ef9baf8589cf959a92deb7de8a929eabb424',
     );
     expect(lebEncode(BigInt.from(2000000)).toHex(include0x: false), '80897a');
-    expect(lebEncode(BigInt.from(60000000000000000)).toHex(include0x: false),
-        '808098f4e9b5ca6a');
+    expect(
+      lebEncode(BigInt.from(60000000000000000)).toHex(include0x: false),
+      '808098f4e9b5ca6a',
+    );
 
     expect(lebDecode(BufferPipe<int>(Uint8List.fromList([0]))), BigInt.zero);
     expect(lebDecode(BufferPipe<int>(Uint8List.fromList([1]))), BigInt.one);
-    expect(lebDecode(BufferPipe<int>(Uint8List.fromList([0xe5, 0x8e, 0x26]))),
-        BigInt.from(624485));
     expect(
-        lebDecode(
-                BufferPipe<int>('ef9baf8589cf959a92deb7de8a929eabb424'.toU8a()))
-            .toHex()
-            .hexStripPrefix(),
-        '1234567890abcdef1234567890abcdef');
+      lebDecode(BufferPipe<int>(Uint8List.fromList([0xe5, 0x8e, 0x26]))),
+      BigInt.from(624485),
+    );
+    expect(
+      lebDecode(
+        BufferPipe<int>('ef9baf8589cf959a92deb7de8a929eabb424'.toU8a()),
+      ).toHex().hexStripPrefix(),
+      '1234567890abcdef1234567890abcdef',
+    );
   });
 
   test('sleb', () {
@@ -53,25 +57,36 @@ void leb128Test() {
           .toHex(include0x: false),
       '91e4d0faf6b0eae5eda1c8a1f5ede1d4cb5b',
     );
-    expect(slebEncode(BigInt.parse('2000000')).toHex(include0x: false),
-        '8089fa00');
     expect(
-        slebEncode(BigInt.parse('60000000000000000')).toHex(include0x: false),
-        '808098f4e9b5caea00');
+      slebEncode(BigInt.parse('2000000')).toHex(include0x: false),
+      '8089fa00',
+    );
+    expect(
+      slebEncode(BigInt.parse('60000000000000000')).toHex(include0x: false),
+      '808098f4e9b5caea00',
+    );
 
-    expect(slebDecode(BufferPipe<int>(Uint8List.fromList([0x7f]))),
-        BigInt.from(-1));
     expect(
-        slebDecode(BufferPipe<int>(Uint8List.fromList([0xc0, 0xbb, 0x78])))
-            .toInt(),
-        -123456);
-    expect(slebDecode(BufferPipe<int>(Uint8List.fromList([0x2a]))),
-        BigInt.from(42));
+      slebDecode(BufferPipe<int>(Uint8List.fromList([0x7f]))),
+      BigInt.from(-1),
+    );
     expect(
-        slebDecode(BufferPipe<int>(
-                ('91e4d0faf6b0eae5eda1c8a1f5ede1d4cb5b'.toU8a())))
-            .toRadixString(16),
-        '-1234567890abcdef1234567890abcdef');
+      slebDecode(BufferPipe<int>(Uint8List.fromList([0xc0, 0xbb, 0x78])))
+          .toInt(),
+      -123456,
+    );
+    expect(
+      slebDecode(BufferPipe<int>(Uint8List.fromList([0x2a]))),
+      BigInt.from(42),
+    );
+    expect(
+      slebDecode(
+        BufferPipe<int>(
+          ('91e4d0faf6b0eae5eda1c8a1f5ede1d4cb5b'.toU8a()),
+        ),
+      ).toRadixString(16),
+      '-1234567890abcdef1234567890abcdef',
+    );
     expect(
       slebDecode(BufferPipe<int>('808098f4e9b5caea00'.toU8a())).toString(),
       '60000000000000000',
@@ -84,14 +99,22 @@ void leb128Test() {
     expect(writeIntLE(1234567890, 5).toHex(include0x: false), 'd202964900');
     expect(writeUIntLE(1234567890, 5).toHex(include0x: false), 'd202964900');
     expect(writeIntLE(-1234567890, 5).toHex(include0x: false), '2efd69b6ff');
-    expect(readIntLE(BufferPipe<int>(('d202964900'.toU8a())), 5).toString(),
-        '1234567890');
-    expect(readUIntLE(BufferPipe<int>(('d202964900'.toU8a())), 5).toString(),
-        '1234567890');
-    expect(readIntLE(BufferPipe<int>(('2efd69b6ff'.toU8a())), 5).toString(),
-        '-1234567890');
-    expect(readIntLE(BufferPipe<int>(('d6ffffffff'.toU8a())), 5).toString(),
-        '-42');
+    expect(
+      readIntLE(BufferPipe<int>(('d202964900'.toU8a())), 5).toString(),
+      '1234567890',
+    );
+    expect(
+      readUIntLE(BufferPipe<int>(('d202964900'.toU8a())), 5).toString(),
+      '1234567890',
+    );
+    expect(
+      readIntLE(BufferPipe<int>(('2efd69b6ff'.toU8a())), 5).toString(),
+      '-1234567890',
+    );
+    expect(
+      readIntLE(BufferPipe<int>(('d6ffffffff'.toU8a())), 5).toString(),
+      '-42',
+    );
     expect(
       readUIntLE(BufferPipe<int>(('d6ffffffff'.toU8a())), 5).toString(),
       '1099511627734',

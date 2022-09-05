@@ -59,8 +59,11 @@ ECKeys getECKeys(String mnemonic, {String passphase = '', int index = 0}) {
   return ecKeysfromSeed(seed, index: index);
 }
 
-Future<ECKeys> getECKeysAsync(String phrase,
-    {String passphase = '', int index = 0}) async {
+Future<ECKeys> getECKeysAsync(
+  String phrase, {
+  String passphase = '',
+  int index = 0,
+}) async {
   final seed = await AgentDartFFI.instance.mnemonicPhraseToSeed(
     req: PhraseToSeedReq(phrase: phrase, password: passphase),
   );
@@ -106,15 +109,19 @@ ECKeys ecKeysfromSeed(Uint8List seed, {int index = 0}) {
   );
 }
 
-Uint8List? getPublicFromPrivateKey(Uint8List privateKey,
-    [bool compress = false]) {
+Uint8List? getPublicFromPrivateKey(
+  Uint8List privateKey, [
+  bool compress = false,
+]) {
   BigInt privateKeyNum = privateKey.toBn(endian: Endian.big);
 
   return getPublicFromPrivateKeyBigInt(privateKeyNum, compress);
 }
 
-Uint8List? getPublicFromPrivateKeyBigInt(BigInt bigint,
-    [bool compress = false]) {
+Uint8List? getPublicFromPrivateKeyBigInt(
+  BigInt bigint, [
+  bool compress = false,
+]) {
   ECPoint? p = params.G * bigint;
 
   if (p != null) {

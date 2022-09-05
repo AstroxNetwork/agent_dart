@@ -1,6 +1,5 @@
 part of 'key_store.dart';
 
-
 const String _algoIdentifier = 'aes-128-ctr';
 
 Future<String> encrypt(

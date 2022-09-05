@@ -67,7 +67,9 @@ class Secp256k1KeyIdentity extends SignIdentity {
       }
       if (dashPublicKey && dashPrivateKey && dashPrivateKey.data) {
         return Secp256k1KeyIdentity(
-            pk, Uint8List.fromList(dashPrivateKey.data));
+          pk,
+          Uint8List.fromList(dashPrivateKey.data),
+        );
       }
     }
     throw 'Deserialization error: '

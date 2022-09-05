@@ -131,28 +131,37 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
 
       final pk = publicKey != null
           ? Ed25519PublicKey.fromRaw(
-              Uint8List.fromList(List<int>.from(publicKey)))
+              Uint8List.fromList(List<int>.from(publicKey)),
+            )
           : Ed25519PublicKey.fromDer(
-              Uint8List.fromList(List<int>.from(dashPublicKey!)));
+              Uint8List.fromList(List<int>.from(dashPublicKey!)),
+            );
 
       if (publicKey != null && secretKey != null) {
         return Ed25519KeyIdentity(
-            pk, Uint8List.fromList(List<int>.from(secretKey)));
+          pk,
+          Uint8List.fromList(List<int>.from(secretKey)),
+        );
       } else if (dashPublicKey != null && dashPrivateKey != null) {
         return Ed25519KeyIdentity(
-            pk, Uint8List.fromList(List<int>.from(dashPrivateKey)));
+          pk,
+          Uint8List.fromList(List<int>.from(dashPrivateKey)),
+        );
       }
     }
     throw 'Deserialization error: Invalid JSON type for string: ${jsonEncode(json)}';
   }
 
   static Ed25519KeyIdentity fromKeyPair(
-      BinaryBlob publicKey, BinaryBlob privateKey) {
+    BinaryBlob publicKey,
+    BinaryBlob privateKey,
+  ) {
     return Ed25519KeyIdentity(Ed25519PublicKey.fromRaw(publicKey), privateKey);
   }
 
   static Future<Ed25519KeyIdentityRecoveredFromII> recoverFromIISeedPhrase(
-      String phrase) async {
+    String phrase,
+  ) async {
     try {
       var userNumber = extractUserNumber(phrase);
       var mne = dropLeadingUserNumber(phrase);
@@ -201,8 +210,12 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
 
   Future<bool> verify(Uint8List signature, Uint8List message) async {
     return await AgentDartFFI.instance.ed25519Verify(
-        req: ED25519VerifyReq(
-            message: message, sig: signature, pubKey: _publicKey.toRaw()));
+      req: ED25519VerifyReq(
+        message: message,
+        sig: signature,
+        pubKey: _publicKey.toRaw(),
+      ),
+    );
   }
 
   Uint8List get accountId => getAccountId();
@@ -261,8 +274,10 @@ Future<Ed25519KeyIdentity> fromMnemonicWithoutValidation(
 /// The derivation path is an array that is always interpreted as a hardened path.
 /// e.g. to generate m/44'/223’/0’/0’/0' the derivation path should be [44, 223, 0, 0, 0]
 Future<Ed25519KeyIdentity> fromSeedWithSlip0010(
-    Uint8List masterSeed, List<int>? derivationPath,
-    {int offset = hardened}) {
+  Uint8List masterSeed,
+  List<int>? derivationPath, {
+  int offset = hardened,
+}) {
   var chainSet = generateMasterKey(masterSeed);
   var slipSeed = chainSet.first;
   var chainCode = chainSet.last;
@@ -279,7 +294,9 @@ Future<Ed25519KeyIdentity> fromSeedWithSlip0010(
 
 Set<Uint8List> generateMasterKey(Uint8List seed) {
   var hmacSha512 = Hmac(
-      sha512, 'ed25519 seed'.plainToU8a(useDartEncode: true)); // HMAC-SHA512
+    sha512,
+    'ed25519 seed'.plainToU8a(useDartEncode: true),
+  ); // HMAC-SHA512
   var h = hmacSha512.convert(seed);
   final slipSeed = Uint8List.fromList(h.bytes.sublist(0, 32));
   final chainCode = Uint8List.fromList(h.bytes.sublist(32));

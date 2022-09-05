@@ -139,7 +139,8 @@ class Bech32Encoder extends Converter<Bech32, String> with Bech32Validations {
             Bech32Validations.checksumLength >
         Bech32Validations.maxInputLength) {
       throw TooLong(
-          hrp.length + data.length + 1 + Bech32Validations.checksumLength);
+        hrp.length + data.length + 1 + Bech32Validations.checksumLength,
+      );
     }
 
     if (hrp.isEmpty) {
@@ -196,7 +197,9 @@ class Bech32Decoder extends Converter<String, Bech32> with Bech32Validations {
 
     var hrp = input.substring(0, separatorPosition);
     var data = input.substring(
-        separatorPosition + 1, input.length - Bech32Validations.checksumLength);
+      separatorPosition + 1,
+      input.length - Bech32Validations.checksumLength,
+    );
     var checksum =
         input.substring(input.length - Bech32Validations.checksumLength);
 
@@ -385,7 +388,6 @@ List<int> _convertBits(List<int> data, int from, int to, {bool pad = true}) {
 
   return result;
 }
-
 
 const String _hrp = 'icp';
 

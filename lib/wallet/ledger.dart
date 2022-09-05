@@ -126,8 +126,11 @@ class LedgerCanisterInitPayload {
         'archive_options':
             archiveOptions != null ? [archiveOptions?.toJson()] : [],
         'initial_values': initialValues
-            .map((e) =>
-                e.map((f) => f is String ? f : (f as ICPTs).toJson()).toList())
+            .map(
+              (e) => e
+                  .map((f) => f is String ? f : (f as ICPTs).toJson())
+                  .toList(),
+            )
             .toList()
       }..removeWhere((key, dynamic value) => value == null);
 }
@@ -538,8 +541,9 @@ class Ledger {
         ? (accountIdOrPrincipal).toU8a().toList()
         : Principal.fromText(accountIdOrPrincipal).toAccountId().toList();
     var res = await ledgerInstance.agent.actor!
-            .getFunc(LedgerMethods.accountBalance)!(
-        [AccountBalanceArgsNew(account: accountId).toJson()]);
+        .getFunc(LedgerMethods.accountBalance)!(
+      [AccountBalanceArgsNew(account: accountId).toJson()],
+    );
     if (res != null) {
       return Tokens.fromMap(res);
     }

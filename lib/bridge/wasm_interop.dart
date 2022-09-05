@@ -88,8 +88,9 @@ class Module {
       promiseToFuture<_Module>(_compile(bytesOrBuffer))
           .then((module) => Module._(module))
           .catchError(
-              (Object e) => throw CompileError(getProperty(e, 'message')),
-              test: (e) => instanceof(e, _compileError));
+            (Object e) => throw CompileError(getProperty(e, 'message')),
+            test: (e) => instanceof(e, _compileError),
+          );
 
   /// Returns `true` if provided WebAssembly [Uint8List] source is valid.
   static bool validateBytes(Uint8List bytes) => _validate(bytes);
@@ -174,12 +175,16 @@ class Instance {
   ///
   /// final importObject = MyImports(env: MyEnv(log: allowInterop(print)));
   /// final instance = Instance.fromModule(module, importObject: importObject);
-  factory Instance.fromModule(Module module,
-      {Map<String, Map<String, Object>>? importMap, Object? importObject}) {
+  factory Instance.fromModule(
+    Module module, {
+    Map<String, Map<String, Object>>? importMap,
+    Object? importObject,
+  }) {
     try {
       return Instance._(
-          _Instance(module.jsObject, _reifyImports(importMap, importObject)),
-          module);
+        _Instance(module.jsObject, _reifyImports(importMap, importObject)),
+        module,
+      );
       // ignore: avoid_catches_without_on_clauses
     } catch (e) {
       if (instanceof(e, _linkError)) {
@@ -212,13 +217,17 @@ class Instance {
   /// Asynchronously instantiates compiled WebAssembly [Module] with imports.
   ///
   /// See [Instance.fromModule] regarding [importMap] and [importObject] usage.
-  static Future<Instance> fromModuleAsync(Module module,
-          {Map<String, Map<String, Object>>? importMap,
-          Object? importObject}) =>
-      promiseToFuture<_Instance>(_instantiateModule(
-              module.jsObject, _reifyImports(importMap, importObject)))
-          .then((instance) => Instance._(instance, module))
-          .catchError((Object e) {
+  static Future<Instance> fromModuleAsync(
+    Module module, {
+    Map<String, Map<String, Object>>? importMap,
+    Object? importObject,
+  }) =>
+      promiseToFuture<_Instance>(
+        _instantiateModule(
+          module.jsObject,
+          _reifyImports(importMap, importObject),
+        ),
+      ).then((instance) => Instance._(instance, module)).catchError((Object e) {
         if (instanceof(e, _compileError)) {
           throw CompileError(getProperty(e, 'message'));
         } else if (instanceof(e, _linkError)) {
@@ -234,25 +243,33 @@ class Instance {
   /// instantiates it with imports.
   ///
   /// See [Instance.fromModule] regarding [importMap] and [importObject] usage.
-  static Future<Instance> fromBytesAsync(Uint8List bytes,
-          {Map<String, Map<String, Object>>? importMap,
-          Object? importObject}) =>
+  static Future<Instance> fromBytesAsync(
+    Uint8List bytes, {
+    Map<String, Map<String, Object>>? importMap,
+    Object? importObject,
+  }) =>
       _fromBytesOfBufferAsync(bytes, _reifyImports(importMap, importObject));
 
   /// Asynchronously compiles WebAssembly Module from [ByteBuffer] source and
   /// instantiates it with imports.
   ///
   /// See [Instance.fromModule] regarding [importMap] and [importObject] usage.
-  static Future<Instance> fromBufferAsync(ByteBuffer buffer,
-          {Map<String, Map<String, Object>>? importMap,
-          Object? importObject}) =>
+  static Future<Instance> fromBufferAsync(
+    ByteBuffer buffer, {
+    Map<String, Map<String, Object>>? importMap,
+    Object? importObject,
+  }) =>
       _fromBytesOfBufferAsync(buffer, _reifyImports(importMap, importObject));
   static Future<Instance> _fromBytesOfBufferAsync(
-          Object bytesOrBuffer, Object imports) =>
+    Object bytesOrBuffer,
+    Object imports,
+  ) =>
       promiseToFuture<_WebAssemblyInstantiatedSource>(
-              _instantiate(bytesOrBuffer, imports))
-          .then((source) =>
-              Instance._(source.instance, Module._(source.module)))
+        _instantiate(bytesOrBuffer, imports),
+      )
+          .then(
+        (source) => Instance._(source.instance, Module._(source.module)),
+      )
           .catchError((Object e) {
         if (instanceof(e, _compileError)) {
           throw CompileError(getProperty(e, 'message'));
@@ -265,7 +282,9 @@ class Instance {
         throw e;
       });
   static Object _reifyImports(
-      Map<String, Map<String, Object>>? importMap, Object? importObject) {
+    Map<String, Map<String, Object>>? importMap,
+    Object? importObject,
+  ) {
     assert(importMap == null || importObject == null);
     assert(importObject is! Map, 'importObject must be a JsObject.');
     if (importObject != null) {
@@ -300,8 +319,10 @@ class Instance {
             setProperty(moduleObject, name, value.jsObject);
             return;
           }
-          assert(false,
-              '$moduleName/$name value ($value) is of unsupported type.');
+          assert(
+            false,
+            '$moduleName/$name value ($value) is of unsupported type.',
+          );
         });
         setProperty(importObject, moduleName, moduleObject);
       });
@@ -366,9 +387,10 @@ class Memory {
     assert(maximum == null || maximum >= initial);
     assert(!shared || maximum != null);
     return _MemoryDescriptor(
-        initial: initial,
-        maximum: maximum ?? _undefined,
-        shared: shared ? true : _undefined);
+      initial: initial,
+      maximum: maximum ?? _undefined,
+      shared: shared ? true : _undefined,
+    );
   }
 }
 
@@ -395,11 +417,17 @@ class Table {
       : jsObject = _Table(_descriptor('externref', initial, maximum), value);
   const Table._(this.jsObject);
   static _TableDescriptor _descriptor(
-      String element, int initial, int? maximum) {
+    String element,
+    int initial,
+    int? maximum,
+  ) {
     assert(initial >= 0);
     assert(maximum == null || maximum >= initial);
     return _TableDescriptor(
-        element: element, initial: initial, maximum: maximum ?? _undefined);
+      element: element,
+      initial: initial,
+      maximum: maximum ?? _undefined,
+    );
   }
 
   /// Returns a table element by its index.
@@ -559,22 +587,30 @@ const _importExportKindMap = {
 @JS()
 @anonymous
 abstract class _MemoryDescriptor {
-  external factory _MemoryDescriptor(
-      {required int initial, Object maximum, Object shared});
+  external factory _MemoryDescriptor({
+    required int initial,
+    Object maximum,
+    Object shared,
+  });
 }
 
 @JS()
 @anonymous
 abstract class _TableDescriptor {
-  external factory _TableDescriptor(
-      {required String element, required int initial, Object maximum});
+  external factory _TableDescriptor({
+    required String element,
+    required int initial,
+    Object maximum,
+  });
 }
 
 @JS()
 @anonymous
 abstract class _GlobalDescriptor {
-  external factory _GlobalDescriptor(
-      {required String value, bool mutable = false});
+  external factory _GlobalDescriptor({
+    required String value,
+    bool mutable = false,
+  });
 }
 
 @JS()
@@ -608,7 +644,9 @@ class _Module {
   external static List<Object> imports(_Module module);
   // List<ByteBuffer>
   external static List<Object> customSections(
-      _Module module, String sectionName);
+    _Module module,
+    String sectionName,
+  );
 }
 
 @JS('WebAssembly.Instance')

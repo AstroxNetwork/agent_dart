@@ -21,20 +21,26 @@ void authenticationTest() {
     final root = await createIdentity(0);
     final session = await createIdentity(1);
     final future = DateTime.fromMillisecondsSinceEpoch(
-        DateTime.now().millisecondsSinceEpoch + 1000);
+      DateTime.now().millisecondsSinceEpoch + 1000,
+    );
     final past = DateTime.fromMillisecondsSinceEpoch(
-        DateTime.now().millisecondsSinceEpoch - 1000);
+      DateTime.now().millisecondsSinceEpoch - 1000,
+    );
 
     // Create a valid delegation.
     expect(
-        isDelegationValid(
-            await DelegationChain.create(root, session.getPublicKey(), future),
-            null),
-        true);
+      isDelegationValid(
+        await DelegationChain.create(root, session.getPublicKey(), future),
+        null,
+      ),
+      true,
+    );
     expect(
-        isDelegationValid(
-            await DelegationChain.create(root, session.getPublicKey(), past),
-            null),
-        false);
+      isDelegationValid(
+        await DelegationChain.create(root, session.getPublicKey(), past),
+        null,
+      ),
+      false,
+    );
   });
 }

@@ -226,13 +226,16 @@ class RosettaApi {
   /// @returns {Promise<Array<Transaction>|null>} An array of Transaction objects, or a TransactionError
   /// for error.
   Future<List<RosettaTransaction>> getTransactionsByAccount(
-      accountAddress) async {
+    accountAddress,
+  ) async {
     try {
       final response = await transactionsByAccount(accountAddress);
       final transactions = response.transactions
           .map((rosetta.BlockTransaction blockTransaction) {
-        return RosettaTransaction(blockTransaction.transaction,
-            blockTransaction.blockIdentifier.index);
+        return RosettaTransaction(
+          blockTransaction.transaction,
+          blockTransaction.blockIdentifier.index,
+        );
       }).toList();
 
       return transactions.reversed.toList();
@@ -296,14 +299,16 @@ class RosettaApi {
   }
 
   Future<rosetta.ConstructionMetadataResponse> metadata(
-      rosetta.ConstructionMetadataRequest req) async {
+    rosetta.ConstructionMetadataRequest req,
+  ) async {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier');
     var result = await request('/construction/metadata', req.toJson());
     return rosetta.ConstructionMetadataResponse.fromMap(result);
   }
 
   Future<rosetta.ConstructionPayloadsResponse> payloads(
-      rosetta.ConstructionPayloadsRequest req) async {
+    rosetta.ConstructionPayloadsRequest req,
+  ) async {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier');
     var result = await request('/construction/payloads', req.toJson());
     return rosetta.ConstructionPayloadsResponse.fromMap(result);
@@ -315,9 +320,11 @@ class RosettaApi {
   Future<rosetta.NetworkStatusResponse> networkStatus() async {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier');
     var result = await request(
-        '/network/status',
-        rosetta.NetworkRequest.fromMap(
-            {'network_identifier': networkIdentifier}).toJson());
+      '/network/status',
+      rosetta.NetworkRequest.fromMap(
+        {'network_identifier': networkIdentifier},
+      ).toJson(),
+    );
     return rosetta.NetworkStatusResponse.fromMap(result);
   }
 
@@ -326,7 +333,8 @@ class RosettaApi {
   /// @returns {Promise<any>} The response body that was provided by the server.
   /// @private
   Future<rosetta.AccountBalanceResponse> accountBalanceByAddress(
-      String accountAddress) async {
+    String accountAddress,
+  ) async {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier');
     var result = await request('/account/balance', {
       'network_identifier': networkIdentifier,
@@ -355,7 +363,8 @@ class RosettaApi {
   /// @returns {Promise<any>} The response body that was provided by the server.
   /// @private
   Future<rosetta.SearchTransactionsResponse> transactionsByAccount(
-      String accountAddress) async {
+    String accountAddress,
+  ) async {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier');
     var result = await request('/search/transactions', {
       'network_identifier': networkIdentifier,
@@ -369,7 +378,8 @@ class RosettaApi {
   /// @returns {Promise<any>} The response body that was provided by the server.
   /// @private
   Future<rosetta.SearchTransactionsResponse> transactionsByHash(
-      String transactionHash) async {
+    String transactionHash,
+  ) async {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier');
     var result = await request('/search/transactions', {
       'network_identifier': networkIdentifier,
@@ -383,24 +393,27 @@ class RosettaApi {
   /// @returns {Promise<any>} The response body that was provided by the server.
   /// @private
   Future<rosetta.SearchTransactionsResponse> transactions(
-      rosetta.SearchTransactionsRequest req) async {
+    rosetta.SearchTransactionsRequest req,
+  ) async {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier');
     var result = await request('/search/transactions', req.toJson());
     return rosetta.SearchTransactionsResponse.fromMap(result);
   }
 
   Future<rosetta.TransactionIdentifierResponse> submit(
-      rosetta.ConstructionSubmitRequest req) async {
+    rosetta.ConstructionSubmitRequest req,
+  ) async {
     var result = await request('/construction/submit', req.toJson());
     return rosetta.TransactionIdentifierResponse.fromMap(result);
   }
 
   Future<rosetta.ConstructionPayloadsResponse> transferPreCombine(
-      Uint8List srcPub,
-      Uint8List destAddr,
-      BigInt count,
-      BigInt? maxFee,
-      Map<String, dynamic>? opt) async {
+    Uint8List srcPub,
+    Uint8List destAddr,
+    BigInt count,
+    BigInt? maxFee,
+    Map<String, dynamic>? opt,
+  ) async {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier');
 
     var netId = networkIdentifier;
@@ -445,8 +458,11 @@ class RosettaApi {
         },
       },
     ).toJson();
-    var metaResult = await metadata(rosetta.ConstructionMetadataRequest.fromMap(
-        {'network_identifier': netId?.toJson()}));
+    var metaResult = await metadata(
+      rosetta.ConstructionMetadataRequest.fromMap(
+        {'network_identifier': netId?.toJson()},
+      ),
+    );
     var meta = {...metaResult.metadata, ...?opt};
 
     var request = rosetta.ConstructionPayloadsRequest.fromMap({
@@ -465,15 +481,19 @@ class RosettaApi {
   ) async {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier');
 
-    return submit(rosetta.ConstructionSubmitRequest.fromMap({
-      'network_identifier': networkIdentifier?.toJson(),
-      'signed_transaction': combineRes.signedTransaction,
-    }));
+    return submit(
+      rosetta.ConstructionSubmitRequest.fromMap({
+        'network_identifier': networkIdentifier?.toJson(),
+        'signed_transaction': combineRes.signedTransaction,
+      }),
+    );
   }
 }
 
 Future<CombineSignedTransactionResult> transferCombine(
-    Ed25519KeyIdentity identity, rosetta.SignablePayload payloadsRes) async {
+  Ed25519KeyIdentity identity,
+  rosetta.SignablePayload payloadsRes,
+) async {
   var signatures = [];
   for (var p in payloadsRes.payloads) {
     var hexBytes = blobToHex(await identity.sign(blobFromHex(p.hexBytes)));
@@ -489,14 +509,18 @@ Future<CombineSignedTransactionResult> transferCombine(
     };
     signatures.add(signedPayload);
   }
-  return combine(rosetta.ConstructionCombineRequestPart.fromMap({
-    'signatures': signatures,
-    'unsigned_transaction': payloadsRes.unsignedTransaction,
-  }));
+  return combine(
+    rosetta.ConstructionCombineRequestPart.fromMap({
+      'signatures': signatures,
+      'unsigned_transaction': payloadsRes.unsignedTransaction,
+    }),
+  );
 }
 
 Future<CombineSignedTransactionResult> ecTransferCombine(
-    Secp256k1KeyIdentity identity, rosetta.SignablePayload payloadsRes) async {
+  Secp256k1KeyIdentity identity,
+  rosetta.SignablePayload payloadsRes,
+) async {
   var signatures = [];
   for (var p in payloadsRes.payloads) {
     var hexBytes = blobToHex(await identity.sign(blobFromHex(p.hexBytes)));
@@ -512,17 +536,20 @@ Future<CombineSignedTransactionResult> ecTransferCombine(
     };
     signatures.add(signedPayload);
   }
-  return combine(rosetta.ConstructionCombineRequestPart.fromMap({
-    'signatures': signatures,
-    'unsigned_transaction': payloadsRes.unsignedTransaction,
-  }));
+  return combine(
+    rosetta.ConstructionCombineRequestPart.fromMap({
+      'signatures': signatures,
+      'unsigned_transaction': payloadsRes.unsignedTransaction,
+    }),
+  );
 }
 
 // to be change after latest docker release:
 // see:
 // https://github.com/dfinity/rosetta-client/commit/bebac5737f3c1ad7ed607c5db08ded4cc4ad7f97#diff-8fd36260d6da44e31d76877ca9f8622cff1258c70efa8c7b81c18daa419763a0
 CombineSignedTransactionResult combine(
-    rosetta.ConstructionCombineRequestPart req) {
+  rosetta.ConstructionCombineRequestPart req,
+) {
   Map<String, rosetta.Signature> signaturesBySigData =
       <String, rosetta.Signature>{};
   for (var sig in req.signatures) {
@@ -531,8 +558,10 @@ CombineSignedTransactionResult combine(
 
   var unsignedTransaction = cborDecode<Map>(req.unsignedTransaction.toU8a());
 
-  assert(req.signatures.length ==
-      unsignedTransaction['ingress_expiries']?.length * 2);
+  assert(
+    req.signatures.length ==
+        unsignedTransaction['ingress_expiries']?.length * 2,
+  );
   assert((unsignedTransaction['updates'] as List).length == 1);
 
   var envelopes = [];
@@ -550,8 +579,11 @@ CombineSignedTransactionResult combine(
       var transactionSignature = signaturesBySigData[
           blobToHex(makeSignatureData(httpCanisterUpdateId(update)))];
 
-      var readStateSignature = signaturesBySigData[blobToHex(makeSignatureData(
-          httpReadStateRepresentationIndependantHash(readState)))];
+      var readStateSignature = signaturesBySigData[blobToHex(
+        makeSignatureData(
+          httpReadStateRepresentationIndependantHash(readState),
+        ),
+      )];
 
       var envelope = {
         'content': {
@@ -559,8 +591,8 @@ CombineSignedTransactionResult combine(
           ...update,
         },
         'sender_pubkey': Ed25519PublicKey.fromRaw(
-                blobFromHex(transactionSignature!.publicKey.hexBytes))
-            .toDer(),
+          blobFromHex(transactionSignature!.publicKey.hexBytes),
+        ).toDer(),
         'sender_sig': blobFromHex(transactionSignature.hexBytes),
         'sender_delegation': null,
       };
@@ -573,8 +605,8 @@ CombineSignedTransactionResult combine(
           ...readState,
         },
         'sender_pubkey': Ed25519PublicKey.fromRaw(
-                blobFromHex(readStateSignature!.publicKey.hexBytes))
-            .toDer(),
+          blobFromHex(readStateSignature!.publicKey.hexBytes),
+        ).toDer(),
         'sender_sig': blobFromHex(readStateSignature.hexBytes),
         'sender_delegation': null,
       };
@@ -585,7 +617,8 @@ CombineSignedTransactionResult combine(
   }
 
   var signedTransaction = blobToHex(
-      cborEncode(envelopes, withSerializer: initCborSerializerNoHead()));
+    cborEncode(envelopes, withSerializer: initCborSerializerNoHead()),
+  );
 
   return CombineSignedTransactionResult(signedTransaction);
 }
@@ -619,7 +652,7 @@ Map<String, dynamic> transactionDecoder(String txnHash) {
     'amount': BigInt.parse(sendArgs.payment.receiverGets.e8s.toRadixString(10)),
     'fee': BigInt.parse(sendArgs.maxFee.e8s.toRadixString(10)),
     'sender_pubkey': Uint8List.fromList(senderPubkey).sublist(
-        (Uint8List.fromList(senderPubkey)).byteLength -
-            tweetNaclSignedPubLength),
+      (Uint8List.fromList(senderPubkey)).byteLength - tweetNaclSignedPubLength,
+    ),
   };
 }

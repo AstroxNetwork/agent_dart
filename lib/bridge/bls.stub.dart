@@ -6,4 +6,5 @@ import 'bls.base.dart';
 
 /// Implemented in `browser_client.dart` and `io_client.dart`.
 BaseBLS createBLS() => throw UnsupportedError(
-    'Cannot create a client without dart:html or dart:io.');
+      'Cannot create a client without dart:html or dart:io.',
+    );

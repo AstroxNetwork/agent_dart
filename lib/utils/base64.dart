@@ -7,8 +7,8 @@ bool base64Validate(String? value) {
   assert(value != null, 'Expected non-null, non-empty base64 input');
 
   return RegExp(
-          r'^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})$')
-      .hasMatch(value!);
+    r'^(?:[A-Za-z\d+/]{4})*(?:[A-Za-z\d+/]{2}==|[A-Za-z\d+/]{3}=|[A-Za-z\d+/]{4})$',
+  ).hasMatch(value!);
 }
 
 String base64Trim(String value) {

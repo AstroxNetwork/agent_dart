@@ -18,8 +18,9 @@ void httpTest() {
         options: HttpAgentOptions()..identity = const AnonymousIdentity(),
       );
 
-      agent.addTransform(HttpAgentRequestTransformFn()
-        ..call = makeNonceTransform(() => nonce));
+      agent.addTransform(
+        HttpAgentRequestTransformFn()..call = makeNonceTransform(() => nonce),
+      );
 
       const methodName = 'greet';
       final arg = Uint8List.fromList([]);

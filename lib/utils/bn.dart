@@ -114,13 +114,14 @@ Uint8List bnToU8a(
   // print((0x80 & valueBn.toInt()) > 0);
 
   var newU8a = encodeBigInt(
-      isNegative
-          ? (0x80 & valueBn.toInt()) > 0
-              ? bitnot(valueBn, bitLength: byteLength * 8)
-              : valueBn
-          : valueBn,
-      endian: endian,
-      bitLength: byteLength * 8);
+    isNegative
+        ? (0x80 & valueBn.toInt()) > 0
+            ? bitnot(valueBn, bitLength: byteLength * 8)
+            : valueBn
+        : valueBn,
+    endian: endian,
+    bitLength: byteLength * 8,
+  );
 
   var ret = Uint8List(byteLength);
 
