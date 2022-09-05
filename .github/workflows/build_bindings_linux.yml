@@ -3,7 +3,7 @@ name: Rust Bindings for linux
 on:
   push:
     branches:
-      - ffi-async
+      - 1.0.0-dev
 
 jobs:
   ci:
