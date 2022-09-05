@@ -30,7 +30,7 @@ class SigningBlockDecoder extends ZipDecoder {
     if (_signatures.length != _algoIds.length) {
       throw 'Algos Length:${_algoIds.length}, is not matched with Signatures length: ${_signatures.length}';
     }
-    var result = <SigningBlockResult>[];
+    final result = <SigningBlockResult>[];
     for (var i = 0; i < _messages.length; i += 1) {
       result.add(
         SigningBlockResult(
@@ -55,7 +55,7 @@ class SigningBlockDecoder extends ZipDecoder {
   }
 
   void checkMagicNumber() {
-    var check = _checkMagicNumber();
+    final check = _checkMagicNumber();
     if (!check) {
       throw 'MagicNumber is not correct';
     }
@@ -63,13 +63,13 @@ class SigningBlockDecoder extends ZipDecoder {
 
   void extractSigningBlocks() {
     _signingBlockEndOffset = _magicNumberOffset - 4;
-    var blockSize = _getSigningBlockSize();
+    final blockSize = _getSigningBlockSize();
     _signingBlockStartOffset = _signingBlockEndOffset - blockSize;
     var currentOffset = _signingBlockStartOffset;
 
     while (currentOffset < _signingBlockEndOffset) {
       _input.offset = currentOffset;
-      var subBlockSize = _input.readUint32();
+      final subBlockSize = _input.readUint32();
       currentOffset = currentOffset + 4;
       _input.offset = currentOffset;
       currentOffset = currentOffset + 4;
@@ -85,21 +85,21 @@ class SigningBlockDecoder extends ZipDecoder {
     _input.offset = current;
     current = current + 4;
     _input.offset = current;
-    var messageBlockSize = _input.readUint32();
+    final messageBlockSize = _input.readUint32();
     current = current + 4;
     while (current < current + messageBlockSize) {
       current = extractMessageBlock(current, messageBlockSize);
       break;
     }
     _input.offset = current;
-    var signatureBlockSize = _input.readUint32();
+    final signatureBlockSize = _input.readUint32();
     current = current + 4;
     while (current < current + signatureBlockSize) {
       current = extractSignatureBlock(current, signatureBlockSize);
       break;
     }
     _input.offset = current;
-    var publicKeyBlockSize = _input.readUint32();
+    final publicKeyBlockSize = _input.readUint32();
     current = current + 4;
     while (current < current + publicKeyBlockSize) {
       current = extractPublicKeyBlock(current, publicKeyBlockSize);
@@ -110,21 +110,21 @@ class SigningBlockDecoder extends ZipDecoder {
   int extractMessageBlock(int start, int expectedBlockLength) {
     var current = start;
     _input.offset = current;
-    var blockLength = _input.readUint32();
+    final blockLength = _input.readUint32();
     assert(
       blockLength + 4 == expectedBlockLength,
       'Message BlockLength is not correct',
     );
     current = current + 4;
     _input.offset = current;
-    var algoId = _input.readUint32();
+    final algoId = _input.readUint32();
     _algoIds.add(algoId);
     current = current + 4;
     _input.offset = current;
-    var messageLength = _input.readUint32();
+    final messageLength = _input.readUint32();
     current = current + 4;
     _input.offset = current;
-    var messageBytes = _input.readBytes(messageLength);
+    final messageBytes = _input.readBytes(messageLength);
     _messages.add(messageBytes.toUint8List());
     return current + messageLength;
   }
@@ -132,7 +132,7 @@ class SigningBlockDecoder extends ZipDecoder {
   int extractSignatureBlock(int start, int expectedBlockLength) {
     var current = start;
     _input.offset = current;
-    var blockLength = _input.readUint32();
+    final blockLength = _input.readUint32();
     assert(
       blockLength + 4 == expectedBlockLength,
       'Signature BlockLength is not correct',
@@ -141,10 +141,10 @@ class SigningBlockDecoder extends ZipDecoder {
     _input.offset = current;
     current = current + 4;
     _input.offset = current;
-    var signatureLength = _input.readUint32();
+    final signatureLength = _input.readUint32();
     current = current + 4;
     _input.offset = current;
-    var signatureBytes = _input.readBytes(signatureLength);
+    final signatureBytes = _input.readBytes(signatureLength);
     _signatures.add(signatureBytes.toUint8List());
     return current + signatureLength;
   }
@@ -152,14 +152,14 @@ class SigningBlockDecoder extends ZipDecoder {
   int extractPublicKeyBlock(int start, int expectedBlockLength) {
     var current = start;
     _input.offset = current;
-    var publicKeyLength = _input.readUint32();
+    final publicKeyLength = _input.readUint32();
     assert(
       publicKeyLength + 4 == expectedBlockLength,
       'PublicKey BlockLength is not correct',
     );
     current = current + 4;
     _input.offset = current;
-    var publicKeyBytes = _input.readBytes(publicKeyLength);
+    final publicKeyBytes = _input.readBytes(publicKeyLength);
     _publicKeys.add(publicKeyBytes.toUint8List());
     return current + publicKeyLength;
   }
@@ -167,7 +167,7 @@ class SigningBlockDecoder extends ZipDecoder {
   bool _checkMagicNumber() {
     _magicNumberOffset = directory.centralDirectoryOffset - 16;
     _input.offset = _magicNumberOffset;
-    var signingBlockNumber = (_input.readString(size: 16));
+    final signingBlockNumber = (_input.readString(size: 16));
     return signingBlockNumber == SigningBlockDecoder.blockMagicNumber;
   }
 

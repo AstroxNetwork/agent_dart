@@ -11,7 +11,7 @@ void pemTest() {
   test('from ed25519 pem', () async {
     final pem = await getPemFile(ed25519File);
     expect(pem.keyType, KeyType.ed25519);
-    var id = await ed25519KeyIdentityFromPem(pem.rawString);
+    final id = await ed25519KeyIdentityFromPem(pem.rawString);
     expect(
       id.getPrincipal().toText(),
       'uz7u7-ut6sf-gx45r-pb3ww-ntxjp-y4lv2-bdobd-65xa3-7yt6t-ti2lz-aqe',
@@ -20,7 +20,7 @@ void pemTest() {
   test('from secp256k1 pem', () async {
     final pem = await getPemFile(secp256k1File);
     expect(pem.keyType, KeyType.secp265k1);
-    var id = await secp256k1KeyIdentityFromPem(pem.rawString);
+    final id = await secp256k1KeyIdentityFromPem(pem.rawString);
     expect(
       id.getPrincipal().toText(),
       '4tu7k-esetu-2lfo6-zzg45-ivl5m-77h3d-gjszr-uoeg4-zh24n-jly75-dqe',

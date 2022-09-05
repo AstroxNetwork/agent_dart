@@ -22,7 +22,7 @@ class AssetActor {
   late final CanisterActor actor;
 
   Future<Uint8List> retrieve(String key) async {
-    var res = await (actor.getFunc(AssetMethod.retrieve)?.call([key]));
+    final res = await (actor.getFunc(AssetMethod.retrieve)?.call([key]));
     if (res != null) {
       return (res as Uint8List);
     }

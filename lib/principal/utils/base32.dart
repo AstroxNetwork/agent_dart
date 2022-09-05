@@ -51,7 +51,7 @@ Uint8List base32Decode(String input) {
   // current byte we're producing.
   int byte = 0;
 
-  var output = Uint8List(((input.length * 4) / 3).ceil() | 0);
+  final output = Uint8List(((input.length * 4) / 3).ceil() | 0);
   int o = 0;
 
   final Map<String, int> lookupTable = alphabet.split('').fold({}, (p, e) {
@@ -67,7 +67,7 @@ Uint8List base32Decode(String input) {
     // Consume a character from the stream, store
     // the output in this.output. As before, better
     // to use update().
-    var found = lookupTable[char.toLowerCase()];
+    final found = lookupTable[char.toLowerCase()];
     assert(found != null, 'Invalid character: $char');
     var val = found!;
     // move to the high bits

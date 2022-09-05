@@ -93,8 +93,8 @@ Future<ECKeys> getECkeyFromPrivateKey(Uint8List prv) async {
 ECKeys ecKeysfromSeed(Uint8List seed, {int index = 0}) {
   final node = bip32.BIP32.fromSeed(seed);
 
-  var masterPrv = node.derivePath('$icpPath/0/$index');
-  var masterPrvRaw = node.derivePath(icpPath);
+  final masterPrv = node.derivePath('$icpPath/0/$index');
+  final masterPrvRaw = node.derivePath(icpPath);
   final xpub = masterPrvRaw.toBase58();
 
   final prv = masterPrv.privateKey;
@@ -113,7 +113,7 @@ Uint8List? getPublicFromPrivateKey(
   Uint8List privateKey, [
   bool compress = false,
 ]) {
-  BigInt privateKeyNum = privateKey.toBn(endian: Endian.big);
+  final BigInt privateKeyNum = privateKey.toBn(endian: Endian.big);
 
   return getPublicFromPrivateKeyBigInt(privateKeyNum, compress);
 }
@@ -122,7 +122,7 @@ Uint8List? getPublicFromPrivateKeyBigInt(
   BigInt bigint, [
   bool compress = false,
 ]) {
-  ECPoint? p = params.G * bigint;
+  final ECPoint? p = params.G * bigint;
 
   if (p != null) {
     return p.getEncoded(compress);

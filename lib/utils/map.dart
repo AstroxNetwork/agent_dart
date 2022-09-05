@@ -1,6 +1,6 @@
 Map makeBigIntToString(Map input) {
-  var newX = {};
-  for (var index in input.entries) {
+  final newX = {};
+  for (final index in input.entries) {
     newX.putIfAbsent(
       index.key is BigInt ? index.key.toString() : index.key,
       () => index.value is BigInt

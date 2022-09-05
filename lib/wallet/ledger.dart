@@ -81,8 +81,8 @@ class LedgerCanisterInitPayload {
   });
 
   factory LedgerCanisterInitPayload.fromMap(Map map) {
-    var initValues = map['initial_values'] as List<List>;
-    var initialValues = [
+    final initValues = map['initial_values'] as List<List>;
+    final initialValues = [
       [initValues[0], ICPTs.fromMap(initValues[1] as Map)]
     ];
     return LedgerCanisterInitPayload(
@@ -399,7 +399,7 @@ class TransferError {
   });
 
   Map<String, dynamic> toJson() {
-    var res = {
+    final res = {
       'TxTooOld': txTooOld,
       'BadFee': badFee,
       'TxDuplicate': txDuplicate,
@@ -519,8 +519,8 @@ class Ledger {
     required String accountId,
     SignIdentity? identity,
   }) async {
-    var ledgerInstance = Ledger.hook(agent)..setIdentity(identity);
-    var res = await ledgerInstance.agent.actor!.getFunc(
+    final ledgerInstance = Ledger.hook(agent)..setIdentity(identity);
+    final res = await ledgerInstance.agent.actor!.getFunc(
       LedgerMethods.getBalance,
     )!(
       [AccountBalanceArgs(account: accountId).toJson()],
@@ -536,11 +536,11 @@ class Ledger {
     required String accountIdOrPrincipal,
     SignIdentity? identity,
   }) async {
-    var ledgerInstance = Ledger.hook(agent)..setIdentity(identity);
-    var accountId = isHexString(accountIdOrPrincipal)
+    final ledgerInstance = Ledger.hook(agent)..setIdentity(identity);
+    final accountId = isHexString(accountIdOrPrincipal)
         ? (accountIdOrPrincipal).toU8a().toList()
         : Principal.fromText(accountIdOrPrincipal).toAccountId().toList();
-    var res = await ledgerInstance.agent.actor!
+    final res = await ledgerInstance.agent.actor!
         .getFunc(LedgerMethods.accountBalance)!(
       [AccountBalanceArgsNew(account: accountId).toJson()],
     );
@@ -557,10 +557,10 @@ class Ledger {
     SendOpts? sendOpts,
     SignIdentity? identity,
   }) async {
-    var ledgerInstance = Ledger.hook(agent)..setIdentity(identity);
-    var defaultFee = BigInt.from(10000);
-    var defaultMemo = getRandomValues(4).toBn(endian: Endian.big);
-    var sendArgs = {
+    final ledgerInstance = Ledger.hook(agent)..setIdentity(identity);
+    final defaultFee = BigInt.from(10000);
+    final defaultMemo = getRandomValues(4).toBn(endian: Endian.big);
+    final sendArgs = {
       'to': to,
       'fee': {
         'e8s': sendOpts?.fee ?? defaultFee,
@@ -576,7 +576,7 @@ class Ledger {
           : null,
     };
 
-    var res = await ledgerInstance.agent.actor!.getFunc(
+    final res = await ledgerInstance.agent.actor!.getFunc(
       LedgerMethods.send,
     )!([SendArgs.fromMap(sendArgs).toJson()]);
     if (res != null) {
@@ -592,10 +592,10 @@ class Ledger {
     SendOpts? sendOpts,
     SignIdentity? identity,
   }) async {
-    var ledgerInstance = Ledger.hook(agent)..setIdentity(identity);
-    var defaultFee = BigInt.from(10000);
-    var defaultMemo = getRandomValues(4).toBn(endian: Endian.big);
-    var sendArgs = {
+    final ledgerInstance = Ledger.hook(agent)..setIdentity(identity);
+    final defaultFee = BigInt.from(10000);
+    final defaultMemo = getRandomValues(4).toBn(endian: Endian.big);
+    final sendArgs = {
       'to': to,
       'fee': {
         'e8s': sendOpts?.fee ?? defaultFee,
@@ -610,7 +610,7 @@ class Ledger {
                   sendOpts?.createAtTime?.millisecondsSinceEpoch.toBn()
             },
     };
-    var res = await ledgerInstance.agent.actor!.getFunc(
+    final res = await ledgerInstance.agent.actor!.getFunc(
       LedgerMethods.transfer,
     )!([TransferArgs.fromMap(sendArgs).toJson()]);
     if (res != null) {

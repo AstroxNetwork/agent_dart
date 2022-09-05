@@ -119,8 +119,8 @@ class AuthClient {
     Map<String, dynamic> map,
     Uri? authUri,
   ) {
-    var fromStorageResult = AuthClient.fromStorage(jsonEncode(map));
-    Identity? identity = fromStorageResult.delegationIdentity;
+    final fromStorageResult = AuthClient.fromStorage(jsonEncode(map));
+    final Identity? identity = fromStorageResult.delegationIdentity;
 
     return AuthClient(
       scheme: scheme,
@@ -146,13 +146,13 @@ class AuthClient {
   DelegationChain? chain;
 
   static FromStorageResult fromStorage(String str) {
-    var map = Map<String, dynamic>.from(jsonDecode(str));
-    var identityString = map[keyLocalStorageKey] as String?;
-    var delegationString = map[keyLocalStorageDelegation] as String?;
+    final map = Map<String, dynamic>.from(jsonDecode(str));
+    final identityString = map[keyLocalStorageKey] as String?;
+    final delegationString = map[keyLocalStorageDelegation] as String?;
     SignIdentity? key = identityString != null
         ? Ed25519KeyIdentity.fromJSON(identityString)
         : null;
-    DelegationChain? chain = delegationString != null
+    final DelegationChain? chain = delegationString != null
         ? DelegationChain.fromJSON(delegationString)
         : null;
     DelegationIdentity? identity;
@@ -169,7 +169,7 @@ class AuthClient {
   }
 
   void handleSuccess(AuthResponseSuccess message, void Function()? onSuccess) {
-    var delegations = message.delegations.map((signedDelegation) {
+    final delegations = message.delegations.map((signedDelegation) {
       return SignedDelegation.fromMap({
         'delegation': Delegation(
           signedDelegation.delegation.pubkey,
@@ -211,15 +211,15 @@ class AuthClient {
   Future<void> login([AuthClientLoginOptions? options]) async {
     key ??= await Ed25519KeyIdentity.generate(null);
     // Create the URL of the IDP. (e.g. https://XXXX/#authorize)
-    var payload = _createAuthPayload(options);
-    var result = await authFunction(payload);
-    var parsedResult = Uri.parse(result);
+    final payload = _createAuthPayload(options);
+    final result = await authFunction(payload);
+    final parsedResult = Uri.parse(result);
     if ((parsedResult.queryParameters['success'] is String &&
             parsedResult.queryParameters['success'] == 'false') ||
         parsedResult.queryParameters['success'] == null) {
       if (parsedResult.queryParameters['json'] == null) {
-        var data = parsedResult.queryParameters['data'];
-        var decoded = cborDecode<Map>((data as String).toU8a());
+        final data = parsedResult.queryParameters['data'];
+        final decoded = cborDecode<Map>((data as String).toU8a());
         handleFailure(jsonEncode(decoded), options?.onError);
       } else {
         handleFailure(
@@ -228,11 +228,11 @@ class AuthClient {
         );
       }
     } else if (parsedResult.queryParameters['json'] == null) {
-      var data = parsedResult.queryParameters['data'];
-      var decoded = cborDecode<Map>((data as String).toU8a());
-      var message = Map<String, dynamic>.from(decoded);
-      var delegations = message['delegations'] as List;
-      var delegationList = delegations
+      final data = parsedResult.queryParameters['data'];
+      final decoded = cborDecode<Map>((data as String).toU8a());
+      final message = Map<String, dynamic>.from(decoded);
+      final delegations = message['delegations'] as List;
+      final delegationList = delegations
           .map(
             (e) => DelegationWithSignature(
               delegation: Delegation.fromMap(e['delegation']),
@@ -240,16 +240,16 @@ class AuthClient {
             ),
           )
           .toList();
-      var userPublicKey = Uint8List.fromList(message['userPublicKey']);
-      var response = AuthResponseSuccess(
+      final userPublicKey = Uint8List.fromList(message['userPublicKey']);
+      final response = AuthResponseSuccess(
         delegations: delegationList,
         userPublicKey: userPublicKey,
       );
       handleSuccess(response, options?.onSuccess);
     } else {
-      var data = parsedResult.queryParameters['json'];
-      var message = Map<String, dynamic>.from(jsonDecode(data as String));
-      var delegationChain = DelegationChain.fromJSON(message);
+      final data = parsedResult.queryParameters['json'];
+      final message = Map<String, dynamic>.from(jsonDecode(data as String));
+      final delegationChain = DelegationChain.fromJSON(message);
       chain = delegationChain;
       identity = DelegationIdentity.fromDelegation(key!, chain!);
       options?.onSuccess?.call();
@@ -257,11 +257,11 @@ class AuthClient {
   }
 
   AuthPayload _createAuthPayload(AuthClientLoginOptions? options) {
-    var defaultUri = Uri.parse(
+    final defaultUri = Uri.parse(
       '$identityProviderDefault/$identityProviderEndpoint',
     );
-    var callbackScheme = '$scheme://$path';
-    var identityProviderUrl = Uri(
+    final callbackScheme = '$scheme://$path';
+    final identityProviderUrl = Uri(
       host: options?.identityProvider?.host ?? authUri?.host ?? defaultUri.host,
       scheme: options?.identityProvider?.scheme ??
           authUri?.scheme ??
@@ -296,8 +296,8 @@ class AuthClient {
 }
 
 Uint8List parseStringToU8a(String str) {
-  var s1 = str.replaceAll('[', '');
-  var s2 = s1.replaceAll(']', '');
-  var newList = s2.split(',');
+  final s1 = str.replaceAll('[', '');
+  final s2 = s1.replaceAll(']', '');
+  final newList = s2.split(',');
   return Uint8List.fromList(newList.map((e) => int.parse(e)).toList());
 }

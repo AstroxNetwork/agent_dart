@@ -18,9 +18,9 @@ Uint8List encodeBigInt(
   Endian endian = Endian.little,
   int? bitLength,
 }) {
-  var bl = (bitLength != null) ? bitLength : number.bitLength;
-  int size = (bl + 7) >> 3;
-  var result = Uint8List(size);
+  final bl = (bitLength != null) ? bitLength : number.bitLength;
+  final int size = (bl + 7) >> 3;
+  final result = Uint8List(size);
 
   for (int i = 0; i < size; i++) {
     result[endian == Endian.little ? i : size - i - 1] =

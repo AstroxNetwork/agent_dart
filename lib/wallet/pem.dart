@@ -14,7 +14,7 @@ class PemFile {
 }
 
 Future<PemFile> getPemFile(String path) async {
-  var pem = await File(path).readAsString();
+  final pem = await File(path).readAsString();
   if (pem.split(CryptoUtils.BEGIN_PRIVATE_KEY).length > 1) {
     return PemFile(
       pem.split(CryptoUtils.BEGIN_PRIVATE_KEY)[1],
@@ -30,24 +30,24 @@ Future<PemFile> getPemFile(String path) async {
 }
 
 Future<Ed25519KeyIdentity> ed25519KeyIdentityFromPem(String pem) async {
-  var privateKeyPem = pem
+  final privateKeyPem = pem
       .replaceAll('-----END PRIVATE KEY-----', '')
       .replaceAll(RegExp(r'\n+'), '')
       .replaceAll(RegExp(r'\s+'), '')
       .trim()
       .replaceAll('r[^0-9a-zA-Z/+]', '');
-  var keyBytes = base64Decode(privateKeyPem);
+  final keyBytes = base64Decode(privateKeyPem);
   final ASN1Parser p = ASN1Parser(keyBytes);
   final ASN1Sequence seq = p.nextObject() as ASN1Sequence;
   final ASN1Parser p2 = ASN1Parser(seq.elements?[2].valueBytes);
-  var octetStringSeq = p2.nextObject() as ASN1OctetString;
-  var res = octetStringSeq.valueBytes!;
+  final octetStringSeq = p2.nextObject() as ASN1OctetString;
+  final res = octetStringSeq.valueBytes!;
   return Ed25519KeyIdentity.generate(res);
 }
 
 Future<Secp256k1KeyIdentity> secp256k1KeyIdentityFromPem(String pem) async {
-  var pem2 = CryptoUtils.BEGIN_EC_PRIVATE_KEY + pem;
-  var key = CryptoUtils.ecPrivateKeyFromPem(pem2).d;
-  var prvU8a = key!.toU8a();
+  final pem2 = CryptoUtils.BEGIN_EC_PRIVATE_KEY + pem;
+  final key = CryptoUtils.ecPrivateKeyFromPem(pem2).d;
+  final prvU8a = key!.toU8a();
   return Secp256k1KeyIdentity.fromSecretKey(prvU8a);
 }

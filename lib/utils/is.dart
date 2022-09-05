@@ -52,7 +52,7 @@ bool isHex(dynamic value, [int bitLength = -1, bool ignoreLength = false]) {
 }
 
 bool isHexString(String str) {
-  var result = str.startsWith(RegExp(r'0x', caseSensitive: false))
+  final result = str.startsWith(RegExp(r'0x', caseSensitive: false))
       ? str.substring(2)
       : str;
   return validators.matches(result, '^[0-9a-fA-F]{${result.length}}');
@@ -63,7 +63,7 @@ bool isHexadecimal(String str) {
 }
 
 bool isIp(String value, String type) {
-  var typeInt = type == 'v4'
+  final typeInt = type == 'v4'
       ? 4
       : type == 'v6'
           ? 6
@@ -113,8 +113,8 @@ bool isUtf8(dynamic value) {
     return false;
   }
 
-  var u8a = u8aToU8a(value);
-  var len = u8a.length;
+  final u8a = u8aToU8a(value);
+  final len = u8a.length;
   var i = 0;
 
   while (i < len) {
@@ -308,7 +308,7 @@ bool isUrl(String url) {
 }
 
 bool isByteString(String byStr, {required int length}) {
-  var str = byStr.startsWith(RegExp(r'0x', caseSensitive: false))
+  final str = byStr.startsWith(RegExp(r'0x', caseSensitive: false))
       ? byStr.substring(2)
       : byStr;
   return validators.matches(str, '^[0-9a-fA-F]{$length}') &&

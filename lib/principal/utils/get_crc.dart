@@ -263,13 +263,13 @@ Uint32List lookUpTable = Uint32List.fromList([
 /// @param buf The blob to calculate the CRC32 of.
 ///
 int getCrc32(ByteBuffer buf) {
-  var b = buf.asUint8List();
+  final b = buf.asUint8List();
   var crc = -1;
 
   // tslint:disable-next-line:prefer-for-of
   for (var i = 0; i < b.length; i++) {
-    var byte = b[i];
-    var t = (byte ^ crc) & 0xff;
+    final byte = b[i];
+    final t = (byte ^ crc) & 0xff;
     crc = lookUpTable[t] ^ ((crc & 0xffffffff) >> 8);
   }
 

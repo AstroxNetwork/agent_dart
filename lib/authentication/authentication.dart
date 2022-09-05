@@ -50,7 +50,7 @@ class DelegationValidChecks {
 /// the authentication provider). Will throw if some options are invalid.
 /// @param options An option with all options for the authentication request.
 Uri createAuthenticationRequestUrl(CreateUrlOptions options) {
-  var url = Uri.parse(
+  final url = Uri.parse(
     options.identityProvider?.toString() ?? _defaultIdentityProviderUrl,
   );
   url.queryParameters.addEntries([
@@ -92,7 +92,7 @@ String? getAccessTokenFromWindow(dynamic link) {
 /// @param url The URL to look into.
 String? getAccessTokenFromURL(dynamic url) {
   final uri = url is String ? Uri.parse(url) : url;
-  var query = Uri.tryParse(
+  final query = Uri.tryParse(
     uri.fragment.startsWith('/') ? uri.fragment.substring(1) : uri.fragment,
   )?.queryParameters;
   return query?['access_token'];
@@ -105,12 +105,12 @@ DelegationChain createDelegationChainFromAccessToken(String accessToken) {
   if (!isHexadecimal(accessToken) || (accessToken.length % 2) != 0) {
     throw 'Invalid hexadecimal string for accessToken.';
   }
-  var strList = accessToken.split('');
+  final strList = accessToken.split('');
   var value = List<String>.from([]);
 
   List<String> combineFunc(List<String> acc, String curr, int i) {
-    var index = (i ~/ 2) | 0;
-    var resultAcc = List<String>.from(acc);
+    final index = (i ~/ 2) | 0;
+    final resultAcc = List<String>.from(acc);
 
     if (index < resultAcc.length) {
       resultAcc[index] = resultAcc[index] + curr;
@@ -124,7 +124,7 @@ DelegationChain createDelegationChainFromAccessToken(String accessToken) {
     value = combineFunc(value, strList[i], i);
   }
 
-  var chainJson = value
+  final chainJson = value
       .map((e) => int.parse(e, radix: 16))
       .toList()
       .map((e) => String.fromCharCode(e))
@@ -139,10 +139,10 @@ DelegationChain createDelegationChainFromAccessToken(String accessToken) {
 /// @param checks Various checks to validate on the chain.
 bool isDelegationValid(DelegationChain chain, DelegationValidChecks? checks) {
   // Verify that the no delegation is expired. If any are in the chain, returns false.
-  for (var d in chain.delegations) {
-    var delegation = d.delegation!;
-    var exp = delegation.expiration;
-    var t = exp / BigInt.from(1000000);
+  for (final d in chain.delegations) {
+    final delegation = d.delegation!;
+    final exp = delegation.expiration;
+    final t = exp / BigInt.from(1000000);
     // prettier-ignore
     if (DateTime.fromMillisecondsSinceEpoch(t.toInt())
         .isBefore(DateTime.now())) {
@@ -151,8 +151,8 @@ bool isDelegationValid(DelegationChain chain, DelegationValidChecks? checks) {
   }
 
   // Check the scopes.
-  var scopes = <Principal>[];
-  var maybeScope = checks?.scope;
+  final scopes = <Principal>[];
+  final maybeScope = checks?.scope;
   if (maybeScope != null) {
     if (maybeScope is List) {
       scopes.addAll(
@@ -168,16 +168,16 @@ bool isDelegationValid(DelegationChain chain, DelegationValidChecks? checks) {
       );
     }
   }
-  for (var s in scopes) {
-    var scope = s.toText();
-    for (var d in chain.delegations) {
-      var delegation = d.delegation;
+  for (final s in scopes) {
+    final scope = s.toText();
+    for (final d in chain.delegations) {
+      final delegation = d.delegation;
       if (delegation == null || delegation.targets == null) {
         continue;
       }
       var none = true;
-      var targets = delegation.targets;
-      for (var target in targets!) {
+      final targets = delegation.targets;
+      for (final target in targets!) {
         if (target.toText() == scope) {
           none = false;
           break;

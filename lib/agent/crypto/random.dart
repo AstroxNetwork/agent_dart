@@ -23,26 +23,26 @@ class DartRandom {
   String get algorithmName => 'DartRandom';
 
   BigInt nextBigInteger(int bitLength) {
-    int fullBytes = bitLength ~/ 8;
+    final int fullBytes = bitLength ~/ 8;
 
     /// var remainingBits = bitLength % 8;
 
     /// Generate a number from the full bytes. Then, prepend a smaller number
     /// covering the remaining bits.
-    BigInt main = bytesToInt(nextBytes(fullBytes));
+    final BigInt main = bytesToInt(nextBytes(fullBytes));
 
     /// forcing remainingBits to be calculate with bitLength
-    int remainingBits = (bitLength - main.bitLength);
-    int additional = remainingBits < 4
+    final int remainingBits = (bitLength - main.bitLength);
+    final int additional = remainingBits < 4
         ? dartRandom.nextInt(pow(2, remainingBits).toInt())
         : remainingBits;
-    BigInt additionalBit = (BigInt.from(additional) << (fullBytes * 8));
-    BigInt result = main + additionalBit;
+    final BigInt additionalBit = (BigInt.from(additional) << (fullBytes * 8));
+    final BigInt result = main + additionalBit;
     return result;
   }
 
   Uint8List nextBytes(int count) {
-    Uint8List list = Uint8List(count);
+    final Uint8List list = Uint8List(count);
 
     for (int i = 0; i < list.length; i++) {
       list[i] = nextUint8();
@@ -58,7 +58,7 @@ class DartRandom {
 }
 
 Uint8List getRandomValues([int length = _defaultLength]) {
-  DartRandom rn = DartRandom(Random.secure());
+  final DartRandom rn = DartRandom(Random.secure());
   var entropy = rn.nextBigInteger(length * 8).toRadixString(16);
 
   if (entropy.length > length * 2) {

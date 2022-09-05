@@ -460,9 +460,9 @@ class ProxyAgent implements Agent {
 
     //   this._backend(msg);
     // });
-    Completer<T> c = Completer<T>();
-    var reject = c.completeError;
-    var resolve = c.complete;
+    final Completer<T> c = Completer<T>();
+    final reject = c.completeError;
+    final resolve = c.complete;
     _pendingCalls.putIfAbsent(msg.id!, () => Promise<T>(resolve, reject));
     _backend(msg);
     return c.future;

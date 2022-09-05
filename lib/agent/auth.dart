@@ -60,8 +60,8 @@ abstract class SignIdentity implements Identity {
   /// @param request - internet computer request to transform
   @override
   Future<dynamic> transformRequest(HttpAgentRequest request) async {
-    var body = request.body;
-    var requestId = requestIdOf(body.toJson());
+    final body = request.body;
+    final requestId = requestIdOf(body.toJson());
     return {
       ...request.toJson(),
       'body': {

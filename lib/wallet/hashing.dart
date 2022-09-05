@@ -10,10 +10,10 @@ import 'package:crypto/crypto.dart';
 import 'package:typed_data/typed_buffers.dart';
 
 Uint8List sha256Chunks(List<dynamic> chunks) {
-  var ds = DigestSink();
-  var sha = sha256.startChunkedConversion(ds);
+  final ds = DigestSink();
+  final sha = sha256.startChunkedConversion(ds);
 
-  for (var chunk in chunks) {
+  for (final chunk in chunks) {
     sha.add(chunk is ByteBuffer ? chunk.asInt8List() : chunk);
   }
   sha.close();
@@ -71,8 +71,8 @@ Uint8List httpCanisterUpdateRepresentationIndependentHash(Map update) {
 /// @param {object} map
 /// @returns {Buffer}
 Uint8List hashOfMap(Map map) {
-  var hashes = <Uint8List>[];
-  for (var entry in map.entries) {
+  final hashes = <Uint8List>[];
+  for (final entry in map.entries) {
     hashes.add(hashKeyValue(entry.key, entry.value));
   }
   return sha256Chunks(u8aSorted(hashes));
@@ -125,10 +125,10 @@ Uint8List _hashBytes(Uint8List value) {
 /// @returns {Buffer}
 Uint8List _hashUint64(BigInt n) {
   // const buf = Buffer.allocUnsafe(10);
-  var buf = Uint8List(10);
+  final buf = Uint8List(10);
   var i = 0;
   while (true) {
-    var byte = (n & BigInt.from(0x7f));
+    final byte = (n & BigInt.from(0x7f));
     n >>= BigInt.from(7).toInt();
     if (n == BigInt.zero) {
       buf[i] = byte.toInt();

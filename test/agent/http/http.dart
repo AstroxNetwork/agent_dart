@@ -10,11 +10,12 @@ void main() {
 void httpTest() {
   group('description 1', () {
     test('some', () async {
-      Principal canisterId = Principal.fromText('2chl6-4hpzw-vqaaa-aaaaa-c');
-      var nonce = Uint8List.fromList([0, 1, 2, 3, 4, 5, 6, 7]);
-      var principal = Principal.anonymous();
+      final Principal canisterId =
+          Principal.fromText('2chl6-4hpzw-vqaaa-aaaaa-c');
+      final nonce = Uint8List.fromList([0, 1, 2, 3, 4, 5, 6, 7]);
+      final principal = Principal.anonymous();
 
-      var agent = HttpAgent(
+      final agent = HttpAgent(
         options: HttpAgentOptions()..identity = const AnonymousIdentity(),
       );
 
@@ -42,7 +43,7 @@ void httpTest() {
       });
 
       // ignore: unused_local_variable
-      var res = await agent.call(
+      final res = await agent.call(
         canisterId,
         CallOptions(arg: arg, methodName: methodName),
         null,
@@ -62,13 +63,13 @@ void httpTest() {
         'ingress_expiry': Expiry(300000),
       };
 
-      var mockPartialsRequestId = requestIdOf(mockPartialRequest);
+      final mockPartialsRequestId = requestIdOf(mockPartialRequest);
 
-      var expectedRequest = {
+      final expectedRequest = {
         'content': mockPartialRequest,
       };
 
-      var expectedRequestId =
+      final expectedRequestId =
           requestIdOf(expectedRequest['content'] as Map<String, dynamic>);
 
       expect(expectedRequestId, mockPartialsRequestId);

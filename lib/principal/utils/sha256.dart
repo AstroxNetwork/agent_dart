@@ -28,12 +28,12 @@ class SHA256 {
 
   @override
   String toString() {
-    var bytes = _digest();
+    final bytes = _digest();
     return bytesToHex(bytes);
   }
 
   Uint8List toU8a() {
-    var bytes = _digest();
+    final bytes = _digest();
     return Uint8List.fromList(bytes);
   }
 

@@ -41,7 +41,7 @@ PollStrategy conditionalDelay(Predicate<bool> condition, int timeInMsec) {
     String status,
   ) async {
     if (await condition(canisterId, requestId, status)) {
-      var c = Completer();
+      final c = Completer();
       Future.delayed(Duration(milliseconds: timeInMsec), c.complete);
       return c.future;
     }
@@ -69,7 +69,7 @@ PollStrategy maxAttempts(int count) {
 /// - Amount in millisecond to wait between each polling.
 PollStrategy throttle(int throttleMilliseconds) {
   return (Principal canisterId, RequestId requestId, String status) async {
-    var c = Completer();
+    final c = Completer();
     Future.delayed(Duration(milliseconds: throttleMilliseconds), c.complete);
     return c.future;
   };
@@ -96,7 +96,7 @@ PollStrategy backoff(num startingThrottleInMsec, num backoffFactor) {
   num currentThrottling = startingThrottleInMsec;
 
   return (Principal canisterId, RequestId requestId, String status) {
-    var c = Completer();
+    final c = Completer();
     Future.delayed(Duration(milliseconds: (currentThrottling).toInt()), () {
       currentThrottling *= backoffFactor;
       c.complete();
@@ -111,7 +111,7 @@ PollStrategy chain(List<PollStrategy> strategies) {
     RequestId requestId,
     String status,
   ) async {
-    for (var a in strategies) {
+    for (final a in strategies) {
       await a(canisterId, requestId, status);
     }
   };

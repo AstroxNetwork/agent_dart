@@ -131,7 +131,7 @@ class Bech32Encoder extends Converter<Bech32, String> with Bech32Validations {
   @override
   String convert(Bech32 input) {
     var hrp = input.hrp;
-    var data = input.data;
+    final data = input.data;
 
     if (hrp.length +
             data.length +
@@ -157,7 +157,7 @@ class Bech32Encoder extends Converter<Bech32, String> with Bech32Validations {
 
     hrp = hrp.toLowerCase();
 
-    var checksummed = data + _createChecksum(hrp, data);
+    final checksummed = data + _createChecksum(hrp, data);
 
     if (hasOutOfBoundsChars(checksummed)) {
       throw OutOfBoundChars('<unknown>');
@@ -183,7 +183,7 @@ class Bech32Decoder extends Converter<String, Bech32> with Bech32Validations {
       throw InvalidSeparator(input.lastIndexOf(separator));
     }
 
-    var separatorPosition = input.lastIndexOf(separator);
+    final separatorPosition = input.lastIndexOf(separator);
 
     if (isChecksumTooShort(separatorPosition, input)) {
       throw TooShortChecksum();
@@ -195,19 +195,19 @@ class Bech32Decoder extends Converter<String, Bech32> with Bech32Validations {
 
     input = input.toLowerCase();
 
-    var hrp = input.substring(0, separatorPosition);
-    var data = input.substring(
+    final hrp = input.substring(0, separatorPosition);
+    final data = input.substring(
       separatorPosition + 1,
       input.length - Bech32Validations.checksumLength,
     );
-    var checksum =
+    final checksum =
         input.substring(input.length - Bech32Validations.checksumLength);
 
     if (hasOutOfRangeHrpCharacters(hrp)) {
       throw OutOfRangeHrpCharacters(hrp);
     }
 
-    List<int> dataBytes = data.split('').map((c) {
+    final List<int> dataBytes = data.split('').map((c) {
       return charset.indexOf(c);
     }).toList();
 
@@ -215,7 +215,7 @@ class Bech32Decoder extends Converter<String, Bech32> with Bech32Validations {
       throw OutOfBoundChars(data[dataBytes.indexOf(-1)]);
     }
 
-    List<int> checksumBytes = checksum.split('').map((c) {
+    final List<int> checksumBytes = checksum.split('').map((c) {
       return charset.indexOf(c);
     }).toList();
 
@@ -320,8 +320,8 @@ const List<int> generator = [
 
 int _polymod(List<int> values) {
   var chk = 1;
-  for (var v in values) {
-    var top = chk >> 25;
+  for (final v in values) {
+    final top = chk >> 25;
     chk = (chk & 0x1ffffff) << 5 ^ v;
     for (int i = 0; i < generator.length; i++) {
       if ((top >> i) & 1 == 1) {
@@ -347,10 +347,10 @@ bool _verifyChecksum(String hrp, List<int> dataIncludingChecksum) {
 }
 
 List<int> _createChecksum(String hrp, List<int> data) {
-  var values = _hrpExpand(hrp) + data + [0, 0, 0, 0, 0, 0];
-  var polymod = _polymod(values) ^ 1;
+  final values = _hrpExpand(hrp) + data + [0, 0, 0, 0, 0, 0];
+  final polymod = _polymod(values) ^ 1;
 
-  List<int> result = List.generate(6, (index) => 0);
+  final List<int> result = List.generate(6, (index) => 0);
 
   for (int i = 0; i < result.length; i++) {
     result[i] = (polymod >> (5 * (5 - i))) & 31;
@@ -361,10 +361,10 @@ List<int> _createChecksum(String hrp, List<int> data) {
 List<int> _convertBits(List<int> data, int from, int to, {bool pad = true}) {
   var acc = 0;
   var bits = 0;
-  List<int> result = [];
-  var maxv = (1 << to) - 1;
+  final List<int> result = [];
+  final maxv = (1 << to) - 1;
 
-  for (var v in data) {
+  for (final v in data) {
     if (v < 0 || (v >> from) != 0) {
       throw Exception();
     }
@@ -395,28 +395,28 @@ String toBech32Address(String address) {
   if (address.length == 64) {
     address = crc32Del(address.toU8a()).toHex();
   }
-  List<int> addrBz = _convertBits(
+  final List<int> addrBz = _convertBits(
     address.toU8a(),
     8,
     5,
   );
 
-  var b32Class = Bech32(_hrp, addrBz);
+  final b32Class = Bech32(_hrp, addrBz);
 
   return bech32.encode(b32Class);
 }
 
 String fromBech32Address(String address) {
   try {
-    Bech32 res = bech32.decode(address);
-    var hrp = res.hrp;
-    var data = res.data;
+    final Bech32 res = bech32.decode(address);
+    final hrp = res.hrp;
+    final data = res.data;
 
     if (hrp != _hrp) {
       throw InvalidHrp();
     }
 
-    List<int> buf = _convertBits(data, 5, 8, pad: false);
+    final List<int> buf = _convertBits(data, 5, 8, pad: false);
     return crc32Add(Uint8List.fromList(buf)).toHex();
   } catch (e) {
     rethrow;

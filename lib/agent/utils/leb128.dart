@@ -24,10 +24,10 @@ Uint8List lebEncode(dynamic value) {
     throw 'Cannot leb encode negative values.';
   }
 
-  List<int> pipe = [];
+  final List<int> pipe = [];
 
   while (true) {
-    var i = (hexToBn(bn.toHex()) & BigInt.from(0x7f)).toInt();
+    final i = (hexToBn(bn.toHex()) & BigInt.from(0x7f)).toInt();
     bn = (bn ~/ BigInt.from(0x80));
     if (bn == BigInt.zero) {
       pipe.add(i);
@@ -79,7 +79,7 @@ Uint8List slebEncode(Comparable value) {
     }
   }
 
-  List<int> pipe = [];
+  final List<int> pipe = [];
 
   while (true) {
     final i = getLowerBytes(bn);
@@ -132,9 +132,9 @@ Uint8List writeUIntLE(dynamic value, int byteLength) {
 }
 
 Uint8List writeIntLE(dynamic value, int byteLength) {
-  var bn = bnToBn(value);
+  final bn = bnToBn(value);
 
-  List<int> pipe = [];
+  final List<int> pipe = [];
   var i = 0;
   var mul = BigInt.from(256);
   var sub = BigInt.zero;
