@@ -16,8 +16,7 @@ void main() {
         acc2CreateTime.millisecondsSinceEpoch;
 
     var acc21CreateTime = DateTime.now();
-    final acc21 =
-        await ICPSigner.fromPhrase(mne2, curveType: CurveType.ed25519);
+    final acc21 = await ICPSigner.fromPhrase(mne2);
     var acc21TimePeriod = DateTime.now().millisecondsSinceEpoch -
         acc21CreateTime.millisecondsSinceEpoch;
 

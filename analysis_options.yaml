@@ -10,6 +10,7 @@ analyzer:
 linter:
   rules:
     avoid_print: false
+    avoid_redundant_argument_values: true
     prefer_const_constructors: true
     prefer_const_declarations: true
     prefer_single_quotes: true

@@ -32,7 +32,7 @@ bool isBase64(String value) {
 }
 
 String base64Encode(dynamic value) {
-  return convert.base64Encode(u8aToU8a(value, useDartEncode: true).toList());
+  return convert.base64Encode(u8aToU8a(value).toList());
 }
 
 Uint8List base64Decode(String value) {

@@ -171,7 +171,6 @@ class ICPAccount extends BaseAccount {
       var newIcp = await ICPAccount.fromPhrase(
         phrase,
         index: 0,
-        icPath: icBasePath,
         curveType: curveType,
       );
       _phrase = phrase;
@@ -268,7 +267,6 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
         return (await ICPSigner.fromPhrase(
           phrase,
           index: index,
-          icPath: icBasePath,
           curveType: curveType,
         ))
           ..setSourceType(SourceType.base);

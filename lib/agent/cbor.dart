@@ -106,7 +106,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
 
   void serializeIterable(Iterable data) {
     if (data is Uint8Buffer) {
-      writeBuff(data, false);
+      writeBuff(data);
     } else if (data is Uint8List) {
       writeBytes(Uint8Buffer()..addAll(data));
     } else if (data.every((element) => element is int)) {

@@ -181,7 +181,7 @@ class Certificate {
 
     final lookup = cert.lookupEx(['subnet', d.subnetId, 'public_key']);
     if (lookup == null) {
-      throw 'ould not find subnet key for subnet 0x${d.subnetId!.toHex(include0x: false)}';
+      throw 'ould not find subnet key for subnet 0x${d.subnetId!.toHex()}';
     }
     return lookup;
   }

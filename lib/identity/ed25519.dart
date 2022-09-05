@@ -12,10 +12,7 @@ class Ed25519KeyPair extends auth.KeyPair {
   Ed25519KeyPair({required super.publicKey, required super.secretKey});
 
   List<String> toJson() {
-    return [
-      publicKey.toDer().toHex(include0x: false),
-      secretKey.toHex(include0x: false)
-    ];
+    return [publicKey.toDer().toHex(), secretKey.toHex()];
   }
 }
 
@@ -93,7 +90,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
 
     var kp = seed == null
         ? await AgentDartFFI.instance
-            .ed25519FromSeed(req: ED25519FromSeedReq(seed: getRandomValues(32)))
+            .ed25519FromSeed(req: ED25519FromSeedReq(seed: getRandomValues()))
         : await AgentDartFFI.instance
             .ed25519FromSeed(req: ED25519FromSeedReq(seed: seed));
 
