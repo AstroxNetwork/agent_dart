@@ -70,14 +70,16 @@ BigInt hexToBn(
       hex = '0$hex';
     }
     hex = decodeBigInt(
-            hexToBytes(hexStripPrefix(hex) == '' ? '0' : hexStripPrefix(hex)),
-            endian: endian)
-        .toRadixString(16);
+      hexToBytes(hexStripPrefix(hex) == '' ? '0' : hexStripPrefix(hex)),
+      endian: endian,
+    ).toRadixString(16);
     var bn = BigInt.parse(hex, radix: 16);
 
     if ((0x80 &
-            int.parse(hex.substring(0, 2 > hex.length ? hex.length : 2),
-                radix: 16)) >
+            int.parse(
+              hex.substring(0, 2 > hex.length ? hex.length : 2),
+              radix: 16,
+            )) >
         0) {
       BigInt some = BigInt.parse(
         bn.toRadixString(2).split('').map((i) {

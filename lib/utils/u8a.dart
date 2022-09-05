@@ -52,8 +52,11 @@ bool u8aEq(Uint8List a, Uint8List b) {
   return const ListEquality().equals(a, b);
 }
 
-Uint8List u8aFixLength(Uint8List value,
-    {int bitLength = -1, bool atStart = false}) {
+Uint8List u8aFixLength(
+  Uint8List value, {
+  int bitLength = -1,
+  bool atStart = false,
+}) {
   final byteLength = (bitLength / 8).ceil();
 
   if (bitLength == -1 || value.length == byteLength) {
@@ -97,8 +100,11 @@ List<Uint8List> u8aSorted(List<Uint8List> u8as) {
   return u8as;
 }
 
-BigInt u8aToBn(Uint8List u8a,
-    {Endian endian = Endian.little, bool isNegative = false}) {
+BigInt u8aToBn(
+  Uint8List u8a, {
+  Endian endian = Endian.little,
+  bool isNegative = false,
+}) {
   return hexToBn(u8aToHex(u8a), endian: endian, isNegative: isNegative);
   // return decodeBigInt(u8a, endian: endian);
 }

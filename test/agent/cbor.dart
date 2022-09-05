@@ -25,10 +25,14 @@ void cborTest() {
 
     final output = cborDecode<Map>(cborEncode(input));
 
-    expect(blobToHex((output['c'] as Uint8Buffer).toU8a()),
-        blobToHex(input['c'] as Uint8List));
-    expect((output['e'] as Uint8Buffer).toHex().toUpperCase(),
-        (input['e'] as Principal).toHex());
+    expect(
+      blobToHex((output['c'] as Uint8Buffer).toU8a()),
+      blobToHex(input['c'] as Uint8List),
+    );
+    expect(
+      (output['e'] as Uint8Buffer).toHex().toUpperCase(),
+      (input['e'] as Principal).toHex(),
+    );
     expect(output['b'], input['b']);
     expect(output['a'], input['a']);
     expect(output['d'], input['d']);

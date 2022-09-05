@@ -45,7 +45,8 @@ void rosettaTest() {
     print('\n ------ payload ------');
     // ignore: avoid_print
     print(
-        '\n from Identity: ${signer.account.getIdentity()?.getPrincipal().toText()}');
+      '\n from Identity: ${signer.account.getIdentity()?.getPrincipal().toText()}',
+    );
     // ignore: avoid_print
     print('\n from :${signer.idAddress}');
     // ignore: avoid_print
@@ -97,7 +98,9 @@ void rosettaTest() {
     RosettaApi rose = RosettaApi();
     await rose.init();
     final txn = await rose.getTransactionByBlock(3672726);
-    expect(txn.hash,
-        '6bbdef23f7c8859e2c5e2c1a99f96c977009760b3bfebcff6d3fa986ff84ffc2');
+    expect(
+      txn.hash,
+      '6bbdef23f7c8859e2c5e2c1a99f96c977009760b3bfebcff6d3fa986ff84ffc2',
+    );
   });
 }

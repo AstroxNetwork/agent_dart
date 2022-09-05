@@ -54,35 +54,55 @@ extension U8aBufferExtension on Uint8Buffer {
 
 extension BnExtension on BigInt {
   BigInt toBn() => bnUtil.bnToBn(this);
-  String toHex(
-          {int bitLength = -1,
-          Endian endian = Endian.big,
-          bool isNegative = false}) =>
-      bnUtil.bnToHex(this,
-          bitLength: bitLength, endian: endian, isNegative: isNegative);
-  Uint8List toU8a(
-          {int bitLength = -1,
-          Endian endian = Endian.big,
-          bool isNegative = false}) =>
-      bnUtil.bnToU8a(this,
-          bitLength: bitLength, endian: endian, isNegative: isNegative);
+  String toHex({
+    int bitLength = -1,
+    Endian endian = Endian.big,
+    bool isNegative = false,
+  }) =>
+      bnUtil.bnToHex(
+        this,
+        bitLength: bitLength,
+        endian: endian,
+        isNegative: isNegative,
+      );
+  Uint8List toU8a({
+    int bitLength = -1,
+    Endian endian = Endian.big,
+    bool isNegative = false,
+  }) =>
+      bnUtil.bnToU8a(
+        this,
+        bitLength: bitLength,
+        endian: endian,
+        isNegative: isNegative,
+      );
   BigInt bitNot({int? bitLength}) => bnUtil.bitnot(this, bitLength: bitLength);
 }
 
 extension IntExtension on int {
   BigInt toBn() => bnUtil.bnToBn(this);
-  String toHex(
-          {int bitLength = -1,
-          Endian endian = Endian.big,
-          bool isNegative = false}) =>
-      bnUtil.bnToHex(toBn(),
-          bitLength: bitLength, endian: endian, isNegative: isNegative);
-  Uint8List toU8a(
-          {int bitLength = -1,
-          Endian endian = Endian.big,
-          bool isNegative = false}) =>
-      bnUtil.bnToU8a(toBn(),
-          bitLength: bitLength, endian: endian, isNegative: isNegative);
+  String toHex({
+    int bitLength = -1,
+    Endian endian = Endian.big,
+    bool isNegative = false,
+  }) =>
+      bnUtil.bnToHex(
+        toBn(),
+        bitLength: bitLength,
+        endian: endian,
+        isNegative: isNegative,
+      );
+  Uint8List toU8a({
+    int bitLength = -1,
+    Endian endian = Endian.big,
+    bool isNegative = false,
+  }) =>
+      bnUtil.bnToU8a(
+        toBn(),
+        bitLength: bitLength,
+        endian: endian,
+        isNegative: isNegative,
+      );
   BigInt bitNot({int? bitLength}) =>
       bnUtil.bitnot(toBn(), bitLength: bitLength);
   static get max => 4294967296;

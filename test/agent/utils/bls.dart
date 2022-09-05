@@ -16,8 +16,12 @@ void blsTest() {
     const msg = 'hello';
     BaseBLS bls = BaseBLS();
     expect(
-        await bls.blsVerify(pk.toU8a(), sig.toU8a(), msg.plainToU8a()), true);
-    expect(await bls.blsVerify(pk.toU8a(), sig.toU8a(), 'Hallo'.plainToU8a()),
-        false);
+      await bls.blsVerify(pk.toU8a(), sig.toU8a(), msg.plainToU8a()),
+      true,
+    );
+    expect(
+      await bls.blsVerify(pk.toU8a(), sig.toU8a(), 'Hallo'.plainToU8a()),
+      false,
+    );
   });
 }

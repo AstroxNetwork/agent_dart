@@ -92,10 +92,9 @@ String? getAccessTokenFromWindow(dynamic link) {
 /// @param url The URL to look into.
 String? getAccessTokenFromURL(dynamic url) {
   final uri = url is String ? Uri.parse(url) : url;
-  var query = Uri.tryParse(uri.fragment.startsWith('/')
-          ? uri.fragment.substring(1)
-          : uri.fragment)
-      ?.queryParameters;
+  var query = Uri.tryParse(
+    uri.fragment.startsWith('/') ? uri.fragment.substring(1) : uri.fragment,
+  )?.queryParameters;
   return query?['access_token'];
 }
 
@@ -156,12 +155,17 @@ bool isDelegationValid(DelegationChain chain, DelegationValidChecks? checks) {
   var maybeScope = checks?.scope;
   if (maybeScope != null) {
     if (maybeScope is List) {
-      scopes.addAll(maybeScope
-          .map((s) => (s is String ? Principal.fromText(s) : (s as Principal)))
-          .toList());
+      scopes.addAll(
+        maybeScope
+            .map(
+              (s) => (s is String ? Principal.fromText(s) : (s as Principal)),
+            )
+            .toList(),
+      );
     } else {
       scopes.addAll(
-          maybeScope is String ? Principal.fromText(maybeScope) : maybeScope);
+        maybeScope is String ? Principal.fromText(maybeScope) : maybeScope,
+      );
     }
   }
   for (var s in scopes) {

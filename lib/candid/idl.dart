@@ -52,7 +52,10 @@ class IDLTypeIds {
 const magicNumber = 'DIDL';
 
 List<TR> zipWith<TX, TY, TR>(
-    List<TX> xs, List<TY> ys, TR Function(TX a, TY b) f) {
+  List<TX> xs,
+  List<TY> ys,
+  TR Function(TX a, TY b) f,
+) {
   return List.generate(xs.length, (i) => f(xs[i], ys[i]), growable: false);
 }
 
@@ -461,8 +464,9 @@ class ReservedClass extends PrimitiveType<dynamic> {
 
 bool isValidUTF8(Uint8List buf) {
   return u8aEq(
-      buf.u8aToString(useDartEncode: true).plainToU8a(useDartEncode: true),
-      buf);
+    buf.u8aToString(useDartEncode: true).plainToU8a(useDartEncode: true),
+    buf,
+  );
 }
 
 class TextClass extends PrimitiveType<String> {
@@ -681,8 +685,10 @@ class FixedIntClass extends PrimitiveType {
 
   @override
   Uint8List encodeValue(dynamic x) {
-    assert((x is int || x is BigInt),
-        'value with ${x.runtimeType} has to be int or BigInt');
+    assert(
+      (x is int || x is BigInt),
+      'value with ${x.runtimeType} has to be int or BigInt',
+    );
     return writeIntLE(x, (_bits / 8).ceil());
   }
 
@@ -897,13 +903,18 @@ class RecordClass extends ConstructType<Map> {
     fields ??= Map.from({});
     _fields = (Map.from(fields)).entries.toList();
     assert(
-        _fields.every((element) =>
+      _fields.every(
+        (element) =>
             (element.key is String && element.key != null) ||
-            (element.key == null)),
-        'Currently we only support Map<String,dynamic> as input');
-    _fields.sort((a, b) =>
-        idlLabelToId((a.key).toString()).toInt() -
-        idlLabelToId((b.key).toString()).toInt());
+            (element.key == null),
+      ),
+      'Currently we only support Map<String,dynamic> as input',
+    );
+    _fields.sort(
+      (a, b) =>
+          idlLabelToId((a.key).toString()).toInt() -
+          idlLabelToId((b.key).toString()).toInt(),
+    );
   }
 
   late final List<MapEntry> _fields;
@@ -1023,8 +1034,11 @@ class RecordClass extends ConstructType<Map> {
   @override
   valueToString(Map x) {
     final values = _fields.map((entry) => x[entry.key]).toList();
-    final fields = zipWith<MapEntry, dynamic, String>(_fields, values,
-        (entry, d) => entry.key + '=' + entry.value.valueToString(d));
+    final fields = zipWith<MapEntry, dynamic, String>(
+      _fields,
+      values,
+      (entry, d) => entry.key + '=' + entry.value.valueToString(d),
+    );
     return "record {${fields.join('; ')}}";
   }
 }
@@ -1043,7 +1057,8 @@ class TupleClass<T extends List> extends ConstructType<List> {
     _components = components;
     _fields = (Map.from(makeMap(components))).entries.toList();
     _fields.sort(
-        (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt());
+      (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt(),
+    );
   }
 
   late final List<CType> _components;
@@ -1071,7 +1086,10 @@ class TupleClass<T extends List> extends ConstructType<List> {
   @override
   Uint8List encodeValue(List x) {
     final bufs = zipWith<CType, dynamic, Uint8List>(
-        _components, x, (c, d) => c.encodeValue(d));
+      _components,
+      x,
+      (c, d) => c.encodeValue(d),
+    );
     return u8aConcat(bufs);
   }
 
@@ -1126,7 +1144,10 @@ class TupleClass<T extends List> extends ConstructType<List> {
   @override
   String valueToString(List x) {
     final fields = zipWith<CType, dynamic, String>(
-        _components, x, (c, d) => c.valueToString(d));
+      _components,
+      x,
+      (c, d) => c.valueToString(d),
+    );
     return "record {${fields.join('; ')}}";
   }
 
@@ -1141,7 +1162,8 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
   VariantClass(Map<String, CType> fields) : super() {
     _fields = fields.entries.toList();
     _fields.sort(
-        (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt());
+      (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt(),
+    );
   }
 
   late final List<MapEntry<String, CType<dynamic>>> _fields;
@@ -1447,7 +1469,9 @@ class FuncClass extends ConstructType<List> {
         u8aConcat(annotations.map((a) => encodeAnnotation(a)).toList());
 
     typeTable.add(
-        this, u8aConcat([opCode, argLen, args, retLen, rets, annLen, anns]));
+      this,
+      u8aConcat([opCode, argLen, args, retLen, rets, annLen, anns]),
+    );
   }
 
   @override
@@ -1503,9 +1527,11 @@ class FuncClass extends ConstructType<List> {
 class ServiceClass extends ConstructType<PrincipalId> {
   ServiceClass(Map<String, FuncClass> fields) {
     _fields = (fields.entries).toList();
-    _fields.sort((a, b) =>
-        idlLabelToId(a.key.toString()).toInt() -
-        idlLabelToId(b.key.toString()).toInt());
+    _fields.sort(
+      (a, b) =>
+          idlLabelToId(a.key.toString()).toInt() -
+          idlLabelToId(b.key.toString()).toInt(),
+    );
   }
 
   late final List<MapEntry<String, FuncClass>> _fields;
@@ -1887,8 +1913,11 @@ class IDL {
 
   static RecClass Rec() => RecClass();
 
-  static FuncClass Func(List<CType<dynamic>> argTypes,
-          List<CType<dynamic>> retTypes, List<String> annotations) =>
+  static FuncClass Func(
+    List<CType<dynamic>> argTypes,
+    List<CType<dynamic>> retTypes,
+    List<String> annotations,
+  ) =>
       FuncClass(argTypes, retTypes, annotations);
 
   static ServiceClass Service(Map<String, FuncClass> fields) =>

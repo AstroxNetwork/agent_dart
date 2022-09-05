@@ -49,8 +49,10 @@ void hashTest() {
       'hello',
       '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824',
     );
-    await testHashOfString('arg',
-        'b25f03dedd69be07f356a06fe35c1b0ddc0de77dcd9066c4be0c6bbde14b23ff');
+    await testHashOfString(
+      'arg',
+      'b25f03dedd69be07f356a06fe35c1b0ddc0de77dcd9066c4be0c6bbde14b23ff',
+    );
     await testHashOfBlob(
       BinaryBlob.fromList([68, 73, 68, 76, 0, 253, 42]),
       '6c0b2ae49718f6995c02ac5700c9c789d7b7862a0d53e6d40a73f1fcd2f70189',

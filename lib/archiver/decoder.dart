@@ -32,11 +32,14 @@ class SigningBlockDecoder extends ZipDecoder {
     }
     var result = <SigningBlockResult>[];
     for (var i = 0; i < _messages.length; i += 1) {
-      result.add(SigningBlockResult(
+      result.add(
+        SigningBlockResult(
           algoId: _algoIds[i],
           signature: _signatures[i],
           message: _messages[i],
-          publicKey: pubKey == true ? _publicKeys[i] : null));
+          publicKey: pubKey == true ? _publicKeys[i] : null,
+        ),
+      );
     }
     return result;
   }

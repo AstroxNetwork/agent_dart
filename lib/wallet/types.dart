@@ -1145,9 +1145,11 @@ class MempoolResponse {
   const MempoolResponse(this.transactionIdentifiers);
 
   factory MempoolResponse.fromMap(Map<String, dynamic> map) {
-    return MempoolResponse((map['transaction_identifiers'] as List)
-        .map((e) => TransactionIdentifier.fromMap(e))
-        .toList());
+    return MempoolResponse(
+      (map['transaction_identifiers'] as List)
+          .map((e) => TransactionIdentifier.fromMap(e))
+          .toList(),
+    );
   }
 
   final List<TransactionIdentifier> transactionIdentifiers;
@@ -1225,9 +1227,11 @@ class NetworkListResponse {
   const NetworkListResponse(this.networkIdentifiers);
 
   factory NetworkListResponse.fromMap(Map<String, dynamic> map) {
-    return NetworkListResponse((map['network_identifiers'] as List)
-        .map((e) => NetworkIdentifier.fromMap(e))
-        .toList());
+    return NetworkListResponse(
+      (map['network_identifiers'] as List)
+          .map((e) => NetworkIdentifier.fromMap(e))
+          .toList(),
+    );
   }
 
   final List<NetworkIdentifier> networkIdentifiers;
@@ -1827,7 +1831,9 @@ class ConstructionSubmitRequest {
 /// or `/construction/submit`.
 class TransactionIdentifierResponse {
   const TransactionIdentifierResponse(
-      this.transactionIdentifier, this.metadata);
+    this.transactionIdentifier,
+    this.metadata,
+  );
 
   factory TransactionIdentifierResponse.fromMap(Map<String, dynamic> map) {
     return TransactionIdentifierResponse(
@@ -2117,8 +2123,13 @@ class RosettaError {
   );
 
   factory RosettaError.fromMap(Map<String, dynamic> map) {
-    return RosettaError(map['code'], map['message'], map['retriable'],
-        map['description'], map['details'],);
+    return RosettaError(
+      map['code'],
+      map['message'],
+      map['retriable'],
+      map['description'],
+      map['details'],
+    );
   }
 
   /// Code is a network-specific error code. If desired, this code can be

@@ -191,18 +191,24 @@ void hashTest() {
       ],
     ];
     expect(
-      lookupPath([
-        'a'.plainToU8a(useDartEncode: true),
-        'a'.plainToU8a(useDartEncode: true)
-      ], tree),
+      lookupPath(
+        [
+          'a'.plainToU8a(useDartEncode: true),
+          'a'.plainToU8a(useDartEncode: true)
+        ],
+        tree,
+      ),
       null,
     );
 
     expect(
-      lookupPath([
-        'a'.plainToU8a(useDartEncode: true),
-        'y'.plainToU8a(useDartEncode: true)
-      ], tree),
+      lookupPath(
+        [
+          'a'.plainToU8a(useDartEncode: true),
+          'y'.plainToU8a(useDartEncode: true)
+        ],
+        tree,
+      ),
       'world'.plainToU8a(useDartEncode: true),
     );
     expect(lookupPath(['aa'.plainToU8a(useDartEncode: true)], tree), null);

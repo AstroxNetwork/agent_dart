@@ -4,7 +4,6 @@ import 'package:agent_dart/utils/extension.dart';
 
 import 'utils/leb128.dart';
 
-
 enum BlobType { binary, der, nonce, requestId }
 
 abstract class BaseBlob {
@@ -60,8 +59,10 @@ Uint8List blobToUint8Array(BinaryBlob blob) {
 }
 
 Nonce makeNonce() {
-  return Nonce.fromList(lebEncode(
-    BigInt.from(DateTime.now().millisecondsSinceEpoch) * BigInt.from(100000) +
-        BigInt.from((Random.secure().nextInt(1) * 100000).floor()),
-  ));
+  return Nonce.fromList(
+    lebEncode(
+      BigInt.from(DateTime.now().millisecondsSinceEpoch) * BigInt.from(100000) +
+          BigInt.from((Random.secure().nextInt(1) * 100000).floor()),
+    ),
+  );
 }

@@ -18,13 +18,17 @@ abstract class AgentDart {
   /// create_phrase
   /// phrase_to_seed
   /// seed_to_key
-  Future<Uint8List> mnemonicPhraseToSeed(
-      {required PhraseToSeedReq req, dynamic hint});
+  Future<Uint8List> mnemonicPhraseToSeed({
+    required PhraseToSeedReq req,
+    dynamic hint,
+  });
 
   FlutterRustBridgeTaskConstMeta get kMnemonicPhraseToSeedConstMeta;
 
-  Future<Uint8List> mnemonicSeedToKey(
-      {required SeedToKeyReq req, dynamic hint});
+  Future<Uint8List> mnemonicSeedToKey({
+    required SeedToKeyReq req,
+    dynamic hint,
+  });
 
   FlutterRustBridgeTaskConstMeta get kMnemonicSeedToKeyConstMeta;
 
@@ -47,8 +51,10 @@ abstract class AgentDart {
   /// ed25519_from_seed
   /// ed25519_sign
   /// ed25519_verify
-  Future<ED25519Res> ed25519FromSeed(
-      {required ED25519FromSeedReq req, dynamic hint});
+  Future<ED25519Res> ed25519FromSeed({
+    required ED25519FromSeedReq req,
+    dynamic hint,
+  });
 
   FlutterRustBridgeTaskConstMeta get kEd25519FromSeedConstMeta;
 
@@ -63,13 +69,17 @@ abstract class AgentDart {
   /// ---------------------
   /// secp256k1
   /// ---------------------
-  Future<Secp256k1IdentityExport> secp256K1FromSeed(
-      {required Secp256k1FromSeedReq req, dynamic hint});
+  Future<Secp256k1IdentityExport> secp256K1FromSeed({
+    required Secp256k1FromSeedReq req,
+    dynamic hint,
+  });
 
   FlutterRustBridgeTaskConstMeta get kSecp256K1FromSeedConstMeta;
 
-  Future<SignatureFFI> secp256K1Sign(
-      {required Secp256k1SignWithSeedReq req, dynamic hint});
+  Future<SignatureFFI> secp256K1Sign({
+    required Secp256k1SignWithSeedReq req,
+    dynamic hint,
+  });
 
   FlutterRustBridgeTaskConstMeta get kSecp256K1SignConstMeta;
 
@@ -80,23 +90,31 @@ abstract class AgentDart {
   /// ---------------------
   /// aes
   /// ---------------------
-  Future<Uint8List> aes128CtrEncrypt(
-      {required AesEncryptReq req, dynamic hint});
+  Future<Uint8List> aes128CtrEncrypt({
+    required AesEncryptReq req,
+    dynamic hint,
+  });
 
   FlutterRustBridgeTaskConstMeta get kAes128CtrEncryptConstMeta;
 
-  Future<Uint8List> aes128CtrDecrypt(
-      {required AesDecryptReq req, dynamic hint});
+  Future<Uint8List> aes128CtrDecrypt({
+    required AesDecryptReq req,
+    dynamic hint,
+  });
 
   FlutterRustBridgeTaskConstMeta get kAes128CtrDecryptConstMeta;
 
-  Future<KeyDerivedRes> pbkdf2DeriveKey(
-      {required PBKDFDeriveReq req, dynamic hint});
+  Future<KeyDerivedRes> pbkdf2DeriveKey({
+    required PBKDFDeriveReq req,
+    dynamic hint,
+  });
 
   FlutterRustBridgeTaskConstMeta get kPbkdf2DeriveKeyConstMeta;
 
-  Future<KeyDerivedRes> scryptDeriveKey(
-      {required ScriptDeriveReq req, dynamic hint});
+  Future<KeyDerivedRes> scryptDeriveKey({
+    required ScriptDeriveReq req,
+    dynamic hint,
+  });
 
   FlutterRustBridgeTaskConstMeta get kScryptDeriveKeyConstMeta;
 }
@@ -295,16 +313,22 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
 
   AgentDartImpl.raw(AgentDartWire inner) : super(inner);
 
-  Future<Uint8List> mnemonicPhraseToSeed(
-          {required PhraseToSeedReq req, dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_mnemonic_phrase_to_seed(
-            port_, _api2wire_box_autoadd_phrase_to_seed_req(req)),
-        parseSuccessData: _wire2api_uint_8_list,
-        constMeta: kMnemonicPhraseToSeedConstMeta,
-        argValues: [req],
-        hint: hint,
-      ));
+  Future<Uint8List> mnemonicPhraseToSeed({
+    required PhraseToSeedReq req,
+    dynamic hint,
+  }) =>
+      executeNormal(
+        FlutterRustBridgeTask(
+          callFfi: (port_) => inner.wire_mnemonic_phrase_to_seed(
+            port_,
+            _api2wire_box_autoadd_phrase_to_seed_req(req),
+          ),
+          parseSuccessData: _wire2api_uint_8_list,
+          constMeta: kMnemonicPhraseToSeedConstMeta,
+          argValues: [req],
+          hint: hint,
+        ),
+      );
 
   FlutterRustBridgeTaskConstMeta get kMnemonicPhraseToSeedConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
@@ -312,16 +336,22 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
         argNames: ["req"],
       );
 
-  Future<Uint8List> mnemonicSeedToKey(
-          {required SeedToKeyReq req, dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_mnemonic_seed_to_key(
-            port_, _api2wire_box_autoadd_seed_to_key_req(req)),
-        parseSuccessData: _wire2api_uint_8_list,
-        constMeta: kMnemonicSeedToKeyConstMeta,
-        argValues: [req],
-        hint: hint,
-      ));
+  Future<Uint8List> mnemonicSeedToKey({
+    required SeedToKeyReq req,
+    dynamic hint,
+  }) =>
+      executeNormal(
+        FlutterRustBridgeTask(
+          callFfi: (port_) => inner.wire_mnemonic_seed_to_key(
+            port_,
+            _api2wire_box_autoadd_seed_to_key_req(req),
+          ),
+          parseSuccessData: _wire2api_uint_8_list,
+          constMeta: kMnemonicSeedToKeyConstMeta,
+          argValues: [req],
+          hint: hint,
+        ),
+      );
 
   FlutterRustBridgeTaskConstMeta get kMnemonicSeedToKeyConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
@@ -329,13 +359,15 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
         argNames: ["req"],
       );
 
-  Future<bool> blsInit({dynamic hint}) => executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_bls_init(port_),
-        parseSuccessData: _wire2api_bool,
-        constMeta: kBlsInitConstMeta,
-        argValues: [],
-        hint: hint,
-      ));
+  Future<bool> blsInit({dynamic hint}) => executeNormal(
+        FlutterRustBridgeTask(
+          callFfi: (port_) => inner.wire_bls_init(port_),
+          parseSuccessData: _wire2api_bool,
+          constMeta: kBlsInitConstMeta,
+          argValues: [],
+          hint: hint,
+        ),
+      );
 
   FlutterRustBridgeTaskConstMeta get kBlsInitConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
@@ -344,14 +376,18 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
       );
 
   Future<bool> blsVerify({required BLSVerifyReq req, dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_bls_verify(
-            port_, _api2wire_box_autoadd_bls_verify_req(req)),
-        parseSuccessData: _wire2api_bool,
-        constMeta: kBlsVerifyConstMeta,
-        argValues: [req],
-        hint: hint,
-      ));
+      executeNormal(
+        FlutterRustBridgeTask(
+          callFfi: (port_) => inner.wire_bls_verify(
+            port_,
+            _api2wire_box_autoadd_bls_verify_req(req),
+          ),
+          parseSuccessData: _wire2api_bool,
+          constMeta: kBlsVerifyConstMeta,
+          argValues: [req],
+          hint: hint,
+        ),
+      );
 
   FlutterRustBridgeTaskConstMeta get kBlsVerifyConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
@@ -359,16 +395,22 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
         argNames: ["req"],
       );
 
-  Future<ED25519Res> ed25519FromSeed(
-          {required ED25519FromSeedReq req, dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_ed25519_from_seed(
-            port_, _api2wire_box_autoadd_ed_25519_from_seed_req(req)),
-        parseSuccessData: _wire2api_ed_25519_res,
-        constMeta: kEd25519FromSeedConstMeta,
-        argValues: [req],
-        hint: hint,
-      ));
+  Future<ED25519Res> ed25519FromSeed({
+    required ED25519FromSeedReq req,
+    dynamic hint,
+  }) =>
+      executeNormal(
+        FlutterRustBridgeTask(
+          callFfi: (port_) => inner.wire_ed25519_from_seed(
+            port_,
+            _api2wire_box_autoadd_ed_25519_from_seed_req(req),
+          ),
+          parseSuccessData: _wire2api_ed_25519_res,
+          constMeta: kEd25519FromSeedConstMeta,
+          argValues: [req],
+          hint: hint,
+        ),
+      );
 
   FlutterRustBridgeTaskConstMeta get kEd25519FromSeedConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
@@ -377,14 +419,18 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
       );
 
   Future<Uint8List> ed25519Sign({required ED25519SignReq req, dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_ed25519_sign(
-            port_, _api2wire_box_autoadd_ed_25519_sign_req(req)),
-        parseSuccessData: _wire2api_uint_8_list,
-        constMeta: kEd25519SignConstMeta,
-        argValues: [req],
-        hint: hint,
-      ));
+      executeNormal(
+        FlutterRustBridgeTask(
+          callFfi: (port_) => inner.wire_ed25519_sign(
+            port_,
+            _api2wire_box_autoadd_ed_25519_sign_req(req),
+          ),
+          parseSuccessData: _wire2api_uint_8_list,
+          constMeta: kEd25519SignConstMeta,
+          argValues: [req],
+          hint: hint,
+        ),
+      );
 
   FlutterRustBridgeTaskConstMeta get kEd25519SignConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
@@ -393,14 +439,18 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
       );
 
   Future<bool> ed25519Verify({required ED25519VerifyReq req, dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_ed25519_verify(
-            port_, _api2wire_box_autoadd_ed_25519_verify_req(req)),
-        parseSuccessData: _wire2api_bool,
-        constMeta: kEd25519VerifyConstMeta,
-        argValues: [req],
-        hint: hint,
-      ));
+      executeNormal(
+        FlutterRustBridgeTask(
+          callFfi: (port_) => inner.wire_ed25519_verify(
+            port_,
+            _api2wire_box_autoadd_ed_25519_verify_req(req),
+          ),
+          parseSuccessData: _wire2api_bool,
+          constMeta: kEd25519VerifyConstMeta,
+          argValues: [req],
+          hint: hint,
+        ),
+      );
 
   FlutterRustBridgeTaskConstMeta get kEd25519VerifyConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
@@ -408,16 +458,22 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
         argNames: ["req"],
       );
 
-  Future<Secp256k1IdentityExport> secp256K1FromSeed(
-          {required Secp256k1FromSeedReq req, dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_secp256k1_from_seed(
-            port_, _api2wire_box_autoadd_secp_256_k_1_from_seed_req(req)),
-        parseSuccessData: _wire2api_secp_256_k_1_identity_export,
-        constMeta: kSecp256K1FromSeedConstMeta,
-        argValues: [req],
-        hint: hint,
-      ));
+  Future<Secp256k1IdentityExport> secp256K1FromSeed({
+    required Secp256k1FromSeedReq req,
+    dynamic hint,
+  }) =>
+      executeNormal(
+        FlutterRustBridgeTask(
+          callFfi: (port_) => inner.wire_secp256k1_from_seed(
+            port_,
+            _api2wire_box_autoadd_secp_256_k_1_from_seed_req(req),
+          ),
+          parseSuccessData: _wire2api_secp_256_k_1_identity_export,
+          constMeta: kSecp256K1FromSeedConstMeta,
+          argValues: [req],
+          hint: hint,
+        ),
+      );
 
   FlutterRustBridgeTaskConstMeta get kSecp256K1FromSeedConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
@@ -425,16 +481,22 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
         argNames: ["req"],
       );
 
-  Future<SignatureFFI> secp256K1Sign(
-          {required Secp256k1SignWithSeedReq req, dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_secp256k1_sign(
-            port_, _api2wire_box_autoadd_secp_256_k_1_sign_with_seed_req(req)),
-        parseSuccessData: _wire2api_signature_ffi,
-        constMeta: kSecp256K1SignConstMeta,
-        argValues: [req],
-        hint: hint,
-      ));
+  Future<SignatureFFI> secp256K1Sign({
+    required Secp256k1SignWithSeedReq req,
+    dynamic hint,
+  }) =>
+      executeNormal(
+        FlutterRustBridgeTask(
+          callFfi: (port_) => inner.wire_secp256k1_sign(
+            port_,
+            _api2wire_box_autoadd_secp_256_k_1_sign_with_seed_req(req),
+          ),
+          parseSuccessData: _wire2api_signature_ffi,
+          constMeta: kSecp256K1SignConstMeta,
+          argValues: [req],
+          hint: hint,
+        ),
+      );
 
   FlutterRustBridgeTaskConstMeta get kSecp256K1SignConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
@@ -442,16 +504,22 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
         argNames: ["req"],
       );
 
-  Future<bool> secp256K1Verify(
-          {required Secp256k1VerifyReq req, dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_secp256k1_verify(
-            port_, _api2wire_box_autoadd_secp_256_k_1_verify_req(req)),
-        parseSuccessData: _wire2api_bool,
-        constMeta: kSecp256K1VerifyConstMeta,
-        argValues: [req],
-        hint: hint,
-      ));
+  Future<bool> secp256K1Verify({
+    required Secp256k1VerifyReq req,
+    dynamic hint,
+  }) =>
+      executeNormal(
+        FlutterRustBridgeTask(
+          callFfi: (port_) => inner.wire_secp256k1_verify(
+            port_,
+            _api2wire_box_autoadd_secp_256_k_1_verify_req(req),
+          ),
+          parseSuccessData: _wire2api_bool,
+          constMeta: kSecp256K1VerifyConstMeta,
+          argValues: [req],
+          hint: hint,
+        ),
+      );
 
   FlutterRustBridgeTaskConstMeta get kSecp256K1VerifyConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
@@ -459,16 +527,22 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
         argNames: ["req"],
       );
 
-  Future<Uint8List> aes128CtrEncrypt(
-          {required AesEncryptReq req, dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_aes_128_ctr_encrypt(
-            port_, _api2wire_box_autoadd_aes_encrypt_req(req)),
-        parseSuccessData: _wire2api_uint_8_list,
-        constMeta: kAes128CtrEncryptConstMeta,
-        argValues: [req],
-        hint: hint,
-      ));
+  Future<Uint8List> aes128CtrEncrypt({
+    required AesEncryptReq req,
+    dynamic hint,
+  }) =>
+      executeNormal(
+        FlutterRustBridgeTask(
+          callFfi: (port_) => inner.wire_aes_128_ctr_encrypt(
+            port_,
+            _api2wire_box_autoadd_aes_encrypt_req(req),
+          ),
+          parseSuccessData: _wire2api_uint_8_list,
+          constMeta: kAes128CtrEncryptConstMeta,
+          argValues: [req],
+          hint: hint,
+        ),
+      );
 
   FlutterRustBridgeTaskConstMeta get kAes128CtrEncryptConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
@@ -476,16 +550,22 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
         argNames: ["req"],
       );
 
-  Future<Uint8List> aes128CtrDecrypt(
-          {required AesDecryptReq req, dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_aes_128_ctr_decrypt(
-            port_, _api2wire_box_autoadd_aes_decrypt_req(req)),
-        parseSuccessData: _wire2api_uint_8_list,
-        constMeta: kAes128CtrDecryptConstMeta,
-        argValues: [req],
-        hint: hint,
-      ));
+  Future<Uint8List> aes128CtrDecrypt({
+    required AesDecryptReq req,
+    dynamic hint,
+  }) =>
+      executeNormal(
+        FlutterRustBridgeTask(
+          callFfi: (port_) => inner.wire_aes_128_ctr_decrypt(
+            port_,
+            _api2wire_box_autoadd_aes_decrypt_req(req),
+          ),
+          parseSuccessData: _wire2api_uint_8_list,
+          constMeta: kAes128CtrDecryptConstMeta,
+          argValues: [req],
+          hint: hint,
+        ),
+      );
 
   FlutterRustBridgeTaskConstMeta get kAes128CtrDecryptConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
@@ -493,16 +573,22 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
         argNames: ["req"],
       );
 
-  Future<KeyDerivedRes> pbkdf2DeriveKey(
-          {required PBKDFDeriveReq req, dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_pbkdf2_derive_key(
-            port_, _api2wire_box_autoadd_pbkdf_derive_req(req)),
-        parseSuccessData: _wire2api_key_derived_res,
-        constMeta: kPbkdf2DeriveKeyConstMeta,
-        argValues: [req],
-        hint: hint,
-      ));
+  Future<KeyDerivedRes> pbkdf2DeriveKey({
+    required PBKDFDeriveReq req,
+    dynamic hint,
+  }) =>
+      executeNormal(
+        FlutterRustBridgeTask(
+          callFfi: (port_) => inner.wire_pbkdf2_derive_key(
+            port_,
+            _api2wire_box_autoadd_pbkdf_derive_req(req),
+          ),
+          parseSuccessData: _wire2api_key_derived_res,
+          constMeta: kPbkdf2DeriveKeyConstMeta,
+          argValues: [req],
+          hint: hint,
+        ),
+      );
 
   FlutterRustBridgeTaskConstMeta get kPbkdf2DeriveKeyConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
@@ -510,16 +596,22 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
         argNames: ["req"],
       );
 
-  Future<KeyDerivedRes> scryptDeriveKey(
-          {required ScriptDeriveReq req, dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_scrypt_derive_key(
-            port_, _api2wire_box_autoadd_script_derive_req(req)),
-        parseSuccessData: _wire2api_key_derived_res,
-        constMeta: kScryptDeriveKeyConstMeta,
-        argValues: [req],
-        hint: hint,
-      ));
+  Future<KeyDerivedRes> scryptDeriveKey({
+    required ScriptDeriveReq req,
+    dynamic hint,
+  }) =>
+      executeNormal(
+        FlutterRustBridgeTask(
+          callFfi: (port_) => inner.wire_scrypt_derive_key(
+            port_,
+            _api2wire_box_autoadd_script_derive_req(req),
+          ),
+          parseSuccessData: _wire2api_key_derived_res,
+          constMeta: kScryptDeriveKeyConstMeta,
+          argValues: [req],
+          hint: hint,
+        ),
+      );
 
   FlutterRustBridgeTaskConstMeta get kScryptDeriveKeyConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
@@ -533,21 +625,24 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
   }
 
   ffi.Pointer<wire_AesDecryptReq> _api2wire_box_autoadd_aes_decrypt_req(
-      AesDecryptReq raw) {
+    AesDecryptReq raw,
+  ) {
     final ptr = inner.new_box_autoadd_aes_decrypt_req();
     _api_fill_to_wire_aes_decrypt_req(raw, ptr.ref);
     return ptr;
   }
 
   ffi.Pointer<wire_AesEncryptReq> _api2wire_box_autoadd_aes_encrypt_req(
-      AesEncryptReq raw) {
+    AesEncryptReq raw,
+  ) {
     final ptr = inner.new_box_autoadd_aes_encrypt_req();
     _api_fill_to_wire_aes_encrypt_req(raw, ptr.ref);
     return ptr;
   }
 
   ffi.Pointer<wire_BLSVerifyReq> _api2wire_box_autoadd_bls_verify_req(
-      BLSVerifyReq raw) {
+    BLSVerifyReq raw,
+  ) {
     final ptr = inner.new_box_autoadd_bls_verify_req();
     _api_fill_to_wire_bls_verify_req(raw, ptr.ref);
     return ptr;
@@ -561,35 +656,40 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
   }
 
   ffi.Pointer<wire_ED25519SignReq> _api2wire_box_autoadd_ed_25519_sign_req(
-      ED25519SignReq raw) {
+    ED25519SignReq raw,
+  ) {
     final ptr = inner.new_box_autoadd_ed_25519_sign_req();
     _api_fill_to_wire_ed_25519_sign_req(raw, ptr.ref);
     return ptr;
   }
 
   ffi.Pointer<wire_ED25519VerifyReq> _api2wire_box_autoadd_ed_25519_verify_req(
-      ED25519VerifyReq raw) {
+    ED25519VerifyReq raw,
+  ) {
     final ptr = inner.new_box_autoadd_ed_25519_verify_req();
     _api_fill_to_wire_ed_25519_verify_req(raw, ptr.ref);
     return ptr;
   }
 
   ffi.Pointer<wire_PBKDFDeriveReq> _api2wire_box_autoadd_pbkdf_derive_req(
-      PBKDFDeriveReq raw) {
+    PBKDFDeriveReq raw,
+  ) {
     final ptr = inner.new_box_autoadd_pbkdf_derive_req();
     _api_fill_to_wire_pbkdf_derive_req(raw, ptr.ref);
     return ptr;
   }
 
   ffi.Pointer<wire_PhraseToSeedReq> _api2wire_box_autoadd_phrase_to_seed_req(
-      PhraseToSeedReq raw) {
+    PhraseToSeedReq raw,
+  ) {
     final ptr = inner.new_box_autoadd_phrase_to_seed_req();
     _api_fill_to_wire_phrase_to_seed_req(raw, ptr.ref);
     return ptr;
   }
 
   ffi.Pointer<wire_ScriptDeriveReq> _api2wire_box_autoadd_script_derive_req(
-      ScriptDeriveReq raw) {
+    ScriptDeriveReq raw,
+  ) {
     final ptr = inner.new_box_autoadd_script_derive_req();
     _api_fill_to_wire_script_derive_req(raw, ptr.ref);
     return ptr;
@@ -597,7 +697,8 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
 
   ffi.Pointer<wire_Secp256k1FromSeedReq>
       _api2wire_box_autoadd_secp_256_k_1_from_seed_req(
-          Secp256k1FromSeedReq raw) {
+    Secp256k1FromSeedReq raw,
+  ) {
     final ptr = inner.new_box_autoadd_secp_256_k_1_from_seed_req();
     _api_fill_to_wire_secp_256_k_1_from_seed_req(raw, ptr.ref);
     return ptr;
@@ -605,7 +706,8 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
 
   ffi.Pointer<wire_Secp256k1SignWithSeedReq>
       _api2wire_box_autoadd_secp_256_k_1_sign_with_seed_req(
-          Secp256k1SignWithSeedReq raw) {
+    Secp256k1SignWithSeedReq raw,
+  ) {
     final ptr = inner.new_box_autoadd_secp_256_k_1_sign_with_seed_req();
     _api_fill_to_wire_secp_256_k_1_sign_with_seed_req(raw, ptr.ref);
     return ptr;
@@ -619,7 +721,8 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
   }
 
   ffi.Pointer<wire_SeedToKeyReq> _api2wire_box_autoadd_seed_to_key_req(
-      SeedToKeyReq raw) {
+    SeedToKeyReq raw,
+  ) {
     final ptr = inner.new_box_autoadd_seed_to_key_req();
     _api_fill_to_wire_seed_to_key_req(raw, ptr.ref);
     return ptr;
@@ -642,126 +745,168 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
   // Section: api_fill_to_wire
 
   void _api_fill_to_wire_aes_decrypt_req(
-      AesDecryptReq apiObj, wire_AesDecryptReq wireObj) {
+    AesDecryptReq apiObj,
+    wire_AesDecryptReq wireObj,
+  ) {
     wireObj.key = _api2wire_uint_8_list(apiObj.key);
     wireObj.iv = _api2wire_uint_8_list(apiObj.iv);
     wireObj.cipher_text = _api2wire_uint_8_list(apiObj.cipherText);
   }
 
   void _api_fill_to_wire_aes_encrypt_req(
-      AesEncryptReq apiObj, wire_AesEncryptReq wireObj) {
+    AesEncryptReq apiObj,
+    wire_AesEncryptReq wireObj,
+  ) {
     wireObj.key = _api2wire_uint_8_list(apiObj.key);
     wireObj.iv = _api2wire_uint_8_list(apiObj.iv);
     wireObj.message = _api2wire_uint_8_list(apiObj.message);
   }
 
   void _api_fill_to_wire_bls_verify_req(
-      BLSVerifyReq apiObj, wire_BLSVerifyReq wireObj) {
+    BLSVerifyReq apiObj,
+    wire_BLSVerifyReq wireObj,
+  ) {
     wireObj.signature = _api2wire_uint_8_list(apiObj.signature);
     wireObj.message = _api2wire_uint_8_list(apiObj.message);
     wireObj.public_key = _api2wire_uint_8_list(apiObj.publicKey);
   }
 
   void _api_fill_to_wire_box_autoadd_aes_decrypt_req(
-      AesDecryptReq apiObj, ffi.Pointer<wire_AesDecryptReq> wireObj) {
+    AesDecryptReq apiObj,
+    ffi.Pointer<wire_AesDecryptReq> wireObj,
+  ) {
     _api_fill_to_wire_aes_decrypt_req(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_box_autoadd_aes_encrypt_req(
-      AesEncryptReq apiObj, ffi.Pointer<wire_AesEncryptReq> wireObj) {
+    AesEncryptReq apiObj,
+    ffi.Pointer<wire_AesEncryptReq> wireObj,
+  ) {
     _api_fill_to_wire_aes_encrypt_req(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_box_autoadd_bls_verify_req(
-      BLSVerifyReq apiObj, ffi.Pointer<wire_BLSVerifyReq> wireObj) {
+    BLSVerifyReq apiObj,
+    ffi.Pointer<wire_BLSVerifyReq> wireObj,
+  ) {
     _api_fill_to_wire_bls_verify_req(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_box_autoadd_ed_25519_from_seed_req(
-      ED25519FromSeedReq apiObj, ffi.Pointer<wire_ED25519FromSeedReq> wireObj) {
+    ED25519FromSeedReq apiObj,
+    ffi.Pointer<wire_ED25519FromSeedReq> wireObj,
+  ) {
     _api_fill_to_wire_ed_25519_from_seed_req(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_box_autoadd_ed_25519_sign_req(
-      ED25519SignReq apiObj, ffi.Pointer<wire_ED25519SignReq> wireObj) {
+    ED25519SignReq apiObj,
+    ffi.Pointer<wire_ED25519SignReq> wireObj,
+  ) {
     _api_fill_to_wire_ed_25519_sign_req(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_box_autoadd_ed_25519_verify_req(
-      ED25519VerifyReq apiObj, ffi.Pointer<wire_ED25519VerifyReq> wireObj) {
+    ED25519VerifyReq apiObj,
+    ffi.Pointer<wire_ED25519VerifyReq> wireObj,
+  ) {
     _api_fill_to_wire_ed_25519_verify_req(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_box_autoadd_pbkdf_derive_req(
-      PBKDFDeriveReq apiObj, ffi.Pointer<wire_PBKDFDeriveReq> wireObj) {
+    PBKDFDeriveReq apiObj,
+    ffi.Pointer<wire_PBKDFDeriveReq> wireObj,
+  ) {
     _api_fill_to_wire_pbkdf_derive_req(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_box_autoadd_phrase_to_seed_req(
-      PhraseToSeedReq apiObj, ffi.Pointer<wire_PhraseToSeedReq> wireObj) {
+    PhraseToSeedReq apiObj,
+    ffi.Pointer<wire_PhraseToSeedReq> wireObj,
+  ) {
     _api_fill_to_wire_phrase_to_seed_req(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_box_autoadd_script_derive_req(
-      ScriptDeriveReq apiObj, ffi.Pointer<wire_ScriptDeriveReq> wireObj) {
+    ScriptDeriveReq apiObj,
+    ffi.Pointer<wire_ScriptDeriveReq> wireObj,
+  ) {
     _api_fill_to_wire_script_derive_req(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_box_autoadd_secp_256_k_1_from_seed_req(
-      Secp256k1FromSeedReq apiObj,
-      ffi.Pointer<wire_Secp256k1FromSeedReq> wireObj) {
+    Secp256k1FromSeedReq apiObj,
+    ffi.Pointer<wire_Secp256k1FromSeedReq> wireObj,
+  ) {
     _api_fill_to_wire_secp_256_k_1_from_seed_req(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_box_autoadd_secp_256_k_1_sign_with_seed_req(
-      Secp256k1SignWithSeedReq apiObj,
-      ffi.Pointer<wire_Secp256k1SignWithSeedReq> wireObj) {
+    Secp256k1SignWithSeedReq apiObj,
+    ffi.Pointer<wire_Secp256k1SignWithSeedReq> wireObj,
+  ) {
     _api_fill_to_wire_secp_256_k_1_sign_with_seed_req(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_box_autoadd_secp_256_k_1_verify_req(
-      Secp256k1VerifyReq apiObj, ffi.Pointer<wire_Secp256k1VerifyReq> wireObj) {
+    Secp256k1VerifyReq apiObj,
+    ffi.Pointer<wire_Secp256k1VerifyReq> wireObj,
+  ) {
     _api_fill_to_wire_secp_256_k_1_verify_req(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_box_autoadd_seed_to_key_req(
-      SeedToKeyReq apiObj, ffi.Pointer<wire_SeedToKeyReq> wireObj) {
+    SeedToKeyReq apiObj,
+    ffi.Pointer<wire_SeedToKeyReq> wireObj,
+  ) {
     _api_fill_to_wire_seed_to_key_req(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_ed_25519_from_seed_req(
-      ED25519FromSeedReq apiObj, wire_ED25519FromSeedReq wireObj) {
+    ED25519FromSeedReq apiObj,
+    wire_ED25519FromSeedReq wireObj,
+  ) {
     wireObj.seed = _api2wire_uint_8_list(apiObj.seed);
   }
 
   void _api_fill_to_wire_ed_25519_sign_req(
-      ED25519SignReq apiObj, wire_ED25519SignReq wireObj) {
+    ED25519SignReq apiObj,
+    wire_ED25519SignReq wireObj,
+  ) {
     wireObj.seed = _api2wire_uint_8_list(apiObj.seed);
     wireObj.message = _api2wire_uint_8_list(apiObj.message);
   }
 
   void _api_fill_to_wire_ed_25519_verify_req(
-      ED25519VerifyReq apiObj, wire_ED25519VerifyReq wireObj) {
+    ED25519VerifyReq apiObj,
+    wire_ED25519VerifyReq wireObj,
+  ) {
     wireObj.sig = _api2wire_uint_8_list(apiObj.sig);
     wireObj.message = _api2wire_uint_8_list(apiObj.message);
     wireObj.pub_key = _api2wire_uint_8_list(apiObj.pubKey);
   }
 
   void _api_fill_to_wire_pbkdf_derive_req(
-      PBKDFDeriveReq apiObj, wire_PBKDFDeriveReq wireObj) {
+    PBKDFDeriveReq apiObj,
+    wire_PBKDFDeriveReq wireObj,
+  ) {
     wireObj.password = _api2wire_uint_8_list(apiObj.password);
     wireObj.salt = _api2wire_uint_8_list(apiObj.salt);
     wireObj.c = _api2wire_u32(apiObj.c);
   }
 
   void _api_fill_to_wire_phrase_to_seed_req(
-      PhraseToSeedReq apiObj, wire_PhraseToSeedReq wireObj) {
+    PhraseToSeedReq apiObj,
+    wire_PhraseToSeedReq wireObj,
+  ) {
     wireObj.phrase = _api2wire_String(apiObj.phrase);
     wireObj.password = _api2wire_String(apiObj.password);
   }
 
   void _api_fill_to_wire_script_derive_req(
-      ScriptDeriveReq apiObj, wire_ScriptDeriveReq wireObj) {
+    ScriptDeriveReq apiObj,
+    wire_ScriptDeriveReq wireObj,
+  ) {
     wireObj.password = _api2wire_uint_8_list(apiObj.password);
     wireObj.salt = _api2wire_uint_8_list(apiObj.salt);
     wireObj.n = _api2wire_u32(apiObj.n);
@@ -770,25 +915,33 @@ class AgentDartImpl extends FlutterRustBridgeBase<AgentDartWire>
   }
 
   void _api_fill_to_wire_secp_256_k_1_from_seed_req(
-      Secp256k1FromSeedReq apiObj, wire_Secp256k1FromSeedReq wireObj) {
+    Secp256k1FromSeedReq apiObj,
+    wire_Secp256k1FromSeedReq wireObj,
+  ) {
     wireObj.seed = _api2wire_uint_8_list(apiObj.seed);
   }
 
   void _api_fill_to_wire_secp_256_k_1_sign_with_seed_req(
-      Secp256k1SignWithSeedReq apiObj, wire_Secp256k1SignWithSeedReq wireObj) {
+    Secp256k1SignWithSeedReq apiObj,
+    wire_Secp256k1SignWithSeedReq wireObj,
+  ) {
     wireObj.msg = _api2wire_uint_8_list(apiObj.msg);
     wireObj.seed = _api2wire_uint_8_list(apiObj.seed);
   }
 
   void _api_fill_to_wire_secp_256_k_1_verify_req(
-      Secp256k1VerifyReq apiObj, wire_Secp256k1VerifyReq wireObj) {
+    Secp256k1VerifyReq apiObj,
+    wire_Secp256k1VerifyReq wireObj,
+  ) {
     wireObj.message_hash = _api2wire_uint_8_list(apiObj.messageHash);
     wireObj.signature_bytes = _api2wire_uint_8_list(apiObj.signatureBytes);
     wireObj.public_key_bytes = _api2wire_uint_8_list(apiObj.publicKeyBytes);
   }
 
   void _api_fill_to_wire_seed_to_key_req(
-      SeedToKeyReq apiObj, wire_SeedToKeyReq wireObj) {
+    SeedToKeyReq apiObj,
+    wire_SeedToKeyReq wireObj,
+  ) {
     wireObj.seed = _api2wire_uint_8_list(apiObj.seed);
     wireObj.path = _api2wire_String(apiObj.path);
   }
@@ -869,9 +1022,8 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   /// The symbols are looked up with [lookup].
   AgentDartWire.fromLookup(
-      ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
-          lookup)
-      : _lookup = lookup;
+    ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup,
+  ) : _lookup = lookup;
 
   void wire_mnemonic_phrase_to_seed(
     int port_,
@@ -884,9 +1036,10 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _wire_mnemonic_phrase_to_seedPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(ffi.Int64, ffi.Pointer<wire_PhraseToSeedReq>)>>(
-      'wire_mnemonic_phrase_to_seed');
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_PhraseToSeedReq>)>>(
+    'wire_mnemonic_phrase_to_seed',
+  );
   late final _wire_mnemonic_phrase_to_seed = _wire_mnemonic_phrase_to_seedPtr
       .asFunction<void Function(int, ffi.Pointer<wire_PhraseToSeedReq>)>();
 
@@ -902,8 +1055,10 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _wire_mnemonic_seed_to_keyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_SeedToKeyReq>)>>('wire_mnemonic_seed_to_key');
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Pointer<wire_SeedToKeyReq>,
+  )>>('wire_mnemonic_seed_to_key');
   late final _wire_mnemonic_seed_to_key = _wire_mnemonic_seed_to_keyPtr
       .asFunction<void Function(int, ffi.Pointer<wire_SeedToKeyReq>)>();
 
@@ -917,7 +1072,8 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _wire_bls_initPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_bls_init');
+    'wire_bls_init',
+  );
   late final _wire_bls_init =
       _wire_bls_initPtr.asFunction<void Function(int)>();
 
@@ -934,7 +1090,9 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _wire_bls_verifyPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
-              ffi.Int64, ffi.Pointer<wire_BLSVerifyReq>)>>('wire_bls_verify');
+    ffi.Int64,
+    ffi.Pointer<wire_BLSVerifyReq>,
+  )>>('wire_bls_verify');
   late final _wire_bls_verify = _wire_bls_verifyPtr
       .asFunction<void Function(int, ffi.Pointer<wire_BLSVerifyReq>)>();
 
@@ -950,8 +1108,10 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _wire_ed25519_from_seedPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_ED25519FromSeedReq>)>>('wire_ed25519_from_seed');
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Pointer<wire_ED25519FromSeedReq>,
+  )>>('wire_ed25519_from_seed');
   late final _wire_ed25519_from_seed = _wire_ed25519_from_seedPtr
       .asFunction<void Function(int, ffi.Pointer<wire_ED25519FromSeedReq>)>();
 
@@ -967,8 +1127,10 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _wire_ed25519_signPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_ED25519SignReq>)>>('wire_ed25519_sign');
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Pointer<wire_ED25519SignReq>,
+  )>>('wire_ed25519_sign');
   late final _wire_ed25519_sign = _wire_ed25519_signPtr
       .asFunction<void Function(int, ffi.Pointer<wire_ED25519SignReq>)>();
 
@@ -984,8 +1146,10 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _wire_ed25519_verifyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_ED25519VerifyReq>)>>('wire_ed25519_verify');
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Pointer<wire_ED25519VerifyReq>,
+  )>>('wire_ed25519_verify');
   late final _wire_ed25519_verify = _wire_ed25519_verifyPtr
       .asFunction<void Function(int, ffi.Pointer<wire_ED25519VerifyReq>)>();
 
@@ -1000,10 +1164,13 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _wire_secp256k1_from_seedPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(
-                  ffi.Int64, ffi.Pointer<wire_Secp256k1FromSeedReq>)>>(
-      'wire_secp256k1_from_seed');
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Pointer<wire_Secp256k1FromSeedReq>,
+  )>>(
+    'wire_secp256k1_from_seed',
+  );
   late final _wire_secp256k1_from_seed = _wire_secp256k1_from_seedPtr
       .asFunction<void Function(int, ffi.Pointer<wire_Secp256k1FromSeedReq>)>();
 
@@ -1018,10 +1185,13 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _wire_secp256k1_signPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(
-                  ffi.Int64, ffi.Pointer<wire_Secp256k1SignWithSeedReq>)>>(
-      'wire_secp256k1_sign');
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Pointer<wire_Secp256k1SignWithSeedReq>,
+  )>>(
+    'wire_secp256k1_sign',
+  );
   late final _wire_secp256k1_sign = _wire_secp256k1_signPtr.asFunction<
       void Function(int, ffi.Pointer<wire_Secp256k1SignWithSeedReq>)>();
 
@@ -1037,8 +1207,10 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _wire_secp256k1_verifyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_Secp256k1VerifyReq>)>>('wire_secp256k1_verify');
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Pointer<wire_Secp256k1VerifyReq>,
+  )>>('wire_secp256k1_verify');
   late final _wire_secp256k1_verify = _wire_secp256k1_verifyPtr
       .asFunction<void Function(int, ffi.Pointer<wire_Secp256k1VerifyReq>)>();
 
@@ -1054,8 +1226,10 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _wire_aes_128_ctr_encryptPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_AesEncryptReq>)>>('wire_aes_128_ctr_encrypt');
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Pointer<wire_AesEncryptReq>,
+  )>>('wire_aes_128_ctr_encrypt');
   late final _wire_aes_128_ctr_encrypt = _wire_aes_128_ctr_encryptPtr
       .asFunction<void Function(int, ffi.Pointer<wire_AesEncryptReq>)>();
 
@@ -1071,8 +1245,10 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _wire_aes_128_ctr_decryptPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_AesDecryptReq>)>>('wire_aes_128_ctr_decrypt');
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Pointer<wire_AesDecryptReq>,
+  )>>('wire_aes_128_ctr_decrypt');
   late final _wire_aes_128_ctr_decrypt = _wire_aes_128_ctr_decryptPtr
       .asFunction<void Function(int, ffi.Pointer<wire_AesDecryptReq>)>();
 
@@ -1088,8 +1264,10 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _wire_pbkdf2_derive_keyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_PBKDFDeriveReq>)>>('wire_pbkdf2_derive_key');
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Pointer<wire_PBKDFDeriveReq>,
+  )>>('wire_pbkdf2_derive_key');
   late final _wire_pbkdf2_derive_key = _wire_pbkdf2_derive_keyPtr
       .asFunction<void Function(int, ffi.Pointer<wire_PBKDFDeriveReq>)>();
 
@@ -1105,8 +1283,10 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _wire_scrypt_derive_keyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_ScriptDeriveReq>)>>('wire_scrypt_derive_key');
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Pointer<wire_ScriptDeriveReq>,
+  )>>('wire_scrypt_derive_key');
   late final _wire_scrypt_derive_key = _wire_scrypt_derive_keyPtr
       .asFunction<void Function(int, ffi.Pointer<wire_ScriptDeriveReq>)>();
 
@@ -1116,7 +1296,8 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _new_box_autoadd_aes_decrypt_reqPtr =
       _lookup<ffi.NativeFunction<ffi.Pointer<wire_AesDecryptReq> Function()>>(
-          'new_box_autoadd_aes_decrypt_req');
+    'new_box_autoadd_aes_decrypt_req',
+  );
   late final _new_box_autoadd_aes_decrypt_req =
       _new_box_autoadd_aes_decrypt_reqPtr
           .asFunction<ffi.Pointer<wire_AesDecryptReq> Function()>();
@@ -1127,7 +1308,8 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _new_box_autoadd_aes_encrypt_reqPtr =
       _lookup<ffi.NativeFunction<ffi.Pointer<wire_AesEncryptReq> Function()>>(
-          'new_box_autoadd_aes_encrypt_req');
+    'new_box_autoadd_aes_encrypt_req',
+  );
   late final _new_box_autoadd_aes_encrypt_req =
       _new_box_autoadd_aes_encrypt_reqPtr
           .asFunction<ffi.Pointer<wire_AesEncryptReq> Function()>();
@@ -1138,7 +1320,8 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _new_box_autoadd_bls_verify_reqPtr =
       _lookup<ffi.NativeFunction<ffi.Pointer<wire_BLSVerifyReq> Function()>>(
-          'new_box_autoadd_bls_verify_req');
+    'new_box_autoadd_bls_verify_req',
+  );
   late final _new_box_autoadd_bls_verify_req =
       _new_box_autoadd_bls_verify_reqPtr
           .asFunction<ffi.Pointer<wire_BLSVerifyReq> Function()>();
@@ -1149,8 +1332,9 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _new_box_autoadd_ed_25519_from_seed_reqPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<wire_ED25519FromSeedReq> Function()>>(
-      'new_box_autoadd_ed_25519_from_seed_req');
+      ffi.NativeFunction<ffi.Pointer<wire_ED25519FromSeedReq> Function()>>(
+    'new_box_autoadd_ed_25519_from_seed_req',
+  );
   late final _new_box_autoadd_ed_25519_from_seed_req =
       _new_box_autoadd_ed_25519_from_seed_reqPtr
           .asFunction<ffi.Pointer<wire_ED25519FromSeedReq> Function()>();
@@ -1161,7 +1345,8 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _new_box_autoadd_ed_25519_sign_reqPtr =
       _lookup<ffi.NativeFunction<ffi.Pointer<wire_ED25519SignReq> Function()>>(
-          'new_box_autoadd_ed_25519_sign_req');
+    'new_box_autoadd_ed_25519_sign_req',
+  );
   late final _new_box_autoadd_ed_25519_sign_req =
       _new_box_autoadd_ed_25519_sign_reqPtr
           .asFunction<ffi.Pointer<wire_ED25519SignReq> Function()>();
@@ -1171,8 +1356,9 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _new_box_autoadd_ed_25519_verify_reqPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<wire_ED25519VerifyReq> Function()>>(
-      'new_box_autoadd_ed_25519_verify_req');
+      ffi.NativeFunction<ffi.Pointer<wire_ED25519VerifyReq> Function()>>(
+    'new_box_autoadd_ed_25519_verify_req',
+  );
   late final _new_box_autoadd_ed_25519_verify_req =
       _new_box_autoadd_ed_25519_verify_reqPtr
           .asFunction<ffi.Pointer<wire_ED25519VerifyReq> Function()>();
@@ -1183,7 +1369,8 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _new_box_autoadd_pbkdf_derive_reqPtr =
       _lookup<ffi.NativeFunction<ffi.Pointer<wire_PBKDFDeriveReq> Function()>>(
-          'new_box_autoadd_pbkdf_derive_req');
+    'new_box_autoadd_pbkdf_derive_req',
+  );
   late final _new_box_autoadd_pbkdf_derive_req =
       _new_box_autoadd_pbkdf_derive_reqPtr
           .asFunction<ffi.Pointer<wire_PBKDFDeriveReq> Function()>();
@@ -1194,7 +1381,8 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _new_box_autoadd_phrase_to_seed_reqPtr =
       _lookup<ffi.NativeFunction<ffi.Pointer<wire_PhraseToSeedReq> Function()>>(
-          'new_box_autoadd_phrase_to_seed_req');
+    'new_box_autoadd_phrase_to_seed_req',
+  );
   late final _new_box_autoadd_phrase_to_seed_req =
       _new_box_autoadd_phrase_to_seed_reqPtr
           .asFunction<ffi.Pointer<wire_PhraseToSeedReq> Function()>();
@@ -1205,7 +1393,8 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _new_box_autoadd_script_derive_reqPtr =
       _lookup<ffi.NativeFunction<ffi.Pointer<wire_ScriptDeriveReq> Function()>>(
-          'new_box_autoadd_script_derive_req');
+    'new_box_autoadd_script_derive_req',
+  );
   late final _new_box_autoadd_script_derive_req =
       _new_box_autoadd_script_derive_reqPtr
           .asFunction<ffi.Pointer<wire_ScriptDeriveReq> Function()>();
@@ -1242,8 +1431,9 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _new_box_autoadd_secp_256_k_1_verify_reqPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<wire_Secp256k1VerifyReq> Function()>>(
-      'new_box_autoadd_secp_256_k_1_verify_req');
+      ffi.NativeFunction<ffi.Pointer<wire_Secp256k1VerifyReq> Function()>>(
+    'new_box_autoadd_secp_256_k_1_verify_req',
+  );
   late final _new_box_autoadd_secp_256_k_1_verify_req =
       _new_box_autoadd_secp_256_k_1_verify_reqPtr
           .asFunction<ffi.Pointer<wire_Secp256k1VerifyReq> Function()>();
@@ -1254,7 +1444,8 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _new_box_autoadd_seed_to_key_reqPtr =
       _lookup<ffi.NativeFunction<ffi.Pointer<wire_SeedToKeyReq> Function()>>(
-          'new_box_autoadd_seed_to_key_req');
+    'new_box_autoadd_seed_to_key_req',
+  );
   late final _new_box_autoadd_seed_to_key_req =
       _new_box_autoadd_seed_to_key_reqPtr
           .asFunction<ffi.Pointer<wire_SeedToKeyReq> Function()>();
@@ -1270,7 +1461,8 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _new_uint_8_listPtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<wire_uint_8_list> Function(
-              ffi.Int32)>>('new_uint_8_list');
+    ffi.Int32,
+  )>>('new_uint_8_list');
   late final _new_uint_8_list = _new_uint_8_listPtr
       .asFunction<ffi.Pointer<wire_uint_8_list> Function(int)>();
 
@@ -1284,7 +1476,8 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _free_WireSyncReturnStructPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(WireSyncReturnStruct)>>(
-          'free_WireSyncReturnStruct');
+    'free_WireSyncReturnStruct',
+  );
   late final _free_WireSyncReturnStruct = _free_WireSyncReturnStructPtr
       .asFunction<void Function(WireSyncReturnStruct)>();
 
@@ -1298,7 +1491,8 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _store_dart_post_cobjectPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(DartPostCObjectFnType)>>(
-          'store_dart_post_cobject');
+    'store_dart_post_cobject',
+  );
   late final _store_dart_post_cobject = _store_dart_post_cobjectPtr
       .asFunction<void Function(DartPostCObjectFnType)>();
 }

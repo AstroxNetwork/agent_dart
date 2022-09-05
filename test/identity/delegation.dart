@@ -94,15 +94,18 @@ void delegationTest() {
 
     // print(rootToMiddleJson);
     // All strings in the JSON should be hex so it is clear how to decode this as different versions of `toJSON` evolve.
-    var revived = jsonDecode(rootToMiddleJson, reviver: (key, value) {
-      if (value is String) {
-        final byte = BigInt.tryParse(value, radix: 16);
-        if (byte == null) {
-          throw 'expected all strings to be hex, but got: $value';
+    var revived = jsonDecode(
+      rootToMiddleJson,
+      reviver: (key, value) {
+        if (value is String) {
+          final byte = BigInt.tryParse(value, radix: 16);
+          if (byte == null) {
+            throw 'expected all strings to be hex, but got: $value';
+          }
         }
-      }
-      return value;
-    });
+        return value;
+      },
+    );
 
     final rootToMiddleActual = DelegationChain.fromJSON(revived);
 

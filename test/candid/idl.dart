@@ -29,21 +29,30 @@ testArgs(List<CType> types, List vals, String hex, String str) {
 void idlTest() {
   test('IDL encoding (magic number)', () {
     // Wrong magic number
-    expect(() => IDL.decode([IDL.Nat], '2a'.toU8a()),
-        throwsA(contains('Message length smaller than magic number')));
-    expect(() => IDL.decode([IDL.Nat], '4449444d2a'.toU8a()),
-        throwsA(contains('Wrong magic number:')));
+    expect(
+      () => IDL.decode([IDL.Nat], '2a'.toU8a()),
+      throwsA(contains('Message length smaller than magic number')),
+    );
+    expect(
+      () => IDL.decode([IDL.Nat], '4449444d2a'.toU8a()),
+      throwsA(contains('Wrong magic number:')),
+    );
   });
 
   test('IDL encoding (empty)', () {
     // Empty
-    expect(() => IDL.encode([IDL.Empty], [null]),
-        throwsA(contains('Invalid empty argument:')));
     expect(
-        () => IDL.decode([IDL.Empty], '4449444c00016f'.toU8a()),
-        throwsA(contains(
+      () => IDL.encode([IDL.Empty], [null]),
+      throwsA(contains('Invalid empty argument:')),
+    );
+    expect(
+      () => IDL.decode([IDL.Empty], '4449444c00016f'.toU8a()),
+      throwsA(
+        contains(
           'Empty cannot appear as an output',
-        )));
+        ),
+      ),
+    );
   });
 
   test('IDL encoding (null)', () {
@@ -53,62 +62,109 @@ void idlTest() {
 
   test('IDL encoding (text)', () {
     // Text
-    testArg(IDL.Text, 'Hi ☃\n', '4449444c00017107486920e298830a',
-        'Text with unicode');
+    testArg(
+      IDL.Text,
+      'Hi ☃\n',
+      '4449444c00017107486920e298830a',
+      'Text with unicode',
+    );
     testArg(
       IDL.Opt(IDL.Text),
       ['Hi ☃\n'],
       '4449444c016e7101000107486920e298830a',
       'Nested text with unicode',
     );
-    expect(() => IDL.encode([IDL.Text], [0]),
-        throwsA(contains('Invalid text argument')));
-    expect(() => IDL.encode([IDL.Text], [null]),
-        throwsA(contains('Invalid text argument')));
     expect(
-        () => IDL.decode(
-            [IDL.Vec(IDL.Nat8)], '4449444c00017107486920e298830a'.toU8a()),
-        throwsA(contains(
-            'type mismatch: type on the wire text, expect type vec nat8')));
+      () => IDL.encode([IDL.Text], [0]),
+      throwsA(contains('Invalid text argument')),
+    );
+    expect(
+      () => IDL.encode([IDL.Text], [null]),
+      throwsA(contains('Invalid text argument')),
+    );
+    expect(
+      () => IDL.decode(
+        [IDL.Vec(IDL.Nat8)],
+        '4449444c00017107486920e298830a'.toU8a(),
+      ),
+      throwsA(
+        contains(
+          'type mismatch: type on the wire text, expect type vec nat8',
+        ),
+      ),
+    );
   });
 
   test('IDL encoding (int)', () {
     // Int
     testArg(IDL.Int, BigInt.from(0), '4449444c00017c00', 'Int');
     testArg(IDL.Int, BigInt.from(42), '4449444c00017c2a', 'Int');
-    testArg(IDL.Int, BigInt.from(1234567890), '4449444c00017cd285d8cc04',
-        'Positive Int');
+    testArg(
+      IDL.Int,
+      BigInt.from(1234567890),
+      '4449444c00017cd285d8cc04',
+      'Positive Int',
+    );
     testArg(
       IDL.Int,
       BigInt.parse('60000000000000000'),
       '4449444c00017c808098f4e9b5caea00',
       'Positive BigInt',
     );
-    testArg(IDL.Int, BigInt.from(-1234567890), '4449444c00017caefaa7b37b',
-        'Negative Int');
-    testArg(IDL.Opt(IDL.Int), [BigInt.from(42)], '4449444c016e7c0100012a',
-        'Nested Int');
-    testEncode(IDL.Opt(IDL.Int), [42], '4449444c016e7c0100012a',
-        'Nested Int (number)');
+    testArg(
+      IDL.Int,
+      BigInt.from(-1234567890),
+      '4449444c00017caefaa7b37b',
+      'Negative Int',
+    );
+    testArg(
+      IDL.Opt(IDL.Int),
+      [BigInt.from(42)],
+      '4449444c016e7c0100012a',
+      'Nested Int',
+    );
+    testEncode(
+      IDL.Opt(IDL.Int),
+      [42],
+      '4449444c016e7c0100012a',
+      'Nested Int (number)',
+    );
     expect(
-        () => IDL.decode([IDL.Int], '4449444c00017d2a'.toU8a()),
-        throwsA(contains(
+      () => IDL.decode([IDL.Int], '4449444c00017d2a'.toU8a()),
+      throwsA(
+        contains(
           'type mismatch: type on the wire nat, expect type int',
-        )));
+        ),
+      ),
+    );
   });
 
   test('IDL encoding (nat)', () {
     // Nat
     testArg(IDL.Nat, BigInt.from(42), '4449444c00017d2a', 'Nat');
     testArg(IDL.Nat, BigInt.from(0), '4449444c00017d00', 'Nat of 0');
-    testArg(IDL.Nat, BigInt.from(1234567890), '4449444c00017dd285d8cc04',
-        'Positive Nat');
-    testArg(IDL.Nat, BigInt.parse('60000000000000000'),
-        '4449444c00017d808098f4e9b5ca6a', 'Positive BigInt');
-    testEncode(IDL.Opt(IDL.Nat), [BigInt.from(42)], '4449444c016e7d0100012a',
-        'Nested Nat (number)');
-    expect(() => IDL.encode([IDL.Nat], [-1]),
-        throwsA(contains('Invalid nat argument')));
+    testArg(
+      IDL.Nat,
+      BigInt.from(1234567890),
+      '4449444c00017dd285d8cc04',
+      'Positive Nat',
+    );
+    testArg(
+      IDL.Nat,
+      BigInt.parse('60000000000000000'),
+      '4449444c00017d808098f4e9b5ca6a',
+      'Positive BigInt',
+    );
+    testEncode(
+      IDL.Opt(IDL.Nat),
+      [BigInt.from(42)],
+      '4449444c016e7d0100012a',
+      'Nested Nat (number)',
+    );
+    expect(
+      () => IDL.encode([IDL.Nat], [-1]),
+      throwsA(contains('Invalid nat argument')),
+    );
   });
 
   test('IDL encoding (float64)', () {
@@ -117,15 +173,31 @@ void idlTest() {
     testArg(IDL.Float64, 6, '4449444c0001720000000000001840', 'Float');
     testArg(IDL.Float64, 0.5, '4449444c000172000000000000e03f', 'Float');
     // test_(IDL.Float64, Number.NaN, '4449444c000172010000000000f07f', 'NaN');
-    testArg(IDL.Float64, double.infinity, '4449444c000172000000000000f07f',
-        '+infinity');
-    testArg(IDL.Float64, double.negativeInfinity,
-        '4449444c000172000000000000f0ff', '-infinity');
+    testArg(
+      IDL.Float64,
+      double.infinity,
+      '4449444c000172000000000000f07f',
+      '+infinity',
+    );
+    testArg(
+      IDL.Float64,
+      double.negativeInfinity,
+      '4449444c000172000000000000f0ff',
+      '-infinity',
+    );
     // test_(IDL.Float64, 4.94065645841247E-324, '4449444c000172000000000000b03c', 'eps');
-    testArg(IDL.Float64, double.minPositive, '4449444c0001720100000000000000',
-        'min_value');
-    testArg(IDL.Float64, double.maxFinite, '4449444c000172ffffffffffffef7f',
-        'max_value');
+    testArg(
+      IDL.Float64,
+      double.minPositive,
+      '4449444c0001720100000000000000',
+      'min_value',
+    );
+    testArg(
+      IDL.Float64,
+      double.maxFinite,
+      '4449444c000172ffffffffffffef7f',
+      'max_value',
+    );
     // test_(IDL.Float64, (-(2 ^ 53 - 1)).toDouble(), '4449444c000172ffffffffffff3fc3',
     //     'min_safe_integer');
     // test_(
@@ -146,25 +218,47 @@ void idlTest() {
     testArg(IDL.Int32, -0x7fffffff, '4449444c00017501000080', 'Negative Int32');
     testArg(IDL.Int32, 0x7fffffff, '4449444c000175ffffff7f', 'Positive Int32');
     testArg(
-        IDL.Int64, BigInt.from(42), '4449444c0001742a00000000000000', 'Int64');
+      IDL.Int64,
+      BigInt.from(42),
+      '4449444c0001742a00000000000000',
+      'Int64',
+    );
     testArg(
-        IDL.Int64, BigInt.from(-42), '4449444c000174d6ffffffffffffff', 'Int64');
-    testArg(IDL.Int64, BigInt.from(1234567890),
-        '4449444c000174d202964900000000', 'Positive Int64');
+      IDL.Int64,
+      BigInt.from(-42),
+      '4449444c000174d6ffffffffffffff',
+      'Int64',
+    );
+    testArg(
+      IDL.Int64,
+      BigInt.from(1234567890),
+      '4449444c000174d202964900000000',
+      'Positive Int64',
+    );
     testArg(IDL.Nat8, 42, '4449444c00017b2a', 'Nat8');
     testArg(IDL.Nat8, 0, '4449444c00017b00', 'Nat8');
     testArg(IDL.Nat8, 255, '4449444c00017bff', 'Nat8');
     testArg(IDL.Nat32, 0, '4449444c00017900000000', 'Nat32');
     testArg(IDL.Nat32, 42, '4449444c0001792a000000', 'Nat32');
     testArg(IDL.Nat32, 0xffffffff, '4449444c000179ffffffff', 'Nat32');
-    testArg(IDL.Nat64, BigInt.from(1234567890),
-        '4449444c000178d202964900000000', 'Positive Nat64');
-    expect(() => IDL.encode([IDL.Nat32], [-42]),
-        throwsA(contains('Invalid nat32 argument')));
-    expect(() => IDL.encode([IDL.Int8], [256]),
-        throwsA(contains('Invalid int8 argument')));
-    expect(() => IDL.encode([IDL.Int32], [0xffffffff]),
-        throwsA(contains('Invalid int32 argument')));
+    testArg(
+      IDL.Nat64,
+      BigInt.from(1234567890),
+      '4449444c000178d202964900000000',
+      'Positive Nat64',
+    );
+    expect(
+      () => IDL.encode([IDL.Nat32], [-42]),
+      throwsA(contains('Invalid nat32 argument')),
+    );
+    expect(
+      () => IDL.encode([IDL.Int8], [256]),
+      throwsA(contains('Invalid int8 argument')),
+    );
+    expect(
+      () => IDL.encode([IDL.Int32], [0xffffffff]),
+      throwsA(contains('Invalid int32 argument')),
+    );
   });
 
   test('IDL encoding (tuple)', () {
@@ -218,7 +312,9 @@ void idlTest() {
     IDL.encode([IDL.Vec(IDL.Nat8)], [Uint8List.fromList([])]);
     IDL.encode([IDL.Vec(IDL.Nat8)], [Uint8List.fromList(List.filled(100, 42))]);
     IDL.encode(
-        [IDL.Vec(IDL.Nat16)], [Uint16List.fromList(List.filled(200, 42))]);
+      [IDL.Vec(IDL.Nat16)],
+      [Uint16List.fromList(List.filled(200, 42))],
+    );
   });
 
   test('IDL encoding (array)', () {
@@ -229,15 +325,18 @@ void idlTest() {
       '4449444c016d7c01000400010203',
       'Array of Ints',
     );
-    expect(() => IDL.encode([IDL.Vec(IDL.Int)], [BigInt.from(0)]),
-        throwsA(contains('Invalid vec int argument')));
     expect(
-        () => IDL.encode([
-              IDL.Vec(IDL.Int)
-            ], [
-              ['fail']
-            ]),
-        throwsA(contains('Invalid vec int argument')));
+      () => IDL.encode([IDL.Vec(IDL.Int)], [BigInt.from(0)]),
+      throwsA(contains('Invalid vec int argument')),
+    );
+    expect(
+      () => IDL.encode([
+        IDL.Vec(IDL.Int)
+      ], [
+        ['fail']
+      ]),
+      throwsA(contains('Invalid vec int argument')),
+    );
   });
 
   test('IDL encoding (array + tuples)', () {
@@ -276,12 +375,13 @@ void idlTest() {
     // Record
     testArg(IDL.Record({}), {}, '4449444c016c000100', 'Empty record');
     expect(
-        () => IDL.encode([
-              IDL.Record({'a': IDL.Text})
-            ], [
-              {'b': 'b'}
-            ]),
-        throwsA(contains('Record is missing key')));
+      () => IDL.encode([
+        IDL.Record({'a': IDL.Text})
+      ], [
+        {'b': 'b'}
+      ]),
+      throwsA(contains('Record is missing key')),
+    );
 
     // Test that additional keys are ignored
     testEncode(
@@ -348,8 +448,12 @@ void idlTest() {
       'Numbered record',
     );
     // Test Tuple and numbered record are exact the same
-    testArg(IDL.Tuple([IDL.Int8, IDL.Bool]), [42, true],
-        '4449444c016c020077017e01002a01', 'Tuple');
+    testArg(
+      IDL.Tuple([IDL.Int8, IDL.Bool]),
+      [42, true],
+      '4449444c016c020077017e01002a01',
+      'Tuple',
+    );
     testArg(
       IDL.Tuple([
         IDL.Tuple([IDL.Int8, IDL.Bool]),
@@ -374,10 +478,14 @@ void idlTest() {
     // Bool
     testArg(IDL.Bool, true, '4449444c00017e01', 'true');
     testArg(IDL.Bool, false, '4449444c00017e00', 'false');
-    expect(() => IDL.encode([IDL.Bool], [0]),
-        throwsA(contains('Invalid bool argument')));
-    expect(() => IDL.encode([IDL.Bool], ['false']),
-        throwsA(contains('Invalid bool argument')));
+    expect(
+      () => IDL.encode([IDL.Bool], [0]),
+      throwsA(contains('Invalid bool argument')),
+    );
+    expect(
+      () => IDL.encode([IDL.Bool], ['false']),
+      throwsA(contains('Invalid bool argument')),
+    );
   });
 
   test('IDL encoding (principal)', () {
@@ -395,15 +503,21 @@ void idlTest() {
       'principal',
     );
     expect(
-        () => IDL.encode([IDL.Principal], ['w7x7r-cok77-xa']),
-        throwsA(contains(
+      () => IDL.encode([IDL.Principal], ['w7x7r-cok77-xa']),
+      throwsA(
+        contains(
           'Invalid principal argument',
-        )));
+        ),
+      ),
+    );
     expect(
-        () => IDL.decode([IDL.Principal], '4449444c00016803caffee'.toU8a()),
-        throwsA(contains(
+      () => IDL.decode([IDL.Principal], '4449444c00016803caffee'.toU8a()),
+      throwsA(
+        contains(
           'Cannot decode principal',
-        )));
+        ),
+      ),
+    );
   });
 
   test('IDL encoding (function)', () {
