@@ -33,6 +33,7 @@ dependencies:
   meta: ^1.7.0
   path: ^1.8.1
   pinenacl: ^0.3.4
+  pointycastle: ^3.6.0
   protobuf: ^2.0.1
   recase: ^4.0.0
   tuple: ^2.0.0
