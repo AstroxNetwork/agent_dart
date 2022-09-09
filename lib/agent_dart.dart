@@ -30,6 +30,7 @@ export 'utils/map.dart';
 export 'utils/number.dart';
 export 'utils/string.dart';
 export 'utils/u8a.dart';
+export 'utils/keccak.dart';
 
 // archiver
 export 'archiver/archiver.dart';
