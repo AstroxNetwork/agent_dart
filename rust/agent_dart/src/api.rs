@@ -3,9 +3,10 @@ use crate::ed25519::ED25519FFI;
 use crate::keyring::KeyRingFFI;
 use crate::keystore::KeystoreFFI;
 use crate::secp256k1::{Secp256k1FFI, Secp256k1IdentityExport, SignatureFFI};
+use crate::sha::Keccak256FFI;
 use crate::types::{
     AesDecryptReq, AesEncryptReq, BLSVerifyReq, CreatePhraseReq, ED25519FromSeedReq, ED25519Res,
-    ED25519SignReq, ED25519VerifyReq, KeyDerivedRes, PBKDFDeriveReq, PhraseToSeedReq,
+    ED25519SignReq, ED25519VerifyReq, KeccakReq, KeyDerivedRes, PBKDFDeriveReq, PhraseToSeedReq,
     ScriptDeriveReq, Secp256k1FromSeedReq, Secp256k1SignReq, Secp256k1SignWithSeedReq,
     Secp256k1VerifyReq, SeedToKeyReq, SymmError,
 };
@@ -93,4 +94,11 @@ pub fn pbkdf2_derive_key(req: PBKDFDeriveReq) -> KeyDerivedRes {
 
 pub fn scrypt_derive_key(req: ScriptDeriveReq) -> KeyDerivedRes {
     KeystoreFFI::scrypt_derive_key(req)
+}
+
+/// ----------------
+/// keccak
+/// ----------------
+pub fn keccak256_encode(req: KeccakReq) -> Vec<u8> {
+    Keccak256FFI::encode(req.message)
 }

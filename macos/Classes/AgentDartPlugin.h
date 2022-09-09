@@ -208,6 +208,10 @@
 
 #define KEY_LENGTH_AES (KEY_LENGTH / 2)
 
+typedef int64_t DartPort;
+
+typedef bool (*DartPostCObjectFnType)(DartPort port_id, void *message);
+
 typedef struct wire_uint_8_list {
   uint8_t *ptr;
   int32_t len;
@@ -285,15 +289,15 @@ typedef struct wire_ScriptDeriveReq {
   uint32_t r;
 } wire_ScriptDeriveReq;
 
+typedef struct wire_KeccakReq {
+  struct wire_uint_8_list *message;
+} wire_KeccakReq;
+
 typedef struct WireSyncReturnStruct {
   uint8_t *ptr;
   int32_t len;
   bool success;
 } WireSyncReturnStruct;
-
-typedef int64_t DartPort;
-
-typedef bool (*DartPostCObjectFnType)(DartPort port_id, void *message);
 
 typedef int64_t Chunk;
 
@@ -306,6 +310,8 @@ typedef int64_t Chunk;
 #define TMASK ((1 << TBITS) - 1)
 
 #define MCONST 140737475470229501
+
+void store_dart_post_cobject(DartPostCObjectFnType ptr);
 
 void wire_mnemonic_phrase_to_seed(int64_t port_, struct wire_PhraseToSeedReq *req);
 
@@ -335,37 +341,39 @@ void wire_pbkdf2_derive_key(int64_t port_, struct wire_PBKDFDeriveReq *req);
 
 void wire_scrypt_derive_key(int64_t port_, struct wire_ScriptDeriveReq *req);
 
-struct wire_AesDecryptReq *new_box_autoadd_aes_decrypt_req(void);
+void wire_keccak256_encode(int64_t port_, struct wire_KeccakReq *req);
 
-struct wire_AesEncryptReq *new_box_autoadd_aes_encrypt_req(void);
+struct wire_AesDecryptReq *new_box_autoadd_aes_decrypt_req_0(void);
 
-struct wire_BLSVerifyReq *new_box_autoadd_bls_verify_req(void);
+struct wire_AesEncryptReq *new_box_autoadd_aes_encrypt_req_0(void);
 
-struct wire_ED25519FromSeedReq *new_box_autoadd_ed_25519_from_seed_req(void);
+struct wire_BLSVerifyReq *new_box_autoadd_bls_verify_req_0(void);
 
-struct wire_ED25519SignReq *new_box_autoadd_ed_25519_sign_req(void);
+struct wire_ED25519FromSeedReq *new_box_autoadd_ed_25519_from_seed_req_0(void);
 
-struct wire_ED25519VerifyReq *new_box_autoadd_ed_25519_verify_req(void);
+struct wire_ED25519SignReq *new_box_autoadd_ed_25519_sign_req_0(void);
 
-struct wire_PBKDFDeriveReq *new_box_autoadd_pbkdf_derive_req(void);
+struct wire_ED25519VerifyReq *new_box_autoadd_ed_25519_verify_req_0(void);
 
-struct wire_PhraseToSeedReq *new_box_autoadd_phrase_to_seed_req(void);
+struct wire_KeccakReq *new_box_autoadd_keccak_req_0(void);
 
-struct wire_ScriptDeriveReq *new_box_autoadd_script_derive_req(void);
+struct wire_PBKDFDeriveReq *new_box_autoadd_pbkdf_derive_req_0(void);
 
-struct wire_Secp256k1FromSeedReq *new_box_autoadd_secp_256_k_1_from_seed_req(void);
+struct wire_PhraseToSeedReq *new_box_autoadd_phrase_to_seed_req_0(void);
 
-struct wire_Secp256k1SignWithSeedReq *new_box_autoadd_secp_256_k_1_sign_with_seed_req(void);
+struct wire_ScriptDeriveReq *new_box_autoadd_script_derive_req_0(void);
 
-struct wire_Secp256k1VerifyReq *new_box_autoadd_secp_256_k_1_verify_req(void);
+struct wire_Secp256k1FromSeedReq *new_box_autoadd_secp_256_k_1_from_seed_req_0(void);
 
-struct wire_SeedToKeyReq *new_box_autoadd_seed_to_key_req(void);
+struct wire_Secp256k1SignWithSeedReq *new_box_autoadd_secp_256_k_1_sign_with_seed_req_0(void);
 
-struct wire_uint_8_list *new_uint_8_list(int32_t len);
+struct wire_Secp256k1VerifyReq *new_box_autoadd_secp_256_k_1_verify_req_0(void);
+
+struct wire_SeedToKeyReq *new_box_autoadd_seed_to_key_req_0(void);
+
+struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
 
 void free_WireSyncReturnStruct(struct WireSyncReturnStruct val);
-
-void store_dart_post_cobject(DartPostCObjectFnType ptr);
 
 static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
@@ -383,20 +391,22 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_aes_128_ctr_decrypt);
     dummy_var ^= ((int64_t) (void*) wire_pbkdf2_derive_key);
     dummy_var ^= ((int64_t) (void*) wire_scrypt_derive_key);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_aes_decrypt_req);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_aes_encrypt_req);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_bls_verify_req);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_ed_25519_from_seed_req);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_ed_25519_sign_req);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_ed_25519_verify_req);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_pbkdf_derive_req);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_phrase_to_seed_req);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_script_derive_req);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_from_seed_req);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_sign_with_seed_req);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_verify_req);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_seed_to_key_req);
-    dummy_var ^= ((int64_t) (void*) new_uint_8_list);
+    dummy_var ^= ((int64_t) (void*) wire_keccak256_encode);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_aes_decrypt_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_aes_encrypt_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_bls_verify_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_ed_25519_from_seed_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_ed_25519_sign_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_ed_25519_verify_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_keccak_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_pbkdf_derive_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_phrase_to_seed_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_script_derive_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_from_seed_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_sign_with_seed_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_verify_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_seed_to_key_req_0);
+    dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturnStruct);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);
     return dummy_var;

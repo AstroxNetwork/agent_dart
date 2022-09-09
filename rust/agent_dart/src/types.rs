@@ -118,3 +118,7 @@ pub struct MACDeriveReq {
     pub derived_left_bits: Vec<u8>,
     pub cipher_text: Vec<u8>,
 }
+
+pub struct KeccakReq {
+    pub message: Vec<u8>,
+}
