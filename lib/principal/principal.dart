@@ -135,7 +135,7 @@ class Principal {
   }
 
   @override
-  int get hashCode => _arr.fold(0, (p, e) => p ^ e.hashCode);
+  int get hashCode => _arr.hashCode;
 }
 
 class CanisterId extends Principal {
