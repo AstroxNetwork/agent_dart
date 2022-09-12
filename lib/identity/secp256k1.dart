@@ -196,8 +196,7 @@ class Secp256k1PublicKey implements PublicKey {
     }
     final rawKey = publicKey.sublist(Secp256k1PublicKey.derPrefix.length);
     if (!u8aEq(derEncode(rawKey), publicKey)) {
-      throw 'a valid secp256k1 DER-encoded public key '
-          'must have the following prefix: ${Secp256k1PublicKey.derPrefix}.';
+      throw StateError('expected prefix ${Secp256k1PublicKey.derPrefix}.');
     }
     return rawKey;
   }
@@ -236,7 +235,7 @@ Uint8List signSecp256k1(String message, BinaryBlob secretKey) {
 }
 
 Future<Uint8List> signSecp256k1Async(Uint8List blob, Uint8List seed) async {
-  final result = await AgentDartFFI.instance.secp256K1Sign(
+  final result = await AgentDartFFI.impl.secp256K1Sign(
     req: Secp256k1SignWithSeedReq(seed: seed, msg: blob),
   );
   return result.signature!;

@@ -40,14 +40,14 @@ class Phrase {
   List<String> get list => _list;
 
   Future<Uint8List> toSeed({String passphrase = ''}) {
-    return AgentDartFFI.instance.mnemonicPhraseToSeed(
+    return AgentDartFFI.impl.mnemonicPhraseToSeed(
       req: PhraseToSeedReq(phrase: mnemonic, password: passphrase),
     );
   }
 
   Future<Uint8List> toHdKey({String passphrase = '', int index = 0}) async {
     final seed = await toSeed(passphrase: passphrase);
-    return AgentDartFFI.instance.mnemonicSeedToKey(
+    return AgentDartFFI.impl.mnemonicSeedToKey(
       req: SeedToKeyReq(seed: seed, path: '$icpPath/0/$index'),
     );
   }

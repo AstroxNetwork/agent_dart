@@ -12,7 +12,7 @@ Service assetIDL() {
 
 enum AssetMethod { retrieve, store }
 
-/// try to understand how idl can be transformed
+/// Try to understand how idl can be transformed.
 class AssetActor {
   AssetActor();
 
@@ -23,7 +23,7 @@ class AssetActor {
     if (res != null) {
       return res as Uint8List;
     }
-    throw 'Cannot get result but $res';
+    throw StateError('request failed with the result: $res.');
   }
 
   Future<void> store(String key, Uint8List value) async {

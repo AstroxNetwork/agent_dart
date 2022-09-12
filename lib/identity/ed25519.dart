@@ -56,10 +56,10 @@ class Ed25519PublicKey implements auth.PublicKey {
   static BinaryBlob derDecode(BinaryBlob key) {
     final unwrapped = unwrapDER(key.buffer, oidEd25519);
     if (unwrapped.length != rawKeyLength) {
-      throw ArgumentError.value(
-        key,
-        'public key',
-        'an Ed25519 public key must be exactly 32-bytes long.',
+      throw RangeError.value(
+        unwrapped.length,
+        'expected $rawKeyLength-bytes long '
+        'but got ${unwrapped.length}.',
       );
     }
     return unwrapped;
@@ -138,16 +138,15 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
 
   static Future<Ed25519KeyIdentity> generate(Uint8List? seed) async {
     if (seed != null && seed.length != 32) {
-      throw ArgumentError.value(
-        seed,
-        'seed',
-        'Ed25519 seed must be 32-bytes long.',
+      throw RangeError.value(
+        seed.length,
+        'expected 32-bytes long but got ${seed.length}.',
       );
     }
 
     final Uint8List publicKey;
     final Uint8List secretKey; // Seed itself.
-    final kp = await AgentDartFFI.instance.ed25519FromSeed(
+    final kp = await AgentDartFFI.impl.ed25519FromSeed(
       req: ED25519FromSeedReq(seed: seed ?? getRandomValues()),
     );
     publicKey = kp.publicKey;
@@ -194,13 +193,13 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     final blob = challenge is BinaryBlob
         ? challenge
         : blobFromBuffer(challenge as ByteBuffer);
-    return AgentDartFFI.instance.ed25519Sign(
+    return AgentDartFFI.impl.ed25519Sign(
       req: ED25519SignReq(seed: _seed, message: blob),
     );
   }
 
   Future<bool> verify(Uint8List signature, Uint8List message) {
-    return AgentDartFFI.instance.ed25519Verify(
+    return AgentDartFFI.impl.ed25519Verify(
       req: ED25519VerifyReq(
         message: message,
         sig: signature,
@@ -250,7 +249,7 @@ Future<Ed25519KeyIdentity> fromMnemonicWithoutValidation(
   int offset = hardened,
 }) async {
   derivationPath ??= [];
-  final seed = await AgentDartFFI.instance.mnemonicPhraseToSeed(
+  final seed = await AgentDartFFI.impl.mnemonicPhraseToSeed(
     req: PhraseToSeedReq(phrase: mnemonic, password: ''),
   );
   return fromSeedWithSlip0010(seed, derivationPath, offset: offset);

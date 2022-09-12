@@ -166,18 +166,20 @@ class Certificate {
           _rootKey = _agent.rootKey;
           return Future.value(_rootKey);
         }
-        throw "Agent does not have a rootKey. Do you need to call 'fetchRootKey'?";
+        throw StateError(
+          'the rootKey is not exist. Try to call `fetchRootKey` again.',
+        );
       }
       return Future.value(_rootKey);
     }
     final Certificate cert = Certificate(d, _agent);
     if (!(await cert.verify())) {
-      throw 'fail to verify delegation certificate';
+      throw StateError('fail to verify certificate.');
     }
 
     final lookup = cert.lookupEx(['subnet', d.subnetId, 'public_key']);
     if (lookup == null) {
-      throw 'Could not find subnet key for subnet 0x${d.subnetId!.toHex()}';
+      throw StateError('Cannot find subnet key for 0x${d.subnetId!.toHex()}.');
     }
     return lookup;
   }
@@ -192,12 +194,14 @@ const _keyLength = 96;
 Uint8List extractDER(Uint8List buf) {
   final expectedLength = _derPrefix.length + _keyLength;
   if (buf.length != expectedLength) {
-    throw 'BLS DER-encoded public key must be $expectedLength bytes long';
+    throw RangeError.value(
+      buf.length,
+      'expected $expectedLength-bytes long but got ${buf.length}.',
+    );
   }
   final prefix = buf.sublist(0, _derPrefix.length);
   if (!u8aEq(prefix, _derPrefix)) {
-    throw 'BLS DER-encoded public key is invalid. '
-        'Expect the following prefix: $_derPrefix, but get $prefix.';
+    throw StateError('expected prefix $_derPrefix but got $prefix.');
   }
   return buf.sublist(_derPrefix.length);
 }
@@ -260,8 +264,6 @@ Uint8List? lookupPathEx(List path, List tree) {
   return maybeReturn;
 }
 
-/// @param path
-/// @param tree
 Uint8List? lookupPath(List path, List tree) {
   if (path.isEmpty) {
     switch (tree[0]) {

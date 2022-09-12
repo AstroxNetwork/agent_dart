@@ -36,18 +36,14 @@ DynamicLibrary getDyLib() {
 class AgentDartFFI {
   factory AgentDartFFI() => _instance;
 
-  AgentDartFFI._() {
-    _impl ??= AgentDartImpl(getDyLib());
-  }
-
-  AgentDartFFI._from(this._impl);
+  AgentDartFFI._();
 
   factory AgentDartFFI.run() {
-    return AgentDartFFI._from(AgentDartImpl(getDyLib()));
+    return AgentDartFFI._();
   }
 
-  static AgentDartImpl get instance => AgentDartFFI()._impl!;
   static final AgentDartFFI _instance = AgentDartFFI._();
 
-  AgentDartImpl? _impl;
+  static AgentDartImpl get impl => AgentDartFFI()._impl;
+  late final AgentDartImpl _impl = AgentDartImpl(getDyLib());
 }

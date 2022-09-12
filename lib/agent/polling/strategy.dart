@@ -60,9 +60,11 @@ PollStrategy maxAttempts(int count) {
     RequestStatusResponseStatus status,
   ) async {
     if (--attempts <= 0) {
-      throw 'Failed to retrieve a reply for request after $count attempts:\n'
-          '  Request ID: ${requestIdToHex(requestId)}\n'
-          '  Request status: ${status.name}\n';
+      throw Exception(
+        'Failed to retrieve a reply for request after $count attempts:\n'
+        '  Request ID: ${requestIdToHex(requestId)}\n'
+        '  Request status: ${status.name}\n',
+      );
     }
   };
 }
@@ -82,17 +84,20 @@ PollStrategy throttle(int throttleMilliseconds) {
   };
 }
 
-PollStrategy timeout(int timeInMilliseconds) {
-  final end = DateTime.now().millisecondsSinceEpoch + timeInMilliseconds;
+PollStrategy timeout(int milliseconds) {
+  final end = DateTime.now().millisecondsSinceEpoch + milliseconds;
   return (
     Principal canisterId,
     RequestId requestId,
     RequestStatusResponseStatus status,
   ) async {
     if (DateTime.now().millisecondsSinceEpoch > end) {
-      throw 'Request timed out after $timeInMilliseconds msec:\n'
-          '  Request ID: ${requestIdToHex(requestId)}\n'
-          '  Request status: $status\n';
+      throw TimeoutException(
+        'Request timed out after $milliseconds milliseconds:\n'
+        '  Request ID: ${requestIdToHex(requestId)}\n'
+        '  Request status: $status\n',
+        Duration(milliseconds: milliseconds),
+      );
     }
   };
 }

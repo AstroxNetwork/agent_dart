@@ -54,14 +54,12 @@ Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
   final Uint8List ciphertext =
       (keyStore['crypto']['ciphertext'] as String).toU8a();
   final String kdf = keyStore['crypto']['kdf'];
-
   final Map<String, dynamic> kdfParams =
       keyStore['crypto']['kdfparams'] is String
           ? json.decode(keyStore['crypto']['kdfparams'])
           : keyStore['crypto']['kdfparams'];
   final cipherParams = keyStore['crypto']['cipherparams'];
   final Uint8List iv = (cipherParams['iv'] as String).toU8a();
-
   final deriveKeyResult = await nativeDeriveKey(
     kdf: kdf,
     iv: iv,
@@ -71,20 +69,16 @@ Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
     passphrase: passphrase,
     salt: (kdfParams['salt'] as String).replaceAll('0x', ''),
   );
-
   final String macString = keyStore['crypto']['mac'];
-
-  final Function eq = const ListEquality().equals;
-  if (!eq(
+  if (!const ListEquality().equals(
     deriveKeyResult.mac.toUpperCase().codeUnits,
     macString.toUpperCase().codeUnits,
   )) {
-    throw 'Decryption Failed';
+    throw StateError('decryption failed.');
   }
 
   final encryptedPrivateKey =
       (keyStore['crypto']['ciphertext'] as String).toU8a();
-
   return (await _decryptPhraseAsync(
     cipherText: encryptedPrivateKey,
     key: deriveKeyResult.leftBits,
@@ -173,7 +167,7 @@ Future<String> decryptPhrase(
     deriveKeyResult.mac.toUpperCase().codeUnits,
     macString.toUpperCase().codeUnits,
   )) {
-    throw 'Decryption Failed';
+    throw StateError('decryption failed.');
   }
 
   final encryptedPhrase = (keyStore['crypto']['ciphertext'] as String).toU8a();
@@ -243,7 +237,7 @@ Future<String> decryptCborPhrase(List<int> bytes, String password) async {
   );
 
   if (!u8aEq(deriveKeyResult.mac.toU8a(), macFromRecover)) {
-    throw 'Decryption Failed';
+    throw StateError('decryption failed.');
   }
 
   final Uint8List encryptedPhrase = Uint8List.fromList(recover['ciphertext']);

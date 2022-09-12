@@ -338,7 +338,7 @@ class ProxyStubAgent {
         });
         break;
       default:
-        throw 'Invalid message received: ${jsonEncode(msg)}';
+        throw UnsupportedError('message received: ${jsonEncode(msg)}.');
     }
   }
 }
@@ -359,7 +359,7 @@ class ProxyAgent implements Agent {
 
     final maybePromise = _pendingCalls[id];
     if (maybePromise == null) {
-      throw 'A proxy get the same message twice...';
+      throw StateError('proxy $id got the same message twice.');
     }
     _pendingCalls.remove(id);
     final resolve = maybePromise.resolve;
@@ -374,7 +374,9 @@ class ProxyAgent implements Agent {
       case ProxyMessageKind.statusResponse:
         return resolve(msg.response);
       default:
-        throw 'Invalid message being sent to ProxyAgent: ${jsonEncode(msg)}';
+        throw UnsupportedError(
+          'invalid message being sent to ProxyAgent: ${jsonEncode(msg)}.',
+        );
     }
   }
 
@@ -387,7 +389,7 @@ class ProxyAgent implements Agent {
       }),
     ).then((principal) {
       if (principal is! String) {
-        throw 'Invalid principal received.';
+        throw ArgumentError.value(principal, 'invalid principal received.');
       }
       return Principal.fromText(principal);
     });

@@ -95,7 +95,7 @@ String? getAccessTokenFromURL(dynamic url) {
 DelegationChain createDelegationChainFromAccessToken(String accessToken) {
   // Transform the HEXADECIMAL string into the JSON it represents.
   if (!isHexadecimal(accessToken) || (accessToken.length % 2) != 0) {
-    throw 'Invalid hexadecimal string for accessToken.';
+    throw ArgumentError.value(accessToken, 'invalid hexadecimal string.');
   }
   final strList = accessToken.split('');
   List<String> value = List<String>.from([]);

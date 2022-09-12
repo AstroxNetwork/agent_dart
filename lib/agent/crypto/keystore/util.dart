@@ -14,7 +14,7 @@ KeyDerivator getDerivedKey(String kdf, Map<String, dynamic> params) {
     final dklen = params['dklen'];
     return _ScryptKeyDerivator(dklen, n, r, p, salt);
   } else {
-    throw ArgumentError('Only pbkdf2 and scrypt are supported');
+    throw UnsupportedError('only pbkdf2 and scrypt are supported');
   }
 }
 
@@ -23,7 +23,7 @@ Future<Uint8List> _encryptPhraseAsync({
   required Uint8List iv,
   required String message,
 }) {
-  return AgentDartFFI.instance.aes128CtrEncrypt(
+  return AgentDartFFI.impl.aes128CtrEncrypt(
     req: AesEncryptReq(key: key, iv: iv, message: message.plainToU8a()),
   );
 }
@@ -33,7 +33,7 @@ Future<Uint8List> _decryptPhraseAsync({
   required Uint8List iv,
   required Uint8List cipherText,
 }) {
-  return AgentDartFFI.instance.aes128CtrDecrypt(
+  return AgentDartFFI.impl.aes128CtrDecrypt(
     req: AesDecryptReq(key: key, iv: iv, cipherText: cipherText),
   );
 }
@@ -52,7 +52,7 @@ Future<NativeDeriveKeyResult> nativeDeriveKey({
   final Uint8List rightBits;
 
   if (kdf == 'scrypt') {
-    final scryptKey = await AgentDartFFI.instance.scryptDeriveKey(
+    final scryptKey = await AgentDartFFI.impl.scryptDeriveKey(
       req: ScriptDeriveReq(
         n: kdfParams['n'],
         p: kdfParams['p'],
@@ -68,7 +68,7 @@ Future<NativeDeriveKeyResult> nativeDeriveKey({
       [...scryptKey.leftBits, ...scryptKey.rightBits],
     );
   } else {
-    final scryptKey = await AgentDartFFI.instance.pbkdf2DeriveKey(
+    final scryptKey = await AgentDartFFI.impl.pbkdf2DeriveKey(
       req: PBKDFDeriveReq(
         c: 262144,
         password: passphrase.plainToU8a(),

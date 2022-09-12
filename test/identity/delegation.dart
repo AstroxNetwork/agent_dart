@@ -100,7 +100,7 @@ void delegationTest() {
         if (value is String) {
           final byte = BigInt.tryParse(value, radix: 16);
           if (byte == null) {
-            throw 'expected all strings to be hex, but got: $value';
+            throw StateError('expected hex string but got $value.');
           }
         }
         return value;

@@ -20,7 +20,7 @@ List<T> safeRead<T>(BufferPipe<T> pipe, int ref) {
 Uint8List lebEncode(dynamic value) {
   var bn = value is BigInt ? value : BigInt.from(value);
   if (bn < BigInt.zero) {
-    throw 'Cannot leb encode negative values.';
+    throw StateError('cannot leb-encode negative values.');
   }
   final List<int> pipe = [];
   while (true) {
