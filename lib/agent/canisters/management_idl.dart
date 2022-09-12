@@ -1,7 +1,7 @@
 import 'package:agent_dart/candid/idl.dart';
 
 Service managementIDL() {
-  final canisterId = IDL.Principal;
+  const canisterId = IDL.Principal;
   final wasmModule = IDL.Vec(IDL.Nat8);
   final canisterSettings = IDL.Record({
     'compute_allocation': IDL.Opt(IDL.Nat),

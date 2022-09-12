@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:agent_dart/agent/request_id.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/utils/u8a.dart';
@@ -6,7 +8,7 @@ import 'package:agent_dart/utils/extension.dart';
 import './agent/http/types.dart';
 import 'types.dart';
 
-final domainSeparator = '\x0Aic-request'.plainToU8a();
+final _domainSeparator = '\x0Aic-request'.plainToU8a();
 
 /// A Key Pair, containing a secret and public key.
 abstract class KeyPair {
@@ -46,6 +48,12 @@ abstract class SignIdentity implements Identity {
   /// Signs a blob of data, with this identity's private key.
   Future<BinaryBlob> sign(BinaryBlob blob);
 
+  Uint8List getAccountId([Uint8List? subAccount]) {
+    return Principal.selfAuthenticating(
+      getPublicKey().toDer(),
+    ).toAccountId(subAccount: subAccount);
+  }
+
   /// Get the principal represented by this identity. Normally should be a
   /// `Principal.selfAuthenticating()`.
   @override
@@ -65,10 +73,10 @@ abstract class SignIdentity implements Identity {
     return {
       ...request.toJson(),
       'body': {
-        'content': (request).body.toJson(),
+        'content': request.body.toJson(),
         'sender_pubkey': getPublicKey().toDer(),
         'sender_sig': await sign(
-          u8aConcat([domainSeparator, requestId.buffer]),
+          u8aConcat([_domainSeparator, requestId.buffer]),
         ),
       },
     };
@@ -90,22 +98,19 @@ class AnonymousIdentity implements Identity {
   }
 }
 
-/*
- * We need to communicate with other agents on the page about identities,
- * but those messages may need to go across boundaries where it's not possible to
- * serialize/deserialize object prototypes easily.
- * So these are lightweight, serializable objects that contain enough information to recreate
- * SignIdentities, but don't commit to having all methods of SignIdentity.
- *
- * Use Case:
- * * DOM Events that let differently-versioned components communicate to one another about
- *   Identities, even if they're using slightly different versions of agent packages to
- *   create/interpret them.
- */
-
+/// We need to communicate with other agents on the page about identities,
+/// but those messages may need to go across boundaries where it's not possible
+/// to serialize/deserialize object prototypes easily. So these are lightweight,
+/// serializable objects that contain enough information to recreate
+/// [SignIdentity]s, but don't commit to having all methods of [SignIdentity].
+///
+/// Use Case:
+///  * DOM Events that let differently-versioned components communicate to
+///    one another about [Identity], even if they're using slightly different
+///    versions of agent packages to create/interpret them.
+///
 /// Create an IdentityDescriptor from a @dfinity/authentication Identity
 /// @param identity - identity describe in returned descriptor
-
 class IdentityDescriptor {
   const IdentityDescriptor({required this.type, this.publicKey});
 
@@ -120,23 +125,16 @@ class IdentityDescriptor {
   final String? publicKey;
 
   Map<String, dynamic> toJson() {
-    if (publicKey == null) {
-      return {
-        'type': type,
-      };
-    } else {
-      return {'type': type, 'publicKey': publicKey};
-    }
+    return {'type': type, if (publicKey != null) 'publicKey': publicKey};
   }
 }
 
 IdentityDescriptor createIdentityDescriptor(Identity identity) {
-  final identityIndicator = identity is SignIdentity
-      ? {
-          'type': 'PublicKeyIdentity',
-          'publicKey': identity.getPublicKey().toDer().toHex()
-        }
-      : {'type': 'AnonymousIdentity'};
+  final isSignIdentity = identity is SignIdentity;
+  final identityIndicator = {
+    'type': isSignIdentity ? 'PublicKeyIdentity' : 'AnonymousIdentity',
+    if (isSignIdentity) 'publicKey': identity.getPublicKey().toDer().toHex(),
+  };
   return IdentityDescriptor.fromJson(identityIndicator);
 }
 

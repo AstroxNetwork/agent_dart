@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:archive/archive_io.dart';
 
 class SigningBlockDecoder extends ZipDecoder {
-  SigningBlockDecoder(this.file) : super() {
+  SigningBlockDecoder(this.file) {
     _init();
   }
 
@@ -25,10 +25,12 @@ class SigningBlockDecoder extends ZipDecoder {
 
   SigningBlockResultList getResult([bool pubKey = false]) {
     if (_messages.length != _signatures.length) {
-      throw 'Messages Length:${_messages.length}, is not matched with Signatures length: ${_signatures.length}';
+      throw 'Messages length ${_messages.length} '
+          'is not matched with Signatures length: ${_signatures.length}';
     }
     if (_signatures.length != _algoIds.length) {
-      throw 'Algos Length:${_algoIds.length}, is not matched with Signatures length: ${_signatures.length}';
+      throw 'Algos length ${_algoIds.length} '
+          'is not matched with Signatures length: ${_signatures.length}';
     }
     final result = <SigningBlockResult>[];
     for (var i = 0; i < _messages.length; i += 1) {
@@ -57,7 +59,7 @@ class SigningBlockDecoder extends ZipDecoder {
   void checkMagicNumber() {
     final check = _checkMagicNumber();
     if (!check) {
-      throw 'MagicNumber is not correct';
+      throw 'MagicNumber is not correct.';
     }
   }
 
@@ -167,7 +169,7 @@ class SigningBlockDecoder extends ZipDecoder {
   bool _checkMagicNumber() {
     _magicNumberOffset = directory.centralDirectoryOffset - 16;
     _input.offset = _magicNumberOffset;
-    final signingBlockNumber = (_input.readString(size: 16));
+    final signingBlockNumber = _input.readString(size: 16);
     return signingBlockNumber == SigningBlockDecoder.blockMagicNumber;
   }
 

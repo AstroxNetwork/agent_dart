@@ -292,13 +292,7 @@ class ProxyStubAgent {
         });
         break;
       case ProxyMessageKind.query:
-        _agent
-            .query(
-          msg.args?[0],
-          msg.args?[1],
-          msg.args?[2],
-        )
-            .then((response) {
+        _agent.query(msg.args?[0], msg.args?[1], msg.args?[2]).then((response) {
           _frontend(
             ProxyMessageQueryResponse.fromJson({
               'id': msg.id,
@@ -354,7 +348,7 @@ class ProxyAgent implements Agent {
 
   final void Function(ProxyMessage msg) _backend;
 
-  final Map<int, Promise> _pendingCalls = <int, Promise>{};
+  final Map<int, _Promise> _pendingCalls = <int, _Promise>{};
   int _nextId = 0;
 
   @override
@@ -455,32 +449,24 @@ class ProxyAgent implements Agent {
   }
 
   Future<T> _sendAndWait<T>(ProxyMessage msg) async {
-    // return new Promise((resolve, reject) => {
-    //   this._pendingCalls.set(msg.id, [resolve, reject]);
-
-    //   this._backend(msg);
-    // });
     final Completer<T> c = Completer<T>();
     final reject = c.completeError;
     final resolve = c.complete;
-    _pendingCalls.putIfAbsent(msg.id!, () => Promise<T>(resolve, reject));
+    _pendingCalls.putIfAbsent(msg.id!, () => _Promise<T>(resolve, reject));
     _backend(msg);
     return c.future;
   }
 
   @override
   Future<BinaryBlob> fetchRootKey() async {
-    // Hex-encoded version of the replica root key
+    // Hex-encoded version of the replica root key.
     rootKey = (await status())['root_key'] as Uint8List;
     return Future.value(rootKey);
   }
 }
 
-typedef PromiseResolve = Future Function(dynamic value);
-typedef PromiseReject = Future Function(dynamic value);
-
-class Promise<T> {
-  const Promise(this.resolve, this.reject);
+class _Promise<T> {
+  const _Promise(this.resolve, this.reject);
 
   final void Function(Object, [StackTrace?]) reject;
   final void Function([FutureOr<T>?]) resolve;

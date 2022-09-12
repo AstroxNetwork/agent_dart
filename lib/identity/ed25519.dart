@@ -6,8 +6,6 @@ import 'package:agent_dart/agent/auth.dart' as auth;
 
 import '../bridge/ffi/ffi.dart';
 
-typedef JsonnableEd25519KeyIdentity = List<String>;
-
 class Ed25519KeyPair extends auth.KeyPair {
   Ed25519KeyPair({required super.publicKey, required super.secretKey});
 
@@ -17,31 +15,31 @@ class Ed25519KeyPair extends auth.KeyPair {
 }
 
 class Ed25519PublicKey implements auth.PublicKey {
-  /// `fromRaw` and `fromDer` should be used for instantiation,
-  /// not this constructor.
-  Ed25519PublicKey(this.rawKey) : derKey = Ed25519PublicKey.derEncode(rawKey);
+  /// [Ed25519PublicKey.fromRaw] and [Ed25519PublicKey.fromDer] should not be
+  /// used for instantiation in this constructor.
+  Ed25519PublicKey(this.rawKey);
 
-  final BinaryBlob rawKey;
-  final DerEncodedBlob derKey;
-
-  static Ed25519PublicKey from(auth.PublicKey key) {
+  factory Ed25519PublicKey.from(auth.PublicKey key) {
     return Ed25519PublicKey.fromDer(key.toDer());
   }
 
-  static Ed25519PublicKey fromRaw(BinaryBlob rawKey) {
+  factory Ed25519PublicKey.fromRaw(BinaryBlob rawKey) {
     return Ed25519PublicKey(rawKey);
   }
 
-  static Ed25519PublicKey fromDer(BinaryBlob derKey) {
+  factory Ed25519PublicKey.fromDer(BinaryBlob derKey) {
     return Ed25519PublicKey(Ed25519PublicKey.derDecode(derKey));
   }
+
+  final BinaryBlob rawKey;
+  late final DerEncodedBlob derKey = Ed25519PublicKey.derEncode(rawKey);
 
   /// The length of Ed25519 public keys is always 32 bytes.
   static int rawKeyLength = 32;
 
   /// Adding this prefix to a raw public key is sufficient to DER-encode it.
   /// See https://github.com/dfinity/agent-js/issues/42#issuecomment-716356288
-  static Uint8List derPrefix = Uint8List.fromList([
+  static final Uint8List derPrefix = Uint8List.fromList([
     ...[48, 42], // SEQUENCE
     ...[48, 5], // SEQUENCE
     ...[6, 3], // OBJECT
@@ -58,128 +56,125 @@ class Ed25519PublicKey implements auth.PublicKey {
   static BinaryBlob derDecode(BinaryBlob key) {
     final unwrapped = unwrapDER(key.buffer, oidEd25519);
     if (unwrapped.length != rawKeyLength) {
-      throw 'An Ed25519 public key must be exactly 32bytes long';
+      throw ArgumentError.value(
+        key,
+        'public key',
+        'an Ed25519 public key must be exactly 32-bytes long.',
+      );
     }
-
     return unwrapped;
   }
 
   @override
-  DerEncodedBlob toDer() {
-    return derKey;
-  }
+  DerEncodedBlob toDer() => derKey;
 
-  BinaryBlob toRaw() {
-    return rawKey;
-  }
+  BinaryBlob toRaw() => rawKey;
 }
 
 class Ed25519KeyIdentity extends auth.SignIdentity {
-  // `fromRaw` and `fromDer` should be used for instantiation, not this constructor.
-  Ed25519KeyIdentity(auth.PublicKey publicKey, this._seed) : super() {
-    _publicKey = Ed25519PublicKey.from(publicKey);
-  }
+  /// [Ed25519PublicKey.fromRaw] and [Ed25519PublicKey.fromDer] should not be
+  /// used for instantiation in this constructor.
+  Ed25519KeyIdentity(
+    auth.PublicKey publicKey,
+    this._seed,
+  ) : _publicKey = Ed25519PublicKey.from(publicKey);
 
-  static Future<Ed25519KeyIdentity> generate(Uint8List? seed) async {
-    if (seed != null && seed.length != 32) {
-      throw 'Ed25519 Seed needs to be 32 bytes long.';
-    }
-
-    Uint8List publicKey;
-    Uint8List secretKey; // seed itself
-
-    final kp = seed == null
-        ? await AgentDartFFI.instance
-            .ed25519FromSeed(req: ED25519FromSeedReq(seed: getRandomValues()))
-        : await AgentDartFFI.instance
-            .ed25519FromSeed(req: ED25519FromSeedReq(seed: seed));
-
-    publicKey = kp.publicKey;
-    secretKey = kp.seed;
-
-    return Ed25519KeyIdentity(
-      Ed25519PublicKey.fromRaw(publicKey),
-      secretKey,
-    );
-  }
-
-  static Ed25519KeyIdentity fromParsedJson(JsonnableEd25519KeyIdentity obj) {
-    return Ed25519KeyIdentity(
-      Ed25519PublicKey.fromDer(blobFromHex(obj[0])),
-      blobFromHex(obj[1]),
-    );
-  }
-
-  static Ed25519KeyIdentity fromJSON(String json) {
-    final parsed = jsonDecode(json);
-
-    if ((parsed is List)) {
-      if (parsed[0] is String && parsed[1] is String) {
-        return Ed25519KeyIdentity.fromParsedJson([parsed[0], parsed[1]]);
-      } else {
-        throw 'Deserialization error: JSON must have at least 2 items.';
-      }
-    } else if (parsed is Map) {
-      final reParsed = Map<String, List>.from(jsonDecode(json));
-      final publicKey = reParsed['publicKey'];
-      final dashPublicKey = reParsed['_publicKey'];
-      final secretKey = reParsed['secretKey'];
-      final dashPrivateKey = reParsed['_privateKey'];
-
-      final pk = publicKey != null
-          ? Ed25519PublicKey.fromRaw(
-              Uint8List.fromList(List<int>.from(publicKey)),
-            )
-          : Ed25519PublicKey.fromDer(
-              Uint8List.fromList(List<int>.from(dashPublicKey!)),
-            );
-
-      if (publicKey != null && secretKey != null) {
-        return Ed25519KeyIdentity(
-          pk,
-          Uint8List.fromList(List<int>.from(secretKey)),
-        );
-      } else if (dashPublicKey != null && dashPrivateKey != null) {
-        return Ed25519KeyIdentity(
-          pk,
-          Uint8List.fromList(List<int>.from(dashPrivateKey)),
-        );
-      }
-    }
-    throw 'Deserialization error: Invalid JSON type for string: ${jsonEncode(json)}';
-  }
-
-  static Ed25519KeyIdentity fromKeyPair(
+  factory Ed25519KeyIdentity.fromKeyPair(
     BinaryBlob publicKey,
     BinaryBlob privateKey,
   ) {
     return Ed25519KeyIdentity(Ed25519PublicKey.fromRaw(publicKey), privateKey);
   }
 
+  factory Ed25519KeyIdentity.fromJSON(String json) {
+    final parsed = jsonDecode(json);
+    if (parsed is List) {
+      if (parsed[0] is String && parsed[1] is String) {
+        return Ed25519KeyIdentity.fromParsedJson([parsed[0], parsed[1]]);
+      }
+      throw ArgumentError.value(
+        json,
+        'json',
+        'JSON must have at least 2 elements.',
+      );
+    }
+    if (parsed is Map) {
+      final reParsed = jsonDecode(json);
+      final publicKey = reParsed['publicKey'];
+      final dashPublicKey = reParsed['_publicKey'];
+      final secretKey = reParsed['secretKey'];
+      final dashPrivateKey = reParsed['_privateKey'];
+
+      final pk = publicKey != null
+          ? Ed25519PublicKey.fromRaw(Uint8List.fromList(publicKey))
+          : Ed25519PublicKey.fromDer(Uint8List.fromList(dashPublicKey!));
+
+      if (publicKey != null && secretKey != null) {
+        return Ed25519KeyIdentity(
+          pk,
+          Uint8List.fromList(secretKey),
+        );
+      }
+      if (dashPublicKey != null && dashPrivateKey != null) {
+        return Ed25519KeyIdentity(
+          pk,
+          Uint8List.fromList(dashPrivateKey),
+        );
+      }
+    }
+    throw ArgumentError.value(
+      json,
+      'json',
+      'invalid json: ${jsonEncode(json)}',
+    );
+  }
+
+  factory Ed25519KeyIdentity.fromParsedJson(List<String> obj) {
+    return Ed25519KeyIdentity(
+      Ed25519PublicKey.fromDer(blobFromHex(obj[0])),
+      blobFromHex(obj[1]),
+    );
+  }
+
+  static Future<Ed25519KeyIdentity> generate(Uint8List? seed) async {
+    if (seed != null && seed.length != 32) {
+      throw ArgumentError.value(
+        seed,
+        'seed',
+        'Ed25519 seed must be 32-bytes long.',
+      );
+    }
+
+    final Uint8List publicKey;
+    final Uint8List secretKey; // Seed itself.
+    final kp = await AgentDartFFI.instance.ed25519FromSeed(
+      req: ED25519FromSeedReq(seed: seed ?? getRandomValues()),
+    );
+    publicKey = kp.publicKey;
+    secretKey = kp.seed;
+    return Ed25519KeyIdentity(Ed25519PublicKey.fromRaw(publicKey), secretKey);
+  }
+
   static Future<Ed25519KeyIdentityRecoveredFromII> recoverFromIISeedPhrase(
     String phrase,
   ) async {
-    try {
-      final userNumber = extractUserNumber(phrase);
-      final mne = dropLeadingUserNumber(phrase);
-      final identity = await fromMnemonicWithoutValidation(
-        mne,
-        icDerivationPath,
-      );
-      return Ed25519KeyIdentityRecoveredFromII(
-        userNumber: userNumber,
-        identity: identity,
-      );
-    } catch (e) {
-      rethrow;
-    }
+    final userNumber = extractUserNumber(phrase);
+    final mne = dropLeadingUserNumber(phrase);
+    final identity = await fromMnemonicWithoutValidation(
+      mne,
+      icDerivationPath,
+    );
+    return Ed25519KeyIdentityRecoveredFromII(
+      userNumber: userNumber,
+      identity: identity,
+    );
   }
 
-  late final Ed25519PublicKey _publicKey;
-  late final BinaryBlob _seed;
+  final Ed25519PublicKey _publicKey;
+  final BinaryBlob _seed;
 
   /// Serialize this key to JSON.
-  JsonnableEd25519KeyIdentity toJSON() {
+  List<String> toJson() {
     return [blobToHex(_publicKey.toDer()), blobToHex(_seed)];
   }
 
@@ -190,23 +185,22 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
 
   /// Return the public key.
   @override
-  Ed25519PublicKey getPublicKey() {
-    return _publicKey;
-  }
+  Ed25519PublicKey getPublicKey() => _publicKey;
 
   /// Signs a blob of data, with this identity's private key.
   /// @param challenge - challenge to sign with this identity's secretKey, producing a signature
   @override
-  Future<BinaryBlob> sign(dynamic challenge) async {
+  Future<BinaryBlob> sign(dynamic challenge) {
     final blob = challenge is BinaryBlob
         ? challenge
         : blobFromBuffer(challenge as ByteBuffer);
-    return await AgentDartFFI.instance
-        .ed25519Sign(req: ED25519SignReq(seed: _seed, message: blob));
+    return AgentDartFFI.instance.ed25519Sign(
+      req: ED25519SignReq(seed: _seed, message: blob),
+    );
   }
 
-  Future<bool> verify(Uint8List signature, Uint8List message) async {
-    return await AgentDartFFI.instance.ed25519Verify(
+  Future<bool> verify(Uint8List signature, Uint8List message) {
+    return AgentDartFFI.instance.ed25519Verify(
       req: ED25519VerifyReq(
         message: message,
         sig: signature,
@@ -214,31 +208,28 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
       ),
     );
   }
-
-  Uint8List get accountId => getAccountId();
-
-  Uint8List getAccountId([Uint8List? subAccount]) {
-    return Principal.selfAuthenticating(
-      getPublicKey().toDer(),
-    ).toAccountId(subAccount: subAccount);
-  }
 }
 
 class Ed25519KeyIdentityRecoveredFromII {
-  Ed25519KeyIdentityRecoveredFromII({required this.identity, this.userNumber});
+  const Ed25519KeyIdentityRecoveredFromII({
+    required this.identity,
+    this.userNumber,
+  });
 
   final BigInt? userNumber;
   final Ed25519KeyIdentity identity;
 }
 
-/// The following part is ported from InternetIdentity service. It's main purpose is to `recover` an identity that registered.
+/// The following part is ported from InternetIdentity service.
+/// It's main purpose is to `recover` an identity that registered.
 /// These truths are covered.
-/// - It generates masterseed using Bip39 and sha512
-/// - Then use derivationPath matches to m/44'/223’/0’/0’/0'
-/// - Then use Ed25519KeyIdentity.to generate a new identity.
-/// - Internet Identity service then use the generated identity as a binding to original identity.
-/// - So the phrases that generated can be saved to a new location, then combined with a device number to recover
-
+///
+/// It generates master-seed using Bip39 and sha512. Then use [icDerivationPath]
+/// matches to m/44'/223’/0’/0’/0'. Then use [Ed25519KeyIdentity.generate] to
+/// generate a new identity. Internet Identity service then use the
+/// generated identity as a binding to original identity. So the phrases that
+/// generated can be saved to a new location, then combined with a device number
+/// to recover.
 const hardened = 0x80000000;
 const icBasePath = [44, 223, 0];
 const icDerivationPath = [44, 223, 0, 0, 0];
@@ -268,20 +259,19 @@ Future<Ed25519KeyIdentity> fromMnemonicWithoutValidation(
 /// Create an Ed25519 according to SLIP 0010:
 /// https://github.com/satoshilabs/slips/blob/master/slip-0010.md
 ///
-/// The derivation path is an array that is always interpreted as a hardened path.
-/// e.g. to generate m/44'/223’/0’/0’/0' the derivation path should be [44, 223, 0, 0, 0]
+/// The derivation path is an array that always interpreted as a hardened path.
+/// e.g. to generate m/44'/223’/0’/0’/0' the derivation path should be
+/// [44, 223, 0, 0, 0].
 Future<Ed25519KeyIdentity> fromSeedWithSlip0010(
   Uint8List masterSeed,
   List<int>? derivationPath, {
   int offset = hardened,
 }) {
   final chainSet = generateMasterKey(masterSeed);
-  var slipSeed = chainSet.first;
-  var chainCode = chainSet.last;
-
+  Uint8List slipSeed = chainSet.first;
+  Uint8List chainCode = chainSet.last;
   derivationPath ??= [];
-
-  for (var i = 0; i < derivationPath.length; i++) {
+  for (int i = 0; i < derivationPath.length; i++) {
     final newSet = derive(slipSeed, chainCode, derivationPath[i] | offset);
     slipSeed = newSet.first;
     chainCode = newSet.last;
@@ -303,21 +293,17 @@ Set<Uint8List> generateMasterKey(Uint8List seed) {
 Set<Uint8List> derive(Uint8List parentKey, Uint8List parentChaincode, int i) {
   // From the spec: Data = 0x00 || ser256(kpar) || ser32(i)
   final data = Uint8List.fromList([0, ...parentKey, ...toBigEndianArray(i)]);
-
   final hmacSha512 = Hmac(sha512, parentChaincode);
-
   final h = hmacSha512.convert(data);
-
   final slipSeed = Uint8List.fromList(h.bytes.sublist(0, 32));
   final chainCode = Uint8List.fromList(h.bytes.sublist(32));
-
   return {slipSeed, chainCode};
 }
 
-// Converts a 32-bit unsigned integer to a big endian byte array.
+/// Converts a 32-bit unsigned integer to a big endian byte array.
 Uint8List toBigEndianArray(int n) {
   final byteArray = Uint8List.fromList([0, 0, 0, 0]);
-  for (var i = byteArray.length - 1; i >= 0; i--) {
+  for (int i = byteArray.length - 1; i >= 0; i--) {
     final byte = n & 0xff;
     byteArray[i] = byte;
     n = ((n - byte) ~/ 256).toInt();
@@ -334,23 +320,19 @@ String dropLeadingUserNumber(String s) {
   }
 }
 
-// BigInt parses various things we do not want to allow, like:
-// - BigInt(whitespace) == 0
-// - Hex/Octal formatted numbers
-// - Scientific notation
-// So we check that the user has entered a sequence of digits only,
-// before attempting to parse
+/// BigInt parses various things we do not want to allow, like:
+///  - BigInt(whitespace) == 0
+///  - Hex/Octal formatted numbers
+///  - Scientific notation
+/// So we check that the user has entered a sequence of digits only,
+/// before attempting to parse.
 BigInt? parseUserNumber(String s) {
-  try {
-    return BigInt.tryParse(s, radix: 10);
-  } catch (e) {
-    return null;
-  }
+  return BigInt.tryParse(s, radix: 10);
 }
 
 BigInt? extractUserNumber(String s) {
   final i = s.indexOf(' ');
-  if (i != -1 && parseUserNumber(s.substring(0, i)) != null) {
+  if (i != -1) {
     return parseUserNumber(s.substring(0, i));
   } else {
     return null;

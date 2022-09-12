@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart/agent/crypto/keystore/api.dart';
+import 'package:agent_dart/agent/crypto/keystore/key_store.dart';
 import 'package:agent_dart/identity/identity.dart';
 import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/utils/extension.dart';
@@ -104,12 +104,8 @@ class ICPAccount extends BaseAccount {
     if (curveType == CurveType.secp256k1 || curveType == CurveType.all) {
       keys = await getECKeysAsync(
         phrase,
-        passphase: passphrase,
-        index: index != null
-            ? index != hardened
-                ? index
-                : 0
-            : 0,
+        passphrase: passphrase,
+        index: index != null && index != hardened ? index : 0,
       );
       ecIdentity = Secp256k1KeyIdentity.fromKeyPair(
         keys.ecPublicKey!,
@@ -124,7 +120,6 @@ class ICPAccount extends BaseAccount {
         offset: index ?? hardened,
       );
     }
-
     return ICPAccount(curveType: curveType)
       .._ecKeys = keys
       .._identity = identity
@@ -157,17 +152,14 @@ class ICPAccount extends BaseAccount {
 
   Future<void> unlock(String passphrase, {String? keystore}) async {
     try {
-      if ((_keystore == null)) {
+      if (_keystore == null) {
         if (keystore != null) {
           _keystore = keystore;
         } else {
-          throw 'keystore file is not found';
+          throw StateError('keystore file is not found.');
         }
       }
-      final phrase = await decodePhrase(
-        jsonDecode(_keystore!),
-        passphrase,
-      );
+      final phrase = await decodePhrase(jsonDecode(_keystore!), passphrase);
       final newIcp = await ICPAccount.fromPhrase(
         phrase,
         index: 0,
@@ -179,10 +171,8 @@ class ICPAccount extends BaseAccount {
       _ecIdentity = newIcp._ecIdentity;
       newIcp._ecKeys = null;
       newIcp._identity = null;
+    } finally {
       isLocked = false;
-    } catch (e) {
-      throw 'Cannot unlock account with password $passphrase '
-          'and keystore $_keystore';
     }
   }
 }
@@ -301,18 +291,12 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
 
   String? get idAddress => account.identity?.getAccountId().toHex();
 
-  @Deprecated('Use idAddress instead')
-  String? get idChecksumAddress => idAddress;
-
   String? get ecPublicKey => account.ecIdentity?.getPublicKey().toRaw().toHex();
 
   String? get ecPublicKeyDer =>
       account.ecIdentity?.getPublicKey().toDer().toHex();
 
   String? get ecAddress => account.ecIdentity?.getAccountId().toHex();
-
-  @Deprecated('Use ecAddress instead')
-  String? get ecChecksumAddress => ecAddress;
 
   Future<ICPAccount> hdCreate({
     String passphrase = '',
@@ -369,6 +353,6 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
       );
       return res;
     }
-    throw UnsupportedError('Sign type $signType is not supported.');
+    throw UnsupportedError('sign type $signType is not supported.');
   }
 }

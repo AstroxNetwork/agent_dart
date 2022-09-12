@@ -71,7 +71,7 @@ void rosettaTest() {
 
     // /// get transaction confirmed
     // var txRes = await Future.delayed(const Duration(seconds: 3), () {
-    //   return rose.transactions(SearchTransactionsRequest.fromMap({
+    //   return rose.transactions(SearchTransactionsRequest.fromJson({
     //     "network_identifier": rose.networkIdentifier?.toJson(),
     //     "transaction_identifier": txn.transaction_identifier.toJson() // ,
     //   }));

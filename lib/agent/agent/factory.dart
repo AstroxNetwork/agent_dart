@@ -21,7 +21,7 @@ class AgentFactory {
   ) {
     return Actor.createActor(
       idl,
-      ActorConfig.fromMap({'canisterId': canisterId, 'agent': agent}),
+      ActorConfig.fromJson({'canisterId': canisterId, 'agent': agent}),
     );
   }
 
@@ -60,14 +60,14 @@ class AgentFactory {
 
   Future<void> initAgent(String url) async {
     final uri = Uri.parse(url);
-    final port = ':${uri.port}';
+    final port = uri.port;
     final protocol = uri.scheme;
     final host = uri.host;
     _agent = HttpAgent(
       defaultProtocol: protocol,
       defaultHost: host,
       defaultPort: port,
-      options: HttpAgentOptions()..identity = identity,
+      options: HttpAgentOptions(identity: identity),
     );
     if (_debug) {
       await _agent.fetchRootKey();
@@ -80,7 +80,7 @@ class AgentFactory {
   void setActor() {
     _actor = Actor.createActor(
       idl,
-      ActorConfig.fromMap({'canisterId': canisterId, 'agent': _agent}),
+      ActorConfig.fromJson({'canisterId': canisterId, 'agent': _agent}),
     );
   }
 }

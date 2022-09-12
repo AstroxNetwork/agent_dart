@@ -6,12 +6,9 @@ import 'package:agent_dart/utils/is.dart';
 
 const _defaultIdentityProviderUrl = 'https://auth.ic0.app/authorize';
 
-String _getDefaultLocation() {
-  return '';
-}
-
-/// Options for {@link createAuthenticationRequestUrl}. All these options may be limited
-/// further by the identity provider, or an error can happen.
+/// Options for {@link createAuthenticationRequestUrl}.
+/// All these options may be limited further by the identity provider,
+/// or an error can happen.
 class CreateUrlOptions {
   const CreateUrlOptions({
     required this.publicKey,
@@ -20,16 +17,19 @@ class CreateUrlOptions {
     this.identityProvider,
   });
 
-  /// The public key to delegate to. This should be the public key of the session key.
+  /// The public key to delegate to. This should be the public key of the
+  /// session key.
   final PublicKey publicKey;
 
-  /// The scope of the delegation. This must contain at least one key and a maximum
-  /// of four. This is validated in {@link createAuthenticationRequestUrl} but also
-  /// will be validated as part of the identity provider.
+  /// The scope of the delegation. This must contain at least one key and
+  /// a maximum of four. This is validated in
+  /// {@link createAuthenticationRequestUrl} but also will be validated as part
+  /// of the identity provider.
   final List<dynamic> scope;
 
-  /// The URI to redirect to, after authentication. By default, `window.location.origin`.
-  final Uri? redirectUri; //URI
+  /// The URI to redirect to, after authentication. By default,
+  /// `window.location.origin`.
+  final Uri? redirectUri;
 
   /// The URL base to use for the identity provider.
   /// By default, this is "https://auth.ic0.app/authorize".
@@ -40,15 +40,16 @@ class CreateUrlOptions {
 class DelegationValidChecks {
   const DelegationValidChecks({required this.scope});
 
-  /// Check that the scope is amongst the scopes that this delegation has access to.
+  /// Check that the scope is amongst the scopes that this delegation
+  /// has access to.
   final dynamic scope; //?: Principal | string | Array<Principal | string>;
 }
 
 // export type AccessToken = string & { _BRAND: 'access_token' };
 
-/// Create a URL that can be used to redirect the browser to request authentication (e.g. using
-/// the authentication provider). Will throw if some options are invalid.
-/// @param options An option with all options for the authentication request.
+/// Create a URL that can be used to redirect the browser to request
+/// authentication (e.g. using the authentication provider). Will throw if some
+/// options are invalid.
 Uri createAuthenticationRequestUrl(CreateUrlOptions options) {
   final url = Uri.parse(
     options.identityProvider?.toString() ?? _defaultIdentityProviderUrl,
@@ -56,20 +57,11 @@ Uri createAuthenticationRequestUrl(CreateUrlOptions options) {
   url.queryParameters.addEntries([
     const MapEntry('response_type', 'token'),
     MapEntry('login_hint', options.publicKey.toDer().toHex()),
-    MapEntry(
-      'redirect_uri',
-      options.redirectUri?.toString() ?? _getDefaultLocation(),
-    ),
+    MapEntry('redirect_uri', options.redirectUri?.toString() ?? ''),
     MapEntry(
       'scope',
       options.scope
-          .map((p) {
-            if (p is String) {
-              return Principal.fromText(p);
-            } else {
-              return p;
-            }
-          })
+          .map((p) => p is String ? Principal.fromText(p) : p)
           .map((p) => p.toString())
           .join(' '),
     ),
@@ -79,12 +71,12 @@ Uri createAuthenticationRequestUrl(CreateUrlOptions options) {
   return url;
 }
 
-/// Returns an AccessToken from the Window object. This cannot be used in Node, instead use
-/// the {@link getAccessTokenFromURL} function.
+/// Returns an AccessToken from the Window object. This cannot be used in Node,
+/// instead use the {@link getAccessTokenFromURL} function.
 ///
 /// An access token is needed to create a DelegationChain object.
 String? getAccessTokenFromWindow(dynamic link) {
-  // in flutter , we use deeplink to pass the uri, we just save here
+  // In flutter , we use deeplink to pass the uri, we just save here.
   return getAccessTokenFromURL(link);
 }
 
@@ -106,7 +98,7 @@ DelegationChain createDelegationChainFromAccessToken(String accessToken) {
     throw 'Invalid hexadecimal string for accessToken.';
   }
   final strList = accessToken.split('');
-  var value = List<String>.from([]);
+  List<String> value = List<String>.from([]);
 
   List<String> combineFunc(List<String> acc, String curr, int i) {
     final index = (i ~/ 2) | 0;
@@ -120,7 +112,7 @@ DelegationChain createDelegationChainFromAccessToken(String accessToken) {
     return resultAcc;
   }
 
-  for (var i = 0; i < strList.length; i += 1) {
+  for (int i = 0; i < strList.length; i += 1) {
     value = combineFunc(value, strList[i], i);
   }
 
@@ -133,12 +125,14 @@ DelegationChain createDelegationChainFromAccessToken(String accessToken) {
   return DelegationChain.fromJSON(chainJson);
 }
 
-/// Analyze a DelegationChain and validate that it's valid, ie. not expired and apply to the
-/// scope.
+/// Analyze a DelegationChain and validate that it's valid, ie. not expired and
+/// apply to the scope.
+///
 /// @param chain The chain to validate.
 /// @param checks Various checks to validate on the chain.
 bool isDelegationValid(DelegationChain chain, DelegationValidChecks? checks) {
-  // Verify that the no delegation is expired. If any are in the chain, returns false.
+  // Verify that the no delegation is expired.
+  // If any are in the chain, returns false.
   for (final d in chain.delegations) {
     final delegation = d.delegation!;
     final exp = delegation.expiration;
@@ -158,7 +152,7 @@ bool isDelegationValid(DelegationChain chain, DelegationValidChecks? checks) {
       scopes.addAll(
         maybeScope
             .map(
-              (s) => (s is String ? Principal.fromText(s) : (s as Principal)),
+              (s) => s is String ? Principal.fromText(s) : (s as Principal),
             )
             .toList(),
       );
@@ -175,7 +169,7 @@ bool isDelegationValid(DelegationChain chain, DelegationValidChecks? checks) {
       if (delegation == null || delegation.targets == null) {
         continue;
       }
-      var none = true;
+      bool none = true;
       final targets = delegation.targets;
       for (final target in targets!) {
         if (target.toText() == scope) {

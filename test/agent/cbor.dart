@@ -48,7 +48,7 @@ void cborTest() {
     final inputA = input['a'] as Principal;
     final outputA = output['a'] as Uint8Buffer;
 
-    expect((outputA).toHex(), (inputA).toHex());
-    expect(Principal.fromUint8Array((outputA).toU8a()).toText(), 'aaaaa-aa');
+    expect(outputA.toHex(), inputA.toHex());
+    expect(Principal.fromUint8Array(outputA.toU8a()).toText(), 'aaaaa-aa');
   });
 }

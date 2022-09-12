@@ -32,13 +32,22 @@ abstract class WithToJson {
   Map<String, dynamic> toJson();
 }
 
-abstract class BaseRequest with WithToJson {}
+abstract class BaseRequest with WithToJson {
+  const BaseRequest();
+}
 
 class ReadStateRequest extends BaseRequest {
+  const ReadStateRequest({
+    this.paths,
+    this.sender,
+    this.ingressExpiry,
+  });
+
+  final List<List<BinaryBlob>>? paths;
+  final Object? sender; //: Uint8Array | Principal;
+  final Expiry? ingressExpiry;
+
   String get requestType => ReadRequestType.readState;
-  List<List<BinaryBlob>>? paths;
-  dynamic sender; //: Uint8Array | Principal;
-  Expiry? ingressExpiry;
 
   @override
   Map<String, dynamic> toJson() {
@@ -52,12 +61,22 @@ class ReadStateRequest extends BaseRequest {
 }
 
 class CallRequest extends ReadStateRequest {
+  CallRequest({
+    required this.canisterId,
+    required this.methodName,
+    required this.arg,
+    this.nonce,
+    super.sender,
+    super.ingressExpiry,
+  });
+
+  final Principal canisterId;
+  final String methodName;
+  final BinaryBlob arg;
+  dynamic nonce;
+
   @override
   String get requestType => SubmitRequestType.call;
-  late Principal canisterId;
-  late String methodName;
-  late BinaryBlob arg;
-  dynamic nonce;
 
   @override
   Map<String, dynamic> toJson() {
@@ -74,12 +93,21 @@ class CallRequest extends ReadStateRequest {
 }
 
 class QueryRequest extends BaseRequest {
+  const QueryRequest({
+    required this.canisterId,
+    required this.methodName,
+    required this.arg,
+    required this.sender,
+    required this.ingressExpiry,
+  });
+
+  final Principal canisterId;
+  final String methodName;
+  final BinaryBlob arg;
+  final dynamic sender; //: Uint8Array | Principal;
+  final Expiry ingressExpiry;
+
   String get requestType => ReadRequestType.typeQuery;
-  late Principal canisterId;
-  late String methodName;
-  late BinaryBlob arg;
-  dynamic sender; //: Uint8Array | Principal;
-  late Expiry ingressExpiry;
 
   @override
   Map<String, dynamic> toJson() {
@@ -99,7 +127,7 @@ typedef ReadRequest = ReadStateRequest;
 abstract class HttpAgentBaseRequest<T extends WithToJson> extends BaseRequest {
   HttpAgentBaseRequest({this.endpoint});
 
-  String? endpoint;
+  final String? endpoint;
 
   late dynamic request;
   late T body;
@@ -235,7 +263,7 @@ class QueryResponseWithStatus extends QueryResponse {
     required super.status,
   });
 
-  factory QueryResponseWithStatus.fromMap(Map map) {
+  factory QueryResponseWithStatus.fromJson(Map map) {
     Reply? reply;
     if (map['reply'] != null) {
       reply = Reply(

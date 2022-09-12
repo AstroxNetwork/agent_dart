@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent/agent/api.dart';
 import 'package:agent_dart/agent/canisters/management.dart';
-import 'package:agent_dart/agent/polling/index.dart';
+import 'package:agent_dart/agent/polling/polling.dart';
 import 'package:agent_dart/candid/idl.dart';
 
 import 'package:agent_dart/principal/principal.dart';
@@ -68,7 +68,7 @@ class CallConfig {
     this.effectiveCanisterId,
   });
 
-  factory CallConfig.fromMap(Map<String, dynamic> map) {
+  factory CallConfig.fromJson(Map<String, dynamic> map) {
     return CallConfig(
       agent: map['agent'],
       pollingStrategyFactory: map['pollingStrategyFactory'],
@@ -117,7 +117,7 @@ class ActorConfig extends CallConfig {
           effectiveCanisterId: effectiveCanisterId,
         );
 
-  factory ActorConfig.fromMap(Map map) {
+  factory ActorConfig.fromJson(Map map) {
     return ActorConfig()
       ..callTransform = map['callTransform']
       ..queryTransform = map['queryTransform']
@@ -127,14 +127,16 @@ class ActorConfig extends CallConfig {
       ..effectiveCanisterId = map['effectiveCanisterId'];
   }
 
-  /// An override function for update calls' CallConfig. This will be called on every calls.
+  /// An override function for update calls' CallConfig.
+  /// This will be called on every calls.
   CallConfig Function(
     String methodName,
     List args,
     CallConfig callConfig,
   )? callTransform;
 
-  /// An override function for query calls' CallConfig. This will be called on every query.
+  /// An override function for query calls' CallConfig.
+  /// This will be called on every query.
   CallConfig Function(
     String methodName,
     List args,
@@ -151,8 +153,7 @@ class ActorConfig extends CallConfig {
   }
 }
 
-// ignore: todo
-// // TODO: move this to proper typing when Candid support TypeScript.
+// TODO: move this to proper typing when Candid support TypeScript.
 // /**
 //  * A subclass of an actor. Actor class itself is meant to be a based class.
 //  */
@@ -166,18 +167,11 @@ class ActorConfig extends CallConfig {
 //   withOptions(options: CallConfig): (...args: Args) => Promise<Ret>;
 // }
 
-class CanisterInstallMode {
-  const CanisterInstallMode._();
+enum CanisterInstallMode { install, reinstall, upgrade }
 
-  static const install = 'install';
-  static const reinstall = 'reinstall';
-  static const upgrade = 'upgrade';
-}
-
-/* Internal metadata for actors. It's an enhanced version of ActorConfig with
- * some fields marked as required (as they are defaulted) and canisterId as
- * a Principal type.
- */
+/// Internal metadata for actors. It's an enhanced version of [ActorConfig] with
+/// some fields marked as required (as they are defaulted) and canisterId as
+/// a [Principal] type.
 class ActorMetadata {
   const ActorMetadata({this.service, this.agent, this.config});
 
@@ -189,7 +183,7 @@ class ActorMetadata {
 class FieldOptions {
   const FieldOptions(this.module, {this.mode, this.arg});
 
-  factory FieldOptions.fromMap(Map<String, dynamic> map) {
+  factory FieldOptions.fromJson(Map<String, dynamic> map) {
     return FieldOptions(map['module'], mode: map['mode'], arg: map['arg']);
   }
 
@@ -232,7 +226,7 @@ class Actor {
     FieldOptions fields,
     ActorConfig config,
   ) async {
-    final mode = fields.mode ?? CanisterInstallMode.install;
+    final String mode = fields.mode ?? CanisterInstallMode.install.name;
     // Need to transform the arg into a number array.
     final arg = fields.arg != null
         ? Uint8List.fromList([...?fields.arg])
@@ -348,7 +342,7 @@ dynamic decodeReturnValue(List<CType> types, BinaryBlob msg) {
 
 typedef MethodCaller = Future Function(CallConfig options, List args);
 
-_createActorMethod(Actor actor, String methodName, FuncClass func) {
+dynamic _createActorMethod(Actor actor, String methodName, FuncClass func) {
   MethodCaller caller;
   if (func.annotations.contains('query')) {
     caller = (CallConfig options, List args) async {
@@ -356,13 +350,13 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
       final presetOption = actor.metadata.config!.queryTransform?.call(
         methodName,
         args,
-        CallConfig.fromMap({
+        CallConfig.fromJson({
           ...actor.metadata.config!.toJson(),
           ...options.toJson(),
         }),
       );
 
-      final newOptions = CallConfig.fromMap({
+      final newOptions = CallConfig.fromJson({
         ...options.toJson(),
         ...presetOption != null ? presetOption.toJson() : {},
       });
@@ -400,13 +394,13 @@ _createActorMethod(Actor actor, String methodName, FuncClass func) {
       final presetOption = actor.metadata.config!.queryTransform?.call(
         methodName,
         args,
-        CallConfig.fromMap({
+        CallConfig.fromJson({
           ...actor.metadata.config!.toJson(),
           ...options.toJson(),
         }),
       );
 
-      final newOptions = CallConfig.fromMap({
+      final newOptions = CallConfig.fromJson({
         ...options.toJson(),
         ...presetOption != null ? presetOption.toJson() : {},
       });

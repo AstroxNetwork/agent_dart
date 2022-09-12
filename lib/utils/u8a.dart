@@ -9,9 +9,6 @@ import 'number.dart';
 import 'string.dart';
 
 Uint8List convertString(String str, {bool useDartEncode = true}) {
-  // return isHexString(str)
-  //     ? stringToU8a(strip0xHex(str), useDartEncode: useDartEncode)
-  //     : stringToU8a(str, useDartEncode: useDartEncode);
   return isHex(str)
       ? hexToU8a(str)
       : stringToU8a(str, useDartEncode: useDartEncode);
@@ -36,10 +33,12 @@ Uint8List u8aToU8a(dynamic value, {bool useDartEncode = true}) {
 }
 
 Uint8List u8aConcat(List<dynamic> list) {
-  final u8as =
-      List<Uint8List>.generate(list.length, (index) => Uint8List.fromList([]));
+  final u8as = List<Uint8List>.generate(
+    list.length,
+    (index) => Uint8List.fromList([]),
+  );
 
-  for (var i = 0; i < list.length; i += 1) {
+  for (int i = 0; i < list.length; i += 1) {
     u8as[i] = u8aToU8a(list[i]);
   }
 
@@ -66,13 +65,11 @@ Uint8List u8aFixLength(
   }
 
   final result = Uint8List(byteLength);
-
   if (atStart) {
     result.setRange(0, value.length, value);
   } else {
     result.setRange(byteLength - value.length, byteLength, value);
   }
-
   return result;
 }
 
@@ -80,16 +77,6 @@ List<Uint8List> u8aSorted(List<Uint8List> u8as) {
   u8as.sort((a, b) {
     var i = 0;
     while (true) {
-      // ignore: unnecessary_null_comparison
-      if (a[i] == null && b[i] == null) {
-        return 0;
-        // ignore: unnecessary_null_comparison
-      } else if (a[i] == null) {
-        return -1;
-        // ignore: unnecessary_null_comparison
-      } else if (b[i] == null) {
-        return 1;
-      }
       final cmp = a[i] - b[i];
       if (cmp != 0) {
         return cmp;
@@ -106,7 +93,6 @@ BigInt u8aToBn(
   bool isNegative = false,
 }) {
   return hexToBn(u8aToHex(u8a), endian: endian, isNegative: isNegative);
-  // return decodeBigInt(u8a, endian: endian);
 }
 
 String u8aToHex(Uint8List u8a, {bool include0x = true}) {

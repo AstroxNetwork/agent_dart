@@ -1,8 +1,9 @@
 import 'dart:convert';
 
-import 'package:agent_dart/agent/crypto/keystore/api.dart';
-import 'package:agent_dart/agent_dart.dart';
+import 'package:agent_dart/agent/crypto/index.dart';
+import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/wallet/phrase.dart';
+import 'package:agent_dart/wallet/signer.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -38,7 +39,7 @@ void main() {
       '02f2326544f2040d3985e31db5e7021402c541d3cde911cd20e951852ee4da47',
     );
     expect(
-      acc2.account.identity?.accountId.toHex(),
+      acc2.account.identity?.getAccountId().toHex(),
       '2636e2e67910af41c53cddb31862f0fa2c31cbd58db9645d90ffb875c7abc8c9',
     );
 
@@ -50,7 +51,7 @@ void main() {
     await acc2.unlock('123');
     expect(acc2.isLocked, false);
     expect(
-      acc2.account.identity?.accountId.toHex(),
+      acc2.account.identity?.getAccountId().toHex(),
       '2636e2e67910af41c53cddb31862f0fa2c31cbd58db9645d90ffb875c7abc8c9',
     );
     expect(
@@ -74,7 +75,7 @@ void main() {
 
     final p = Phrase.fromString(mne2);
     expect(p.mnemonic, mne2);
-    expect(p.list, stringToArr(mne2));
+    expect(p.list, stringToList(mne2));
 
     try {
       Phrase.fromString(mne2.substring(0, mne2.length - 10));

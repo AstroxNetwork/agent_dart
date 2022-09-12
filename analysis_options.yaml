@@ -21,3 +21,5 @@ linter:
     require_trailing_commas: true
     sort_constructors_first: true
     sort_unnamed_constructors_first: true
+    unnecessary_await_in_return: true
+    unnecessary_parenthesis: true

@@ -22,8 +22,8 @@ Future<Uint8List> _encryptPhraseAsync({
   required Uint8List key,
   required Uint8List iv,
   required String message,
-}) async {
-  return await AgentDartFFI.instance.aes128CtrEncrypt(
+}) {
+  return AgentDartFFI.instance.aes128CtrEncrypt(
     req: AesEncryptReq(key: key, iv: iv, message: message.plainToU8a()),
   );
 }
@@ -82,22 +82,21 @@ Future<NativeDeriveKeyResult> nativeDeriveKey({
     );
   }
 
-  final List<int> cipherText = useCipherText != null
-      ? useCipherText.toList()
-      : await _encryptPhraseAsync(
-          key: Uint8List.fromList(leftBits),
-          iv: Uint8List.fromList(iv),
-          message: message!,
-        );
+  final List<int> cipherText = useCipherText?.toList() ??
+      await _encryptPhraseAsync(
+        key: Uint8List.fromList(leftBits),
+        iv: Uint8List.fromList(iv),
+        message: message!,
+      );
 
   final List<int> macBuffer =
       rightBits + cipherText + iv + _algoIdentifier.codeUnits;
 
-  final String mac = (SHA256()
+  final String mac = SHA256()
       .update(Uint8List.fromList(derivedKey))
       .update(macBuffer)
       .digest()
-      .toHex());
+      .toHex();
 
   return NativeDeriveKeyResult(
     cipherText: cipherText,

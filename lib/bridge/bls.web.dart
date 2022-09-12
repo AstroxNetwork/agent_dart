@@ -878,7 +878,7 @@ class WebBls implements BaseBLS {
 
   List<int> passArray8ToWasm0(Uint8List arg, int Function(int) malloc) {
     final ptr = malloc(arg.length * 1);
-    getUint8Memory0().setAll((ptr ~/ 1), arg);
+    getUint8Memory0().setAll(ptr ~/ 1, arg);
     return [ptr, arg.length];
   }
 

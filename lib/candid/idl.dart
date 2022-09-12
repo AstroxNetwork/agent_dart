@@ -1,4 +1,4 @@
-// ignore_for_file: constant_identifier_names, non_constant_identifier_names
+// ignore_for_file: constant_identifier_names, non_constant_identifier_names, prefer_void_to_null
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -49,7 +49,7 @@ class IDLTypeIds {
   static const Principal = -24;
 }
 
-const magicNumber = 'DIDL';
+const _magicNumber = 'DIDL';
 
 List<TR> zipWith<TX, TY, TR>(
   List<TX> xs,
@@ -77,7 +77,7 @@ Uint8List? tryToJson(CType type, dynamic value) {
 /// An IDL Type Table, which precedes the data in the stream.
 class TypeTable {
   // List of types. Needs to be an array as the index needs to be stable.
-  final List<Uint8List> _typs = [];
+  final List<Uint8List> _types = [];
 
   final Map<String, int> _idx = <String, int>{};
 
@@ -86,46 +86,46 @@ class TypeTable {
   }
 
   void add<T>(ConstructType<T> type, Uint8List buf) {
-    final idx = _typs.length;
+    final idx = _types.length;
     _idx.putIfAbsent(type.name, () => idx);
-    _typs.add(buf);
+    _types.add(buf);
   }
 
-  merge<T>(ConstructType<T> obj, String knot) {
+  void merge<T>(ConstructType<T> obj, String knot) {
     final idx = _idx[obj.name];
     final knotIdx = _idx[knot];
     if (idx == null) {
-      throw 'Missing type index for $obj';
+      throw StateError('missing type index for $obj.');
     }
     if (knotIdx == null) {
-      throw 'Missing type index for $knot';
+      throw StateError('missing type index for $knot.');
     }
-    _typs[idx] = _typs[knotIdx];
+    _types[idx] = _types[knotIdx];
 
     // Delete the type.
-    _typs.removeAt(knotIdx); // js: _typs.splice(knotIdx, 1);
+    _types.removeAt(knotIdx); // _types.splice(knotIdx, 1);
     _idx.remove(knot);
   }
 
   Uint8List encode() {
-    final len = lebEncode(_typs.length);
-    final buf = u8aConcat(_typs);
+    final len = lebEncode(_types.length);
+    final buf = u8aConcat(_types);
     final result = List<int>.from(len)..addAll(buf);
     return Uint8List.fromList(result);
   }
 
   Uint8List indexOf(String typeName) {
     if (!_idx.containsKey(typeName)) {
-      throw 'Missing type index for $typeName';
+      throw StateError('missing type index for $typeName.');
     }
     return slebEncode(_idx[typeName] ?? 0);
   }
 }
 
 abstract class Visitor<D, R> {
-  R visitType<T>(CType<T> t, D data) {
-    throw 'Not implemented';
-  }
+  const Visitor();
+
+  R visitType<T>(CType<T> t, D data);
 
   R visitPrimitive<T>(PrimitiveType<T> t, D data) {
     return visitType(t, data);
@@ -196,7 +196,6 @@ abstract class Visitor<D, R> {
   }
 
   R visitTuple(TupleClass t, List<CType> components, D data) {
-    // final fields = components.map((ty) => ["_${components.indexOf(ty)}_", ty]).toList();
     return visitConstruct(t, data);
   }
 
@@ -219,7 +218,9 @@ abstract class Visitor<D, R> {
 
 /// Represents an IDL type.
 abstract class CType<T> {
-  late String name;
+  const CType();
+
+  String get name;
 
   R accept<D, R>(Visitor<D, R> v, D d);
 
@@ -260,10 +261,12 @@ abstract class CType<T> {
 }
 
 abstract class PrimitiveType<T> extends CType<T> {
+  const PrimitiveType();
+
   @override
   CType checkType(CType t) {
     if (name != t.name) {
-      throw 'type mismatch: type on the wire ${t.name}, expect type $name';
+      throw UnsupportedError('type is ${t.name}, expected type $name.');
     }
     return t;
   }
@@ -275,64 +278,41 @@ abstract class PrimitiveType<T> extends CType<T> {
   }
 }
 
-class ConstructType<T> extends CType<T> {
+abstract class ConstructType<T> extends CType<T> {
+  const ConstructType();
+
   @override
   ConstructType checkType(CType t) {
     if (t is RecClass) {
       final ty = t.getType();
       if (ty == null) {
-        throw 'type mismatch with uninitialized type';
+        throw UnsupportedError('type is unsupported.');
       }
       return ty;
     }
-    throw 'type mismatch: type on the wire ${t.name}, expect type $name';
+    throw UnsupportedError('type is ${t.name}, expected type $name.');
   }
 
   @override
-  encodeType(TypeTable? typeTable) {
+  Uint8List encodeType(TypeTable? typeTable) {
     return typeTable!.indexOf(name);
-  }
-
-  @override
-  void _buildTypeTableImpl(TypeTable typeTable) {
-    throw UnimplementedError();
-  }
-
-  @override
-  R accept<D, R>(Visitor<D, R> v, D d) {
-    throw UnimplementedError();
-  }
-
-  @override
-  bool covariant(x) {
-    throw UnimplementedError();
-  }
-
-  @override
-  T decodeValue(Pipe x, CType t) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Uint8List encodeValue(T x) {
-    throw UnimplementedError();
   }
 }
 
 class EmptyClass<T> extends PrimitiveType<T> {
+  const EmptyClass();
+
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
     return v.visitEmpty(this, d);
   }
 
   @override
-  bool covariant(x) {
-    return false;
-  }
+  bool covariant(x) => false;
 
   @override
-  decodeValue(Pipe x, CType t) {
-    throw 'Empty cannot appear as an output';
+  T decodeValue(Pipe x, CType t) {
+    throw UnsupportedError('empty cannot appear as an output.');
   }
 
   @override
@@ -342,29 +322,29 @@ class EmptyClass<T> extends PrimitiveType<T> {
 
   @override
   Uint8List encodeValue(x) {
-    throw 'Empty cannot appear as a function argument';
+    throw UnsupportedError('empty cannot appear as a function argument.');
   }
 
   @override
-  valueToString(T x) {
-    throw 'Empty cannot appear as a value';
+  String valueToString(T x) {
+    throw UnsupportedError('empty cannot appear as a value.');
   }
 
   @override
-  get name => 'empty';
+  String get name => 'empty';
 }
 
 /// Represents an IDL Bool
 class BoolClass extends PrimitiveType<bool> {
+  const BoolClass();
+
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
     return v.visitBool(this, d);
   }
 
   @override
-  bool covariant(x) {
-    return x is bool;
-  }
+  bool covariant(x) => x is bool;
 
   @override
   bool decodeValue(Pipe x, CType t) {
@@ -374,9 +354,8 @@ class BoolClass extends PrimitiveType<bool> {
       return false;
     } else if (k == '01') {
       return true;
-    } else {
-      throw 'Boolean value out of range';
     }
+    throw RangeError('bool value out of range.');
   }
 
   @override
@@ -386,17 +365,16 @@ class BoolClass extends PrimitiveType<bool> {
 
   @override
   Uint8List encodeValue(bool x) {
-    return x
-        ? Int8List.fromList([1]).buffer.asUint8List()
-        : Int8List.fromList([0]).buffer.asUint8List();
+    return Int8List.fromList([x ? 1 : 0]).buffer.asUint8List();
   }
 
   @override
-  get name => 'bool';
+  String get name => 'bool';
 }
 
-// ignore: prefer_void_to_null
 class NullClass extends PrimitiveType<Null> {
+  const NullClass();
+
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
     return v.visitNull(this, d);
@@ -408,7 +386,6 @@ class NullClass extends PrimitiveType<Null> {
   }
 
   @override
-  // ignore: prefer_void_to_null
   Null decodeValue(Pipe x, CType t) {
     checkType(t);
     return null;
@@ -420,7 +397,6 @@ class NullClass extends PrimitiveType<Null> {
   }
 
   @override
-  // ignore: prefer_void_to_null
   Uint8List encodeValue(Null x) {
     return Uint8List.fromList([]);
   }
@@ -429,19 +405,20 @@ class NullClass extends PrimitiveType<Null> {
   get name => 'null';
 }
 
+/// A reserved class with no usages.
 class ReservedClass extends PrimitiveType<dynamic> {
+  const ReservedClass();
+
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
     return v.visitReserved(this, d);
   }
 
   @override
-  bool covariant(x) {
-    return true;
-  }
+  bool covariant(x) => true;
 
   @override
-  decodeValue(Pipe x, CType t) {
+  dynamic decodeValue(Pipe x, CType t) {
     if (t.name != name) {
       t.decodeValue(x, t);
     }
@@ -459,10 +436,10 @@ class ReservedClass extends PrimitiveType<dynamic> {
   }
 
   @override
-  get name => 'reserved';
+  String get name => 'reserved';
 }
 
-bool isValidUTF8(Uint8List buf) {
+bool _isValidUTF8(Uint8List buf) {
   return u8aEq(
     buf.u8aToString().plainToU8a(useDartEncode: true),
     buf,
@@ -470,6 +447,8 @@ bool isValidUTF8(Uint8List buf) {
 }
 
 class TextClass extends PrimitiveType<String> {
+  const TextClass();
+
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
     return v.visitText(this, d);
@@ -493,24 +472,27 @@ class TextClass extends PrimitiveType<String> {
   }
 
   @override
-  decodeValue(Pipe x, CType t) {
+  String decodeValue(Pipe x, CType t) {
     checkType(t);
     final len = lebDecode(x);
-    final buf = safeRead((x as Pipe<int>), len.toInt());
-    if (!isValidUTF8(Uint8List.fromList(buf))) {
-      throw 'Not valid UTF8 text';
+    final buf = safeRead(x as Pipe<int>, len.toInt());
+    if (!_isValidUTF8(Uint8List.fromList(buf))) {
+      throw ArgumentError('not a valid UTF-8 text.');
     }
     return Uint8List.fromList(buf).u8aToString();
   }
 
   @override
-  get name => 'text';
+  String get name => 'text';
 
   @override
   String valueToString(String x) => '"$x"';
 }
 
+/// Implicit types [BigInt] | [int].
 class IntClass extends PrimitiveType {
+  const IntClass();
+
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
     return v.visitInt(this, d);
@@ -522,7 +504,7 @@ class IntClass extends PrimitiveType {
   }
 
   @override
-  decodeValue(Pipe x, CType t) {
+  dynamic decodeValue(Pipe x, CType t) {
     checkType(t);
     return slebDecode(x);
   }
@@ -538,13 +520,15 @@ class IntClass extends PrimitiveType {
   }
 
   @override
-  get name => 'int';
+  String get name => 'int';
 
   @override
   String valueToString(x) => x.toString();
 }
 
 class NatClass extends PrimitiveType {
+  const NatClass();
+
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
     return v.visitNat(this, d);
@@ -572,20 +556,18 @@ class NatClass extends PrimitiveType {
   }
 
   @override
-  get name => 'nat';
+  String get name => 'nat';
 
   @override
   String valueToString(x) => x.toString();
 }
 
 class FloatClass extends PrimitiveType<num> {
-  FloatClass(this._bits) : super() {
-    if (_bits != 32 && _bits != 64) {
-      throw 'not a valid float type';
-    }
-  }
+  const FloatClass(
+    this._bits,
+  ) : assert(_bits == 32 || _bits == 64, 'Bits is not a valid float type.');
 
-  late final int _bits;
+  final int _bits;
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -600,7 +582,7 @@ class FloatClass extends PrimitiveType<num> {
   @override
   decodeValue(Pipe x, CType t) {
     checkType(t);
-    final k = safeRead((x as Pipe<int>), (_bits / 8).ceil());
+    final k = safeRead(x as Pipe<int>, (_bits / 8).ceil());
     if (_bits == 32) {
       return Uint8List.fromList(k)
           .buffer
@@ -640,8 +622,9 @@ class FloatClass extends PrimitiveType<num> {
 }
 
 class FixedIntClass extends PrimitiveType {
-  FixedIntClass(this._bits) : super();
-  late final int _bits;
+  const FixedIntClass(this._bits);
+
+  final int _bits;
 
   int get bits => _bits;
 
@@ -672,7 +655,7 @@ class FixedIntClass extends PrimitiveType {
     if (_bits <= 32) {
       return num.toInt();
     } else {
-      // dart int has 64 bit width, should be safe
+      // dart int has 64 bit width, should be safe.
       return num;
     }
   }
@@ -686,7 +669,7 @@ class FixedIntClass extends PrimitiveType {
   @override
   Uint8List encodeValue(dynamic x) {
     assert(
-      (x is int || x is BigInt),
+      x is int || x is BigInt,
       'value with ${x.runtimeType} has to be int or BigInt',
     );
     return writeIntLE(x, (_bits / 8).ceil());
@@ -700,8 +683,9 @@ class FixedIntClass extends PrimitiveType {
 }
 
 class FixedNatClass extends PrimitiveType<dynamic> {
-  FixedNatClass(this._bits) : super();
-  late final int _bits;
+  const FixedNatClass(this._bits);
+
+  final int _bits;
 
   int get bits => _bits;
 
@@ -724,7 +708,7 @@ class FixedNatClass extends PrimitiveType<dynamic> {
   }
 
   @override
-  decodeValue(Pipe x, CType t) {
+  dynamic decodeValue(Pipe x, CType t) {
     checkType(t);
     final num = readUIntLE(x, (_bits / 8).ceil());
     if (_bits <= 32) {
@@ -746,7 +730,7 @@ class FixedNatClass extends PrimitiveType<dynamic> {
   }
 
   @override
-  get name => 'nat$_bits';
+  String get name => 'nat$_bits';
 
   @override
   String valueToString(dynamic x) {
@@ -755,12 +739,9 @@ class FixedNatClass extends PrimitiveType<dynamic> {
 }
 
 class VecClass<T> extends ConstructType<List<T>> {
-  VecClass(this._type);
+  const VecClass(this._type);
 
-  // ignore: prefer_final_fields
-  bool _blobOptimization = false;
-
-  late final CType<T> _type;
+  final CType<T> _type;
 
   CType<T> get type => _type;
 
@@ -777,9 +758,6 @@ class VecClass<T> extends ConstructType<List<T>> {
   @override
   Uint8List encodeValue(dynamic x) {
     final len = lebEncode(x.length);
-    if (_blobOptimization) {
-      return u8aConcat([len, Uint8List.fromList(x as List<int>)]);
-    }
     return u8aConcat([
       len,
       ...x.map((dynamic d) => tryToJson(_type, d) ?? _type.encodeValue(d))
@@ -798,23 +776,19 @@ class VecClass<T> extends ConstructType<List<T>> {
   @override
   List<T> decodeValue(Pipe x, CType t) {
     final vec = checkType(t);
-    if (vec is! VecClass) {
-      throw 'Not a vector type';
-    } else {
+    if (vec is VecClass) {
       final len = lebDecode(x).toInt();
-      if (_blobOptimization) {
-        return [...x.read(len) as List<T>];
-      }
       final rets = <T>[];
       for (var i = 0; i < len; i++) {
-        rets.add(_type.decodeValue(x, (vec).type));
+        rets.add(_type.decodeValue(x, vec.type));
       }
       return rets;
     }
+    throw UnsupportedError('not a vector type.');
   }
 
   @override
-  get name => 'vec ${_type.name}';
+  String get name => 'vec ${_type.name}';
 
   @override
   String display() => 'vec ${_type.display()}';
@@ -827,9 +801,9 @@ class VecClass<T> extends ConstructType<List<T>> {
 }
 
 class OptClass<T> extends ConstructType<List> {
-  OptClass(this._type);
+  const OptClass(this._type);
 
-  late final CType<T> _type;
+  final CType<T> _type;
 
   CType<T> get type => _type;
 
@@ -840,25 +814,24 @@ class OptClass<T> extends ConstructType<List> {
 
   @override
   bool covariant(x) {
-    return (x is List) &&
-        (x.isEmpty || (x.length == 1 && _type.covariant(x[0])));
+    return x is List && (x.isEmpty || (x.length == 1 && _type.covariant(x[0])));
   }
 
   @override
   Uint8List encodeValue(List x) {
     if (x.isEmpty) {
       return Uint8List.fromList([0]);
-    } else {
-      final val = x[0];
-      return u8aConcat([
-        Uint8List.fromList([1]),
-        tryToJson(_type, val) ?? _type.encodeValue(val)
-      ]);
     }
+
+    final val = x[0];
+    return u8aConcat([
+      Uint8List.fromList([1]),
+      tryToJson(_type, val) ?? _type.encodeValue(val)
+    ]);
   }
 
   @override
-  _buildTypeTableImpl(TypeTable typeTable) {
+  void _buildTypeTableImpl(TypeTable typeTable) {
     _type.buildTypeTable(typeTable);
 
     final opCode = slebEncode(IDLTypeIds.Opt);
@@ -870,20 +843,19 @@ class OptClass<T> extends ConstructType<List> {
   List<T> decodeValue(Pipe x, CType t) {
     final opt = checkType(t);
     if (opt is! OptClass) {
-      throw 'Not an option type';
+      throw UnsupportedError('not an option type.');
     }
-    final len = Uint8List.fromList(safeRead((x as Pipe<int>), 1)).toHex();
+    final len = Uint8List.fromList(safeRead(x as Pipe<int>, 1)).toHex();
     if (len == '00') {
       return [];
     } else if (len == '01') {
       return [_type.decodeValue(x, opt._type)];
-    } else {
-      throw 'Not an option value';
     }
+    throw UnsupportedError('not an option value.');
   }
 
   @override
-  get name => 'opt ${_type.name}';
+  String get name => 'opt ${_type.name}';
 
   @override
   String display() => 'opt ${_type.display()}';
@@ -892,32 +864,19 @@ class OptClass<T> extends ConstructType<List> {
   String valueToString(List x) {
     if (x.isEmpty) {
       return 'null';
-    } else {
-      return 'opt ${_type.valueToString(x[0])}';
     }
+    return 'opt ${_type.valueToString(x[0])}';
   }
 }
 
 class RecordClass extends ConstructType<Map> {
-  RecordClass(Map? fields) {
-    fields ??= Map.from({});
-    _fields = (Map.from(fields)).entries.toList();
-    assert(
-      _fields.every(
-        (element) =>
-            (element.key is String && element.key != null) ||
-            (element.key == null),
-      ),
-      'Currently we only support Map<String,dynamic> as input',
-    );
-    _fields.sort(
-      (a, b) =>
-          idlLabelToId((a.key).toString()).toInt() -
-          idlLabelToId((b.key).toString()).toInt(),
-    );
-  }
+  RecordClass(Map? fields)
+      : _fields = Map<String, dynamic>.from(fields ?? {}).entries.toList()
+          ..sort(
+            (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt(),
+          );
 
-  late final List<MapEntry> _fields;
+  final List<MapEntry> _fields;
 
   List<MapEntry> get fields => _fields;
 
@@ -928,10 +887,9 @@ class RecordClass extends ConstructType<Map> {
 
   List<CType>? tryAsTuple() {
     final res = <CType>[];
-    for (var i = 0; i < _fields.length; i++) {
+    for (int i = 0; i < _fields.length; i++) {
       final key = _fields[i].key;
       final type = _fields[i].value;
-
       if (key != '_${i}_') {
         return null;
       }
@@ -942,28 +900,31 @@ class RecordClass extends ConstructType<Map> {
 
   @override
   bool covariant(dynamic x) {
-    return (x is Map &&
-        _fields.every((entry) {
-          final k = entry.key;
-          final t = entry.value;
-
-          if (!x.containsKey(k)) {
-            throw "Record is missing key '$k'.";
-          }
-          return t.covariant(x[k]);
-        }));
+    if (x is! Map) {
+      return false;
+    }
+    return _fields.every((entry) {
+      final k = entry.key;
+      final t = entry.value;
+      if (!x.containsKey(k)) {
+        throw StateError("record is missing the key '$k'.");
+      }
+      return t.covariant(x[k]);
+    });
   }
 
   @override
   Uint8List encodeValue(Map x) {
     final values = _fields.map((entry) => x[entry.key]).toList();
-
-    final bufs =
-        zipWith<MapEntry, dynamic, Uint8List>(_fields, values, (entry, d) {
-      final t = entry.value;
-      return tryToJson(t, d) ?? t.encodeValue(d);
-    });
-    return u8aConcat(bufs);
+    final buffer = zipWith<MapEntry, dynamic, Uint8List>(
+      _fields,
+      values,
+      (entry, d) {
+        final t = entry.value;
+        return tryToJson(t, d) ?? t.encodeValue(d);
+      },
+    );
+    return u8aConcat(buffer);
   }
 
   @override
@@ -979,91 +940,82 @@ class RecordClass extends ConstructType<Map> {
         entry.value.encodeType(typeTable)
       ]),
     );
-
     typeTable.add(this, u8aConcat([opCode, len, u8aConcat(fields.toList())]));
   }
 
   @override
   Map decodeValue(Pipe x, CType t) {
     final record = checkType(t);
-
-    if (record is RecordClass || record is TupleClass) {
-      final r = {};
-      var idx = 0;
-      final fields = (record is RecordClass)
-          ? record.fields
-          : (record as TupleClass).fields;
-      for (final entry in fields) {
-        final hash = entry.key;
-        final type = entry.value;
-        // [hash, type]
-        if (idx >= _fields.length ||
-            idlLabelToId(_fields[idx].key) != idlLabelToId(hash)) {
-          // skip field
-          entry.value.decodeValue(x, type);
-          continue;
-        }
-        final expectedEntry = _fields[idx];
-        final expectKey = expectedEntry.key, expectType = expectedEntry.value;
-        r[expectKey] = expectType.decodeValue(x, type);
-        idx++;
-      }
-      if (idx < _fields.length) {
-        throw 'Cannot find field ${_fields[idx].key}';
-      }
-      return r;
-    } else {
-      throw 'Not a record type';
+    if (record is! RecordClass && record is! TupleClass) {
+      throw ArgumentError.value(t, 't', 'not a record type.');
     }
+    final r = <dynamic, dynamic>{};
+    int idx = 0;
+    final fields =
+        record is RecordClass ? record.fields : (record as TupleClass).fields;
+    for (final entry in fields) {
+      final hash = entry.key;
+      final type = entry.value;
+      // [hash, type]
+      if (idx >= _fields.length ||
+          idlLabelToId(_fields[idx].key) != idlLabelToId(hash)) {
+        // skip field
+        entry.value.decodeValue(x, type);
+        continue;
+      }
+      final expectedEntry = _fields[idx];
+      final expectKey = expectedEntry.key, expectType = expectedEntry.value;
+      r[expectKey] = expectType.decodeValue(x, type);
+      idx++;
+    }
+    if (idx < _fields.length) {
+      throw RangeError.index(
+        idx,
+        _fields.length,
+        'idx',
+        'cannot find field ${_fields[idx].key}.',
+      );
+    }
+    return r;
   }
 
   @override
   String get name {
-    final fields = _fields.map((entry) => entry.key + ':' + entry.value.name);
+    final fields = _fields.map((entry) => '${entry.key}:${entry.value.name}');
     return "record {${fields.join('; ')}}";
   }
 
   @override
   String display() {
     final fields =
-        _fields.map((entry) => entry.key + ':' + entry.value.display());
+        _fields.map((entry) => '${entry.key}:${entry.value.display()}');
     return "record {${fields.join('; ')}}";
   }
 
   @override
-  valueToString(Map x) {
+  String valueToString(Map x) {
     final values = _fields.map((entry) => x[entry.key]).toList();
     final fields = zipWith<MapEntry, dynamic, String>(
       _fields,
       values,
-      (entry, d) => entry.key + '=' + entry.value.valueToString(d),
+      (entry, d) => '${entry.key}=${entry.value.valueToString(d)}',
     );
     return "record {${fields.join('; ')}}";
   }
 }
 
-Map makeMap(List<CType> components) {
-  final x = {};
-  for (final e in components) {
-    final i = components.indexOf(e);
-    (x['_${i}_'] = e);
-  }
-  return x;
-}
-
 class TupleClass<T extends List> extends ConstructType<List> {
-  TupleClass(List<CType> components) : super() {
-    _components = components;
-    _fields = (Map.from(makeMap(components))).entries.toList();
+  TupleClass(List<CType> components) : _components = components {
+    _fields = Map.from(_makeMap(components)).entries.toList();
     _fields.sort(
       (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt(),
     );
   }
 
-  late final List<CType> _components;
-  late final List<MapEntry> _fields;
+  final List<CType> _components;
 
   List<MapEntry> get fields => _fields;
+  late final List<MapEntry> _fields;
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -1072,24 +1024,27 @@ class TupleClass<T extends List> extends ConstructType<List> {
 
   @override
   bool covariant(x) {
+    if (x is! List) {
+      return false;
+    }
     // `>=` because tuples can be covariant when encoded.
-
-    return ((x is List) &&
-        x.length >= _fields.length &&
-        _components.asMap().entries.map((t) {
-              return t.value.covariant(x[t.key]) ? 0 : 1;
-            }).reduce((value, element) => value + element) ==
-            0);
+    return x.length >= _fields.length &&
+        _components
+                .asMap()
+                .entries
+                .map((t) => t.value.covariant(x[t.key]) ? 0 : 1)
+                .reduce((value, element) => value + element) ==
+            0;
   }
 
   @override
   Uint8List encodeValue(List x) {
-    final bufs = zipWith<CType, dynamic, Uint8List>(
+    final buffer = zipWith<CType, dynamic, Uint8List>(
       _components,
       x,
       (c, d) => c.encodeValue(d),
     );
-    return u8aConcat(bufs);
+    return u8aConcat(buffer);
   }
 
   @override
@@ -1105,25 +1060,29 @@ class TupleClass<T extends List> extends ConstructType<List> {
         entry.value.encodeType(typeTable)
       ]),
     );
-
     typeTable.add(this, u8aConcat([opCode, len, u8aConcat(fields.toList())]));
   }
 
   @override
-  decodeValue(Pipe x, CType t) {
+  List decodeValue(Pipe x, CType t) {
     final tuple = checkType(t);
-    if ((tuple is! TupleClass)) {
-      throw 'not a tuple type';
+    if (tuple is! TupleClass) {
+      throw ArgumentError.value(t, 't', 'not a valid tuple type.');
     }
     if (tuple._components.length < _components.length) {
-      throw 'tuple mismatch';
+      throw RangeError.range(
+        tuple._components.length,
+        _components.length,
+        null,
+        'tuple components',
+        'tuple components mismatch.',
+      );
     }
     final res = [];
     for (final entry in tuple._components.asMap().entries) {
-      //[i, wireType]
+      // [i, wireType]
       final i = entry.key;
       final wireType = entry.value;
-
       if (i >= _components.length) {
         // skip value
         wireType.decodeValue(x, wireType);
@@ -1152,13 +1111,19 @@ class TupleClass<T extends List> extends ConstructType<List> {
 
   @override
   String get name {
-    final fields = _fields.map((entry) => entry.key + ':' + entry.value.name);
+    final fields = _fields.map((entry) => '${entry.key}:${entry.value.name}');
     return "record {${fields.join('; ')}}";
+  }
+
+  Map<String, dynamic> _makeMap(List<CType> components) {
+    return {
+      for (final e in components) '_${components.indexOf(e)}_': e,
+    };
   }
 }
 
 class VariantClass extends ConstructType<Map<String, dynamic>> {
-  VariantClass(Map<String, CType> fields) : super() {
+  VariantClass(Map<String, CType> fields) {
     _fields = fields.entries.toList();
     _fields.sort(
       (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt(),
@@ -1178,7 +1143,7 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
     if (x is! Map) {
       return true;
     }
-    return (x).entries.length == 1 &&
+    return x.entries.length == 1 &&
         _fields.every((entry) {
           // [k, v]
           return !x.containsKey(entry.key) ||
@@ -1188,7 +1153,7 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
 
   @override
   Uint8List encodeValue(Map<String, dynamic> x) {
-    for (var i = 0; i < _fields.length; i++) {
+    for (int i = 0; i < _fields.length; i++) {
       final name = _fields[i].key;
       final t = _fields[i].value;
       if (x.containsKey(name)) {
@@ -1198,7 +1163,7 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
         );
       }
     }
-    throw 'Variant has no data: $x';
+    throw StateError('variant has no data: $x.');
   }
 
   @override
@@ -1221,12 +1186,17 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
   @override
   Map<String, dynamic> decodeValue(Pipe x, CType t) {
     final variant = checkType(t);
-    if ((variant is! VariantClass)) {
-      throw 'Not a variant type';
+    if (variant is! VariantClass) {
+      throw ArgumentError.value(t, 't', 'not a valid variant type.');
     }
-    final idx = (lebDecode(x).toInt());
+    final idx = lebDecode(x).toInt();
     if (idx >= variant._fields.length) {
-      throw 'Invalid variant index: $idx';
+      throw RangeError.index(
+        idx,
+        variant._fields.length,
+        'variant index',
+        'invalid variant index: $idx.',
+      );
     }
     final entry = variant._fields[idx];
     final wireHash = entry.key, wireType = entry.value;
@@ -1237,7 +1207,7 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
         return {key: value};
       }
     }
-    throw 'Cannot find field hash $wireHash';
+    throw StateError('cannot find field hash $wireHash.');
   }
 
   @override
@@ -1249,9 +1219,13 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
   @override
   String display() {
     final fields = _fields.map(
-      (entry) =>
-          entry.key +
-          (entry.value.name == 'null' ? '' : ':${entry.value.display()}'),
+      (entry) {
+        final sb = StringBuffer(entry.key);
+        if (entry.value.name.isNotEmpty && entry.value.name != 'null') {
+          sb.write(':${entry.value.display()}');
+        }
+        return sb.toString();
+      },
     );
     return "variant {${fields.join('; ')}}";
   }
@@ -1260,27 +1234,24 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
   String valueToString(Map<String, dynamic> x) {
     for (final fEntry in _fields) {
       final name = fEntry.key, type = fEntry.value;
-      // eslint-disable-next-line
       if (x.containsKey(name)) {
         final value = type.valueToString(x[name]);
-        if (value == 'null') {
+        if (value.isEmpty || value == 'null') {
           return 'variant {$name}';
         } else {
           return 'variant {$name=$value}';
         }
       }
     }
-    throw 'Variant has no data: $x';
+    throw StateError('variant has no data: $x.');
   }
 }
 
-/// Represents a reference to an IDL type, used for defining recursive data
-/// types.
+/// Represents a reference to IDL type, used for defining recursive data types.
 class RecClass<T> extends ConstructType<T> {
   static int _counter = 0;
 
-  // ignore: prefer_final_fields
-  int _id = RecClass._counter++;
+  final int _id = RecClass._counter++;
   ConstructType<T>? _type;
 
   @override
@@ -1303,7 +1274,7 @@ class RecClass<T> extends ConstructType<T> {
   }
 
   @override
-  encodeValue(T x) {
+  Uint8List encodeValue(T x) {
     _checkType();
     return _type!.encodeValue(x);
   }
@@ -1317,37 +1288,37 @@ class RecClass<T> extends ConstructType<T> {
   }
 
   @override
-  decodeValue(Pipe x, CType t) {
+  T decodeValue(Pipe x, CType t) {
     _checkType();
     return _type!.decodeValue(x, t);
   }
 
   @override
-  get name => 'rec_$_id';
+  String get name => 'rec_$_id';
 
   @override
-  display() {
+  String display() {
     _checkType();
     return 'μ$name.${_type!.name}';
   }
 
   @override
-  valueToString(T x) {
+  String valueToString(T x) {
     _checkType();
     return _type!.valueToString(x);
   }
 
-  _checkType() {
+  void _checkType() {
     if (_type == null) {
-      throw 'Recursive type uninitialized';
+      throw StateError('recursive type uninitialized.');
     }
   }
 }
 
 PrincipalId decodePrincipalId(Pipe b) {
-  final x = Uint8List.fromList(safeRead((b as Pipe<int>), 1)).toHex();
+  final x = Uint8List.fromList(safeRead(b as Pipe<int>, 1)).toHex();
   if (x != '01') {
-    throw 'Cannot decode principal';
+    throw ArgumentError('cannot decode principal $x.');
   }
   final len = lebDecode(b).toInt();
   final hex = Uint8List.fromList(safeRead(b, len)).toHex().toUpperCase();
@@ -1355,6 +1326,8 @@ PrincipalId decodePrincipalId(Pipe b) {
 }
 
 class PrincipalClass extends PrimitiveType<PrincipalId> {
+  const PrincipalClass();
+
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
     return v.visitPrincipal(this, d);
@@ -1366,7 +1339,7 @@ class PrincipalClass extends PrimitiveType<PrincipalId> {
   }
 
   @override
-  decodeValue(Pipe x, CType t) {
+  PrincipalId decodeValue(Pipe x, CType t) {
     checkType(t);
     return decodePrincipalId(x);
   }
@@ -1397,18 +1370,24 @@ class PrincipalClass extends PrimitiveType<PrincipalId> {
 
 // [PrincipalId, string]
 class FuncClass extends ConstructType<List> {
-  FuncClass(this.argTypes, this.retTypes, this.annotations) : super();
-
-  static argsToString(List<CType> types, List v) {
-    if (types.length != v.length) {
-      throw 'arity mismatch';
-    }
-    return '(${types.asMap().entries.map((entry) => entry.value.valueToString(v[entry.key])).join(', ')})';
-  }
+  const FuncClass(this.argTypes, this.retTypes, this.annotations);
 
   final List<CType> argTypes;
   final List<CType> retTypes;
   final List<String> annotations;
+
+  static String argsToString(List<CType> types, List v) {
+    if (types.length != v.length) {
+      throw RangeError.range(
+        types.length,
+        v.length,
+        v.length,
+        'types',
+        'arity mismatch',
+      );
+    }
+    return '(${types.asMap().entries.map((e) => e.value.valueToString(v[e.key])).join(', ')})';
+  }
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -1417,33 +1396,34 @@ class FuncClass extends ConstructType<List> {
 
   @override
   bool covariant(x) {
-    return ((x is List) &&
+    return x is List &&
         x.length == 2 &&
         x[0] != null &&
         x[0] is PrincipalId &&
-        x[1] is String);
+        x[1] is String;
   }
 
   @override
   Uint8List encodeValue(x) {
-    // : [PrincipalId, string]
+    // [PrincipalId, string]
     final hex = (x[0] as PrincipalId).toHex();
     final buf = hex.toU8a();
     final len = lebEncode(buf.length);
     final canister = u8aConcat([
       Uint8List.fromList([1]),
       len,
-      buf
+      buf,
     ]);
 
-    final method =
-        Uint8List.fromList((x[1] as String).plainToU8a(useDartEncode: true));
+    final method = Uint8List.fromList(
+      (x[1] as String).plainToU8a(useDartEncode: true),
+    );
     final methodLen = lebEncode(method.length);
     return u8aConcat([
       Uint8List.fromList([1]),
       canister,
       methodLen,
-      method
+      method,
     ]);
   }
 
@@ -1455,36 +1435,37 @@ class FuncClass extends ConstructType<List> {
     for (final argR in retTypes) {
       argR.buildTypeTable(typeTable);
     }
-
     final opCode = slebEncode(IDLTypeIds.Func);
     final argLen = lebEncode(argTypes.length);
-    final args =
-        u8aConcat(argTypes.map((arg) => arg.encodeType(typeTable)).toList());
+    final args = u8aConcat(
+      argTypes.map((arg) => arg.encodeType(typeTable)).toList(),
+    );
     final retLen = lebEncode(retTypes.length);
-    final rets =
-        u8aConcat(retTypes.map((arg) => arg.encodeType(typeTable)).toList());
+    final rets = u8aConcat(
+      retTypes.map((arg) => arg.encodeType(typeTable)).toList(),
+    );
     final annLen = lebEncode(annotations.length);
-    final anns =
-        u8aConcat(annotations.map((a) => encodeAnnotation(a)).toList());
+    final ann = u8aConcat(
+      annotations.map((a) => encodeAnnotation(a)).toList(),
+    );
 
     typeTable.add(
       this,
-      u8aConcat([opCode, argLen, args, retLen, rets, annLen, anns]),
+      u8aConcat([opCode, argLen, args, retLen, rets, annLen, ann]),
     );
   }
 
   @override
   List<dynamic> decodeValue(Pipe x, CType t) {
-    final r = Uint8List.fromList(safeRead((x as Pipe<int>), 1)).toHex();
+    final r = Uint8List.fromList(safeRead(x as Pipe<int>, 1)).toHex();
     if (r != '01') {
-      throw 'Cannot decode function reference';
+      throw ArgumentError('cannot decode function reference $x.');
     }
     final canister = decodePrincipalId(x);
-
-    final mLen = (lebDecode(x).toInt());
+    final mLen = lebDecode(x).toInt();
     final buf = Uint8List.fromList(safeRead(x, mLen));
-    if (!isValidUTF8(buf)) {
-      throw 'Not valid UTF8 method name';
+    if (!_isValidUTF8(buf)) {
+      throw ArgumentError('not a valid UTF-8 method name.');
     }
     final method = buf.u8aToString();
     return [canister, method];
@@ -1494,8 +1475,7 @@ class FuncClass extends ConstructType<List> {
   get name {
     final args = argTypes.map((arg) => arg.name).join(', ');
     final rets = retTypes.map((arg) => arg.name).join(', ');
-    final annon = ' ${annotations.join(' ')}';
-    return '($args) -> ($rets)$annon';
+    return '($args) -> ($rets) ${annotations.join(' ')}';
   }
 
   @override
@@ -1508,8 +1488,7 @@ class FuncClass extends ConstructType<List> {
   String display() {
     final args = argTypes.map((arg) => arg.display()).join(', ');
     final rets = retTypes.map((arg) => arg.display()).join(', ');
-    final annon = ' ${annotations.join(' ')}';
-    return '($args) → ($rets)$annon';
+    return '($args) → ($rets) ${annotations.join(' ')}';
   }
 
   Uint8List encodeAnnotation(String ann) {
@@ -1517,19 +1496,16 @@ class FuncClass extends ConstructType<List> {
       return Uint8List.fromList([1]);
     } else if (ann == 'oneway') {
       return Uint8List.fromList([2]);
-    } else {
-      throw 'Illeagal function annotation';
     }
+    throw StateError('invalid function annotation.');
   }
 }
 
 class ServiceClass extends ConstructType<PrincipalId> {
-  ServiceClass(Map<String, FuncClass> fields) {
-    _fields = (fields.entries).toList();
+  ServiceClass([Map<String, FuncClass> fields = const {}]) {
+    _fields = fields.entries.toList();
     _fields.sort(
-      (a, b) =>
-          idlLabelToId(a.key.toString()).toInt() -
-          idlLabelToId(b.key.toString()).toInt(),
+      (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt(),
     );
   }
 
@@ -1543,9 +1519,7 @@ class ServiceClass extends ConstructType<PrincipalId> {
   }
 
   @override
-  bool covariant(x) {
-    return x is PrincipalId;
-  }
+  bool covariant(x) => x is PrincipalId;
 
   @override
   Uint8List encodeValue(PrincipalId x) {
@@ -1572,7 +1546,6 @@ class ServiceClass extends ConstructType<PrincipalId> {
       final labelLen = lebEncode(labelBuf.length);
       return u8aConcat([labelLen, labelBuf, func.encodeType(typeTable)]);
     }).toList();
-
     typeTable.add(this, u8aConcat([opCode, len, u8aConcat(meths)]));
   }
 
@@ -1582,7 +1555,7 @@ class ServiceClass extends ConstructType<PrincipalId> {
   }
 
   @override
-  get name {
+  String get name {
     final fields = _fields.map((entry) => '${entry.key}:${entry.value.name}');
     return "service {${fields.join('; ')}}";
   }
@@ -1593,9 +1566,6 @@ class ServiceClass extends ConstructType<PrincipalId> {
   }
 }
 
-///
-/// @param x
-/// @returns {string}
 String toReadableString(dynamic x) {
   if (x is BigInt) {
     return 'BigInt($x)';
@@ -1610,15 +1580,19 @@ String toReadableString(dynamic x) {
 /// @returns {Buffer} serialised value
 BinaryBlob idlEncode(List<CType> argTypes, List args) {
   if (args.length < argTypes.length) {
-    throw 'Wrong number of message arguments';
+    throw RangeError.range(
+      args.length,
+      argTypes.length,
+      argTypes.length,
+      'args',
+      'wrong number of message arguments.',
+    );
   }
-
   final typeTable = TypeTable();
   for (final t in argTypes) {
     t.buildTypeTable(typeTable);
   }
-
-  final magic = magicNumber.plainToU8a(useDartEncode: true);
+  final magic = _magicNumber.plainToU8a(useDartEncode: true);
   final table = typeTable.encode();
   final len = lebEncode(args.length);
   final types = u8aConcat(
@@ -1631,12 +1605,11 @@ BinaryBlob idlEncode(List<CType> argTypes, List args) {
         return buf;
       }
       if (!t.covariant(x)) {
-        throw 'Invalid ${t.display()} argument: ${toReadableString(x)}';
+        throw ArgumentError.value('${t.display()} - ${toReadableString(x)}.');
       }
       return t.encodeValue(x);
     }),
   );
-
   return u8aConcat([magic, table, len, types, vals]);
 }
 
@@ -1646,25 +1619,29 @@ BinaryBlob idlEncode(List<CType> argTypes, List args) {
 /// @returns Value deserialized to JS type
 List idlDecode(List<CType> retTypes, Uint8List bytes) {
   final b = Pipe(bytes);
-
-  if (bytes.lengthInBytes < magicNumber.length) {
-    throw 'Message length smaller than magic number';
+  if (bytes.lengthInBytes < _magicNumber.length) {
+    throw RangeError.range(
+      bytes.lengthInBytes,
+      _magicNumber.length,
+      null,
+      'bytes',
+      'message length is smaller than the magic number.',
+    );
   }
   final magic = Uint8List.fromList(
-    safeRead(b, magicNumber.length),
+    safeRead(b, _magicNumber.length),
   ).u8aToString();
-
-  if (magic != magicNumber) {
-    throw 'Wrong magic number: $magic';
+  if (magic != _magicNumber) {
+    throw StateError('wrong magic number: $magic.');
   }
 
-  // : [Array<[IDLTypeIds, any]>, number[]]
+  // [Array<[IDLTypeIds, any]>, number[]]
   List<dynamic> readTypeTable(Pipe pipe) {
     // Array<[IDLTypeIds, any]>;
     final typeTable = [];
     final len = lebDecode(pipe).toInt();
 
-    for (var i = 0; i < len; i++) {
+    for (int i = 0; i < len; i++) {
       final ty = slebDecode(pipe).toInt();
       switch (ty) {
         case IDLTypeIds.Opt:
@@ -1675,16 +1652,21 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
         case IDLTypeIds.Record:
         case IDLTypeIds.Variant:
           final fields = List.from([]);
-          var objectLength = lebDecode(pipe).toInt();
-          // ignore: prefer_typing_uninitialized_variables
-          var prevHash;
+          int objectLength = lebDecode(pipe).toInt();
+          int? prevHash;
           while (objectLength-- > 0) {
             final hash = lebDecode(pipe).toInt();
             if (hash >= math.pow(2, 32)) {
-              throw 'field id out of 32-bit range';
+              throw RangeError.range(
+                hash,
+                null,
+                math.pow(2, 32).toInt(),
+                'hash',
+                'Field ID is out of 32-bit range.',
+              );
             }
-            if (prevHash is num && prevHash >= hash) {
-              throw 'field id collision or not sorted';
+            if (prevHash != null && prevHash >= hash) {
+              throw StateError('field ID collision or not sorted.');
             }
             prevHash = hash;
             final t = slebDecode(pipe).toInt();
@@ -1693,8 +1675,8 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
           typeTable.add([ty, fields]);
           break;
         case IDLTypeIds.Func:
-          for (var k = 0; k < 2; k++) {
-            var funcLength = lebDecode(pipe).toInt();
+          for (int k = 0; k < 2; k++) {
+            int funcLength = lebDecode(pipe).toInt();
             while (funcLength-- > 0) {
               slebDecode(pipe);
             }
@@ -1704,7 +1686,7 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
           typeTable.add([ty, null]);
           break;
         case IDLTypeIds.Service:
-          var servLength = lebDecode(pipe).toInt();
+          int servLength = lebDecode(pipe).toInt();
           while (servLength-- > 0) {
             final l = lebDecode(pipe).toInt();
             safeRead(pipe, l);
@@ -1713,13 +1695,13 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
           typeTable.add([ty, null]);
           break;
         default:
-          throw 'Illegal op_code: $ty';
+          throw FallThroughError();
       }
     }
 
     final rawList = <int>[];
     final length = lebDecode(pipe).toInt();
-    for (var i = 0; i < length; i++) {
+    for (int i = 0; i < length; i++) {
       rawList.add(slebDecode(pipe).toInt());
     }
     return [typeTable, rawList];
@@ -1727,17 +1709,23 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
 
   final typeTableRead = readTypeTable(b);
 
-  final rawTable = typeTableRead[0] as List<dynamic>; //Array<[IDLTypeIds, any]>
+  final rawTable = typeTableRead[0] as List<dynamic>; // [IDLTypeIds, any]
   final rawTypes = typeTableRead[1] as List<int>;
   if (rawTypes.length < retTypes.length) {
-    throw 'Wrong number of return values';
+    throw RangeError.range(
+      rawTypes.length,
+      retTypes.length,
+      null,
+      'rawTypes',
+      'wrong number of return values.',
+    );
   }
 
   final table = rawTable.map((_) => RecClass()).toList();
 
   CType getType(int t) {
     if (t < -24) {
-      throw 'future value not supported';
+      throw UnsupportedError('future value is not supported.');
     }
     if (t < 0) {
       switch (t) {
@@ -1778,63 +1766,54 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
         case -24:
           return IDL.Principal;
         default:
-          throw 'Illegal op_code: t';
+          throw StateError('invalid type code $t.');
       }
     }
     if (t >= rawTable.length) {
-      throw 'type index out of range';
+      throw RangeError.range(
+        t,
+        rawTable.length,
+        rawTable.length,
+        'type',
+        'type is out of range.',
+      );
     }
     return table[t];
   }
 
   ConstructType buildType(List<dynamic> entry) {
     // entry: [IDLTypeIds, any]
-
     switch (entry[0]) {
       case IDLTypeIds.Vector:
-        {
-          final ty = getType(entry[1]);
-          return Vec(ty);
-        }
+        return Vec(getType(entry[1]));
       case IDLTypeIds.Opt:
-        {
-          final ty = getType(entry[1]);
-          return Opt(ty);
-        }
+        return Opt(getType(entry[1]));
       case IDLTypeIds.Record:
-        {
-          final fields = <String, CType>{};
-          for (final e in entry[1] as List) {
-            final name = '_${e[0].toString()}_';
-            fields[name] = getType(e[1] as int);
-          }
-          final record = Record(fields);
-          final tuple = record.tryAsTuple();
-          if (tuple is List<CType>) {
-            return Tuple(tuple);
-          } else {
-            return record;
-          }
+        final fields = <String, CType>{};
+        for (final e in entry[1] as List) {
+          final name = '_${e[0].toString()}_';
+          fields[name] = getType(e[1] as int);
+        }
+        final record = Record(fields);
+        final tuple = record.tryAsTuple();
+        if (tuple is List<CType>) {
+          return Tuple(tuple);
+        } else {
+          return record;
         }
       case IDLTypeIds.Variant:
-        {
-          final fields = <String, CType>{};
-          for (final e in entry[1] as List) {
-            final name = '_${e[0]}_';
-            fields[name] = getType(e[1] as int);
-          }
-          return Variant(fields);
+        final fields = <String, CType>{};
+        for (final e in entry[1] as List) {
+          final name = '_${e[0]}_';
+          fields[name] = getType(e[1] as int);
         }
+        return Variant(fields);
       case IDLTypeIds.Func:
-        {
-          return Func([], [], []);
-        }
+        return const Func([], [], []);
       case IDLTypeIds.Service:
-        {
-          return Service({});
-        }
+        return Service();
       default:
-        throw 'Illegal op_code: ${entry[0]}';
+        throw StateError('invalid type code ${entry[0]}.');
     }
   }
 
@@ -1850,54 +1829,37 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
     return result;
   }).toList();
 
-  // skip unused values
-  for (var ind = retTypes.length; ind < types.length; ind++) {
+  // Skip unused values.
+  for (int ind = retTypes.length; ind < types.length; ind++) {
     types[ind].decodeValue(b, types[ind]);
   }
-
   if (b.buffer.isNotEmpty) {
-    throw 'decode: Left-over bytes';
+    throw StateError('unexpected left-over bytes.');
   }
-
   return output;
 }
 
 class IDL {
-  static final Empty = EmptyClass();
+  const IDL._();
 
-  static final Reserved = ReservedClass();
-
-  static final Bool = BoolClass();
-
-  static final Null = NullClass();
-
-  static final Text = TextClass();
-
-  static final Int = IntClass();
-
-  static final Nat = NatClass();
-
-  static final Float32 = FloatClass(32);
-
-  static final Float64 = FloatClass(64);
-
-  static final Int8 = FixedIntClass(8);
-
-  static final Int16 = FixedIntClass(16);
-
-  static final Int32 = FixedIntClass(32);
-
-  static final Int64 = FixedIntClass(64);
-
-  static final Nat8 = FixedNatClass(8);
-
-  static final Nat16 = FixedNatClass(16);
-
-  static final Nat32 = FixedNatClass(32);
-
-  static final Nat64 = FixedNatClass(64);
-
-  static final Principal = PrincipalClass();
+  static const Empty = EmptyClass();
+  static const Reserved = ReservedClass();
+  static const Bool = BoolClass();
+  static const Null = NullClass();
+  static const Text = TextClass();
+  static const Int = IntClass();
+  static const Nat = NatClass();
+  static const Float32 = FloatClass(32);
+  static const Float64 = FloatClass(64);
+  static const Int8 = FixedIntClass(8);
+  static const Int16 = FixedIntClass(16);
+  static const Int32 = FixedIntClass(32);
+  static const Int64 = FixedIntClass(64);
+  static const Nat8 = FixedNatClass(8);
+  static const Nat16 = FixedNatClass(16);
+  static const Nat32 = FixedNatClass(32);
+  static const Nat64 = FixedNatClass(64);
+  static const Principal = PrincipalClass();
 
   static TupleClass<List<CType>> Tuple(List<CType> components) =>
       TupleClass(components);

@@ -141,7 +141,7 @@ void ed25519Test() {
 
     final json = jsonEncode(key.getKeyPair());
     final key2 = Ed25519KeyIdentity.fromJSON(json);
-    expect(key.toJSON(), key2.toJSON());
+    expect(key.toJson(), key2.toJson());
   });
   test('can encode and decode to/from JSON', () async {
     final seed = List.filled(32, 0);
@@ -149,7 +149,7 @@ void ed25519Test() {
 
     final json = jsonEncode(key.getKeyPair());
     final key2 = Ed25519KeyIdentity.fromJSON(json);
-    expect(key.toJSON(), key2.toJSON());
+    expect(key.toJson(), key2.toJson());
   });
 
   test('can encode and decode to/from JSON (backward compatibility)', () async {
@@ -167,7 +167,7 @@ void ed25519Test() {
     });
 
     final key2 = Ed25519KeyIdentity.fromJSON(json);
-    expect(key.toJSON(), key2.toJSON());
+    expect(key.toJson(), key2.toJson());
   });
 
   test('derive Ed25519 via SLIP 0010', () async {

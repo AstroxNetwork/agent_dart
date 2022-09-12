@@ -2,13 +2,13 @@
 import 'package:agent_dart/agent_dart.dart';
 import 'package:pinenacl/ed25519.dart';
 
-final AccountIdentifier = IDL.Text;
+const _accountIdentifier = IDL.Text;
 
-class Duration {
-  const Duration({required this.secs, required this.nanos});
+class PayloadDuration {
+  const PayloadDuration({required this.secs, required this.nanos});
 
-  factory Duration.fromMap(Map map) {
-    return Duration(secs: map['secs'], nanos: map['nanos']);
+  factory PayloadDuration.fromJson(Map map) {
+    return PayloadDuration(secs: map['secs'], nanos: map['nanos']);
   }
 
   final BigInt secs;
@@ -18,7 +18,7 @@ class Duration {
 
   Map<String, dynamic> toJson() {
     return {'secs': secs, 'nanos': nanos}
-      ..removeWhere((key, dynamic value) => value == null);
+      ..removeWhere((key, value) => value == null);
   }
 }
 
@@ -29,7 +29,7 @@ class ArchiveOptions {
     this.nodeMaxMemorySizeBytes,
   });
 
-  factory ArchiveOptions.fromMap(Map map) {
+  factory ArchiveOptions.fromJson(Map map) {
     return ArchiveOptions(
       controllerId: map['controller_id'],
       maxMessageSizeBytes: map['max_message_size_bytes'],
@@ -47,17 +47,19 @@ class ArchiveOptions {
     'controller_id': IDL.Principal,
   });
 
-  Map<String, dynamic> toJson() => {
-        'max_message_size_bytes': maxMessageSizeBytes,
-        'node_max_memory_size_bytes': nodeMaxMemorySizeBytes,
-        'controller_id': controllerId,
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'max_message_size_bytes': maxMessageSizeBytes,
+      'node_max_memory_size_bytes': nodeMaxMemorySizeBytes,
+      'controller_id': controllerId,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 class ICPTs {
   const ICPTs({required this.e8s});
 
-  factory ICPTs.fromMap(Map map) {
+  factory ICPTs.fromJson(Map map) {
     return ICPTs(e8s: map['e8s']);
   }
 
@@ -65,9 +67,9 @@ class ICPTs {
 
   static Record idl = IDL.Record({'e8s': IDL.Nat64});
 
-  Map<String, dynamic> toJson() => {
-        'e8s': e8s,
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {'e8s': e8s}..removeWhere((key, value) => value == null);
+  }
 }
 
 class LedgerCanisterInitPayload {
@@ -80,21 +82,21 @@ class LedgerCanisterInitPayload {
     this.archiveOptions,
   });
 
-  factory LedgerCanisterInitPayload.fromMap(Map map) {
+  factory LedgerCanisterInitPayload.fromJson(Map map) {
     final initValues = map['initial_values'] as List<List>;
     final initialValues = [
-      [initValues[0], ICPTs.fromMap(initValues[1] as Map)]
+      [initValues[0], ICPTs.fromJson(initValues[1] as Map)],
     ];
     return LedgerCanisterInitPayload(
       sendWhitelist: map['send_whitelist'],
       mintingAccount: map['minting_account'],
       initialValues: initialValues,
       transactionWindow: map['transaction_window'] != null
-          ? Duration.fromMap(map['transaction_window'])
+          ? PayloadDuration.fromJson(map['transaction_window'])
           : null,
       maxMessageSizeBytes: map['max_message_size_bytes'],
       archiveOptions: map['archive_options'] != null
-          ? ArchiveOptions.fromMap(map['archive_options'])
+          ? ArchiveOptions.fromJson(map['archive_options'])
           : null,
     );
   }
@@ -102,58 +104,59 @@ class LedgerCanisterInitPayload {
   final List<List<Principal>> sendWhitelist;
   final String mintingAccount;
   final List<List> initialValues;
-  final Duration? transactionWindow;
+  final PayloadDuration? transactionWindow;
   final int? maxMessageSizeBytes;
   final ArchiveOptions? archiveOptions;
 
   static Record idl = IDL.Record({
     'send_whitelist': IDL.Vec(IDL.Tuple([IDL.Principal])),
-    'minting_account': AccountIdentifier,
-    'transaction_window': IDL.Opt(Duration.idl),
+    'minting_account': _accountIdentifier,
+    'transaction_window': IDL.Opt(PayloadDuration.idl),
     'max_message_size_bytes': IDL.Opt(IDL.Nat32),
     'archive_options': IDL.Opt(ArchiveOptions.idl),
-    'initial_values': IDL.Vec(IDL.Tuple([AccountIdentifier, ICPTs.idl])),
+    'initial_values': IDL.Vec(IDL.Tuple([_accountIdentifier, ICPTs.idl])),
   });
 
-  Map<String, dynamic> toJson() => {
-        'send_whitelist':
-            sendWhitelist.map((e) => e.map((f) => f).toList()).toList(),
-        'minting_account': mintingAccount,
-        'transaction_window':
-            transactionWindow != null ? [transactionWindow?.toJson()] : [],
-        'max_message_size_bytes':
-            maxMessageSizeBytes != null ? [maxMessageSizeBytes] : [],
-        'archive_options':
-            archiveOptions != null ? [archiveOptions?.toJson()] : [],
-        'initial_values': initialValues
-            .map(
-              (e) => e
-                  .map((f) => f is String ? f : (f as ICPTs).toJson())
-                  .toList(),
-            )
-            .toList()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'send_whitelist':
+          sendWhitelist.map((e) => e.map((f) => f).toList()).toList(),
+      'minting_account': mintingAccount,
+      'transaction_window':
+          transactionWindow != null ? [transactionWindow?.toJson()] : [],
+      'max_message_size_bytes':
+          maxMessageSizeBytes != null ? [maxMessageSizeBytes] : [],
+      'archive_options':
+          archiveOptions != null ? [archiveOptions?.toJson()] : [],
+      'initial_values': initialValues
+          .map(
+            (e) =>
+                e.map((f) => f is String ? f : (f as ICPTs).toJson()).toList(),
+          )
+          .toList(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 class AccountBalanceArgs {
   const AccountBalanceArgs({required this.account});
 
-  factory AccountBalanceArgs.fromMap(Map map) {
+  factory AccountBalanceArgs.fromJson(Map map) {
     return AccountBalanceArgs(account: map['account']);
   }
 
   final String account;
 
-  static Record idl = IDL.Record({'account': AccountIdentifier});
+  static Record idl = IDL.Record({'account': _accountIdentifier});
 
-  Map<String, dynamic> toJson() => {
-        'account': account,
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {'account': account}..removeWhere((key, value) => value == null);
+  }
 }
 
 final SubAccount = IDL.Vec(IDL.Nat8);
 
-final BlockHeight = IDL.Nat64;
+const _blockHeight = IDL.Nat64;
 
 class NotifyCanisterArgs {
   const NotifyCanisterArgs({
@@ -164,12 +167,12 @@ class NotifyCanisterArgs {
     required this.blockHeight,
   });
 
-  factory NotifyCanisterArgs.fromMap(Map map) {
+  factory NotifyCanisterArgs.fromJson(Map map) {
     return NotifyCanisterArgs(
       toSubAccount: map['to_subaccount'],
       fromSubAccount: map['from_subaccount'],
       toCanister: map['to_canister'],
-      maxFee: ICPTs.fromMap(map['max_fee']),
+      maxFee: ICPTs.fromJson(map['max_fee']),
       blockHeight: map['block_height'],
     );
   }
@@ -185,24 +188,26 @@ class NotifyCanisterArgs {
     'from_subaccount': IDL.Opt(SubAccount),
     'to_canister': IDL.Principal,
     'max_fee': ICPTs.idl,
-    'block_height': BlockHeight,
+    'block_height': _blockHeight,
   });
 
-  Map<String, dynamic> toJson() => {
-        'to_subaccount': toSubAccount != null ? [toSubAccount] : [],
-        'from_subaccount': fromSubAccount != null ? [fromSubAccount] : [],
-        'to_canister': toCanister,
-        'max_fee': maxFee.toJson(),
-        'block_height': blockHeight,
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'to_subaccount': toSubAccount != null ? [toSubAccount] : [],
+      'from_subaccount': fromSubAccount != null ? [fromSubAccount] : [],
+      'to_canister': toCanister,
+      'max_fee': maxFee.toJson(),
+      'block_height': blockHeight,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
-final Memo = IDL.Nat64;
+const _memo = IDL.Nat64;
 
 class TimeStamp {
   const TimeStamp({required this.timestampNanos});
 
-  factory TimeStamp.fromMap(Map map) {
+  factory TimeStamp.fromJson(Map map) {
     return TimeStamp(
       timestampNanos: map['timestamp_nanos'] ??
           DateTime.now().millisecondsSinceEpoch.toBn(),
@@ -213,9 +218,10 @@ class TimeStamp {
 
   static Record idl = IDL.Record({'timestamp_nanos': IDL.Nat64});
 
-  Map<String, dynamic> toJson() => {
-        'timestamp_nanos': timestampNanos,
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {'timestamp_nanos': timestampNanos}
+      ..removeWhere((key, value) => value == null);
+  }
 }
 
 class SendArgs {
@@ -228,17 +234,17 @@ class SendArgs {
     this.createdAtTime,
   });
 
-  factory SendArgs.fromMap(Map map) {
+  factory SendArgs.fromJson(Map map) {
     return SendArgs(
       to: map['to'],
-      fee: ICPTs.fromMap(map['fee']),
+      fee: ICPTs.fromJson(map['fee']),
       memo: map['memo'],
-      amount: ICPTs.fromMap(map['amount']),
+      amount: ICPTs.fromJson(map['amount']),
       fromSubAccount: map['from_subaccount'] != null
           ? List<int>.from(map['from_subaccount'])
           : null,
       createdAtTime: map['created_at_time'] != null
-          ? TimeStamp.fromMap(map['created_at_time'])
+          ? TimeStamp.fromJson(map['created_at_time'])
           : null,
     );
   }
@@ -251,23 +257,24 @@ class SendArgs {
   final ICPTs amount;
 
   static Record idl = IDL.Record({
-    'to': AccountIdentifier,
+    'to': _accountIdentifier,
     'fee': ICPTs.idl,
-    'memo': Memo,
+    'memo': _memo,
     'from_subaccount': IDL.Opt(SubAccount),
     'created_at_time': IDL.Opt(TimeStamp.idl),
     'amount': ICPTs.idl,
   });
 
-  Map<String, dynamic> toJson() => {
-        'to': to,
-        'fee': fee.toJson(),
-        'memo': memo,
-        'from_subaccount': fromSubAccount != null ? [fromSubAccount] : [],
-        'created_at_time':
-            createdAtTime != null ? [createdAtTime!.toJson()] : [],
-        'amount': amount.toJson()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'to': to,
+      'fee': fee.toJson(),
+      'memo': memo,
+      'from_subaccount': fromSubAccount != null ? [fromSubAccount] : [],
+      'created_at_time': createdAtTime != null ? [createdAtTime!.toJson()] : [],
+      'amount': amount.toJson()
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 final AccountIdentifierNew = IDL.Vec(IDL.Nat8);
@@ -275,24 +282,23 @@ final AccountIdentifierNew = IDL.Vec(IDL.Nat8);
 class AccountBalanceArgsNew {
   const AccountBalanceArgsNew({required this.account});
 
-  factory AccountBalanceArgsNew.fromMap(Map map) {
+  factory AccountBalanceArgsNew.fromJson(Map map) {
     return AccountBalanceArgsNew(account: List<int>.from(map['account']));
   }
 
   final List<int> account;
 
-  static Record idl = IDL.Record({
-    'account': AccountIdentifierNew,
-  });
+  static Record idl = IDL.Record({'account': AccountIdentifierNew});
 
-  Map<String, dynamic> toJson() =>
-      {'account': account}..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {'account': account}..removeWhere((key, value) => value == null);
+  }
 }
 
 class Tokens {
   const Tokens({required this.e8s});
 
-  factory Tokens.fromMap(Map map) {
+  factory Tokens.fromJson(Map map) {
     return Tokens(e8s: map['e8s']);
   }
 
@@ -300,8 +306,9 @@ class Tokens {
 
   static Record idl = IDL.Record({'e8s': IDL.Nat64});
 
-  Map<String, dynamic> toJson() =>
-      {'e8s': e8s}..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {'e8s': e8s}..removeWhere((key, value) => value == null);
+  }
 }
 
 class TransferArgs {
@@ -314,21 +321,21 @@ class TransferArgs {
     this.createdAtTime,
   });
 
-  factory TransferArgs.fromMap(Map map) {
+  factory TransferArgs.fromJson(Map map) {
     return TransferArgs(
-      to: (map['to'] is String
+      to: map['to'] is String
           ? isHexString(map['to'])
               ? (map['to'] as String).toU8a().toList()
-              : Principal.fromText((map['to'] as String)).toAccountId().toList()
-          : (u8aToU8a(map['to']).toList())),
-      fee: Tokens.fromMap(map['fee']),
+              : Principal.fromText(map['to'] as String).toAccountId().toList()
+          : (u8aToU8a(map['to']).toList()),
+      fee: Tokens.fromJson(map['fee']),
       memo: map['memo'],
-      amount: Tokens.fromMap(map['amount']),
+      amount: Tokens.fromJson(map['amount']),
       fromSubAccount: map['from_subaccount'] != null
           ? List<int>.from(map['from_subaccount'])
           : null,
       createdAtTime: map['created_at_time'] != null
-          ? TimeStamp.fromMap(map['created_at_time'])
+          ? TimeStamp.fromJson(map['created_at_time'])
           : null,
     );
   }
@@ -343,24 +350,25 @@ class TransferArgs {
   static Record idl = IDL.Record({
     'to': AccountIdentifierNew,
     'fee': Tokens.idl,
-    'memo': Memo,
+    'memo': _memo,
     'from_subaccount': IDL.Opt(SubAccount),
     'created_at_time': IDL.Opt(TimeStamp.idl),
     'amount': Tokens.idl,
   });
 
-  Map<String, dynamic> toJson() => {
-        'to': to,
-        'fee': fee.toJson(),
-        'memo': memo,
-        'from_subaccount': fromSubAccount != null ? [fromSubAccount] : [],
-        'created_at_time':
-            createdAtTime != null ? [createdAtTime!.toJson()] : [],
-        'amount': amount.toJson()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'to': to,
+      'fee': fee.toJson(),
+      'memo': memo,
+      'from_subaccount': fromSubAccount != null ? [fromSubAccount] : [],
+      'created_at_time': createdAtTime != null ? [createdAtTime!.toJson()] : [],
+      'amount': amount.toJson()
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
-final BlockIndex = IDL.Nat64;
+const _blockIndex = IDL.Nat64;
 
 class TransferError {
   const TransferError({
@@ -371,7 +379,7 @@ class TransferError {
     this.insufficientFunds,
   });
 
-  factory TransferError.fromMap(Map map) {
+  factory TransferError.fromJson(Map map) {
     return TransferError(
       txTooOld: map['TxTooOld'] != null ? Map.from(map['TxTooOld']) : null,
       badFee: map['BadFee'] != null ? Map.from(map['BadFee']) : null,
@@ -393,7 +401,7 @@ class TransferError {
   static Variant idl = IDL.Variant({
     'TxTooOld': IDL.Record({'allowed_window_nanos': IDL.Nat64}),
     'BadFee': IDL.Record({'expected_fee': Tokens.idl}),
-    'TxDuplicate': IDL.Record({'duplicate_of': BlockIndex}),
+    'TxDuplicate': IDL.Record({'duplicate_of': _blockIndex}),
     'TxCreatedInFuture': IDL.Null,
     'InsufficientFunds': IDL.Record({'balance': Tokens.idl}),
   });
@@ -405,7 +413,7 @@ class TransferError {
       'TxDuplicate': txDuplicate,
       'InsufficientFunds': insufficientFunds,
       'TxCreatedInFuture': txCreatedInFuture
-    }..removeWhere((key, dynamic value) => value == null || value == false);
+    }..removeWhere((key, value) => value == null || value == false);
     if (res['TxCreatedInFuture'] != null && res['TxCreatedInFuture'] == true) {
       res.update('TxCreatedInFuture', (value) => null);
     }
@@ -416,10 +424,10 @@ class TransferError {
 class TransferResult {
   const TransferResult({this.ok, this.err});
 
-  factory TransferResult.fromMap(Map map) {
+  factory TransferResult.fromJson(Map map) {
     return TransferResult(
       ok: map['Ok'] != null ? (map['Ok']) : null,
-      err: map['Err'] != null ? TransferError.fromMap(map['Err']) : null,
+      err: map['Err'] != null ? TransferError.fromJson(map['Err']) : null,
     );
   }
 
@@ -427,17 +435,17 @@ class TransferResult {
   final TransferError? err;
 
   static Variant idl = IDL.Variant({
-    'Ok': BlockIndex,
+    'Ok': _blockIndex,
     'Err': TransferError.idl,
   });
 
   Map<String, dynamic> toJson() {
     return {'Ok': ok, 'Err': err?.toJson()}
-      ..removeWhere((key, dynamic value) => value == null);
+      ..removeWhere((key, value) => value == null);
   }
 }
 
-Service ledgerIdl = IDL.Service({
+final Service ledgerIdl = IDL.Service({
   'account_balance': IDL.Func(
     [AccountBalanceArgsNew.idl],
     [Tokens.idl],
@@ -449,37 +457,19 @@ Service ledgerIdl = IDL.Service({
     ['query'],
   ),
   'notify_dfx': IDL.Func([NotifyCanisterArgs.idl], [], []),
-  'send_dfx': IDL.Func([SendArgs.idl], [BlockHeight], []),
+  'send_dfx': IDL.Func([SendArgs.idl], [_blockHeight], []),
   'transfer': IDL.Func([TransferArgs.idl], [TransferResult.idl], []),
 });
 
 class LedgerMethods {
+  const LedgerMethods._();
+
   static const getBalance = 'account_balance_dfx';
   static const notify = 'notify_dfx';
   static const send = 'send_dfx';
   static const accountBalance = 'account_balance';
   static const transfer = 'transfer';
 }
-
-// ledgerInit() {
-//   final AccountIdentifier = IDL.Text;
-//   final Duration = IDL.Record({"secs": IDL.Nat64, "nanos": IDL.Nat32});
-//   final ArchiveOptions = IDL.Record({
-//     "max_message_size_bytes": IDL.Opt(IDL.Nat32),
-//     "node_max_memory_size_bytes": IDL.Opt(IDL.Nat32),
-//     "controller_id": IDL.Principal,
-//   });
-//   final ICPTs = IDL.Record({"e8s": IDL.Nat64});
-//   final LedgerCanisterInitPayload = IDL.Record({
-//     "send_whitelist": IDL.Vec(IDL.Tuple([IDL.Principal])),
-//     "minting_account": AccountIdentifier,
-//     "transaction_window": IDL.Opt(Duration),
-//     "max_message_size_bytes": IDL.Opt(IDL.Nat32),
-//     "archive_options": IDL.Opt(ArchiveOptions),
-//     "initial_values": IDL.Vec(IDL.Tuple([AccountIdentifier, ICPTs])),
-//   });
-//   return [LedgerCanisterInitPayload];
-// }
 
 class SendOpts {
   const SendOpts({
@@ -492,7 +482,9 @@ class SendOpts {
   final BigInt? fee;
   final BigInt? memo;
   final int? fromSubAccount;
-  final DateTime? createAtTime; // TODO: create js Date to TimeStamp function
+  final DateTime? createAtTime;
+
+  int? get createAt => createAtTime?.millisecondsSinceEpoch;
 }
 
 class Ledger {
@@ -510,7 +502,7 @@ class Ledger {
 
   void setIdentity(SignIdentity? id) {
     if (id != null) {
-      agent.getAgent().setIdentity(Future.value(id));
+      agent.getAgent().setIdentity(id);
     }
   }
 
@@ -522,13 +514,11 @@ class Ledger {
     final ledgerInstance = Ledger.hook(agent)..setIdentity(identity);
     final res = await ledgerInstance.agent.actor!.getFunc(
       LedgerMethods.getBalance,
-    )!(
-      [AccountBalanceArgs(account: accountId).toJson()],
-    );
+    )!([AccountBalanceArgs(account: accountId).toJson()]);
     if (res != null) {
-      return ICPTs.fromMap(res);
+      return ICPTs.fromJson(res);
     }
-    throw 'Cannot get count but $res';
+    throw StateError('request failed with the result: $res.');
   }
 
   static Future<Tokens> accountBalance({
@@ -538,16 +528,16 @@ class Ledger {
   }) async {
     final ledgerInstance = Ledger.hook(agent)..setIdentity(identity);
     final accountId = isHexString(accountIdOrPrincipal)
-        ? (accountIdOrPrincipal).toU8a().toList()
+        ? accountIdOrPrincipal.toU8a().toList()
         : Principal.fromText(accountIdOrPrincipal).toAccountId().toList();
     final res = await ledgerInstance.agent.actor!
         .getFunc(LedgerMethods.accountBalance)!(
       [AccountBalanceArgsNew(account: accountId).toJson()],
     );
     if (res != null) {
-      return Tokens.fromMap(res);
+      return Tokens.fromJson(res);
     }
-    throw 'Cannot get count but $res';
+    throw StateError('request failed with the result: $res.');
   }
 
   static Future<BigInt> send({
@@ -578,11 +568,11 @@ class Ledger {
 
     final res = await ledgerInstance.agent.actor!.getFunc(
       LedgerMethods.send,
-    )!([SendArgs.fromMap(sendArgs).toJson()]);
+    )!([SendArgs.fromJson(sendArgs).toJson()]);
     if (res != null) {
       return res as BigInt;
     }
-    throw 'Cannot get count but $res';
+    throw StateError('request failed with the result: $res.');
   }
 
   static Future<TransferResult> transfer({
@@ -612,10 +602,10 @@ class Ledger {
     };
     final res = await ledgerInstance.agent.actor!.getFunc(
       LedgerMethods.transfer,
-    )!([TransferArgs.fromMap(sendArgs).toJson()]);
+    )!([TransferArgs.fromJson(sendArgs).toJson()]);
     if (res != null) {
-      return TransferResult.fromMap(res as Map);
+      return TransferResult.fromJson(res as Map);
     }
-    throw 'Cannot get count but $res';
+    throw StateError('request failed with the result: $res.');
   }
 }

@@ -13,10 +13,9 @@ const defaultTimeout = Duration(seconds: 30);
 /// Users can set host should be full path of http/https.
 /// Usually the usage could be `defaultHost+endpoint`
 /// and set the defaultHost to somewhere final,
-/// then change the endpoint programatically.
-/// `Duration(second: 30)` is the default timeout limit,
+/// then change the endpoint programmatically.
+/// [defaultTimeout] is the default timeout limit,
 /// and throw error directly to end the request section.
-///
 Future<Map<String, dynamic>> defaultFetch({
   required String endpoint,
   String? host,
@@ -75,14 +74,16 @@ Future<Map<String, dynamic>> defaultFetch({
       case FetchMethod.options:
       case FetchMethod.trace:
         throw UnimplementedError(
-          'Unsupported http request method: `${method.name.toUpperCase()}`.',
+          'Unimplemented http request method: `${method.name.toUpperCase()}`.',
         );
     }
 
+    final duration = timeout ?? defaultTimeout;
     final response = await fr.timeout(
-      timeout ?? defaultTimeout,
+      duration,
       onTimeout: () => throw TimeoutException(
-        '${host ?? '$defaultHost$endpoint'} timeout',
+        '${host ?? '$defaultHost$endpoint'} timeout.',
+        duration,
       ),
     );
     if (response.headers['content-type'] != null &&
@@ -90,7 +91,6 @@ Future<Map<String, dynamic>> defaultFetch({
       final actualHeader = response.headers['content-type']!.split(',').first;
       response.headers['content-type'] = actualHeader;
     }
-    client.close();
     return {
       'body': response.body,
       'ok': response.statusCode >= 200 && response.statusCode < 300,
@@ -98,14 +98,13 @@ Future<Map<String, dynamic>> defaultFetch({
       'statusText': response.reasonPhrase ?? '',
       'arrayBuffer': response.bodyBytes,
     };
-  } catch (e) {
+  } finally {
     client.close();
-    rethrow;
   }
 }
 
 class FetchResponse {
-  FetchResponse(
+  const FetchResponse(
     this.body,
     this.ok,
     this.statusCode,
@@ -113,7 +112,7 @@ class FetchResponse {
     this.arrayBuffer,
   );
 
-  factory FetchResponse.fromMap(Map<String, dynamic> map) {
+  factory FetchResponse.fromJson(Map<String, dynamic> map) {
     return FetchResponse(
       map['body'],
       map['ok'],

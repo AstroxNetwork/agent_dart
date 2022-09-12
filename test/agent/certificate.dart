@@ -71,7 +71,7 @@ void hashTest() {
     expect(tree, expected);
 
     expect(
-      (await reconstruct(tree)),
+      await reconstruct(tree),
       'eb5c5b2195e62d996b84c9bcc8259d19a83786a2f59e0878cec84c811f669aa0'
           .toU8a(),
     );
@@ -135,7 +135,7 @@ void hashTest() {
     final tree = cborDecode(cborEncode);
     expect(tree, expected);
     expect(
-      (await reconstruct(tree)),
+      await reconstruct(tree),
       'eb5c5b2195e62d996b84c9bcc8259d19a83786a2f59e0878cec84c811f669aa0'
           .toU8a(),
     );
