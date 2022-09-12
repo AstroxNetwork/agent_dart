@@ -84,14 +84,14 @@ Future<ECKeys> getECKeysAsync(
   String passphrase = '',
   int index = 0,
 }) async {
-  final seed = await AgentDartFFI.instance.mnemonicPhraseToSeed(
+  final seed = await AgentDartFFI.impl.mnemonicPhraseToSeed(
     req: PhraseToSeedReq(phrase: phrase, password: passphrase),
   );
 
-  final prv = await AgentDartFFI.instance.mnemonicSeedToKey(
+  final prv = await AgentDartFFI.impl.mnemonicSeedToKey(
     req: SeedToKeyReq(seed: seed, path: '$icpPath/0/$index'),
   );
-  final kp = await AgentDartFFI.instance.secp256K1FromSeed(
+  final kp = await AgentDartFFI.impl.secp256K1FromSeed(
     req: Secp256k1FromSeedReq(seed: prv),
   );
   return ECKeys(
@@ -101,7 +101,7 @@ Future<ECKeys> getECKeysAsync(
 }
 
 Future<ECKeys> getECkeyFromPrivateKey(Uint8List prv) async {
-  final kp = await AgentDartFFI.instance.secp256K1FromSeed(
+  final kp = await AgentDartFFI.impl.secp256K1FromSeed(
     req: Secp256k1FromSeedReq(seed: prv),
   );
   return ECKeys(
@@ -150,7 +150,7 @@ Uint8List? getPublicFromPrivateKeyBigInt(
 }
 
 Future<Uint8List> getDerFromFFI(Uint8List seed) async {
-  final ffiIdentity = await AgentDartFFI.instance.secp256K1FromSeed(
+  final ffiIdentity = await AgentDartFFI.impl.secp256K1FromSeed(
     req: Secp256k1FromSeedReq(seed: seed),
   );
   return ffiIdentity.derEncodedPublicKey;

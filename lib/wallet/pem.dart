@@ -26,7 +26,7 @@ Future<PemFile> getPemFile(String path) async {
       KeyType.secp265k1,
     );
   }
-  throw 'Cannot Read Pem';
+  throw UnsupportedError('$path does not have a supported PEM type.');
 }
 
 Future<Ed25519KeyIdentity> ed25519KeyIdentityFromPem(String pem) async {

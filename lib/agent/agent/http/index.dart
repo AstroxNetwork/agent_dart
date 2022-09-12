@@ -237,10 +237,11 @@ class HttpAgent implements Agent {
     final response = list[0] as Map<String, dynamic>;
     final requestId = list[1] as Uint8List;
     if (!(response['ok'] as bool)) {
-      // ignore: prefer_adjacent_string_concatenation
-      throw 'Server returned an error:\n'
-          '  Code: ${response["statusCode"]} (${response["statusText"]})\n'
-          '  Body: ${response["body"] is Uint8List ? (response["body"] as Uint8List).u8aToString() : response["body"]}\n';
+      throw AgentError(
+        'Server returned an error:\n'
+        '  Code: ${response["statusCode"]} (${response["statusText"]})\n'
+        '  Body: ${response["body"] is Uint8List ? (response["body"] as Uint8List).u8aToString() : response["body"]}\n',
+      );
     }
 
     return CallResponseBody.fromJson({...response, 'requestId': requestId});
@@ -251,7 +252,7 @@ class HttpAgent implements Agent {
     if (_rootKeyFetched == false) {
       final key =
           ((await status())['root_key'] as Uint8Buffer).buffer.asUint8List();
-      // Hex-encoded version of the replica root key
+      // Hex-encoded version of the replica root key.
       rootKey = blobFromUint8Array(key);
       _rootKeyFetched = true;
     }
@@ -304,9 +305,11 @@ class HttpAgent implements Agent {
     );
 
     if (!(response['ok'] as bool)) {
-      throw 'Server returned an error:\n  '
-          'Code: ${response["statusCode"]} (${response["statusText"]})\n  '
-          'Body: ${response["body"]}\n';
+      throw AgentError(
+        'Server returned an error:\n'
+        '  Code: ${response["statusCode"]} (${response["statusText"]})\n'
+        '  Body: ${response["body"]}\n',
+      );
     }
 
     final buffer = response['arrayBuffer'] as Uint8List;
@@ -353,9 +356,11 @@ class HttpAgent implements Agent {
     );
 
     if (!(response['ok'] as bool)) {
-      throw 'Server returned an error:\n  '
-          'Code: ${response["statusCode"]} (${response["statusText"]})\n  '
-          'Body: ${response["body"]}\n';
+      throw AgentError(
+        'Server returned an error:\n'
+        '  Code: ${response["statusCode"]} (${response["statusText"]})\n'
+        '  Body: ${response["body"]}\n',
+      );
     }
 
     final buffer = response['arrayBuffer'] as Uint8List;
@@ -375,9 +380,11 @@ class HttpAgent implements Agent {
       method: FetchMethod.get,
     );
     if (!(response['ok'] as bool)) {
-      throw 'Server returned an error:\n  '
-          'Code: ${response["statusCode"]} (${response["statusText"]})\n  '
-          'Body: ${response["body"]}\n';
+      throw AgentError(
+        'Server returned an error:\n'
+        '  Code: ${response["statusCode"]} (${response["statusText"]})\n'
+        '  Body: ${response["body"]}\n',
+      );
     }
     final buffer = response['arrayBuffer'] as Uint8List;
     return cbor.cborDecode<Map>(buffer);

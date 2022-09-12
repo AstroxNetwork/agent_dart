@@ -358,22 +358,18 @@ dynamic _createActorMethod(Actor actor, String methodName, FuncClass func) {
 
       final newOptions = CallConfig.fromJson({
         ...options.toJson(),
-        ...presetOption != null ? presetOption.toJson() : {},
+        ...?presetOption?.toJson(),
       });
-
-      final agent =
-          newOptions.agent ?? actor.metadata.config!.agent; // getDefaultAgent()
+      final agent = newOptions.agent ?? actor.metadata.config!.agent;
       final cid = Principal.from(
         newOptions.canisterId ?? actor.metadata.config!.canisterId,
       );
       final arg = IDL.encode(func.argTypes, args);
-
       final result = await agent!.query(
         cid,
         QueryFields(arg: arg, methodName: methodName),
         null,
       );
-
       switch (result.status) {
         case QueryResponseStatus.rejected:
           throw QueryCallRejectedError(
@@ -399,20 +395,11 @@ dynamic _createActorMethod(Actor actor, String methodName, FuncClass func) {
           ...options.toJson(),
         }),
       );
-
       final newOptions = CallConfig.fromJson({
         ...options.toJson(),
         ...presetOption != null ? presetOption.toJson() : {},
       });
-
-      final agent =
-          newOptions.agent ?? actor.metadata.config!.agent; // getDefaultAgent()
-      // final { canisterId, effectiveCanisterId, pollingStrategyFactory } = {
-      //   ...DEFAULT_ACTOR_CONFIG,
-      //   ...actor[metadataSymbol].config,
-      //   ...options,
-      // };
-
+      final agent = newOptions.agent ?? actor.metadata.config!.agent;
       final canisterId =
           actor.metadata.config!.canisterId ?? newOptions.canisterId;
       final effectiveCanisterId = actor.metadata.config!.effectiveCanisterId ??
@@ -439,13 +426,11 @@ dynamic _createActorMethod(Actor actor, String methodName, FuncClass func) {
 
       final response = result.response!;
       final requestId = result.requestId!;
-
       if (!response.ok!) {
         throw UpdateCallRejectedError(cid, methodName, result, requestId);
       }
 
       final pollStrategy = pollingStrategyFactory();
-
       final responseBytes = await pollForResponse(
         agent,
         ecid,
@@ -455,11 +440,13 @@ dynamic _createActorMethod(Actor actor, String methodName, FuncClass func) {
 
       if (responseBytes.isNotEmpty) {
         return decodeReturnValue(func.retTypes, responseBytes);
-      } else if (func.retTypes.isEmpty) {
-        return null;
-      } else {
-        throw "Call was returned undefined, but type [${func.retTypes.join(',')}].";
       }
+      if (func.retTypes.isEmpty) {
+        return null;
+      }
+      throw StateError(
+        'call returned nothing, but expected [${func.retTypes.join(',')}].',
+      );
     };
   }
 

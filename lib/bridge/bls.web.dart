@@ -4,7 +4,7 @@ import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/bridge/bls.base.dart';
 import 'package:agent_dart/bridge/wasm_interop.dart';
 
-final wasmBytesBase64 = '''
+final _wasmBytesBase64 = '''
     AGFzbQEAAAABXg9gAn9/AGABfwBgA39/fwBgAn9/AX9gAX8Bf2ADf39/AX9gBH9/f38AYAV/f39/fwBgBn9/f39/fwF/
     YAAAYAZ/f39/f38AYAV/fn5+fgBgAAF/YAF/AX5gAn9/AX4DvAG6AQgEAAEAAAABAgEDAAAMAAACAQEKAQAHBgEAAQEA
     AgcCAgABAgAGAAgOBAEBBAAAAQALAQkAAwMAAQQBAAICAAIBAQEBAQEGAQACAQEEAAECAQEABQMBAQMEAwQCAwAAAAEA
@@ -807,7 +807,7 @@ final wasmBytesBase64 = '''
     .trim()
     .replaceAll('r[^0-9a-zA-Z/+]', '');
 
-final moduleBytes = base64Decode(wasmBytesBase64);
+final _moduleBytes = base64Decode(_wasmBytesBase64);
 
 typedef BLSVerifyFunc = int Function(int, int, int, int, int, int);
 
@@ -819,7 +819,7 @@ class WebBls implements BaseBLS {
   late bool _isInit;
 
   Future<void> initInstance() async {
-    instance = await Instance.fromBytesAsync(moduleBytes);
+    instance = await Instance.fromBytesAsync(_moduleBytes);
   }
 
   @override
@@ -834,7 +834,7 @@ class WebBls implements BaseBLS {
     if (blsVerifyFunc == null) {
       await initInstance();
       if (!await blsInit()) {
-        throw 'Cannot initialize BLS';
+        throw StateError('cannot initialize BLS on Web.');
       }
       blsVerifyFunc = instance!.functions['bls_verify']! as int Function(
         int,

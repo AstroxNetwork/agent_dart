@@ -28,7 +28,7 @@ class Counter extends ActorHook {
     if (res != null) {
       return (res as BigInt).toInt();
     }
-    throw 'Cannot get count but $res';
+    throw StateError('request failed with the result: $res.');
   }
 
   Future<void> add() async {
