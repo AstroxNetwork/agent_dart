@@ -17,12 +17,10 @@ class SigningBlock {
   final List<Uint8List> messages;
   final List<Uint8List> signatures;
   final List<PublicKey> publicKeys;
+  final int algoId;
   final List<MessageBlock> messageBlocks;
   final List<SignatureBlock> signatureBlocks;
   final List<PublicKeyBlock> publicKeyBlocks;
-
-  late int blocksCount;
-  int algoId;
 
   int messageBlocksSize() {
     var size = 0;
@@ -66,7 +64,7 @@ class SigningBlock {
       msgBlock.write(output);
     }
 
-    // size of sigtnaure
+    // size of signature
     output.writeUint32(signatureBlocksSize());
     // content of signature
     for (final sigBlock in signatureBlocks) {

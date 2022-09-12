@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:path/path.dart' as path;
 import 'package:agent_dart/agent/agent.dart';
 import 'package:archive/archive_io.dart';
 import 'package:agent_dart/utils/extension.dart';
+
 import 'signing_block.dart';
 
 class ZipSigningBlock {
@@ -26,7 +28,7 @@ class ZipSigningBlock {
   int getSize() {
     var size = 0;
     for (final sb in signingBlocks) {
-      size += (sb.getSize() + 12); // Uint64 should + 32
+      size += sb.getSize() + 12; // Uint64 should + 32
     }
 
     return size;

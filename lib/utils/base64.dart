@@ -4,8 +4,7 @@ import 'u8a.dart';
 import 'dart:convert' as convert;
 
 bool base64Validate(String? value) {
-  assert(value != null, 'Expected non-null, non-empty base64 input');
-
+  assert(value != null, 'expected non-null & non-empty base64 input.');
   return RegExp(
     r'^(?:[A-Za-z\d+/]{4})*(?:[A-Za-z\d+/]{2}==|[A-Za-z\d+/]{3}=|[A-Za-z\d+/]{4})$',
   ).hasMatch(value!);
@@ -26,7 +25,7 @@ String base64Pad(String value) {
 bool isBase64(String value) {
   try {
     return base64Validate(value);
-  } catch (error) {
+  } catch (e) {
     return false;
   }
 }

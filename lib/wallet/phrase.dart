@@ -4,56 +4,40 @@ import 'package:agent_dart/bridge/ffi/ffi.dart';
 import 'package:agent_dart/wallet/keysmith.dart';
 
 class Phrase {
-  Phrase(this.mnemonic) {
-    _list = stringToArr(mnemonic);
+  Phrase(this.mnemonic) : _list = stringToList(mnemonic);
+
+  factory Phrase.generate({int length = 24}) {
+    assert(length == 12 || length == 24);
+    return Phrase.fromString(
+      generateMnemonic(bitLength: length == 24 ? 256 : 128),
+    );
   }
 
   factory Phrase.fromString(String phrase) {
-    // assert(validateMnemonic(phrase), "Mnemonic Phrase is not valid");
-    final arr = stringToArr(phrase);
+    final arr = stringToList(phrase);
     final invalidWords = <String>[];
     for (final word in arr) {
-      final found = wordList.any(
-        (element) => element == word,
-      );
-
-      if (found == false) {
+      if (!_phraseWordsList.any((e) => e == word)) {
         invalidWords.add(word);
       }
     }
     if (invalidWords.isNotEmpty) {
       throw PhaseException(message: 'Invalid phrase', wordList: invalidWords);
     }
-
     if (arr.length != 12 && arr.length != 24) {
       throw PhaseException(
-        message: 'Invalid phrase length of ${arr.length}, expected 12 or 24',
+        message: 'Invalid phrase length of ${arr.length}, expected 12 or 24.',
       );
     }
     return Phrase(phrase);
   }
 
   final String mnemonic;
-  late List<String> _list;
+  final List<String> _list;
 
   int get length => _list.length;
 
   List<String> get list => _list;
-
-  static Phrase generate({int length = 24}) {
-    var bitLength = 128;
-    if (length == 24) {
-      bitLength = 256;
-    } else if (length == 12) {
-      bitLength = 128;
-    } else {
-      throw const PhaseException(message: 'Phrase should be length 12 or 24');
-    }
-
-    return Phrase.fromString(
-      generateMnemonic(bitLength: bitLength),
-    );
-  }
 
   Future<Uint8List> toSeed({String passphrase = ''}) {
     return AgentDartFFI.instance.mnemonicPhraseToSeed(
@@ -63,7 +47,7 @@ class Phrase {
 
   Future<Uint8List> toHdKey({String passphrase = '', int index = 0}) async {
     final seed = await toSeed(passphrase: passphrase);
-    return await AgentDartFFI.instance.mnemonicSeedToKey(
+    return AgentDartFFI.instance.mnemonicSeedToKey(
       req: SeedToKeyReq(seed: seed, path: '$icpPath/0/$index'),
     );
   }
@@ -85,13 +69,13 @@ class PhaseException implements Exception {
   }
 }
 
-List<String> stringToArr(String phrase) {
+List<String> stringToList(String phrase) {
   final str = phrase.trimLeft();
   final last = str.trimRight();
   return last.split(' ');
 }
 
-const wordList = [
+const _phraseWordsList = [
   'abandon',
   'ability',
   'able',
@@ -2139,5 +2123,5 @@ const wordList = [
   'zebra',
   'zero',
   'zone',
-  'zoo'
+  'zoo',
 ];

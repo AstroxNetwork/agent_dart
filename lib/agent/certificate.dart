@@ -12,35 +12,42 @@ import '../bridge/bls.base.dart';
 import 'agent/api.dart';
 import 'errors.dart';
 
-final BaseBLS bls = BaseBLS();
+final BaseBLS _bls = BaseBLS();
 
-/// A certificate needs to be verified (using {@link Certificate.prototype.verify})
+/// A certificate needs to be verified (using Certificate.prototype.verify)
 /// before it can be used.
 class UnverifiedCertificateError extends AgentError {
-  UnverifiedCertificateError() : super() {
-    throw "Cannot lookup unverified certificate. Call 'verify()' first.";
-  }
+  UnverifiedCertificateError();
+
+  @override
+  String toString() => 'Cannot lookup unverified certificate. '
+      "Call 'verify()' first.";
 }
 
-// type HashTree =
-//   | [0]
-//   | [1, HashTree, HashTree]
-//   | [2, ArrayBuffer, HashTree]
-//   | [3, ArrayBuffer]
-//   | [4, ArrayBuffer];
+/// type HashTree =
+///   | [0]
+///   | [1, HashTree, HashTree]
+///   | [2, ArrayBuffer, HashTree]
+///   | [3, ArrayBuffer]
+///   | [4, ArrayBuffer];
+enum NodeId {
+  empty(0),
+  fork(1),
+  labeled(2),
+  leaf(3),
+  pruned(4);
 
-class NodeId {
-  const NodeId._();
+  const NodeId(this._value);
 
-  static const empty = 0;
-  static const fork = 1;
-  static const labeled = 2;
-  static const leaf = 3;
-  static const pruned = 4;
+  factory NodeId.fromValue(int value) {
+    return values.singleWhere((e) => e._value == value);
+  }
+
+  final int _value;
 }
 
 class Cert {
-  Cert({this.tree, this.signature, this.delegation});
+  const Cert({this.tree, this.signature, this.delegation});
 
   factory Cert.fromJson(Map json) {
     return Cert(
@@ -54,15 +61,15 @@ class Cert {
     );
   }
 
-  List? tree;
-  Uint8List? signature;
-  Delegation? delegation;
+  final List? tree;
+  final Uint8List? signature;
+  final Delegation? delegation;
 
-  toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'tree': tree,
       'signature': signature,
-      'delegation': delegation != null ? delegation!.toJson() : {}
+      'delegation': delegation?.toJson() ?? {}
     };
   }
 }
@@ -70,40 +77,30 @@ class Cert {
 /// Make a human readable string out of a hash tree.
 /// @param tree
 String hashTreeToString(List tree) {
-  indent(String s) => s.split('\n').map((x) => '  $x').join('\n');
+  String indent(String s) => s.split('\n').map((x) => '  $x').join('\n');
 
   switch (tree[0]) {
     case 0:
       return '()';
     case 1:
-      {
-        final left = hashTreeToString(tree[1] as List);
-        final right = hashTreeToString(tree[2] as List);
-        return 'sub(\n left:\n${indent(left)}\n---\n right:\n${indent(right)}\n)';
-      }
+      final left = hashTreeToString(tree[1] as List);
+      final right = hashTreeToString(tree[2] as List);
+      return 'sub(\n left:\n${indent(left)}\n---\n right:\n${indent(right)}\n)';
     case 2:
-      {
-        final label = u8aToString(tree[1] as Uint8List, useDartEncode: true);
-        final sub = hashTreeToString(tree[2] as List);
-        return 'label(\n label:\n${indent(label)}\n sub:\n${indent(sub)}\n)';
-      }
+      final label = u8aToString(tree[1] as Uint8List, useDartEncode: true);
+      final sub = hashTreeToString(tree[2] as List);
+      return 'label(\n label:\n${indent(label)}\n sub:\n${indent(sub)}\n)';
     case 3:
-      {
-        return 'leaf(...${(tree[1] as Uint8List).lengthInBytes} bytes)';
-      }
+      return 'leaf(...${(tree[1] as Uint8List).lengthInBytes} bytes)';
     case 4:
-      {
-        return 'pruned(${blobToHex(tree[1] as Uint8List)}';
-      }
+      return 'pruned(${blobToHex(tree[1] as Uint8List)}';
     default:
-      {
-        return 'unknown(${jsonEncode(tree[0])})';
-      }
+      return 'unknown(${jsonEncode(tree[0])})';
   }
 }
 
 class Delegation extends ReadStateResponse {
-  Delegation(
+  const Delegation(
     this.subnetId,
     BinaryBlob certificate,
   ) : super(certificate: certificate);
@@ -125,15 +122,15 @@ class Delegation extends ReadStateResponse {
 }
 
 class Certificate {
-  Certificate(ReadStateResponse response, this._agent) {
-    cert = Cert.fromJson(cborDecode(response.certificate));
-  }
-
-  late Cert cert;
-  bool verified = false;
-  BinaryBlob? _rootKey;
+  Certificate(
+    ReadStateResponse response,
+    this._agent,
+  ) : cert = Cert.fromJson(cborDecode(response.certificate));
 
   final Agent _agent;
+  final Cert cert;
+  bool verified = false;
+  BinaryBlob? _rootKey;
 
   Uint8List? lookupEx(List path) {
     checkState();
@@ -151,7 +148,7 @@ class Certificate {
     final sig = cert.signature;
     final key = extractDER(derKey);
     final msg = u8aConcat([domainSep('ic-state-root'), rootHash]);
-    final res = await bls.blsVerify(key, sig!, msg);
+    final res = await _bls.blsVerify(key, sig!, msg);
     verified = res;
     return res;
   }
@@ -169,7 +166,6 @@ class Certificate {
           _rootKey = _agent.rootKey;
           return Future.value(_rootKey);
         }
-
         throw "Agent does not have a rootKey. Do you need to call 'fetchRootKey'?";
       }
       return Future.value(_rootKey);
@@ -181,7 +177,7 @@ class Certificate {
 
     final lookup = cert.lookupEx(['subnet', d.subnetId, 'public_key']);
     if (lookup == null) {
-      throw 'ould not find subnet key for subnet 0x${d.subnetId!.toHex()}';
+      throw 'Could not find subnet key for subnet 0x${d.subnetId!.toHex()}';
     }
     return lookup;
   }
@@ -207,7 +203,8 @@ Uint8List extractDER(Uint8List buf) {
 }
 
 Future<Uint8List> reconstruct(List t) async {
-  switch (t[0] as int) {
+  final nodeId = NodeId.fromValue(t[0]);
+  switch (nodeId) {
     case NodeId.empty:
       return Future.value(hash(domainSep('ic-hashtree-empty')));
     case NodeId.pruned:
@@ -241,8 +238,6 @@ Future<Uint8List> reconstruct(List t) async {
           ]),
         ),
       );
-    default:
-      throw 'unreachable';
   }
 }
 
@@ -251,13 +246,7 @@ Uint8List domainSep(String s) {
   return u8aConcat([buf, s.plainToU8a(useDartEncode: true)]);
 }
 
-///
-/// @param path
-/// @param tree
-Uint8List? lookupPathEx(
-  List path,
-  List tree,
-) {
+Uint8List? lookupPathEx(List path, List tree) {
   final maybeReturn = lookupPath(
     path.map((p) {
       if (p is String) {

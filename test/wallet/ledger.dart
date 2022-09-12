@@ -25,7 +25,7 @@ void ledgerTest() {
     }
 
     Future<AgentFactory> getAgent() async {
-      return await AgentFactory.createAgent(
+      return AgentFactory.createAgent(
         canisterId: 'ryjl3-tyaaa-aaaaa-aaaba-cai',
         // local ledger canister id, should change accourdingly
         url: 'http://localhost:8000/',
@@ -128,7 +128,7 @@ void ledgerTest() {
       );
       print('\n---✅ sending end=====>');
       print('\n---🔢 block height: ${blockHeight.ok}');
-      expect((blockHeight).ok! >= BigInt.zero, true);
+      expect(blockHeight.ok! >= BigInt.zero, true);
       final receiverAfterSend = await Ledger.accountBalance(
         agent: agent,
         accountIdOrPrincipal: someReceiver.ecAddress!,
@@ -185,7 +185,7 @@ void ledgerTest() {
       );
       print('\n---✅ sending end=====>');
       print('\n---🔢 block height: ${blockHeight.ok}');
-      expect((blockHeight).ok! >= BigInt.zero, true);
+      expect(blockHeight.ok! >= BigInt.zero, true);
       final receiverAfterSend = await Ledger.accountBalance(
         agent: agent,
         accountIdOrPrincipal: receiverCanister,

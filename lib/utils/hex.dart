@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:math';
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
@@ -14,7 +14,7 @@ bool hexHasPrefix(String value) {
 }
 
 String hexStripPrefix(String value) {
-  if (isNull(value)) {
+  if (value.isEmpty) {
     return '';
   }
   if (hexHasPrefix(value)) {
@@ -24,7 +24,7 @@ String hexStripPrefix(String value) {
   if (reg.hasMatch(value)) {
     return value;
   }
-  throw 'Invalid hex $value passed to hexStripPrefix';
+  throw FallThroughError();
 }
 
 BigInt hexToBn(
@@ -63,7 +63,7 @@ BigInt hexToBn(
       ),
     );
   } else {
-    var hex = value is num
+    String hex = value is num
         ? int.parse(value.toString(), radix: 10).toRadixString(16)
         : hexStripPrefix(value);
     if (hex.length % 2 > 0) {
@@ -73,14 +73,11 @@ BigInt hexToBn(
       hexToBytes(hexStripPrefix(hex) == '' ? '0' : hexStripPrefix(hex)),
       endian: endian,
     ).toRadixString(16);
-    var bn = BigInt.parse(hex, radix: 16);
+    BigInt bn = BigInt.parse(hex, radix: 16);
 
-    if ((0x80 &
-            int.parse(
-              hex.substring(0, 2 > hex.length ? hex.length : 2),
-              radix: 16,
-            )) >
-        0) {
+    final result = 0x80 &
+        int.parse(hex.substring(0, 2 > hex.length ? hex.length : 2), radix: 16);
+    if (result > 0) {
       BigInt some = BigInt.parse(
         bn.toRadixString(2).split('').map((i) {
           return '0' == i ? 1 : 0;
@@ -107,8 +104,8 @@ Uint8List hexToU8a(String value, [int bitLength = -1]) {
   final valLength = newValue.length / 2;
   final bufLength = (bitLength == -1 ? valLength : bitLength / 8).ceil();
   final result = Uint8List(bufLength);
-  final offset = max(0, bufLength - valLength).toInt();
-  for (var index = 0; index < bufLength - offset; index++) {
+  final offset = math.max(0, bufLength - valLength).toInt();
+  for (int index = 0; index < bufLength - offset; index++) {
     final subStart = index * 2;
     final subEnd =
         subStart + 2 <= newValue.length ? subStart + 2 : newValue.length;
@@ -152,15 +149,13 @@ String hexFixLength(
 ]) {
   final strLength = (bitLength / 4).ceil();
   final hexLength = strLength + 2;
-  // ignore: prefer_typing_uninitialized_variables
-  var beforeAdd;
-
-  if ((bitLength == -1 ||
+  String beforeAdd;
+  if (bitLength == -1 ||
       value.length == hexLength ||
-      (!withPadding && value.length < hexLength))) {
+      (!withPadding && value.length < hexLength)) {
     beforeAdd = hexStripPrefix(value);
   } else {
-    if ((value.length > hexLength)) {
+    if (value.length > hexLength) {
       final stripped = hexStripPrefix(value);
       beforeAdd = stripped.substring(stripped.length - 1 * strLength);
     } else {

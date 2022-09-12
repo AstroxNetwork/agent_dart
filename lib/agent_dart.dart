@@ -1,5 +1,8 @@
 export 'agent/agent.dart';
 
+// archiver
+export 'archiver/archiver.dart';
+
 // auth_clinet;
 export 'auth_client/auth_client.dart';
 
@@ -13,13 +16,12 @@ export 'authentication/authentication.dart';
 export 'identity/identity.dart';
 
 // candid
-export 'candid/index.dart';
+export 'candid/idl.dart';
 
 // wallet
 export 'wallet/wallet.dart';
 
 // utils
-export 'utils/array.dart';
 export 'utils/base64.dart';
 export 'utils/bech32.dart';
 export 'utils/bn.dart';
@@ -30,6 +32,3 @@ export 'utils/map.dart';
 export 'utils/number.dart';
 export 'utils/string.dart';
 export 'utils/u8a.dart';
-
-// archiver
-export 'archiver/archiver.dart';

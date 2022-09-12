@@ -7,10 +7,18 @@ import 'utils/leb128.dart';
 enum BlobType { binary, der, nonce, requestId }
 
 abstract class BaseBlob {
-  late final Uint8List _buffer;
-  late BlobType blobType;
-  late String blobName;
+  const BaseBlob(
+    Uint8List buffer,
+    this.blobType,
+    this.blobName,
+  ) : _buffer = buffer;
+
+  final Uint8List _buffer;
+  final BlobType blobType;
+  final String blobName;
+
   Uint8List get buffer => _buffer;
+
   int get byteLength;
 }
 
@@ -21,8 +29,11 @@ typedef RequestId = BinaryBlob;
 
 extension ExtBinaryBlob on BinaryBlob {
   String get name => '__BLOB';
+
   BlobType get blobType => BlobType.binary;
+
   int get byteLength => lengthInBytes;
+
   static Uint8List from(Uint8List other) => Uint8List.fromList(other);
 }
 

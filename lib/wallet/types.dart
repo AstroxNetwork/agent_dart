@@ -7,12 +7,12 @@ class NetworkIdentifier {
     this.subNetworkIdentifier,
   );
 
-  factory NetworkIdentifier.fromMap(Map<String, dynamic> map) {
+  factory NetworkIdentifier.fromJson(Map<String, dynamic> map) {
     return NetworkIdentifier(
       map['blockchain'],
       map['network'],
       map['sub_network_identifier'] != null
-          ? SubNetworkIdentifier.fromMap(map['sub_network_identifier'])
+          ? SubNetworkIdentifier.fromJson(map['sub_network_identifier'])
           : null,
     );
   }
@@ -25,11 +25,13 @@ class NetworkIdentifier {
   final String network;
   final SubNetworkIdentifier? subNetworkIdentifier;
 
-  Map<String, dynamic> toJson() => {
-        'blockchain': blockchain,
-        'network': network,
-        'sub_network_identifier': subNetworkIdentifier?.toJson()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'blockchain': blockchain,
+      'network': network,
+      'sub_network_identifier': subNetworkIdentifier?.toJson(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// In blockchains with sharded state, the SubNetworkIdentifier is required to
@@ -38,7 +40,7 @@ class NetworkIdentifier {
 class SubNetworkIdentifier {
   const SubNetworkIdentifier(this.network, this.metadata);
 
-  factory SubNetworkIdentifier.fromMap(Map<String, dynamic> map) {
+  factory SubNetworkIdentifier.fromJson(Map<String, dynamic> map) {
     return SubNetworkIdentifier(
       map['network'],
       map['metadata'],
@@ -48,15 +50,19 @@ class SubNetworkIdentifier {
   final String network;
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {'network': network, 'metadata': metadata}
-    ..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network': network,
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// The block_identifier uniquely identifies a block in a particular network.
 class BlockIdentifier {
   const BlockIdentifier(this.index, this.hash);
 
-  factory BlockIdentifier.fromMap(Map<String, dynamic> map) {
+  factory BlockIdentifier.fromJson(Map<String, dynamic> map) {
     return BlockIdentifier(map['index'], map['hash']);
   }
 
@@ -64,8 +70,12 @@ class BlockIdentifier {
   final int index;
   final String hash;
 
-  Map<String, dynamic> toJson() => {'index': index, 'hash': hash}
-    ..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'index': index,
+      'hash': hash,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// When fetching data by BlockIdentifier, it may be possible to only specify
@@ -74,15 +84,19 @@ class BlockIdentifier {
 class PartialBlockIdentifier {
   const PartialBlockIdentifier(this.index, this.hash);
 
-  factory PartialBlockIdentifier.fromMap(Map<String, dynamic> map) {
+  factory PartialBlockIdentifier.fromJson(Map<String, dynamic> map) {
     return PartialBlockIdentifier(map['index'], map['hash']);
   }
 
   final int? index;
   final String? hash;
 
-  Map<String, dynamic> toJson() => {'index': index, 'hash': hash}
-    ..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'index': index,
+      'hash': hash,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// The transaction_identifier uniquely identifies a transaction in a particular
@@ -90,7 +104,7 @@ class PartialBlockIdentifier {
 class TransactionIdentifier {
   const TransactionIdentifier(this.hash);
 
-  factory TransactionIdentifier.fromMap(Map<String, dynamic> map) {
+  factory TransactionIdentifier.fromJson(Map<String, dynamic> map) {
     return TransactionIdentifier(map['hash']);
   }
 
@@ -98,15 +112,16 @@ class TransactionIdentifier {
   /// should use the hash of the block as the identifier.
   final String hash;
 
-  Map<String, dynamic> toJson() =>
-      {'hash': hash}..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {'hash': hash}..removeWhere((key, value) => value == null);
+  }
 }
 
 /// The operation_identifier uniquely identifies an operation within a transaction.
 class OperationIdentifier {
   const OperationIdentifier(this.index, this.networkIndex);
 
-  factory OperationIdentifier.fromMap(Map<String, dynamic> map) {
+  factory OperationIdentifier.fromJson(Map<String, dynamic> map) {
     return OperationIdentifier(map['index'], map['network_index']);
   }
 
@@ -124,10 +139,12 @@ class OperationIdentifier {
   /// (typically most account-based blockchains).
   final int? networkIndex;
 
-  Map<String, dynamic> toJson() => {
-        'index': index,
-        'network_index': networkIndex
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'index': index,
+      'network_index': networkIndex,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// The account identifier uniquely identifies an account within a network.
@@ -136,11 +153,11 @@ class OperationIdentifier {
 class AccountIdentifier {
   const AccountIdentifier(this.address, this.subAccount, this.metadata);
 
-  factory AccountIdentifier.fromMap(Map<String, dynamic> map) {
+  factory AccountIdentifier.fromJson(Map<String, dynamic> map) {
     return AccountIdentifier(
       map['address'],
       map['sub_account'] != null
-          ? SubAccountIdentifier.fromMap(map['sub_account'])
+          ? SubAccountIdentifier.fromJson(map['sub_account'])
           : null,
       map['metadata'],
     );
@@ -157,11 +174,13 @@ class AccountIdentifier {
   /// should specify the public key(s) owned by the address in metadata.
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'address': address,
-        'sub_account': subAccount?.toJson(),
-        'metadata': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'address': address,
+      'sub_account': subAccount?.toJson(),
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// An account may have state specific to a contract address (ERC-20 token)
@@ -170,7 +189,7 @@ class AccountIdentifier {
 class SubAccountIdentifier {
   const SubAccountIdentifier(this.address, this.metadata);
 
-  factory SubAccountIdentifier.fromMap(Map<String, dynamic> map) {
+  factory SubAccountIdentifier.fromJson(Map<String, dynamic> map) {
     return SubAccountIdentifier(map['address'], map['metadata']);
   }
 
@@ -184,8 +203,12 @@ class SubAccountIdentifier {
   /// but differing metadata will not be considered equal by clients.
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {'address': address, 'metadata': metadata}
-    ..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'address': address,
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// Blocks contain an array of Transactions that occurred at
@@ -203,12 +226,14 @@ class Block {
     this.metadata,
   );
 
-  factory Block.fromMap(Map<String, dynamic> map) {
+  factory Block.fromJson(Map<String, dynamic> map) {
     return Block(
-      BlockIdentifier.fromMap(map['block_identifier']),
-      BlockIdentifier.fromMap(map['parent_block_identifier']),
+      BlockIdentifier.fromJson(map['block_identifier']),
+      BlockIdentifier.fromJson(map['parent_block_identifier']),
       map['timestamp'],
-      (map['transactions'] as List).map((e) => Transaction.fromMap(e)).toList(),
+      (map['transactions'] as List)
+          .map((e) => Transaction.fromJson(e))
+          .toList(),
       map['metadata'],
     );
   }
@@ -219,13 +244,15 @@ class Block {
   final List<Transaction> transactions;
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'block_identifier': blockIdentifier.toJson(),
-        'parent_block_identifier': parentBlockIdentifier.toJson(),
-        'timestamp': timestamp,
-        'transactions': transactions.map((e) => e.toJson()),
-        'metadata': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'block_identifier': blockIdentifier.toJson(),
+      'parent_block_identifier': parentBlockIdentifier.toJson(),
+      'timestamp': timestamp,
+      'transactions': transactions.map((e) => e.toJson()),
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// Transactions contain an array of [Operation]s that are attributable to
@@ -233,10 +260,10 @@ class Block {
 class Transaction {
   const Transaction(this.transactionIdentifier, this.operations, this.metadata);
 
-  factory Transaction.fromMap(Map<String, dynamic> map) {
+  factory Transaction.fromJson(Map<String, dynamic> map) {
     return Transaction(
-      TransactionIdentifier.fromMap(map['transaction_identifier']),
-      (map['operations'] as List).map((e) => Operation.fromMap(e)).toList(),
+      TransactionIdentifier.fromJson(map['transaction_identifier']),
+      (map['operations'] as List).map((e) => Operation.fromJson(e)).toList(),
       map['metadata'],
     );
   }
@@ -249,11 +276,13 @@ class Transaction {
   /// [TransactionIdentifier] of these transactions in the metadata.
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'transaction_identifier': transactionIdentifier.toJson(),
-        'operations': operations.map((e) => e.toJson()).toList(),
-        'metadata': metadata,
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'transaction_identifier': transactionIdentifier.toJson(),
+      'operations': operations.map((e) => e.toJson()).toList(),
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// Operations contain all balance-changing information within a transaction.
@@ -274,20 +303,22 @@ class Operation {
     this.metadata,
   );
 
-  factory Operation.fromMap(Map<String, dynamic> map) {
+  factory Operation.fromJson(Map<String, dynamic> map) {
     return Operation(
       map['type'],
-      OperationIdentifier.fromMap(map['operation_identifier']),
+      OperationIdentifier.fromJson(map['operation_identifier']),
       map['related_operations'] != null
           ? (map['related_operations'] as List)
-              .map((e) => OperationIdentifier.fromMap(e))
+              .map((e) => OperationIdentifier.fromJson(e))
               .toList()
           : null,
       map['status'],
-      map['account'] != null ? AccountIdentifier.fromMap(map['account']) : null,
-      map['amount'] != null ? Amount.fromMap(map['amount']) : null,
+      map['account'] != null
+          ? AccountIdentifier.fromJson(map['account'])
+          : null,
+      map['amount'] != null ? Amount.fromJson(map['amount']) : null,
       map['coin_change'] != null
-          ? CoinChange.fromMap(map['coin_change'])
+          ? CoinChange.fromJson(map['coin_change'])
           : null,
       map['metadata'],
     );
@@ -329,27 +360,28 @@ class Operation {
   final CoinChange? coinChange;
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'type': type,
-        'operation_identifier': operationIdentifier.toJson(),
-        'related_operations':
-            relatedOperations?.map((e) => e.toJson()).toList(),
-        'status': status,
-        'account': account?.toJson(),
-        'amount': amount?.toJson(),
-        'coin_change': coinChange?.toJson(),
-        'metadata': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type,
+      'operation_identifier': operationIdentifier.toJson(),
+      'related_operations': relatedOperations?.map((e) => e.toJson()).toList(),
+      'status': status,
+      'account': account?.toJson(),
+      'amount': amount?.toJson(),
+      'coin_change': coinChange?.toJson(),
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// Amount is some Value of a Currency. It is considered invalid to specify a Value without a Currency.
 class Amount {
   const Amount(this.value, this.currency, this.metadata);
 
-  factory Amount.fromMap(Map<String, dynamic> map) {
+  factory Amount.fromJson(Map<String, dynamic> map) {
     return Amount(
       map['value'],
-      Currency.fromMap(map['currency']),
+      Currency.fromJson(map['currency']),
       map['metadata'],
     );
   }
@@ -361,11 +393,13 @@ class Amount {
   final Currency currency;
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'value': value,
-        'currency': currency.toJson(),
-        'metadata': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'value': value,
+      'currency': currency.toJson(),
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// Currency is composed of a canonical Symbol and Decimals.
@@ -374,7 +408,7 @@ class Amount {
 class Currency {
   const Currency(this.symbol, this.decimals, this.metadata);
 
-  factory Currency.fromMap(Map<String, dynamic> map) {
+  factory Currency.fromJson(Map<String, dynamic> map) {
     return Currency(map['symbol'], map['decimals'], map['metadata']);
   }
 
@@ -391,11 +425,13 @@ class Currency {
   /// contract address of an ERC-20 token.
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'symbol': symbol,
-        'decimals': decimals,
-        'metadata': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'symbol': symbol,
+      'decimals': decimals,
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// SyncStatus is used to provide additional context about an implementation's
@@ -406,7 +442,7 @@ class Currency {
 class SyncStatus {
   const SyncStatus(this.currentIndex, this.targetIndex, this.stage);
 
-  factory SyncStatus.fromMap(Map<String, dynamic> map) {
+  factory SyncStatus.fromJson(Map<String, dynamic> map) {
     return SyncStatus(map['current_index'], map['target_index'], map['stage']);
   }
 
@@ -420,26 +456,32 @@ class SyncStatus {
   /// Stage is the phase of the sync process.
   final String? stage;
 
-  Map<String, dynamic> toJson() => {
-        'current_index': currentIndex,
-        'target_index': targetIndex,
-        'stage': stage
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'current_index': currentIndex,
+      'target_index': targetIndex,
+      'stage': stage,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// A Peer is a representation of a node's peer.
 class Peer {
   const Peer(this.peerId, this.metadata);
 
-  factory Peer.fromMap(Map<String, dynamic> map) {
+  factory Peer.fromJson(Map<String, dynamic> map) {
     return Peer(map['peer_id'], map['metadata']);
   }
 
   final String peerId;
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {'peer_id': peerId, 'metadata': metadata}
-    ..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'peer_id': peerId,
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// The Version object is utilized to inform the client of the versions of
@@ -452,7 +494,7 @@ class Version {
     this.metadata,
   );
 
-  factory Version.fromMap(Map<String, dynamic> map) {
+  factory Version.fromJson(Map<String, dynamic> map) {
     return Version(
       map['rosetta_version'],
       map['node_version'],
@@ -479,12 +521,14 @@ class Version {
   /// dependent services should be returned here.
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'rosetta_version': rosettaVersion,
-        'node_version': nodeVersion,
-        'middleware_version': middlewareVersion,
-        'metadata': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'rosetta_version': rosettaVersion,
+      'node_version': nodeVersion,
+      'middleware_version': middlewareVersion,
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// Allow specifies supported Operation status, Operation types,
@@ -504,17 +548,17 @@ class Allow {
     this.timestampStartIndex,
   );
 
-  factory Allow.fromMap(Map<String, dynamic> map) {
+  factory Allow.fromJson(Map<String, dynamic> map) {
     return Allow(
       (map['operation_statuses'] as List)
-          .map((e) => OperationStatus.fromMap(e))
+          .map((e) => OperationStatus.fromJson(e))
           .toList(),
       (map['operation_types'] as List).map((e) => e.toString()).toList(),
-      (map['errors'] as List).map((e) => RosettaError.fromMap(e)).toList(),
+      (map['errors'] as List).map((e) => RosettaError.fromJson(e)).toList(),
       map['historical_balance_lookup'],
       (map['call_methods'] as List).map((e) => e.toString()).toList(),
       (map['balance_exemptions'] as List)
-          .map((e) => BalanceExemption.fromMap(e))
+          .map((e) => BalanceExemption.fromJson(e))
           .toList(),
       map['mempool_coins'],
       map['timestamp_start_index'],
@@ -568,24 +612,25 @@ class Allow {
   /// `include_mempool` as true will be automatically rejected.
   final bool mempoolCoins;
 
-  Map<String, dynamic> toJson() => {
-        'operation_statuses': operationStatus.map((e) => e.toJson()).toList(),
-        'operation_types': operationTypes.map((e) => e.toString()).toList(),
-        'errors': errors.map((e) => e.toJson()).toList(),
-        'historical_balance_lookup': historicalBalanceLookup,
-        'call_methods': callMethods.map((e) => e.toString()).toList(),
-        'balance_exemptions':
-            balanceExemptions.map((e) => e.toString()).toList(),
-        'mempool_coins': mempoolCoins,
-        'timestamp_start_index': timestampStartIndex
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'operation_statuses': operationStatus.map((e) => e.toJson()).toList(),
+      'operation_types': operationTypes.map((e) => e.toString()).toList(),
+      'errors': errors.map((e) => e.toJson()).toList(),
+      'historical_balance_lookup': historicalBalanceLookup,
+      'call_methods': callMethods.map((e) => e.toString()).toList(),
+      'balance_exemptions': balanceExemptions.map((e) => e.toString()).toList(),
+      'mempool_coins': mempoolCoins,
+      'timestamp_start_index': timestampStartIndex,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// OperationStatus is utilized to indicate which Operation status are considered successful.
 class OperationStatus {
   const OperationStatus(this.status, this.successful);
 
-  factory OperationStatus.fromMap(Map<String, dynamic> map) {
+  factory OperationStatus.fromJson(Map<String, dynamic> map) {
     return OperationStatus(map['status'], map['successful']);
   }
 
@@ -602,8 +647,12 @@ class OperationStatus {
   /// is successful and should affect an account.
   final bool successful;
 
-  Map<String, dynamic> toJson() => {'status': status, 'successful': successful}
-    ..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'status': status,
+      'successful': successful,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// The timestamp of the block in milliseconds since the Unix Epoch.
@@ -618,7 +667,7 @@ class PublicKey {
   // "secp256k1" | "secp256r1" | "edwards25519" | "tweedle";
   const PublicKey(this.hexBytes, this.curveType);
 
-  factory PublicKey.fromMap(Map<String, dynamic> map) {
+  factory PublicKey.fromJson(Map<String, dynamic> map) {
     return PublicKey(map['hex_bytes'], map['curve_type']);
   }
 
@@ -626,10 +675,12 @@ class PublicKey {
   final String hexBytes;
   final String curveType;
 
-  Map<String, dynamic> toJson() => {
-        'hex_bytes': hexBytes,
-        'curve_type': curveType
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'hex_bytes': hexBytes,
+      'curve_type': curveType,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [CurveType] is the type of cryptographic curve associated with a PublicKey.
@@ -650,12 +701,12 @@ class SigningPayload {
     this.signatureType,
   );
 
-  factory SigningPayload.fromMap(Map<String, dynamic> map) {
+  factory SigningPayload.fromJson(Map<String, dynamic> map) {
     return SigningPayload(
       map['hex_bytes'],
       map['address'],
       map['account_identifier'] != null
-          ? AccountIdentifier.fromMap(map['account_identifier'])
+          ? AccountIdentifier.fromJson(map['account_identifier'])
           : null,
       map['signature_type'],
     );
@@ -668,12 +719,14 @@ class SigningPayload {
   final AccountIdentifier? accountIdentifier;
   final String? signatureType;
 
-  Map<String, dynamic> toJson() => {
-        'hex_bytes': hexBytes,
-        'address': address,
-        'account_identifier': accountIdentifier?.toJson(),
-        'signature_type': signatureType
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'hex_bytes': hexBytes,
+      'address': address,
+      'account_identifier': accountIdentifier?.toJson(),
+      'signature_type': signatureType,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// Signature contains the payload that was signed, the public keys of the
@@ -689,10 +742,10 @@ class Signature {
     this.hexBytes,
   );
 
-  factory Signature.fromMap(Map<String, dynamic> map) {
+  factory Signature.fromJson(Map<String, dynamic> map) {
     return Signature(
-      SigningPayload.fromMap(map['signing_payload']),
-      PublicKey.fromMap(map['public_key']),
+      SigningPayload.fromJson(map['signing_payload']),
+      PublicKey.fromJson(map['public_key']),
       map['signature_type'],
       map['hex_bytes'],
     );
@@ -710,27 +763,33 @@ class Signature {
   final String signatureType;
   final String hexBytes;
 
-  Map<String, dynamic> toJson() => {
-        'signing_payload': signingPayload.toJson(),
-        'public_key': publicKey.toJson(),
-        'signature_type': signatureType,
-        'hex_bytes': hexBytes
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'signing_payload': signingPayload.toJson(),
+      'public_key': publicKey.toJson(),
+      'signature_type': signatureType,
+      'hex_bytes': hexBytes,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// CoinIdentifier uniquely identifies a Coin.
 class CoinIdentifier {
   const CoinIdentifier(this.identifier);
 
-  factory CoinIdentifier.fromMap(Map<String, dynamic> map) =>
-      CoinIdentifier(map['identifier']);
+  factory CoinIdentifier.fromJson(Map<String, dynamic> map) {
+    return CoinIdentifier(map['identifier']);
+  }
 
   /// Identifier should be populated with a globally unique identifier of a Coin.
   /// In Bitcoin, this identifier would be transaction_hash:index.
   final String identifier;
 
-  Map<String, dynamic> toJson() => {'identifier': identifier}
-    ..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'identifier': identifier,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// CoinChange is used to represent a change in state of a some coin identified
@@ -743,40 +802,44 @@ class CoinChange {
   /// "coin_created" | "coin_spent";
   const CoinChange(this.coinAction, this.coinIdentifier);
 
-  factory CoinChange.fromMap(Map<String, dynamic> map) {
+  factory CoinChange.fromJson(Map<String, dynamic> map) {
     return CoinChange(
       map['coin_action'],
-      CoinIdentifier.fromMap(map['coin_identifier']),
+      CoinIdentifier.fromJson(map['coin_identifier']),
     );
   }
 
   final String coinAction;
   final CoinIdentifier coinIdentifier;
 
-  Map<String, dynamic> toJson() => {
-        'coin_identifier': coinIdentifier.toJson(),
-        'coin_action': coinAction
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'coin_identifier': coinIdentifier.toJson(),
+      'coin_action': coinAction,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// Coin contains its unique identifier and the amount it represents.
 class Coin {
   const Coin(this.amount, this.coinIdentifier);
 
-  factory Coin.fromMap(Map<String, dynamic> map) {
+  factory Coin.fromJson(Map<String, dynamic> map) {
     return Coin(
-      Amount.fromMap(map['amount']),
-      CoinIdentifier.fromMap(map['coin_identifier']),
+      Amount.fromJson(map['amount']),
+      CoinIdentifier.fromJson(map['coin_identifier']),
     );
   }
 
   final CoinIdentifier coinIdentifier;
   final Amount amount;
 
-  Map<String, dynamic> toJson() => {
-        'coin_identifier': coinIdentifier.toJson(),
-        'amount': amount.toJson()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'coin_identifier': coinIdentifier.toJson(),
+      'amount': amount.toJson(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [BalanceExemption] indicates that the balance for an exempt account
@@ -799,10 +862,10 @@ class BalanceExemption {
     this.exemptionType,
   );
 
-  factory BalanceExemption.fromMap(Map<String, dynamic> map) {
+  factory BalanceExemption.fromJson(Map<String, dynamic> map) {
     return BalanceExemption(
       map['sub_account_address'],
-      map['currency'] != null ? Currency.fromMap(map['currency']) : null,
+      map['currency'] != null ? Currency.fromJson(map['currency']) : null,
       map['exemption_type'],
     );
   }
@@ -831,11 +894,13 @@ class BalanceExemption {
   /// ```
   final String? exemptionType;
 
-  Map<String, dynamic> toJson() => {
-        'sub_account_address': subAccountAddress,
-        'currency': currency?.toJson(),
-        'exemption_type': exemptionType
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'sub_account_address': subAccountAddress,
+      'currency': currency?.toJson(),
+      'exemption_type': exemptionType,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [BlockEvent] represents the addition or removal of a [BlockIdentifier]
@@ -845,10 +910,10 @@ class BlockEvent {
   // "block_added" | "block_removed"
   const BlockEvent(this.sequence, this.blockIdentifier, this.type);
 
-  factory BlockEvent.fromMap(Map<String, dynamic> map) {
+  factory BlockEvent.fromJson(Map<String, dynamic> map) {
     return BlockEvent(
       map['sequence'],
-      BlockIdentifier.fromMap(map['block_identifier']),
+      BlockIdentifier.fromJson(map['block_identifier']),
       map['type'],
     );
   }
@@ -859,31 +924,35 @@ class BlockEvent {
   final BlockIdentifier blockIdentifier;
   final String type;
 
-  Map<String, dynamic> toJson() => {
-        'sequence': sequence,
-        'block_identifier': blockIdentifier.toJson(),
-        'type': type
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'sequence': sequence,
+      'block_identifier': blockIdentifier.toJson(),
+      'type': type,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// BlockTransaction contains a populated Transaction and the BlockIdentifier that contains it.
 class BlockTransaction {
   const BlockTransaction(this.blockIdentifier, this.transaction);
 
-  factory BlockTransaction.fromMap(Map<String, dynamic> map) {
+  factory BlockTransaction.fromJson(Map<String, dynamic> map) {
     return BlockTransaction(
-      BlockIdentifier.fromMap(map['block_identifier']),
-      Transaction.fromMap(map['transaction']),
+      BlockIdentifier.fromJson(map['block_identifier']),
+      Transaction.fromJson(map['transaction']),
     );
   }
 
   final BlockIdentifier blockIdentifier;
   final Transaction transaction;
 
-  Map<String, dynamic> toJson() => {
-        'block_identifier': blockIdentifier.toJson(),
-        'transaction': transaction.toJson()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'block_identifier': blockIdentifier.toJson(),
+      'transaction': transaction.toJson(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// An [AccountBalanceRequest] is utilized to make a balance request
@@ -898,13 +967,15 @@ class AccountBalanceRequest {
     this.currencies,
   );
 
-  factory AccountBalanceRequest.fromMap(Map<String, dynamic> map) {
+  factory AccountBalanceRequest.fromJson(Map<String, dynamic> map) {
     return AccountBalanceRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
-      AccountIdentifier.fromMap(map['account_identifier']),
-      PartialBlockIdentifier.fromMap(map['block_identifier']),
+      NetworkIdentifier.fromJson(map['network_identifier']),
+      AccountIdentifier.fromJson(map['account_identifier']),
+      PartialBlockIdentifier.fromJson(map['block_identifier']),
       map['currencies'] != null
-          ? (map['currencies'] as List).map((e) => Currency.fromMap(e)).toList()
+          ? (map['currencies'] as List)
+              .map((e) => Currency.fromJson(e))
+              .toList()
           : null,
     );
   }
@@ -919,12 +990,14 @@ class AccountBalanceRequest {
   /// If not populated, all available balances will be returned.
   final List<Currency>? currencies;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'account_identifier': accountIdentifier.toJson(),
-        'block_identifier': blockIdentifier?.toJson(),
-        'currencies': currencies?.map((e) => e.toJson()).toList()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'account_identifier': accountIdentifier.toJson(),
+      'block_identifier': blockIdentifier?.toJson(),
+      'currencies': currencies?.map((e) => e.toJson()).toList(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// An [AccountBalanceResponse] is returned on the /account/balance endpoint.
@@ -938,10 +1011,10 @@ class AccountBalanceResponse {
     this.metadata,
   );
 
-  factory AccountBalanceResponse.fromMap(Map<String, dynamic> map) {
+  factory AccountBalanceResponse.fromJson(Map<String, dynamic> map) {
     return AccountBalanceResponse(
-      BlockIdentifier.fromMap(map['block_identifier']),
-      (map['balances'] as List).map((e) => Amount.fromMap(e)).toList(),
+      BlockIdentifier.fromJson(map['block_identifier']),
+      (map['balances'] as List).map((e) => Amount.fromJson(e)).toList(),
       map['metadata'],
     );
   }
@@ -956,11 +1029,13 @@ class AccountBalanceResponse {
   /// identifier or global across the account address.
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'block_identifier': blockIdentifier.toJson(),
-        'balances': balances.map((e) => e.toJson()).toList(),
-        'metadata': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'block_identifier': blockIdentifier.toJson(),
+      'balances': balances.map((e) => e.toJson()).toList(),
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [AccountCoinsRequest] is utilized to make a request
@@ -973,13 +1048,15 @@ class AccountCoinsRequest {
     this.currencies,
   );
 
-  factory AccountCoinsRequest.fromMap(Map<String, dynamic> map) {
+  factory AccountCoinsRequest.fromJson(Map<String, dynamic> map) {
     return AccountCoinsRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
-      AccountIdentifier.fromMap(map['account_identifier']),
+      NetworkIdentifier.fromJson(map['network_identifier']),
+      AccountIdentifier.fromJson(map['account_identifier']),
       map['include_mempool'],
       map['currencies'] != null
-          ? (map['currencies'] as List).map((e) => Currency.fromMap(e)).toList()
+          ? (map['currencies'] as List)
+              .map((e) => Currency.fromJson(e))
+              .toList()
           : null,
     );
   }
@@ -997,12 +1074,14 @@ class AccountCoinsRequest {
   /// If not populated, all unspent coins will be returned.
   final List<Currency>? currencies;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'account_identifier': accountIdentifier.toJson(),
-        'include_mempool': includeMempool,
-        'currencies': currencies?.map((e) => e.toJson()).toList()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'account_identifier': accountIdentifier.toJson(),
+      'include_mempool': includeMempool,
+      'currencies': currencies?.map((e) => e.toJson()).toList(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [AccountCoinsResponse] is returned on the /account/coins endpoint and
@@ -1010,10 +1089,10 @@ class AccountCoinsRequest {
 class AccountCoinsResponse {
   const AccountCoinsResponse(this.blockIdentifier, this.coins, this.metadata);
 
-  factory AccountCoinsResponse.fromMap(Map<String, dynamic> map) {
+  factory AccountCoinsResponse.fromJson(Map<String, dynamic> map) {
     return AccountCoinsResponse(
-      BlockIdentifier.fromMap(map['block_identifier']),
-      (map['coins'] as List).map((e) => Coin.fromMap(e)).toList(),
+      BlockIdentifier.fromJson(map['block_identifier']),
+      (map['coins'] as List).map((e) => Coin.fromJson(e)).toList(),
       map['metadata'],
     );
   }
@@ -1032,31 +1111,35 @@ class AccountCoinsResponse {
   /// identifier or global across the account address.
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'block_identifier': blockIdentifier.toJson(),
-        'coins': coins.map((e) => e.toJson()).toList(),
-        'metadata': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'block_identifier': blockIdentifier.toJson(),
+      'coins': coins.map((e) => e.toJson()).toList(),
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// A [BlockRequest] is utilized to make a block request on the /block endpoint.
 class BlockRequest {
   const BlockRequest(this.networkIdentifier, this.blockIdentifier);
 
-  factory BlockRequest.fromMap(Map<String, dynamic> map) {
+  factory BlockRequest.fromJson(Map<String, dynamic> map) {
     return BlockRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
-      PartialBlockIdentifier.fromMap(map['block_identifier']),
+      NetworkIdentifier.fromJson(map['network_identifier']),
+      PartialBlockIdentifier.fromJson(map['block_identifier']),
     );
   }
 
   final NetworkIdentifier networkIdentifier;
   final PartialBlockIdentifier blockIdentifier;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'block_identifier': blockIdentifier.toJson()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'block_identifier': blockIdentifier.toJson(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// A [BlockResponse] includes a fully-populated block or a partially-populated
@@ -1077,12 +1160,12 @@ class BlockResponse {
   /// transactions returned.
   const BlockResponse(this.block, this.otherTransactions);
 
-  factory BlockResponse.fromMap(Map<String, dynamic> map) {
+  factory BlockResponse.fromJson(Map<String, dynamic> map) {
     return BlockResponse(
-      map['block'] != null ? Block.fromMap(map['block']) : null,
+      map['block'] != null ? Block.fromJson(map['block']) : null,
       map['other_transactions'] != null
           ? (map['other_transactions'] as List)
-              .map((e) => TransactionIdentifier.fromMap(e))
+              .map((e) => TransactionIdentifier.fromJson(e))
               .toList()
           : null,
     );
@@ -1091,10 +1174,12 @@ class BlockResponse {
   final Block? block;
   final List<TransactionIdentifier>? otherTransactions;
 
-  Map<String, dynamic> toJson() => {
-        'block': block?.toJson(),
-        'other_transactions': otherTransactions?.map((e) => e.toJson()).toList()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'block': block?.toJson(),
+      'other_transactions': otherTransactions?.map((e) => e.toJson()).toList(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// A [BlockTransactionRequest] is used to fetch a [Transaction] included in
@@ -1106,7 +1191,7 @@ class BlockTransactionRequest {
     this.transactionIdentifier,
   );
 
-  factory BlockTransactionRequest.fromMap(Map<String, dynamic> map) {
+  factory BlockTransactionRequest.fromJson(Map<String, dynamic> map) {
     return BlockTransactionRequest(
       map['network_identifier'],
       map['block_identifier'],
@@ -1118,25 +1203,30 @@ class BlockTransactionRequest {
   final BlockIdentifier blockIdentifier;
   final TransactionIdentifier transactionIdentifier;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'block_identifier': blockIdentifier.toJson(),
-        'transaction_identifier': transactionIdentifier.toJson()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'block_identifier': blockIdentifier.toJson(),
+      'transaction_identifier': transactionIdentifier.toJson(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// A [BlockTransactionResponse] contains information about a block transaction.
 class BlockTransactionResponse {
   const BlockTransactionResponse(this.transaction);
 
-  factory BlockTransactionResponse.fromMap(Map<String, dynamic> map) {
-    return BlockTransactionResponse(Transaction.fromMap(map['transaction']));
+  factory BlockTransactionResponse.fromJson(Map<String, dynamic> map) {
+    return BlockTransactionResponse(Transaction.fromJson(map['transaction']));
   }
 
   final Transaction transaction;
 
-  Map<String, dynamic> toJson() => {'transaction': transaction.toJson()}
-    ..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'transaction': transaction.toJson(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// A [MempoolResponse] contains all transaction identifiers in the mempool
@@ -1144,20 +1234,22 @@ class BlockTransactionResponse {
 class MempoolResponse {
   const MempoolResponse(this.transactionIdentifiers);
 
-  factory MempoolResponse.fromMap(Map<String, dynamic> map) {
+  factory MempoolResponse.fromJson(Map<String, dynamic> map) {
     return MempoolResponse(
       (map['transaction_identifiers'] as List)
-          .map((e) => TransactionIdentifier.fromMap(e))
+          .map((e) => TransactionIdentifier.fromJson(e))
           .toList(),
     );
   }
 
   final List<TransactionIdentifier> transactionIdentifiers;
 
-  Map<String, dynamic> toJson() => {
-        'transaction_identifiers':
-            transactionIdentifiers.map((e) => e.toJson()).toList()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'transaction_identifiers':
+          transactionIdentifiers.map((e) => e.toJson()).toList(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// A [MempoolTransactionRequest] is utilized to retrieve a transaction
@@ -1168,20 +1260,22 @@ class MempoolTransactionRequest {
     this.transactionIdentifier,
   );
 
-  factory MempoolTransactionRequest.fromMap(Map<String, dynamic> map) {
+  factory MempoolTransactionRequest.fromJson(Map<String, dynamic> map) {
     return MempoolTransactionRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
-      TransactionIdentifier.fromMap(map['transaction_identifier']),
+      NetworkIdentifier.fromJson(map['network_identifier']),
+      TransactionIdentifier.fromJson(map['transaction_identifier']),
     );
   }
 
   final NetworkIdentifier networkIdentifier;
   final TransactionIdentifier transactionIdentifier;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'transaction_identifier': transactionIdentifier.toJson()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'transaction_identifier': transactionIdentifier.toJson(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// A MempoolTransactionResponse contains an estimate of a mempool transaction.
@@ -1190,9 +1284,9 @@ class MempoolTransactionRequest {
 class MempoolTransactionResponse {
   const MempoolTransactionResponse(this.transaction, this.metadata);
 
-  factory MempoolTransactionResponse.fromMap(Map<String, dynamic> map) {
+  factory MempoolTransactionResponse.fromJson(Map<String, dynamic> map) {
     return MempoolTransactionResponse(
-      Transaction.fromMap(map['transaction']),
+      Transaction.fromJson(map['transaction']),
       map['metadata'],
     );
   }
@@ -1200,10 +1294,12 @@ class MempoolTransactionResponse {
   final Transaction transaction;
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'transaction': transaction.toJson(),
-        'metadata': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'transaction': transaction.toJson(),
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// A [MetadataRequest] is utilized in any request where the only argument
@@ -1211,14 +1307,15 @@ class MempoolTransactionResponse {
 class MetadataRequest {
   const MetadataRequest(this.metadata);
 
-  factory MetadataRequest.fromMap(Map<String, dynamic> map) {
+  factory MetadataRequest.fromJson(Map<String, dynamic> map) {
     return MetadataRequest(map['metadata']);
   }
 
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {'metadata': metadata}
-    ..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {'metadata': metadata}..removeWhere((key, value) => value == null);
+  }
 }
 
 /// A [NetworkListResponse] contains all [NetworkIdentifier]s that the node
@@ -1226,20 +1323,21 @@ class MetadataRequest {
 class NetworkListResponse {
   const NetworkListResponse(this.networkIdentifiers);
 
-  factory NetworkListResponse.fromMap(Map<String, dynamic> map) {
+  factory NetworkListResponse.fromJson(Map<String, dynamic> map) {
     return NetworkListResponse(
       (map['network_identifiers'] as List)
-          .map((e) => NetworkIdentifier.fromMap(e))
+          .map((e) => NetworkIdentifier.fromJson(e))
           .toList(),
     );
   }
 
   final List<NetworkIdentifier> networkIdentifiers;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifiers':
-            networkIdentifiers.map((e) => e.toJson()).toList()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifiers': networkIdentifiers.map((e) => e.toJson()).toList(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// A [NetworkRequest] is utilized to retrieve some data specific exclusively
@@ -1247,9 +1345,9 @@ class NetworkListResponse {
 class NetworkRequest {
   const NetworkRequest(this.networkIdentifier, this.metadata);
 
-  factory NetworkRequest.fromMap(Map<String, dynamic> map) {
+  factory NetworkRequest.fromJson(Map<String, dynamic> map) {
     return NetworkRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
+      NetworkIdentifier.fromJson(map['network_identifier']),
       map['metadata'],
     );
   }
@@ -1257,10 +1355,12 @@ class NetworkRequest {
   final NetworkIdentifier networkIdentifier;
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'metadata': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [NetworkStatusResponse] contains basic information about the node's view of
@@ -1284,12 +1384,12 @@ class NetworkStatusResponse {
     this.syncStatus,
   );
 
-  factory NetworkStatusResponse.fromMap(Map<String, dynamic> map) {
+  factory NetworkStatusResponse.fromJson(Map<String, dynamic> map) {
     return NetworkStatusResponse(
-      BlockIdentifier.fromMap(map['current_block_identifier']),
+      BlockIdentifier.fromJson(map['current_block_identifier']),
       map['current_block_timestamp'],
-      BlockIdentifier.fromMap(map['genesis_block_identifier']),
-      (map['peers'] as List).map((e) => Peer.fromMap(e)).toList(),
+      BlockIdentifier.fromJson(map['genesis_block_identifier']),
+      (map['peers'] as List).map((e) => Peer.fromJson(e)).toList(),
       map['oldest_block_identifier'],
       map['sync_status'],
     );
@@ -1302,14 +1402,16 @@ class NetworkStatusResponse {
   final SyncStatus? syncStatus;
   final List<Peer> peers;
 
-  Map<String, dynamic> toJson() => {
-        'current_block_identifier': currentBlockIdentifier.toJson(),
-        'current_block_timestamp': currentBlockTimestamp,
-        'genesis_block_identifier': genesisBlockIdentifier.toJson(),
-        'peers': peers.map((e) => e.toJson()).toList(),
-        'oldest_block_identifier': oldestBlockIdentifier?.toJson(),
-        'sync_status': syncStatus?.toJson()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'current_block_identifier': currentBlockIdentifier.toJson(),
+      'current_block_timestamp': currentBlockTimestamp,
+      'genesis_block_identifier': genesisBlockIdentifier.toJson(),
+      'peers': peers.map((e) => e.toJson()).toList(),
+      'oldest_block_identifier': oldestBlockIdentifier?.toJson(),
+      'sync_status': syncStatus?.toJson(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [NetworkOptionsResponse] contains information about the versioning
@@ -1317,20 +1419,22 @@ class NetworkStatusResponse {
 class NetworkOptionsResponse {
   const NetworkOptionsResponse(this.version, this.allow);
 
-  factory NetworkOptionsResponse.fromMap(Map<String, dynamic> map) {
+  factory NetworkOptionsResponse.fromJson(Map<String, dynamic> map) {
     return NetworkOptionsResponse(
-      Version.fromMap(map['version']),
-      Allow.fromMap(map['allow']),
+      Version.fromJson(map['version']),
+      Allow.fromJson(map['allow']),
     );
   }
 
   final Version version;
   final Allow allow;
 
-  Map<String, dynamic> toJson() => {
-        'version': version.toJson(),
-        'allow': allow.toJson()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'version': version.toJson(),
+      'allow': allow.toJson(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// A [ConstructionMetadataRequest] is utilized to get information required to
@@ -1347,13 +1451,13 @@ class ConstructionMetadataRequest {
     this.publicKeys,
   );
 
-  factory ConstructionMetadataRequest.fromMap(Map<String, dynamic> map) {
+  factory ConstructionMetadataRequest.fromJson(Map<String, dynamic> map) {
     return ConstructionMetadataRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
+      NetworkIdentifier.fromJson(map['network_identifier']),
       map['options'],
       map['public_keys'] != null
           ? (map['public_keys'] as List)
-              .map((e) => PublicKey.fromMap(e))
+              .map((e) => PublicKey.fromJson(e))
               .toList()
           : null,
     );
@@ -1371,11 +1475,13 @@ class ConstructionMetadataRequest {
 
   final List<PublicKey>? publicKeys;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'options': options,
-        'public_keys': publicKeys?.map((e) => e.toJson())
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'options': options,
+      'public_keys': publicKeys?.map((e) => e.toJson()),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// The [ConstructionMetadataResponse] returns network-specific metadata
@@ -1388,12 +1494,12 @@ class ConstructionMetadataRequest {
 class ConstructionMetadataResponse {
   const ConstructionMetadataResponse(this.metadata, this.suggestedFee);
 
-  factory ConstructionMetadataResponse.fromMap(Map<String, dynamic> map) {
+  factory ConstructionMetadataResponse.fromJson(Map<String, dynamic> map) {
     return ConstructionMetadataResponse(
       map['metadata'],
       map['suggested_fee'] != null
           ? (map['suggested_fee'] as List)
-              .map((e) => Amount.fromMap(e))
+              .map((e) => Amount.fromJson(e))
               .toList()
           : null,
     );
@@ -1403,10 +1509,12 @@ class ConstructionMetadataResponse {
 
   final List<Amount>? suggestedFee;
 
-  Map<String, dynamic> toJson() => {
-        'metadata': metadata,
-        'suggested_fee': suggestedFee?.map((e) => e.toJson()).toList()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'metadata': metadata,
+      'suggested_fee': suggestedFee?.map((e) => e.toJson()).toList(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [ConstructionDeriveRequest] is passed to the `/construction/derive` endpoint.
@@ -1421,10 +1529,10 @@ class ConstructionDeriveRequest {
     this.metadata,
   );
 
-  factory ConstructionDeriveRequest.fromMap(Map<String, dynamic> map) {
+  factory ConstructionDeriveRequest.fromJson(Map<String, dynamic> map) {
     return ConstructionDeriveRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
-      PublicKey.fromMap(map['public_key']),
+      NetworkIdentifier.fromJson(map['network_identifier']),
+      PublicKey.fromJson(map['public_key']),
       map['metadata'],
     );
   }
@@ -1434,11 +1542,13 @@ class ConstructionDeriveRequest {
   final PublicKey publicKey;
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'public_key': publicKey.toJson(),
-        'meta_data': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'public_key': publicKey.toJson(),
+      'meta_data': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [ConstructionDeriveResponse] is returned by the
@@ -1450,10 +1560,10 @@ class ConstructionDeriveResponse {
     this.metadata,
   );
 
-  factory ConstructionDeriveResponse.fromMap(Map<String, dynamic> map) {
+  factory ConstructionDeriveResponse.fromJson(Map<String, dynamic> map) {
     return ConstructionDeriveResponse(
       map['address'],
-      AccountIdentifier.fromMap(map['account_identifier']),
+      AccountIdentifier.fromJson(map['account_identifier']),
       map['metadata'],
     );
   }
@@ -1464,11 +1574,13 @@ class ConstructionDeriveResponse {
   final AccountIdentifier? accountIdentifier;
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'address': address,
-        'account_identifier': accountIdentifier?.toJson(),
-        'metadata': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'address': address,
+      'account_identifier': accountIdentifier?.toJson(),
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [ConstructionPreprocessRequest] is passed to the
@@ -1498,13 +1610,13 @@ class ConstructionPreprocessRequest {
     this.suggestedFeeMultiplier,
   );
 
-  factory ConstructionPreprocessRequest.fromMap(Map<String, dynamic> map) {
+  factory ConstructionPreprocessRequest.fromJson(Map<String, dynamic> map) {
     return ConstructionPreprocessRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
-      (map['operations'] as List).map((e) => Operation.fromMap(e)).toList(),
+      NetworkIdentifier.fromJson(map['network_identifier']),
+      (map['operations'] as List).map((e) => Operation.fromJson(e)).toList(),
       map['metadata'],
       map['max_fee'] != null
-          ? (map['max_fee'] as List).map((e) => Amount.fromMap(e)).toList()
+          ? (map['max_fee'] as List).map((e) => Amount.fromJson(e)).toList()
           : null,
       map['suggested_fee_multiplier'],
     );
@@ -1516,13 +1628,15 @@ class ConstructionPreprocessRequest {
   final List<Amount>? maxFee;
   final int? suggestedFeeMultiplier;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'operations': operations.map((e) => e.toJson()),
-        'metadata': metadata,
-        'max_fee': maxFee?.map((e) => e.toJson()),
-        'suggested_fee_multiplier': suggestedFeeMultiplier
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'operations': operations.map((e) => e.toJson()),
+      'metadata': metadata,
+      'max_fee': maxFee?.map((e) => e.toJson()),
+      'suggested_fee_multiplier': suggestedFeeMultiplier,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [ConstructionPreprocessResponse] contains `options`
@@ -1542,12 +1656,12 @@ class ConstructionPreprocessResponse {
     this.requiredPublicKeys,
   );
 
-  factory ConstructionPreprocessResponse.fromMap(Map<String, dynamic> map) {
+  factory ConstructionPreprocessResponse.fromJson(Map<String, dynamic> map) {
     return ConstructionPreprocessResponse(
       map['options'],
       map['required_public_keys'] != null
           ? (map['required_public_keys'] as List)
-              .map((e) => AccountIdentifier.fromMap(e))
+              .map((e) => AccountIdentifier.fromJson(e))
               .toList()
           : null,
     );
@@ -1557,6 +1671,14 @@ class ConstructionPreprocessResponse {
   /// by the caller.
   final Map<String, dynamic>? options;
   final List<AccountIdentifier>? requiredPublicKeys;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'options': options,
+      'required_public_keys':
+          requiredPublicKeys?.map((e) => e.toJson()).toList(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [ConstructionPayloadsRequest] is the request to `/construction/payloads`.
@@ -1572,14 +1694,14 @@ class ConstructionPayloadsRequest {
     this.publicKeys,
   );
 
-  factory ConstructionPayloadsRequest.fromMap(Map<String, dynamic> map) {
+  factory ConstructionPayloadsRequest.fromJson(Map<String, dynamic> map) {
     return ConstructionPayloadsRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
-      (map['operations'] as List).map((e) => Operation.fromMap(e)).toList(),
+      NetworkIdentifier.fromJson(map['network_identifier']),
+      (map['operations'] as List).map((e) => Operation.fromJson(e)).toList(),
       map['metadata'],
       map['public_keys'] != null
           ? (map['public_keys'] as List)
-              .map((e) => PublicKey.fromMap(e))
+              .map((e) => PublicKey.fromJson(e))
               .toList()
           : null,
     );
@@ -1590,12 +1712,14 @@ class ConstructionPayloadsRequest {
   final Map<String, dynamic>? metadata;
   final List<PublicKey>? publicKeys;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'operations': operations.map((e) => e.toJson()).toList(),
-        'public_keys': publicKeys?.map((e) => e.toJson()).toList(),
-        'metadata': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'operations': operations.map((e) => e.toJson()).toList(),
+      'public_keys': publicKeys?.map((e) => e.toJson()).toList(),
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 abstract class SignablePayload {
@@ -1617,18 +1741,20 @@ class ConstructionPayloadsResponse extends SignablePayload {
     super.payloads,
   );
 
-  factory ConstructionPayloadsResponse.fromMap(Map<String, dynamic> map) {
+  factory ConstructionPayloadsResponse.fromJson(Map<String, dynamic> map) {
     return ConstructionPayloadsResponse(
       map['unsigned_transaction'],
-      (map['payloads'] as List).map((e) => SigningPayload.fromMap(e)).toList(),
+      (map['payloads'] as List).map((e) => SigningPayload.fromJson(e)).toList(),
     );
   }
 
   @override
-  Map<String, dynamic> toJson() => {
-        'unsigned_transaction': unsignedTransaction,
-        'payloads': payloads.map((e) => e.toJson()).toList()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'unsigned_transaction': unsignedTransaction,
+      'payloads': payloads.map((e) => e.toJson()).toList(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [ConstructionCombineRequest] is the input to the
@@ -1642,11 +1768,11 @@ class ConstructionCombineRequest {
     this.signatures,
   );
 
-  factory ConstructionCombineRequest.fromMap(Map<String, dynamic> map) {
+  factory ConstructionCombineRequest.fromJson(Map<String, dynamic> map) {
     return ConstructionCombineRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
+      NetworkIdentifier.fromJson(map['network_identifier']),
       map['unsigned_transaction'],
-      (map['signatures'] as List).map((e) => Signature.fromMap(e)).toList(),
+      (map['signatures'] as List).map((e) => Signature.fromJson(e)).toList(),
     );
   }
 
@@ -1654,11 +1780,13 @@ class ConstructionCombineRequest {
   final String unsignedTransaction;
   final List<Signature> signatures;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'unsigned_transaction': unsignedTransaction,
-        'signatures': signatures.map((e) => e.toJson()).toList()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'unsigned_transaction': unsignedTransaction,
+      'signatures': signatures.map((e) => e.toJson()).toList(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 class ConstructionCombineRequestPart {
@@ -1668,13 +1796,13 @@ class ConstructionCombineRequestPart {
     this.signatures,
   );
 
-  factory ConstructionCombineRequestPart.fromMap(Map<String, dynamic> map) {
+  factory ConstructionCombineRequestPart.fromJson(Map<String, dynamic> map) {
     return ConstructionCombineRequestPart(
       map['network_identifier'] != null
-          ? NetworkIdentifier.fromMap(map['network_identifier'])
+          ? NetworkIdentifier.fromJson(map['network_identifier'])
           : null,
       map['unsigned_transaction'],
-      (map['signatures'] as List).map((e) => Signature.fromMap(e)).toList(),
+      (map['signatures'] as List).map((e) => Signature.fromJson(e)).toList(),
     );
   }
 
@@ -1682,11 +1810,13 @@ class ConstructionCombineRequestPart {
   final String unsignedTransaction;
   final List<Signature> signatures;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier?.toJson(),
-        'unsigned_transaction': unsignedTransaction,
-        'signatures': signatures.map((e) => e.toJson()).toList()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier?.toJson(),
+      'unsigned_transaction': unsignedTransaction,
+      'signatures': signatures.map((e) => e.toJson()).toList(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [ConstructionCombineResponse] is returned by `/construction/combine`.
@@ -1695,14 +1825,17 @@ class ConstructionCombineRequestPart {
 class ConstructionCombineResponse {
   const ConstructionCombineResponse(this.signedTransaction);
 
-  factory ConstructionCombineResponse.fromMap(Map<String, dynamic> map) {
+  factory ConstructionCombineResponse.fromJson(Map<String, dynamic> map) {
     return ConstructionCombineResponse(map['signed_transaction']);
   }
 
   final String signedTransaction;
 
-  Map<String, dynamic> toJson() => {'signed_transaction': signedTransaction}
-    ..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'signed_transaction': signedTransaction,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [ConstructionParseRequest] is the input to the `/construction/parse` endpoint.
@@ -1714,9 +1847,9 @@ class ConstructionParseRequest {
     this.transaction,
   );
 
-  factory ConstructionParseRequest.fromMap(Map<String, dynamic> map) {
+  factory ConstructionParseRequest.fromJson(Map<String, dynamic> map) {
     return ConstructionParseRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
+      NetworkIdentifier.fromJson(map['network_identifier']),
       map['signed'],
       map['transaction'],
     );
@@ -1732,11 +1865,13 @@ class ConstructionParseRequest {
   /// `/construction/combine`.
   final String transaction;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'signed': signed,
-        'transaction': transaction
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'signed': signed,
+      'transaction': transaction,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [ConstructionParseResponse] contains an array of operations that occur in
@@ -1750,15 +1885,15 @@ class ConstructionParseResponse {
     this.metadata,
   );
 
-  factory ConstructionParseResponse.fromMap(Map<String, dynamic> map) {
+  factory ConstructionParseResponse.fromJson(Map<String, dynamic> map) {
     return ConstructionParseResponse(
-      (map['operations'] as List).map((e) => Operation.fromMap(e)).toList(),
+      (map['operations'] as List).map((e) => Operation.fromJson(e)).toList(),
       map['signers'] != null
           ? (map['signers'] as List).map((e) => e.toString()).toList()
           : null,
       map['account_identifier_signers'] != null
           ? (map['account_identifier_signers'] as List)
-              .map((e) => AccountIdentifier.fromMap(e))
+              .map((e) => AccountIdentifier.fromJson(e))
               .toList()
           : null,
       map['metadata'],
@@ -1774,22 +1909,24 @@ class ConstructionParseResponse {
   final List<AccountIdentifier>? accountIdentifierSigners;
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'operations': operations.map((e) => e.toJson()).toList(),
-        'signers': signers?.map((e) => e.toString()).toList(),
-        'account_identifier_signers':
-            accountIdentifierSigners?.map((e) => e.toJson()).toList(),
-        'metadata': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'operations': operations.map((e) => e.toJson()).toList(),
+      'signers': signers?.map((e) => e.toString()).toList(),
+      'account_identifier_signers':
+          accountIdentifierSigners?.map((e) => e.toJson()).toList(),
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [ConstructionHashRequest] is the input to the `/construction/hash` endpoint.
 class ConstructionHashRequest {
   const ConstructionHashRequest(this.networkIdentifier, this.signedTransaction);
 
-  factory ConstructionHashRequest.fromMap(Map<String, dynamic> map) {
+  factory ConstructionHashRequest.fromJson(Map<String, dynamic> map) {
     return ConstructionHashRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
+      NetworkIdentifier.fromJson(map['network_identifier']),
       map['signed_transaction'],
     );
   }
@@ -1797,10 +1934,12 @@ class ConstructionHashRequest {
   final NetworkIdentifier networkIdentifier;
   final String signedTransaction;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'signed_transaction': signedTransaction
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'signed_transaction': signedTransaction,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// The transaction submission request includes a signed transaction.
@@ -1810,9 +1949,9 @@ class ConstructionSubmitRequest {
     this.signedTransaction,
   );
 
-  factory ConstructionSubmitRequest.fromMap(Map<String, dynamic> map) {
+  factory ConstructionSubmitRequest.fromJson(Map<String, dynamic> map) {
     return ConstructionSubmitRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
+      NetworkIdentifier.fromJson(map['network_identifier']),
       map['signed_transaction'],
     );
   }
@@ -1820,10 +1959,12 @@ class ConstructionSubmitRequest {
   final NetworkIdentifier networkIdentifier;
   final String signedTransaction;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'signed_transaction': signedTransaction
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'signed_transaction': signedTransaction,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [TransactionIdentifierResponse] contains the [transactionIdentifier] of
@@ -1835,9 +1976,9 @@ class TransactionIdentifierResponse {
     this.metadata,
   );
 
-  factory TransactionIdentifierResponse.fromMap(Map<String, dynamic> map) {
+  factory TransactionIdentifierResponse.fromJson(Map<String, dynamic> map) {
     return TransactionIdentifierResponse(
-      TransactionIdentifier.fromMap(map['transaction_identifier']),
+      TransactionIdentifier.fromJson(map['transaction_identifier']),
       map['metadata'],
     );
   }
@@ -1845,19 +1986,21 @@ class TransactionIdentifierResponse {
   final TransactionIdentifier transactionIdentifier;
   final Map<String, dynamic>? metadata;
 
-  Map<String, dynamic> toJson() => {
-        'transaction_identifier': transactionIdentifier.toJson(),
-        'metadata': metadata
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'transaction_identifier': transactionIdentifier.toJson(),
+      'metadata': metadata,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [CallRequest] is the input to the `/call` endpoint.
 class CallRequest {
   const CallRequest(this.networkIdentifier, this.method, this.parameters);
 
-  factory CallRequest.fromMap(Map<String, dynamic> map) {
+  factory CallRequest.fromJson(Map<String, dynamic> map) {
     return CallRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
+      NetworkIdentifier.fromJson(map['network_identifier']),
       map['method'],
       map['parameters'],
     );
@@ -1877,18 +2020,20 @@ class CallRequest {
   /// caller to determine which parameters to provide when invoking `/call`.
   final Map<String, dynamic> parameters;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'method': method,
-        'parameters': parameters
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'method': method,
+      'parameters': parameters,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [CallResponse] contains the result of a `/call` invocation.
 class CallResponse {
   const CallResponse(this.result, this.idempotent);
 
-  factory CallResponse.fromMap(Map<String, dynamic> map) {
+  factory CallResponse.fromJson(Map<String, dynamic> map) {
     return CallResponse(map['result'], map['idempotent']);
   }
 
@@ -1905,8 +2050,12 @@ class CallResponse {
   /// true here or they could cause issues for the caller.
   final bool idempotent;
 
-  Map<String, dynamic> toJson() => {'result': result, 'idempotent': idempotent}
-    ..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'result': result,
+      'idempotent': idempotent,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [EventsBlocksRequest] is utilized to fetch a sequence of [BlockEvent]s
@@ -1915,9 +2064,9 @@ class CallResponse {
 class EventsBlocksRequest {
   const EventsBlocksRequest(this.networkIdentifier, this.offset, this.limit);
 
-  factory EventsBlocksRequest.fromMap(Map<String, dynamic> map) {
+  factory EventsBlocksRequest.fromJson(Map<String, dynamic> map) {
     return EventsBlocksRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
+      NetworkIdentifier.fromJson(map['network_identifier']),
       map['offset'],
       map['limit'],
     );
@@ -1934,11 +2083,13 @@ class EventsBlocksRequest {
   /// The implementation may return <= limit events.
   final int? limit;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'offset': offset,
-        'limit': limit
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'offset': offset,
+      'limit': limit,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [EventsBlocksResponse] contains an ordered collection of [BlockEvent]s
@@ -1946,10 +2097,10 @@ class EventsBlocksRequest {
 class EventsBlocksResponse {
   const EventsBlocksResponse(this.maxSequence, this.events);
 
-  factory EventsBlocksResponse.fromMap(Map<String, dynamic> map) {
+  factory EventsBlocksResponse.fromJson(Map<String, dynamic> map) {
     return EventsBlocksResponse(
       map['max_sequence'],
-      (map['events'] as List).map((e) => BlockEvent.fromMap(e)).toList(),
+      (map['events'] as List).map((e) => BlockEvent.fromJson(e)).toList(),
     );
   }
 
@@ -1962,10 +2113,12 @@ class EventsBlocksResponse {
   /// block syncing logic.
   final List<BlockEvent> events;
 
-  Map<String, dynamic> toJson() => {
-        'max_sequence': maxSequence,
-        'events': events.map((e) => e.toJson()).toList()
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'max_sequence': maxSequence,
+      'events': events.map((e) => e.toJson()).toList(),
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [SearchTransactionsRequest] is used to search for transactions matching
@@ -1987,23 +2140,23 @@ class SearchTransactionsRequest {
     this.success,
   );
 
-  factory SearchTransactionsRequest.fromMap(Map<String, dynamic> map) {
+  factory SearchTransactionsRequest.fromJson(Map<String, dynamic> map) {
     return SearchTransactionsRequest(
-      NetworkIdentifier.fromMap(map['network_identifier']),
+      NetworkIdentifier.fromJson(map['network_identifier']),
       map['operator'],
       map['max_block'],
       map['offset'],
       map['limit'],
       map['transaction_identifier'] != null
-          ? TransactionIdentifier.fromMap(map['transaction_identifier'])
+          ? TransactionIdentifier.fromJson(map['transaction_identifier'])
           : null,
       map['account_identifier'] != null
-          ? AccountIdentifier.fromMap(map['account_identifier'])
+          ? AccountIdentifier.fromJson(map['account_identifier'])
           : null,
       map['coin_identifier'] != null
-          ? CoinIdentifier.fromMap(map['coin_identifier'])
+          ? CoinIdentifier.fromJson(map['coin_identifier'])
           : null,
-      map['currency'] != null ? Currency.fromMap(map['currency']) : null,
+      map['currency'] != null ? Currency.fromJson(map['currency']) : null,
       map['status'],
       map['type'],
       map['address'],
@@ -2050,21 +2203,23 @@ class SearchTransactionsRequest {
   /// operation statuses (using the mapping provided in `/network/options`).
   final bool? success;
 
-  Map<String, dynamic> toJson() => {
-        'network_identifier': networkIdentifier.toJson(),
-        'operator': operator,
-        'max_block': maxBlock,
-        'offset': offset,
-        'limit': limit,
-        'transaction_identifier': transactionIdentifier?.toJson(),
-        'account_identifier': accountIdentifier?.toJson(),
-        'coin_identifier': coinIdentifier?.toJson(),
-        'currency': currency?.toJson(),
-        'status': status,
-        'type': type,
-        'address': address,
-        'success': success
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'network_identifier': networkIdentifier.toJson(),
+      'operator': operator,
+      'max_block': maxBlock,
+      'offset': offset,
+      'limit': limit,
+      'transaction_identifier': transactionIdentifier?.toJson(),
+      'account_identifier': accountIdentifier?.toJson(),
+      'coin_identifier': coinIdentifier?.toJson(),
+      'currency': currency?.toJson(),
+      'status': status,
+      'type': type,
+      'address': address,
+      'success': success,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// [SearchTransactionsResponse] contains an ordered collection of
@@ -2077,10 +2232,10 @@ class SearchTransactionsResponse {
     this.nextOffset,
   );
 
-  factory SearchTransactionsResponse.fromMap(Map<String, dynamic> map) {
+  factory SearchTransactionsResponse.fromJson(Map<String, dynamic> map) {
     return SearchTransactionsResponse(
       (map['transactions'] as List)
-          .map((e) => BlockTransaction.fromMap(e))
+          .map((e) => BlockTransaction.fromJson(e))
           .toList(),
       map['total_count'] as int,
       map['next_offset'],
@@ -2101,11 +2256,13 @@ class SearchTransactionsResponse {
 
   final int? totalCount;
 
-  Map<String, dynamic> toJson() => {
-        'transactions': transactions.map((e) => e.toJson()),
-        'total_count': totalCount ?? transactions.length,
-        'next_offset': nextOffset
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'transactions': transactions.map((e) => e.toJson()),
+      'total_count': totalCount ?? transactions.length,
+      'next_offset': nextOffset,
+    }..removeWhere((key, value) => value == null);
+  }
 }
 
 /// Instead of utilizing HTTP status codes to describe node errors
@@ -2122,7 +2279,7 @@ class RosettaError {
     this.details,
   );
 
-  factory RosettaError.fromMap(Map<String, dynamic> map) {
+  factory RosettaError.fromJson(Map<String, dynamic> map) {
     return RosettaError(
       map['code'],
       map['message'],
@@ -2161,11 +2318,13 @@ class RosettaError {
   /// in addition to the standard error message.
   final Map<String, dynamic>? details;
 
-  Map<String, dynamic> toJson() => {
-        'code': code,
-        'message': message,
-        'retriable': retriable,
-        'description': description,
-        'details': details
-      }..removeWhere((key, dynamic value) => value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'code': code,
+      'message': message,
+      'retriable': retriable,
+      'description': description,
+      'details': details,
+    }..removeWhere((key, value) => value == null);
+  }
 }

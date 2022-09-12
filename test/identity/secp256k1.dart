@@ -14,9 +14,9 @@ void secp256k1Test() {
   const msg = 'Hello World';
 
   test('sign', () async {
-    final res = sign(msg, prv.toU8a());
+    final res = signSecp256k1(msg, prv.toU8a());
     expect(res.length, 64);
-    final isValid = verify(
+    final isValid = verifySecp256k1(
       msg,
       res,
       Secp256k1PublicKey.from(
@@ -26,9 +26,9 @@ void secp256k1Test() {
     expect(isValid, true);
   });
   test('sign', () async {
-    final res = await signAsync(msg.plainToU8a(), prv.toU8a());
+    final res = await signSecp256k1Async(msg.plainToU8a(), prv.toU8a());
     expect(res.length, 64);
-    final isValid = verify(
+    final isValid = verifySecp256k1(
       msg,
       res,
       Secp256k1PublicKey.from(
@@ -43,13 +43,13 @@ void secp256k1Test() {
       final mne = generateMnemonic();
       final prvR = getECKeys(mne).ecPrivateKey!;
       const wordR = msg;
-      final res = sign(
+      final res = signSecp256k1(
         wordR,
         prvR,
       );
       expect(res.length, 64);
 
-      final isValid = verify(
+      final isValid = verifySecp256k1(
         wordR,
         res,
         Secp256k1PublicKey.from(
@@ -63,14 +63,14 @@ void secp256k1Test() {
       expect(prvR.toHex(), prvR2.toHex());
       const wordR2 = msg;
 
-      final res2 = await signAsync(
+      final res2 = await signSecp256k1Async(
         wordR2.plainToU8a(),
         prvR2,
       );
       expect(res2.length, 64);
       expect(res.toHex(), res2.toHex());
 
-      final isValid2 = verify(
+      final isValid2 = verifySecp256k1(
         wordR2,
         res2,
         Secp256k1PublicKey.from(

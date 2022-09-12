@@ -113,7 +113,7 @@ class AuthClient {
     Identity? identity,
   }) : identity = identity ?? const AnonymousIdentity();
 
-  factory AuthClient.fromMap(
+  factory AuthClient.fromJson(
     String scheme,
     AuthFunction authFunction,
     Map<String, dynamic> map,
@@ -170,7 +170,7 @@ class AuthClient {
 
   void handleSuccess(AuthResponseSuccess message, void Function()? onSuccess) {
     final delegations = message.delegations.map((signedDelegation) {
-      return SignedDelegation.fromMap({
+      return SignedDelegation.fromJson({
         'delegation': Delegation(
           signedDelegation.delegation.pubkey,
           signedDelegation.delegation.expiration,
@@ -235,7 +235,7 @@ class AuthClient {
       final delegationList = delegations
           .map(
             (e) => DelegationWithSignature(
-              delegation: Delegation.fromMap(e['delegation']),
+              delegation: Delegation.fromJson(e['delegation']),
               signature: Uint8List.fromList(e['signature']),
             ),
           )
@@ -286,10 +286,10 @@ class AuthClient {
     return jsonEncode(
       {
         keyLocalStorageKey: key != null
-            ? jsonEncode((key as Ed25519KeyIdentity).toJSON())
+            ? jsonEncode((key as Ed25519KeyIdentity).toJson())
             : null,
         keyLocalStorageDelegation:
-            chain != null ? jsonEncode(chain!.toJSON()) : null,
+            chain != null ? jsonEncode(chain!.toJson()) : null,
       }..removeWhere((key, value) => value == null),
     );
   }

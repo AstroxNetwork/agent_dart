@@ -1,6 +1,18 @@
 import 'dart:typed_data';
 
-Uint32List lookUpTable = Uint32List.fromList([
+/// Calculate the CRC32 of a blob.
+int getCrc32(ByteBuffer buf) {
+  final b = buf.asUint8List();
+  int crc = -1;
+  for (int i = 0; i < b.length; i++) {
+    final byte = b[i];
+    final t = (byte ^ crc) & 0xff;
+    crc = _lookUpTable[t] ^ ((crc & 0xffffffff) >> 8);
+  }
+  return ((crc ^ -1) & 0xffffffff) >> 0;
+}
+
+final Uint32List _lookUpTable = Uint32List.fromList([
   0x00000000,
   0x77073096,
   0xee0e612c,
@@ -258,20 +270,3 @@ Uint32List lookUpTable = Uint32List.fromList([
   0x5a05df1b,
   0x2d02ef8d,
 ]);
-
-/// Calculate the CRC32 of a blob.
-/// @param buf The blob to calculate the CRC32 of.
-///
-int getCrc32(ByteBuffer buf) {
-  final b = buf.asUint8List();
-  var crc = -1;
-
-  // tslint:disable-next-line:prefer-for-of
-  for (var i = 0; i < b.length; i++) {
-    final byte = b[i];
-    final t = (byte ^ crc) & 0xff;
-    crc = lookUpTable[t] ^ ((crc & 0xffffffff) >> 8);
-  }
-
-  return ((crc ^ -1) & 0xffffffff) >> 0;
-}

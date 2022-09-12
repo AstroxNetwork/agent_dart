@@ -69,7 +69,7 @@ void delegationTest() {
           '302A300506032B65700321006B79C57E6A095239282C04818E96112F3F03A4001BA97A564C23852A3F1EA5FC'
               .toLowerCase(),
     };
-    expect(middleToBottom.toJSON(), result);
+    expect(middleToBottom.toJson(), result);
   });
   test('DelegationChain can be serialized to and from JSON', () async {
     final root = await createIdentity(2);
@@ -90,10 +90,10 @@ void delegationTest() {
       targets: [Principal.fromText('u76ha-lyaaa-aaaab-aacha-cai')],
     );
 
-    final rootToMiddleJson = jsonEncode(rootToMiddle.toJSON());
+    final rootToMiddleJson = jsonEncode(rootToMiddle.toJson());
 
     // print(rootToMiddleJson);
-    // All strings in the JSON should be hex so it is clear how to decode this as different versions of `toJSON` evolve.
+    // All strings in the JSON should be hex so it is clear how to decode this as different versions of `toJson` evolve.
     final revived = jsonDecode(
       rootToMiddleJson,
       reviver: (key, value) {
@@ -109,10 +109,10 @@ void delegationTest() {
 
     final rootToMiddleActual = DelegationChain.fromJSON(revived);
 
-    expect(rootToMiddleActual.toJSON(), rootToMiddle.toJSON());
+    expect(rootToMiddleActual.toJson(), rootToMiddle.toJson());
 
-    final middleToBottomJson = jsonEncode(middleToBottom.toJSON());
+    final middleToBottomJson = jsonEncode(middleToBottom.toJson());
     final middleToBottomActual = DelegationChain.fromJSON(middleToBottomJson);
-    expect(middleToBottomActual.toJSON(), middleToBottom.toJSON());
+    expect(middleToBottomActual.toJson(), middleToBottom.toJson());
   });
 }

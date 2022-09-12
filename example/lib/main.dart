@@ -30,8 +30,8 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> initCounter() async {
     _counter = (await AgentFactory.create(
-      canisterId: "sbzkb-zqaaa-aaaaa-aaaiq-cai",
-      url: "https://03af-58-62-205-141.ngrok.io",
+      canisterId: 'sbzkb-zqaaa-aaaaa-aaaiq-cai',
+      url: 'https://03af-58-62-205-141.ngrok.io',
       // For Android emulator, please use 10.0.2.2 as endpoint
       idl: idl,
     ))
@@ -48,7 +48,7 @@ class _MyAppState extends State<MyApp> {
     if (_counter == null) {
       await initCounter();
     }
-    int c = await _counter!.count();
+    final int c = await _counter!.count();
     loading(false);
     setState(() {
       _count = c;
@@ -70,17 +70,20 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Dfinity flutter Dapp'),
         ),
         body: Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text(_loading ? 'loading contract count' : '$_count'),
-            Container(
-              height: 30,
-            ),
-            Container(
-              height: 30,
-            ),
-            const Text('Please Login 👆'),
-            Container(height: 30),
-          ]),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(_loading ? 'loading contract count' : '$_count'),
+              Container(
+                height: 30,
+              ),
+              Container(
+                height: 30,
+              ),
+              const Text('Please Login 👆'),
+              Container(height: 30),
+            ],
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),

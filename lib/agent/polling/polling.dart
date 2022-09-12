@@ -19,54 +19,47 @@ Future<BinaryBlob> pollForResponse(
   final cert = Certificate(state, agent);
   final verified = await cert.verify();
   if (!verified) {
-    throw 'Fail to verify certificate';
+    throw StateError('fail to verify certificate.');
   }
   final maybeBuf = cert.lookup([...path, blobFromText('status').buffer]);
-  // ignore: prefer_typing_uninitialized_variables
-  var status;
+  final RequestStatusResponseStatus status;
   if (maybeBuf == null) {
-    // Missing requestId means we need to wait
+    // Missing requestId means we need to wait.
     status = RequestStatusResponseStatus.unknown;
   } else {
-    status = maybeBuf.u8aToString();
+    status = RequestStatusResponseStatus.fromName(maybeBuf.u8aToString());
   }
 
   switch (status) {
     case RequestStatusResponseStatus.replied:
-      {
-        return cert.lookup([...path, blobFromText('reply')]) as BinaryBlob;
-      }
-
+      return cert.lookup([...path, blobFromText('reply')]) as BinaryBlob;
     case RequestStatusResponseStatus.received:
     case RequestStatusResponseStatus.unknown:
     case RequestStatusResponseStatus.processing:
       // Execute the polling strategy, then retry.
       await strategy(canisterId, requestId, status);
       return pollForResponse(agent, canisterId, requestId, strategy);
-
     case RequestStatusResponseStatus.rejected:
-      {
-        final rejectCode =
-            cert.lookup([...path, blobFromText('reject_code')])!.u8aToString();
-        final rejectMessage = cert
-            .lookup([...path, blobFromText('reject_message')])!.u8aToString();
-        throw PollingResponseRejectedException(
-          requestId: requestIdToHex(requestId),
-          status: status,
-          rejectCode: rejectCode,
-          rejectMessage: rejectMessage,
-        );
-      }
-
+      final rejectCode = cert.lookup(
+        [...path, blobFromText('reject_code')],
+      )!.u8aToString();
+      final rejectMessage = cert.lookup(
+        [...path, blobFromText('reject_message')],
+      )!.u8aToString();
+      throw PollingResponseRejectedException(
+        requestId: requestIdToHex(requestId),
+        status: status,
+        rejectCode: rejectCode,
+        rejectMessage: rejectMessage,
+      );
     case RequestStatusResponseStatus.done:
-      // This is _technically_ not an error, but we still didn't see the `Replied` status so
-      // we don't know the result and cannot decode it.
+      // This is _technically_ not an error, but we still didn't see the
+      // `Replied` status so we don't know the result and cannot decode it.
       throw PollingResponseDoneException(
         requestId: requestIdToHex(requestId),
         status: status,
       );
   }
-  throw 'unreachable';
 }
 
 class PollingResponseException implements Exception {
@@ -76,50 +69,42 @@ class PollingResponseException implements Exception {
   });
 
   final String requestId;
-  final String status;
+  final RequestStatusResponseStatus status;
 
   @override
   String toString() {
-    return 'Call was $status:\n   Request ID: $requestId\n';
+    return 'Call was ${status.name}:\n   '
+        'Request ID: $requestId\n';
   }
 }
 
-class PollingResponseDoneException implements PollingResponseException {
+class PollingResponseDoneException extends PollingResponseException {
   const PollingResponseDoneException({
-    required this.requestId,
-    required this.status,
+    required super.requestId,
+    required super.status,
   });
 
   @override
-  final String requestId;
-  @override
-  final String status;
-
-  @override
   String toString() {
-    return 'Call was marked as $status but we never saw the reply:\n'
+    return 'Call was marked as ${status.name} but we never saw the reply:\n'
         '  Request ID: $requestId\n';
   }
 }
 
-class PollingResponseRejectedException implements PollingResponseException {
+class PollingResponseRejectedException extends PollingResponseException {
   const PollingResponseRejectedException({
-    required this.requestId,
-    required this.status,
+    required super.requestId,
+    required super.status,
     required this.rejectCode,
     required this.rejectMessage,
   });
 
-  @override
-  final String requestId;
-  @override
-  final String status;
   final String rejectCode;
   final String rejectMessage;
 
   @override
   String toString() {
-    return 'Call was $status:\n'
+    return 'Call was ${status.name}:\n'
         '   Request ID: $requestId\n'
         '  Reject code: $rejectCode\n'
         '   Reject msg: $rejectMessage\n';

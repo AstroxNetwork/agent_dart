@@ -16,7 +16,7 @@ void httpTest() {
       final principal = Principal.anonymous();
 
       final agent = HttpAgent(
-        options: HttpAgentOptions()..identity = const AnonymousIdentity(),
+        options: const HttpAgentOptions(identity: AnonymousIdentity()),
       );
 
       agent.addTransform(

@@ -7,11 +7,12 @@ import 'package:crypto/crypto.dart';
 import 'package:crypto/src/digest_sink.dart';
 
 Uint8List sha224Hash(ByteBuffer buf) {
-  return SHA224().update(buf.asUint8List()).toU8a();
+  return SHA224().update(buf.asUint8List()).toUint8List();
 }
 
 class SHA224 {
   SHA224() : ds = DigestSink();
+
   final DigestSink ds;
   late final sha = sha224.startChunkedConversion(ds);
 
@@ -25,18 +26,10 @@ class SHA224 {
     return ds.value.bytes;
   }
 
+  Uint8List toUint8List() => Uint8List.fromList(_digest());
+
+  Uint8List digest() => toUint8List();
+
   @override
-  String toString() {
-    final bytes = _digest();
-    return bytesToHex(bytes);
-  }
-
-  Uint8List toU8a() {
-    final bytes = _digest();
-    return Uint8List.fromList(bytes);
-  }
-
-  Uint8List digest() {
-    return toU8a();
-  }
+  String toString() => bytesToHex(_digest());
 }

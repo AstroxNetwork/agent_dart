@@ -24,13 +24,13 @@ BigInt bnToBn(dynamic value) {
   if (result != null) {
     return result;
   }
-  throw "failed converting:'$value' to BigInt";
+  throw FallThroughError();
 }
 
 BigInt compactToBn(Map<String, dynamic> value) {
-  final toBnTrue = value.containsKey('toBn') && isFunction(value['toBn']);
+  final toBnTrue = value.containsKey('toBn') && value['toBn'] is Function;
   final toBigIntTrue =
-      value.containsKey('toBigInt') && isFunction(value['toBigInt']);
+      value.containsKey('toBigInt') && value['toBigInt'] is Function;
   if (toBnTrue && !toBigIntTrue) {
     return (value['toBn'] as Function).call();
   }
@@ -45,9 +45,9 @@ BigInt bitnot(BigInt bn, {int? bitLength}) {
   // JavaScript's bitwise not doesn't work on negative BigInts (bn = ~bn; // WRONG!)
   // so we manually implement our own two's compliment (flip bits, add one)
   bn = -bn;
-  var bin = (bn).toRadixString(2).replaceAll('-', '');
+  var bin = bn.toRadixString(2).replaceAll('-', '');
 
-  var prefix = '';
+  String prefix = '';
   while (bin.length % 8 != 0) {
     bin = '0$bin';
   }
@@ -84,6 +84,7 @@ String bnToHex(
 
 class Options {
   const Options({this.bitLength, this.endian, this.isNegative});
+
   final int? bitLength;
   final Endian? endian;
   final bool? isNegative;
@@ -100,7 +101,7 @@ Uint8List bnToU8a(
   if (bitLength == -1) {
     byteLength = (valueBn.bitLength / 8).ceil();
   } else {
-    byteLength = ((bitLength) / 8).ceil();
+    byteLength = (bitLength / 8).ceil();
   }
 
   if (value == null) {
@@ -111,29 +112,17 @@ Uint8List bnToU8a(
     }
   }
 
-  // print((0x80 & valueBn.toInt()) > 0);
-
   final newU8a = encodeBigInt(
-    isNegative
-        ? (0x80 & valueBn.toInt()) > 0
-            ? bitnot(valueBn, bitLength: byteLength * 8)
-            : valueBn
+    isNegative && (0x80 & valueBn.toInt()) > 0
+        ? bitnot(valueBn, bitLength: byteLength * 8)
         : valueBn,
     endian: endian,
     bitLength: byteLength * 8,
   );
-
   final ret = Uint8List(byteLength);
-
   ret.setAll(0, newU8a);
   return ret;
 }
-
-final bnZero = BigInt.zero;
-final bnOne = BigInt.one;
-final bnTen = BigInt.from(10);
-final bnHundred = BigInt.from(100);
-final bnThrousand = BigInt.from(1000);
 
 BigInt bnMax(List<BigInt> list) {
   list.sort((a, b) => a.compareTo(b));

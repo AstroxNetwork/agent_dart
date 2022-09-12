@@ -10,10 +10,7 @@ Service assetIDL() {
   });
 }
 
-class AssetMethod {
-  static const retrieve = 'retrieve';
-  static const store = 'store';
-}
+enum AssetMethod { retrieve, store }
 
 /// try to understand how idl can be transformed
 class AssetActor {
@@ -22,14 +19,14 @@ class AssetActor {
   late final CanisterActor actor;
 
   Future<Uint8List> retrieve(String key) async {
-    final res = await (actor.getFunc(AssetMethod.retrieve)?.call([key]));
+    final res = await actor.getFunc(AssetMethod.retrieve.name)?.call([key]);
     if (res != null) {
-      return (res as Uint8List);
+      return res as Uint8List;
     }
     throw 'Cannot get result but $res';
   }
 
   Future<void> store(String key, Uint8List value) async {
-    await actor.getFunc(AssetMethod.store)?.call([key, value]);
+    await actor.getFunc(AssetMethod.store.name)?.call([key, value]);
   }
 }

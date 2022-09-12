@@ -1,9 +1,7 @@
 import 'dart:typed_data';
 
-const alphabet = 'abcdefghijklmnopqrstuvwxyz234567';
+const _alphabet = 'abcdefghijklmnopqrstuvwxyz234567';
 
-/// @param input The input array to encode.
-/// @returns A Base32 string encoding the input.
 String base32Encode(Uint8List input) {
   // How many bits will we skip from the first byte.
   int skip = 0;
@@ -30,7 +28,7 @@ String base32Encode(Uint8List input) {
 
     if (skip < 4) {
       // produce a character
-      output += alphabet[bits >> 3];
+      output += _alphabet[bits >> 3];
       skip += 5;
     }
 
@@ -41,10 +39,9 @@ String base32Encode(Uint8List input) {
     i += encodeByte(input[i]);
   }
 
-  return output + (skip < 0 ? alphabet[bits >> 3] : '');
+  return output + (skip < 0 ? _alphabet[bits >> 3] : '');
 }
 
-/// @param input The base32 encoded string to decode.
 Uint8List base32Decode(String input) {
   // how many bits we have from the previous character.
   int skip = 0;
@@ -54,8 +51,8 @@ Uint8List base32Decode(String input) {
   final output = Uint8List(((input.length * 4) / 3).ceil() | 0);
   int o = 0;
 
-  final Map<String, int> lookupTable = alphabet.split('').fold({}, (p, e) {
-    p[e] = alphabet.indexOf(e);
+  final Map<String, int> lookupTable = _alphabet.split('').fold({}, (p, e) {
+    p[e] = _alphabet.indexOf(e);
     return p;
   });
   // Add aliases for rfc4648.
@@ -90,7 +87,7 @@ Uint8List base32Decode(String input) {
     }
   }
 
-  for (var i = 0; i < input.length; i += 1) {
+  for (int i = 0; i < input.length; i += 1) {
     decodeChar(input[i]);
   }
   return output.sublist(0, o);

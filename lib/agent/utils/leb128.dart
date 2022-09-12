@@ -9,7 +9,7 @@ import 'package:agent_dart/utils/extension.dart';
 
 List<T> safeRead<T>(BufferPipe<T> pipe, int ref) {
   if (pipe.length < ref) {
-    throw 'unexpected end of buffer';
+    throw Exception('Unexpected end of buffer.');
   }
   return pipe.read(ref);
 }
@@ -19,16 +19,13 @@ List<T> safeRead<T>(BufferPipe<T> pipe, int ref) {
 /// @param value The number to encode.
 Uint8List lebEncode(dynamic value) {
   var bn = value is BigInt ? value : BigInt.from(value);
-
   if (bn < BigInt.zero) {
     throw 'Cannot leb encode negative values.';
   }
-
   final List<int> pipe = [];
-
   while (true) {
     final i = (hexToBn(bn.toHex()) & BigInt.from(0x7f)).toInt();
-    bn = (bn ~/ BigInt.from(0x80));
+    bn = bn ~/ BigInt.from(0x80);
     if (bn == BigInt.zero) {
       pipe.add(i);
       break;
@@ -36,7 +33,6 @@ Uint8List lebEncode(dynamic value) {
       pipe.add(i | 0x80);
     }
   }
-
   return Uint8List.fromList(pipe);
 }
 
@@ -44,11 +40,10 @@ Uint8List lebEncode(dynamic value) {
 /// support signed leb encoding).
 /// @param pipe A Buffer containing the leb encoded bits.
 BigInt lebDecode<T>(BufferPipe<T> pipe) {
-  var weight = BigInt.one;
-  var value = BigInt.zero;
+  BigInt weight = BigInt.one;
+  BigInt value = BigInt.zero;
   // ignore: prefer_typing_uninitialized_variables
   var byte;
-
   do {
     byte = safeRead(pipe, 1)[0];
     value += BigInt.from(byte & 0x7f) * weight;
@@ -58,11 +53,11 @@ BigInt lebDecode<T>(BufferPipe<T> pipe) {
   return value;
 }
 
-/// Encode a number (or bigint) into a Buffer, with support for negative numbers. The number
-/// will be floored to the nearest integer.
+/// Encode a number (or bigint) into a Buffer, with support for negative numbers.
+/// The number will be floored to the nearest integer.
 /// @param value The number to encode.
 Uint8List slebEncode(Comparable value) {
-  var bn = value is BigInt ? value : BigInt.from(value as num);
+  BigInt bn = value is BigInt ? value : BigInt.from(value as num);
 
   final isNeg = bn < BigInt.zero;
   if (isNeg) {
@@ -75,7 +70,7 @@ Uint8List slebEncode(Comparable value) {
       // We swap the bits here again, and remove 1 to do two's complement.
       return (BigInt.from(0x80) - bytes - BigInt.one).toInt();
     } else {
-      return (bytes).toInt();
+      return bytes.toInt();
     }
   }
 
@@ -83,7 +78,7 @@ Uint8List slebEncode(Comparable value) {
 
   while (true) {
     final i = getLowerBytes(bn);
-    bn = (bn ~/ BigInt.from(0x80));
+    bn = bn ~/ BigInt.from(0x80);
 
     // prettier-ignore
     if ((isNeg && bn == BigInt.zero && (i & 0x40) != 0) ||
@@ -126,7 +121,7 @@ BigInt slebDecode(BufferPipe pipe) {
 
 Uint8List writeUIntLE(dynamic value, int byteLength) {
   if (bnToBn(value) < BigInt.zero) {
-    throw 'Cannot write negative values.';
+    throw ArgumentError.value(value, 'value', 'Cannot write negative values.');
   }
   return writeIntLE(value, byteLength);
 }

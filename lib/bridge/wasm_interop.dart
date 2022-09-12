@@ -260,6 +260,7 @@ class Instance {
     Object? importObject,
   }) =>
       _fromBytesOfBufferAsync(buffer, _reifyImports(importMap, importObject));
+
   static Future<Instance> _fromBytesOfBufferAsync(
     Object bytesOrBuffer,
     Object imports,
@@ -281,6 +282,7 @@ class Instance {
         // ignore: only_throw_errors
         throw e;
       });
+
   static Object _reifyImports(
     Map<String, Map<String, Object>>? importMap,
     Object? importObject,
@@ -351,12 +353,14 @@ class Memory {
   /// [maximum] must be greater than or equal to [initial].
   Memory.shared({required int initial, required int maximum})
       : jsObject = _Memory(_descriptor(initial, maximum, true));
+
   const Memory._(this.jsObject);
 
   /// Returns a [ByteBuffer] backing this memory object.
   ///
   /// Calling [grow] invalidates [buffer] reference.
   ByteBuffer get buffer => jsObject.buffer;
+
   // https://github.com/dart-lang/sdk/issues/33527
   /// Returns a number of bytes of [ByteBuffer] backing this memory object.
   int get lengthInBytes => getProperty(buffer, 'byteLength') as int;
@@ -380,8 +384,10 @@ class Memory {
   @override
   bool operator ==(Object other) =>
       other is Memory && other.jsObject == jsObject;
+
   @override
   int get hashCode => jsObject.hashCode;
+
   static _MemoryDescriptor _descriptor(int initial, int? maximum, bool shared) {
     assert(initial >= 0);
     assert(maximum == null || maximum >= initial);
@@ -415,7 +421,9 @@ class Table {
   /// provided, [value] will be assigned to all table entries.
   Table.externref({required int initial, int? maximum, Object? value})
       : jsObject = _Table(_descriptor('externref', initial, maximum), value);
+
   const Table._(this.jsObject);
+
   static _TableDescriptor _descriptor(
     String element,
     int initial,
@@ -451,6 +459,7 @@ class Table {
   @override
   bool operator ==(Object other) =>
       other is Table && other.jsObject == jsObject;
+
   @override
   int get hashCode => jsObject.hashCode;
 }
@@ -482,6 +491,7 @@ class Global {
   /// Creates a [Global] of `externref` type with [value].
   Global.externref({Object? value, bool mutable = false})
       : jsObject = _Global(_descriptor('externref', mutable), value);
+
   const Global._(this.jsObject);
 
   /// Returns a value stored in [Global].
@@ -507,8 +517,10 @@ class Global {
   @override
   bool operator ==(Object other) =>
       other is Global && other.jsObject == jsObject;
+
   @override
   int get hashCode => jsObject.hashCode;
+
   static _GlobalDescriptor _descriptor(String value, bool mutable) =>
       _GlobalDescriptor(value: value, mutable: mutable);
 }
@@ -530,7 +542,8 @@ extension JsBigInt on BigInt {
 @JS('BigInt')
 external Object Function(String string) get _jsBigInt;
 
-/* WebAssembly IDL */
+/// WebAssembly IDL
+
 /// [Module] imports entry.
 @JS()
 @anonymous
@@ -617,31 +630,41 @@ abstract class _GlobalDescriptor {
 @anonymous
 abstract class _WebAssemblyInstantiatedSource {
   external _Module get module;
+
   external _Instance get instance;
 }
 
 @JS('WebAssembly.Memory')
 external Function get _memoryConstructor;
+
 @JS('WebAssembly.Table')
 external Function get _tableConstructor;
+
 @JS('WebAssembly.Global')
 external Function get _globalConstructor;
+
 @JS('WebAssembly.validate')
 external bool _validate(Object bytesOrBuffer);
+
 @JS('WebAssembly.compile')
 external Object _compile(Object bytesOrBuffer);
+
 @JS('WebAssembly.instantiate')
 external Object _instantiate(Object bytesOrBuffer, Object import);
+
 @JS('WebAssembly.instantiate')
 external Object _instantiateModule(_Module module, Object import);
 
 @JS('WebAssembly.Module')
 class _Module {
   external _Module(Object bytesOfBuffer);
+
   // List<_ModuleExportDescriptor>
   external static List<Object> exports(_Module module);
+
   // List<_ModuleImportDescriptor>
   external static List<Object> imports(_Module module);
+
   // List<ByteBuffer>
   external static List<Object> customSections(
     _Module module,
@@ -652,29 +675,38 @@ class _Module {
 @JS('WebAssembly.Instance')
 class _Instance {
   external _Instance(_Module module, Object import);
+
   external Object get exports;
 }
 
 @JS('WebAssembly.Memory')
 class _Memory {
   external _Memory(_MemoryDescriptor descriptor);
+
   external ByteBuffer get buffer;
+
   external int grow(int delta);
 }
 
 @JS('WebAssembly.Table')
 class _Table {
   external _Table(_TableDescriptor descriptor, Object? value);
+
   external int grow(int delta);
+
   external Object? get(int index);
+
   external void set(int index, Object? value);
+
   external int get length;
 }
 
 @JS('WebAssembly.Global')
 class _Global {
   external _Global(_GlobalDescriptor descriptor, Object? v);
+
   external Object? get value;
+
   external set value(Object? v);
 }
 
@@ -685,6 +717,7 @@ class CompileError extends Error {
 
   /// Message describing the problem.
   final Object? message;
+
   @override
   String toString() => Error.safeToString(message);
 }
@@ -696,6 +729,7 @@ class LinkError extends Error {
 
   /// Message describing the problem.
   final Object? message;
+
   @override
   String toString() => Error.safeToString(message);
 }
@@ -707,14 +741,17 @@ class RuntimeError extends Error {
 
   /// Message describing the problem.
   final Object? message;
+
   @override
   String toString() => Error.safeToString(message);
 }
 
 @JS('WebAssembly.CompileError')
 external Function get _compileError;
+
 @JS('WebAssembly.LinkError')
 external Function get _linkError;
+
 @JS('WebAssembly.RuntimeError')
 external Function get _runtimeError;
 
