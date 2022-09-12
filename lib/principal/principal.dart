@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/agent/types.dart';
+import 'package:agent_dart/utils/extension.dart';
+
 import 'utils/base32.dart';
 import 'utils/get_crc.dart';
 import 'utils/sha224.dart';
@@ -130,9 +131,10 @@ class Principal {
   String toJson() => toText();
 
   @override
-  bool operator ==(Object other) {
-    return other is Principal ? toHex() == other.toHex() : false;
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Principal &&
+          _arr.eq(other._arr);
 
   @override
   int get hashCode => _arr.hashCode;
