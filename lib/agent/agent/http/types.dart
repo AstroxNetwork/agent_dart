@@ -153,12 +153,20 @@ class HttpAgentQueryRequest extends HttpAgentBaseRequest<BaseRequest> {
 }
 
 abstract class UnSigned<T> {
-  late T content;
+  const UnSigned({required this.content});
+
+  final T content;
 }
 
 abstract class Signed<T> extends UnSigned<T> {
-  late BinaryBlob senderPublicKey;
-  late BinaryBlob senderSignature;
+  const Signed({
+    required super.content,
+    required this.senderPublicKey,
+    required this.senderSignature,
+  });
+
+  final BinaryBlob senderPublicKey;
+  final BinaryBlob senderSignature;
 }
 
 typedef Envelope<T> = UnSigned<T>;
@@ -166,7 +174,9 @@ typedef Envelope<T> = UnSigned<T>;
 typedef HttpAgentRequest = HttpAgentBaseRequest;
 
 class HttpAgentRequestTransformFn {
-  late HttpAgentRequestTransformFnCall call;
+  HttpAgentRequestTransformFn({required this.call, this.priority});
+
+  final HttpAgentRequestTransformFnCall call;
   int? priority;
 }
 
@@ -175,7 +185,7 @@ typedef HttpAgentRequestTransformFnCall = Future<HttpAgentRequest?> Function(
 );
 
 class HttpResponseBody extends ResponseBody {
-  HttpResponseBody({
+  const HttpResponseBody({
     bool? ok,
     int? status,
     String? statusText,
@@ -193,8 +203,8 @@ class HttpResponseBody extends ResponseBody {
     );
   }
 
-  late String? body;
-  late Uint8List? arrayBuffer;
+  final String? body;
+  final Uint8List? arrayBuffer;
 
   @override
   String toString() {

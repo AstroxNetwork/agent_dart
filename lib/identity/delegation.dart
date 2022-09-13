@@ -122,7 +122,7 @@ class DelegationChain {
         ? Map<String, dynamic>.from(jsonDecode(obj))
         : Map<String, dynamic>.from(obj);
     if (json['delegations'] is! List) {
-      throw ArgumentError(json['delegations'], 'invalid delegations type.');
+      throw ArgumentError('Invalid delegations type.', json['delegations']);
     }
     final publicKey = json['publicKey'] as String;
     final delegations = json['delegations'] as List<dynamic>;

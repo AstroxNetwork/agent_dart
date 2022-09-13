@@ -95,10 +95,10 @@ class TypeTable {
     final idx = _idx[obj.name];
     final knotIdx = _idx[knot];
     if (idx == null) {
-      throw StateError('missing type index for $obj.');
+      throw StateError('Missing type index for $obj.');
     }
     if (knotIdx == null) {
-      throw StateError('missing type index for $knot.');
+      throw StateError('Missing type index for $knot.');
     }
     _types[idx] = _types[knotIdx];
 
@@ -116,7 +116,7 @@ class TypeTable {
 
   Uint8List indexOf(String typeName) {
     if (!_idx.containsKey(typeName)) {
-      throw StateError('missing type index for $typeName.');
+      throw StateError('Missing type index for $typeName.');
     }
     return slebEncode(_idx[typeName] ?? 0);
   }
@@ -266,7 +266,7 @@ abstract class PrimitiveType<T> extends CType<T> {
   @override
   CType checkType(CType t) {
     if (name != t.name) {
-      throw UnsupportedError('type is ${t.name}, expected type $name.');
+      throw TypeError();
     }
     return t;
   }
@@ -286,11 +286,11 @@ abstract class ConstructType<T> extends CType<T> {
     if (t is RecClass) {
       final ty = t.getType();
       if (ty == null) {
-        throw UnsupportedError('type is unsupported.');
+        throw UnsupportedError('Type is unsupported.');
       }
       return ty;
     }
-    throw UnsupportedError('type is ${t.name}, expected type $name.');
+    throw TypeError();
   }
 
   @override
@@ -312,7 +312,7 @@ class EmptyClass<T> extends PrimitiveType<T> {
 
   @override
   T decodeValue(Pipe x, CType t) {
-    throw UnsupportedError('empty cannot appear as an output.');
+    throw UnsupportedError('Empty cannot appear as an output.');
   }
 
   @override
@@ -322,12 +322,12 @@ class EmptyClass<T> extends PrimitiveType<T> {
 
   @override
   Uint8List encodeValue(x) {
-    throw UnsupportedError('empty cannot appear as a function argument.');
+    throw UnsupportedError('Empty cannot appear as a function argument.');
   }
 
   @override
   String valueToString(T x) {
-    throw UnsupportedError('empty cannot appear as a value.');
+    throw UnsupportedError('Empty cannot appear as a value.');
   }
 
   @override
@@ -355,7 +355,7 @@ class BoolClass extends PrimitiveType<bool> {
     } else if (k == '01') {
       return true;
     }
-    throw RangeError('bool value out of range.');
+    throw RangeError('Boolean value out of range.');
   }
 
   @override
@@ -477,7 +477,7 @@ class TextClass extends PrimitiveType<String> {
     final len = lebDecode(x);
     final buf = safeRead(x as Pipe<int>, len.toInt());
     if (!_isValidUTF8(Uint8List.fromList(buf))) {
-      throw ArgumentError('not a valid UTF-8 text.');
+      throw ArgumentError('Not a valid UTF-8 text.');
     }
     return Uint8List.fromList(buf).u8aToString();
   }
@@ -784,7 +784,7 @@ class VecClass<T> extends ConstructType<List<T>> {
       }
       return rets;
     }
-    throw UnsupportedError('not a vector type.');
+    throw TypeError();
   }
 
   @override
@@ -843,7 +843,7 @@ class OptClass<T> extends ConstructType<List> {
   List<T> decodeValue(Pipe x, CType t) {
     final opt = checkType(t);
     if (opt is! OptClass) {
-      throw UnsupportedError('not an option type.');
+      throw TypeError();
     }
     final len = Uint8List.fromList(safeRead(x as Pipe<int>, 1)).toHex();
     if (len == '00') {
@@ -907,7 +907,7 @@ class RecordClass extends ConstructType<Map> {
       final k = entry.key;
       final t = entry.value;
       if (!x.containsKey(k)) {
-        throw StateError("record is missing the key '$k'.");
+        throw StateError("Record is missing the key '$k'.");
       }
       return t.covariant(x[k]);
     });
@@ -947,7 +947,7 @@ class RecordClass extends ConstructType<Map> {
   Map decodeValue(Pipe x, CType t) {
     final record = checkType(t);
     if (record is! RecordClass && record is! TupleClass) {
-      throw ArgumentError.value(t, 't', 'not a record type.');
+      throw ArgumentError.value(t, 't', 'Not a record type.');
     }
     final r = <dynamic, dynamic>{};
     int idx = 0;
@@ -973,7 +973,7 @@ class RecordClass extends ConstructType<Map> {
         idx,
         _fields.length,
         'idx',
-        'cannot find field ${_fields[idx].key}.',
+        'Cannot find field ${_fields[idx].key}',
       );
     }
     return r;
@@ -1067,7 +1067,7 @@ class TupleClass<T extends List> extends ConstructType<List> {
   List decodeValue(Pipe x, CType t) {
     final tuple = checkType(t);
     if (tuple is! TupleClass) {
-      throw ArgumentError.value(t, 't', 'not a valid tuple type.');
+      throw ArgumentError.value(t, 't', 'Not a valid tuple type');
     }
     if (tuple._components.length < _components.length) {
       throw RangeError.range(
@@ -1075,7 +1075,7 @@ class TupleClass<T extends List> extends ConstructType<List> {
         _components.length,
         null,
         'tuple components',
-        'tuple components mismatch.',
+        'Tuple components mismatch',
       );
     }
     final res = [];
@@ -1187,7 +1187,7 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
   Map<String, dynamic> decodeValue(Pipe x, CType t) {
     final variant = checkType(t);
     if (variant is! VariantClass) {
-      throw ArgumentError.value(t, 't', 'not a valid variant type.');
+      throw ArgumentError.value(t, 't', 'Not a valid variant type');
     }
     final idx = lebDecode(x).toInt();
     if (idx >= variant._fields.length) {
@@ -1195,7 +1195,7 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
         idx,
         variant._fields.length,
         'variant index',
-        'invalid variant index: $idx.',
+        'Invalid variant index: $idx',
       );
     }
     final entry = variant._fields[idx];
@@ -1318,7 +1318,7 @@ class RecClass<T> extends ConstructType<T> {
 PrincipalId decodePrincipalId(Pipe b) {
   final x = Uint8List.fromList(safeRead(b as Pipe<int>, 1)).toHex();
   if (x != '01') {
-    throw ArgumentError('cannot decode principal $x.');
+    throw ArgumentError('Cannot decode principal $x.');
   }
   final len = lebDecode(b).toInt();
   final hex = Uint8List.fromList(safeRead(b, len)).toHex().toUpperCase();
@@ -1383,7 +1383,7 @@ class FuncClass extends ConstructType<List> {
         v.length,
         v.length,
         'types',
-        'arity mismatch',
+        'Arity mismatch',
       );
     }
     return '(${types.asMap().entries.map((e) => e.value.valueToString(v[e.key])).join(', ')})';
@@ -1459,13 +1459,13 @@ class FuncClass extends ConstructType<List> {
   List<dynamic> decodeValue(Pipe x, CType t) {
     final r = Uint8List.fromList(safeRead(x as Pipe<int>, 1)).toHex();
     if (r != '01') {
-      throw ArgumentError('cannot decode function reference $x.');
+      throw ArgumentError('Cannot decode function reference $x.');
     }
     final canister = decodePrincipalId(x);
     final mLen = lebDecode(x).toInt();
     final buf = Uint8List.fromList(safeRead(x, mLen));
     if (!_isValidUTF8(buf)) {
-      throw ArgumentError('not a valid UTF-8 method name.');
+      throw ArgumentError('Not a valid UTF-8 method name.');
     }
     final method = buf.u8aToString();
     return [canister, method];
@@ -1585,7 +1585,7 @@ BinaryBlob idlEncode(List<CType> argTypes, List args) {
       argTypes.length,
       argTypes.length,
       'args',
-      'wrong number of message arguments.',
+      'Wrong number of message arguments',
     );
   }
   final typeTable = TypeTable();
@@ -1625,14 +1625,14 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
       _magicNumber.length,
       null,
       'bytes',
-      'message length is smaller than the magic number.',
+      'Message length is smaller than the magic number',
     );
   }
   final magic = Uint8List.fromList(
     safeRead(b, _magicNumber.length),
   ).u8aToString();
   if (magic != _magicNumber) {
-    throw StateError('wrong magic number: $magic.');
+    throw StateError('Wrong magic number: $magic.');
   }
 
   // [Array<[IDLTypeIds, any]>, number[]]
@@ -1662,11 +1662,11 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
                 null,
                 math.pow(2, 32).toInt(),
                 'hash',
-                'Field ID is out of 32-bit range.',
+                'Field ID is out of 32-bit range',
               );
             }
             if (prevHash != null && prevHash >= hash) {
-              throw StateError('field ID collision or not sorted.');
+              throw StateError('Field ID collision or not sorted.');
             }
             prevHash = hash;
             final t = slebDecode(pipe).toInt();
@@ -1717,7 +1717,7 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
       retTypes.length,
       null,
       'rawTypes',
-      'wrong number of return values.',
+      'Wrong number of return values',
     );
   }
 
@@ -1725,7 +1725,7 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
 
   CType getType(int t) {
     if (t < -24) {
-      throw UnsupportedError('future value is not supported.');
+      throw UnsupportedError('Future value is not supported.');
     }
     if (t < 0) {
       switch (t) {
@@ -1766,7 +1766,7 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
         case -24:
           return IDL.Principal;
         default:
-          throw StateError('invalid type code $t.');
+          throw StateError('Invalid type code $t.');
       }
     }
     if (t >= rawTable.length) {
@@ -1775,7 +1775,7 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
         rawTable.length,
         rawTable.length,
         'type',
-        'type is out of range.',
+        'Type is out of range',
       );
     }
     return table[t];
@@ -1813,7 +1813,7 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
       case IDLTypeIds.Service:
         return Service();
       default:
-        throw StateError('invalid type code ${entry[0]}.');
+        throw StateError('Invalid type code ${entry[0]}.');
     }
   }
 
@@ -1834,7 +1834,7 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
     types[ind].decodeValue(b, types[ind]);
   }
   if (b.buffer.isNotEmpty) {
-    throw StateError('unexpected left-over bytes.');
+    throw StateError('Unexpected left-over bytes.');
   }
   return output;
 }

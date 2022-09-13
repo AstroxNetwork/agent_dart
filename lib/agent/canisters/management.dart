@@ -11,16 +11,16 @@ CanisterActor getManagementCanister(CallConfig config) {
     if (first != null && first is Map && first['canister_id'] != null) {
       effectiveCanisterId = Principal.from(first['canister_id']);
     }
-    return CallConfig()..effectiveCanisterId = effectiveCanisterId;
+    return CallConfig(effectiveCanisterId: effectiveCanisterId);
   }
 
-  final newConfig = ActorConfig()
-    ..agent = config.agent
-    ..pollingStrategyFactory = config.pollingStrategyFactory
-    ..effectiveCanisterId = config.effectiveCanisterId
-    ..canisterId = Principal.fromHex('')
-    ..callTransform = transform
-    ..queryTransform = transform;
-
+  final newConfig = ActorConfig(
+    agent: config.agent,
+    pollingStrategyFactory: config.pollingStrategyFactory,
+    effectiveCanisterId: config.effectiveCanisterId,
+    canisterId: Principal.fromHex(''),
+    callTransform: transform,
+    queryTransform: transform,
+  );
   return Actor.createActor(managementIDL(), newConfig);
 }

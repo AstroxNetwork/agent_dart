@@ -518,7 +518,7 @@ class Ledger {
     if (res != null) {
       return ICPTs.fromJson(res);
     }
-    throw StateError('request failed with the result: $res.');
+    throw StateError('Request failed with the result: $res.');
   }
 
   static Future<Tokens> accountBalance({
@@ -537,7 +537,7 @@ class Ledger {
     if (res != null) {
       return Tokens.fromJson(res);
     }
-    throw StateError('request failed with the result: $res.');
+    throw StateError('Request failed with the result: $res.');
   }
 
   static Future<BigInt> send({
@@ -572,7 +572,7 @@ class Ledger {
     if (res != null) {
       return res as BigInt;
     }
-    throw StateError('request failed with the result: $res.');
+    throw StateError('Request failed with the result: $res.');
   }
 
   static Future<TransferResult> transfer({
@@ -606,6 +606,6 @@ class Ledger {
     if (res != null) {
       return TransferResult.fromJson(res as Map);
     }
-    throw StateError('request failed with the result: $res.');
+    throw StateError('Request failed with the result: $res.');
   }
 }

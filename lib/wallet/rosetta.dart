@@ -19,7 +19,7 @@ enum TransactionErrorType { notFound, timeout, networkError }
 /// Describes the cause of a Rosetta API error.
 class TransactionError extends TypeError {
   /// Create a [TransactionError].
-  TransactionError(dynamic message, int status, {Map? detail}) {
+  TransactionError(this.message, int status, {this.detail}) {
     switch (status) {
       case 408:
         errorType = TransactionErrorType.timeout;
@@ -31,14 +31,20 @@ class TransactionError extends TypeError {
         errorType = TransactionErrorType.networkError;
         break;
     }
-    throw {
-      'message': Error.safeToString(message),
-      'status': errorType,
-      'detail': detail,
-    };
   }
 
+  final Object message;
+  final Object? detail;
   late final TransactionErrorType errorType;
+
+  @override
+  String toString() {
+    return 'TransactionError('
+        'message: ${Error.safeToString(message)}, '
+        'status: ${errorType.name}, '
+        'detail: $detail'
+        ')';
+  }
 }
 
 /// Contains information about a transaction.
@@ -131,7 +137,7 @@ class RosettaApi {
     final networkList = await networksList();
     networkIdentifier = (networkList.networkIdentifiers).singleWhere(
       (rosetta.NetworkIdentifier id) => id.blockchain == 'Internet Computer',
-      orElse: () => throw StateError('no identifier found.'),
+      orElse: () => throw StateError('No identifier found.'),
     );
   }
 
@@ -159,7 +165,7 @@ class RosettaApi {
       final meta = await metadata(req);
       final fee = meta.suggestedFee?.singleWhere(
         (e) => e.currency.symbol == 'ICP',
-        orElse: () => throw StateError('no fee found.'),
+        orElse: () => throw StateError('No fee found.'),
       );
       if (fee != null) {
         suggestedFee = BigInt.parse(fee.value);

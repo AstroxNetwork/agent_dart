@@ -53,15 +53,20 @@ class UpdateCallRejectedError extends ActorCallError {
     String methodName,
     SubmitResponse response,
     RequestId requestId,
-  ) : super(canisterId, methodName, 'update', {
-          'Request ID': requestIdToHex(requestId),
-          'HTTP status code': response.response!.status!.toString(),
-          'HTTP status text': response.response!.statusText!,
-        });
+  ) : super(
+          canisterId,
+          methodName,
+          'update',
+          {
+            'Request ID': requestIdToHex(requestId),
+            'HTTP status code': response.response!.status!.toString(),
+            'HTTP status text': response.response!.statusText!,
+          },
+        );
 }
 
 class CallConfig {
-  CallConfig({
+  const CallConfig({
     this.agent,
     this.pollingStrategyFactory,
     this.canisterId,
@@ -79,17 +84,17 @@ class CallConfig {
 
   /// An agent to use in this call, otherwise the actor or call will try to discover the
   /// agent to use.
-  Agent? agent;
+  final Agent? agent;
 
   /// A polling strategy factory that dictates how much and often we should poll the
   /// read_state endpoint to get the result of an update call.
-  PollStrategyFactory? pollingStrategyFactory;
+  final PollStrategyFactory? pollingStrategyFactory;
 
   /// The canister ID of this Actor.
-  Principal? canisterId;
+  final Principal? canisterId;
 
   /// The effective canister ID. This should almost always be ignored.
-  Principal? effectiveCanisterId;
+  final Principal? effectiveCanisterId;
 
   Map<String, dynamic> toJson() {
     return {
@@ -103,33 +108,29 @@ class CallConfig {
 
 /// Configuration that can be passed to customize the Actor behaviour.
 class ActorConfig extends CallConfig {
-  ActorConfig({
-    Agent? agent,
-    PollStrategyFactory? pollingStrategyFactory,
-    Principal? canisterId,
-    Principal? effectiveCanisterId,
+  const ActorConfig({
+    super.agent,
+    super.pollingStrategyFactory,
+    super.canisterId,
+    super.effectiveCanisterId,
     this.callTransform,
     this.queryTransform,
-  }) : super(
-          agent: agent,
-          pollingStrategyFactory: pollingStrategyFactory,
-          canisterId: canisterId,
-          effectiveCanisterId: effectiveCanisterId,
-        );
+  });
 
   factory ActorConfig.fromJson(Map map) {
-    return ActorConfig()
-      ..callTransform = map['callTransform']
-      ..queryTransform = map['queryTransform']
-      ..agent = map['agent']
-      ..pollingStrategyFactory = map['pollingStrategyFactory']
-      ..canisterId = map['canisterId']
-      ..effectiveCanisterId = map['effectiveCanisterId'];
+    return ActorConfig(
+      callTransform: map['callTransform'],
+      queryTransform: map['queryTransform'],
+      agent: map['agent'],
+      pollingStrategyFactory: map['pollingStrategyFactory'],
+      canisterId: map['canisterId'],
+      effectiveCanisterId: map['effectiveCanisterId'],
+    );
   }
 
   /// An override function for update calls' CallConfig.
   /// This will be called on every calls.
-  CallConfig Function(
+  final CallConfig Function(
     String methodName,
     List args,
     CallConfig callConfig,
@@ -137,7 +138,7 @@ class ActorConfig extends CallConfig {
 
   /// An override function for query calls' CallConfig.
   /// This will be called on every query.
-  CallConfig Function(
+  final CallConfig Function(
     String methodName,
     List args,
     CallConfig callConfig,
@@ -249,21 +250,17 @@ class Actor {
   }
 
   static Future<Principal> createCanister(CallConfig? config) async {
-    final canister = getManagementCanister(
-      config ?? CallConfig(),
+    final canister = getManagementCanister(config ?? const CallConfig());
+    final ActorMethod? func = canister.getFunc(
+      'provisional_create_canister_with_cycles',
     );
-    final ActorMethod? func =
-        canister.getFunc('provisional_create_canister_with_cycles');
-    // ignore: prefer_typing_uninitialized_variables
-    var result;
+    dynamic result;
     if (func != null) {
       result = await func.call([
         {'amount': [], 'settings': []}
       ]);
     }
-
     final canisterId = Principal.from(result['canister_id']);
-
     return canisterId;
   }
 
@@ -274,12 +271,12 @@ class Actor {
   ) async {
     final canisterId = await createCanister(config);
 
-    final newConfig = ActorConfig()
-      ..agent = config?.agent
-      ..canisterId = canisterId
-      ..effectiveCanisterId = config?.effectiveCanisterId
-      ..pollingStrategyFactory = config?.pollingStrategyFactory;
-
+    final newConfig = ActorConfig(
+      agent: config?.agent,
+      canisterId: canisterId,
+      effectiveCanisterId: config?.effectiveCanisterId,
+      pollingStrategyFactory: config?.pollingStrategyFactory,
+    );
     install(fields, newConfig);
 
     return createActor(interfaceFactory, newConfig);
@@ -445,7 +442,7 @@ dynamic _createActorMethod(Actor actor, String methodName, FuncClass func) {
         return null;
       }
       throw StateError(
-        'call returned nothing, but expected [${func.retTypes.join(',')}].',
+        'Call returned nothing, but expected [${func.retTypes.join(',')}].',
       );
     };
   }
@@ -464,10 +461,10 @@ class ActorMethod {
     List<dynamic> args,
     CallConfig? withOptions,
   ) =>
-      caller(withOptions ?? CallConfig(), args);
+      caller(withOptions ?? const CallConfig(), args);
 
   Future<dynamic> call(List<dynamic>? args) async {
-    return caller!(CallConfig(), args ?? []);
+    return caller!(const CallConfig(), args ?? []);
   }
 
   Future<dynamic> withOptions(

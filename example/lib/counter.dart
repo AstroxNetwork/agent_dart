@@ -3,6 +3,8 @@ import 'package:agent_dart/agent_dart.dart';
 import 'init.dart';
 
 class CounterMethod {
+  const CounterMethod._();
+
   static const add = 'increment';
   static const count = 'getValue';
 }
@@ -28,7 +30,7 @@ class Counter extends ActorHook {
     if (res != null) {
       return (res as BigInt).toInt();
     }
-    throw StateError('request failed with the result: $res.');
+    throw StateError('Request failed with the result: $res.');
   }
 
   Future<void> add() async {

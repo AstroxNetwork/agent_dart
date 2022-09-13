@@ -74,7 +74,7 @@ Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
     deriveKeyResult.mac.toUpperCase().codeUnits,
     macString.toUpperCase().codeUnits,
   )) {
-    throw StateError('decryption failed.');
+    throw StateError('Decryption failed.');
   }
 
   final encryptedPrivateKey =
@@ -167,7 +167,7 @@ Future<String> decryptPhrase(
     deriveKeyResult.mac.toUpperCase().codeUnits,
     macString.toUpperCase().codeUnits,
   )) {
-    throw StateError('decryption failed.');
+    throw StateError('Decryption failed.');
   }
 
   final encryptedPhrase = (keyStore['crypto']['ciphertext'] as String).toU8a();

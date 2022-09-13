@@ -9,7 +9,13 @@ import 'package:agent_dart/utils/extension.dart';
 
 List<T> safeRead<T>(BufferPipe<T> pipe, int ref) {
   if (pipe.length < ref) {
-    throw Exception('Unexpected end of buffer.');
+    throw RangeError.range(
+      pipe.length,
+      ref,
+      null,
+      'pipe',
+      'Unexpected end of buffer',
+    );
   }
   return pipe.read(ref);
 }
@@ -20,7 +26,7 @@ List<T> safeRead<T>(BufferPipe<T> pipe, int ref) {
 Uint8List lebEncode(dynamic value) {
   var bn = value is BigInt ? value : BigInt.from(value);
   if (bn < BigInt.zero) {
-    throw StateError('cannot leb-encode negative values.');
+    throw StateError('Cannot leb-encode negative values.');
   }
   final List<int> pipe = [];
   while (true) {
@@ -121,7 +127,7 @@ BigInt slebDecode(BufferPipe pipe) {
 
 Uint8List writeUIntLE(dynamic value, int byteLength) {
   if (bnToBn(value) < BigInt.zero) {
-    throw ArgumentError.value(value, 'value', 'Cannot write negative values.');
+    throw ArgumentError.value(value, 'value', 'Cannot write negative values');
   }
   return writeIntLE(value, byteLength);
 }

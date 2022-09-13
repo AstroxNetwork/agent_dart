@@ -19,7 +19,7 @@ Future<BinaryBlob> pollForResponse(
   final cert = Certificate(state, agent);
   final verified = await cert.verify();
   if (!verified) {
-    throw StateError('fail to verify certificate.');
+    throw StateError('Fail to verify certificate.');
   }
   final maybeBuf = cert.lookup([...path, blobFromText('status').buffer]);
   final RequestStatusResponseStatus status;

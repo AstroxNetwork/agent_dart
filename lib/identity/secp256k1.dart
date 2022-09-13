@@ -51,7 +51,7 @@ class Secp256k1KeyIdentity extends SignIdentity {
       throw ArgumentError.value(
         json,
         'json',
-        'JSON must have at least 2 elements.',
+        'JSON must have at least 2 elements',
       );
     } else if (parsed is Map) {
       final publicKey = parsed['publicKey'];
@@ -72,11 +72,7 @@ class Secp256k1KeyIdentity extends SignIdentity {
         );
       }
     }
-    throw ArgumentError.value(
-      json,
-      'json',
-      'invalid json: ${jsonEncode(json)}',
-    );
+    throw ArgumentError.value(jsonEncode(json), 'json', 'Invalid json');
   }
 
   factory Secp256k1KeyIdentity.fromKeyPair(
@@ -174,8 +170,8 @@ class Secp256k1PublicKey implements PublicKey {
     if (publicKey.byteLength != Secp256k1PublicKey.rawKeyLength) {
       throw RangeError.value(
         publicKey.byteLength,
-        'expected ${Secp256k1PublicKey.rawKeyLength}-bytes long '
-        'but got ${publicKey.byteLength}.',
+        'Expected ${Secp256k1PublicKey.rawKeyLength}-bytes long '
+        'but got ${publicKey.byteLength}',
       );
     }
     return Uint8List.fromList([
@@ -190,13 +186,13 @@ class Secp256k1PublicKey implements PublicKey {
     if (publicKey.byteLength != expectedLength) {
       throw RangeError.value(
         publicKey.byteLength,
-        'expected ${Secp256k1PublicKey.rawKeyLength}-bytes long '
-        'but got ${publicKey.byteLength}.',
+        'Expected ${Secp256k1PublicKey.rawKeyLength}-bytes long '
+        'but got ${publicKey.byteLength}',
       );
     }
     final rawKey = publicKey.sublist(Secp256k1PublicKey.derPrefix.length);
     if (!u8aEq(derEncode(rawKey), publicKey)) {
-      throw StateError('expected prefix ${Secp256k1PublicKey.derPrefix}.');
+      throw StateError('Expected prefix ${Secp256k1PublicKey.derPrefix}.');
     }
     return rawKey;
   }

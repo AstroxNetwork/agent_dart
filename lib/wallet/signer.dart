@@ -156,7 +156,7 @@ class ICPAccount extends BaseAccount {
         if (keystore != null) {
           _keystore = keystore;
         } else {
-          throw StateError('keystore file is not found.');
+          throw StateError('Keystore file is not found.');
         }
       }
       final phrase = await decodePhrase(jsonDecode(_keystore!), passphrase);
@@ -353,6 +353,6 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
       );
       return res;
     }
-    throw UnsupportedError('sign type $signType is not supported.');
+    throw UnsupportedError('Sign type $signType is not supported.');
   }
 }

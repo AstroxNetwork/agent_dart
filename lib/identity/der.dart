@@ -22,7 +22,7 @@ int encodeLenBytes(int len) {
   } else if (len <= 0xffffff) {
     return 4;
   }
-  throw RangeError.range(len, null, 0xffffff, 'length', 'length is too long.');
+  throw RangeError.range(len, null, 0xffffff, 'length', 'Length is too long');
 }
 
 int encodeLen(Uint8List buf, int offset, int len) {
@@ -45,7 +45,7 @@ int encodeLen(Uint8List buf, int offset, int len) {
     buf[offset + 3] = len;
     return 4;
   }
-  throw RangeError.range(len, null, 0xffffff, 'length', 'length is too long.');
+  throw RangeError.range(len, null, 0xffffff, 'length', 'Length is too long');
 }
 
 int decodeLenBytes(Uint8List buf, int offset) {
@@ -53,11 +53,7 @@ int decodeLenBytes(Uint8List buf, int offset) {
     return 1;
   }
   if (buf[offset] == 0x80) {
-    throw ArgumentError.value(
-      buf[offset],
-      'length',
-      'invalid length ${buf[offset]}.',
-    );
+    throw ArgumentError.value(buf[offset], 'length', 'Invalid length');
   }
   if (buf[offset] == 0x81) {
     return 2;
@@ -73,7 +69,7 @@ int decodeLenBytes(Uint8List buf, int offset) {
     null,
     0xffffff,
     'length',
-    'length is too long.',
+    'Length is too long',
   );
 }
 
@@ -137,15 +133,15 @@ Uint8List wrapDER(ByteBuffer payload, Uint8List oid) {
 /// [derEncoded] is the DER encoded and tagged data.
 /// [oid] is the DER encoded (and SEQUENCE wrapped!) expected OID
 Uint8List unwrapDER(ByteBuffer derEncoded, Uint8List oid) {
-  var offset = 0;
+  int offset = 0;
   final buf = Uint8List.fromList(derEncoded.asUint8List());
 
   check(int expected, String name) {
     if (buf[offset] != expected) {
       throw ArgumentError.value(
-        expected,
+        buf[offset],
         name,
-        'expected $expected for $name but got ${buf[offset]}.',
+        'Expected $expected for $name but got',
       );
     }
     offset++;
@@ -157,7 +153,7 @@ Uint8List unwrapDER(ByteBuffer derEncoded, Uint8List oid) {
     buf.sublist(offset, offset + oid.lengthInBytes).buffer,
     oid.buffer,
   )) {
-    throw StateError('not the expecting OID.');
+    throw StateError('Not the expecting OID.');
   }
   offset += oid.lengthInBytes;
   check(0x03, 'bit string');
