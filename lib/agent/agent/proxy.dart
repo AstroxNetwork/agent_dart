@@ -389,7 +389,11 @@ class ProxyAgent implements Agent {
       }),
     ).then((principal) {
       if (principal is! String) {
-        throw ArgumentError.value(principal, 'Invalid principal received');
+        throw ArgumentError.value(
+          principal,
+          'Principal',
+          'Invalid principal received',
+        );
       }
       return Principal.fromText(principal);
     });

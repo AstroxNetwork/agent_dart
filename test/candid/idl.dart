@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent_dart.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../test_utils.dart';
 // ignore: library_prefixes
 
 void main() {
@@ -31,11 +33,17 @@ void idlTest() {
     // Wrong magic number
     expect(
       () => IDL.decode([IDL.Nat], '2a'.toU8a()),
-      throwsA(contains('Message length smaller than magic number')),
+      throwsA(
+        isError<RangeError>(
+          'Message length is smaller than the magic number',
+        ),
+      ),
     );
     expect(
       () => IDL.decode([IDL.Nat], '4449444d2a'.toU8a()),
-      throwsA(contains('Wrong magic number:')),
+      throwsA(
+        isError<StateError>('Wrong magic number: DIDM.'),
+      ),
     );
   });
 
@@ -43,14 +51,12 @@ void idlTest() {
     // Empty
     expect(
       () => IDL.encode([IDL.Empty], [null]),
-      throwsA(contains('Invalid empty argument:')),
+      throwsA(isError<ArgumentError>()),
     );
     expect(
       () => IDL.decode([IDL.Empty], '4449444c00016f'.toU8a()),
       throwsA(
-        contains(
-          'Empty cannot appear as an output',
-        ),
+        isError<UnsupportedError>('Empty cannot appear as an output.'),
       ),
     );
   });
@@ -76,22 +82,18 @@ void idlTest() {
     );
     expect(
       () => IDL.encode([IDL.Text], [0]),
-      throwsA(contains('Invalid text argument')),
+      throwsA(isError<ArgumentError>()),
     );
     expect(
       () => IDL.encode([IDL.Text], [null]),
-      throwsA(contains('Invalid text argument')),
+      throwsA(isError<ArgumentError>()),
     );
     expect(
       () => IDL.decode(
         [IDL.Vec(IDL.Nat8)],
         '4449444c00017107486920e298830a'.toU8a(),
       ),
-      throwsA(
-        contains(
-          'type mismatch: type on the wire text, expect type vec nat8',
-        ),
-      ),
+      throwsA(isError<TypeError>()),
     );
   });
 
@@ -131,11 +133,7 @@ void idlTest() {
     );
     expect(
       () => IDL.decode([IDL.Int], '4449444c00017d2a'.toU8a()),
-      throwsA(
-        contains(
-          'type mismatch: type on the wire nat, expect type int',
-        ),
-      ),
+      throwsA(isError<TypeError>()),
     );
   });
 
@@ -163,7 +161,7 @@ void idlTest() {
     );
     expect(
       () => IDL.encode([IDL.Nat], [-1]),
-      throwsA(contains('Invalid nat argument')),
+      throwsA(isError<ArgumentError>()),
     );
   });
 
@@ -249,15 +247,15 @@ void idlTest() {
     );
     expect(
       () => IDL.encode([IDL.Nat32], [-42]),
-      throwsA(contains('Invalid nat32 argument')),
+      throwsA(isError<ArgumentError>()),
     );
     expect(
       () => IDL.encode([IDL.Int8], [256]),
-      throwsA(contains('Invalid int8 argument')),
+      throwsA(isError<ArgumentError>()),
     );
     expect(
       () => IDL.encode([IDL.Int32], [0xffffffff]),
-      throwsA(contains('Invalid int32 argument')),
+      throwsA(isError<ArgumentError>()),
     );
   });
 
@@ -275,7 +273,7 @@ void idlTest() {
       ], [
         [0]
       ]),
-      throwsA(contains('Invalid record {int; text} argument')),
+      throwsA(isError<ArgumentError>()),
     );
   });
 
@@ -327,7 +325,7 @@ void idlTest() {
     );
     expect(
       () => IDL.encode([IDL.Vec(IDL.Int)], [BigInt.from(0)]),
-      throwsA(contains('Invalid vec int argument')),
+      throwsA(isError<ArgumentError>()),
     );
     expect(
       () => IDL.encode([
@@ -335,7 +333,7 @@ void idlTest() {
       ], [
         ['fail']
       ]),
-      throwsA(contains('Invalid vec int argument')),
+      throwsA(isError<ArgumentError>()),
     );
   });
 
@@ -380,7 +378,7 @@ void idlTest() {
       ], [
         {'b': 'b'}
       ]),
-      throwsA(contains('Record is missing key')),
+      throwsA(isError<StateError>("Record is missing the key 'a'.")),
     );
 
     // Test that additional keys are ignored
@@ -480,11 +478,11 @@ void idlTest() {
     testArg(IDL.Bool, false, '4449444c00017e00', 'false');
     expect(
       () => IDL.encode([IDL.Bool], [0]),
-      throwsA(contains('Invalid bool argument')),
+      throwsA(isError<ArgumentError>()),
     );
     expect(
       () => IDL.encode([IDL.Bool], ['false']),
-      throwsA(contains('Invalid bool argument')),
+      throwsA(isError<ArgumentError>()),
     );
   });
 
@@ -504,19 +502,11 @@ void idlTest() {
     );
     expect(
       () => IDL.encode([IDL.Principal], ['w7x7r-cok77-xa']),
-      throwsA(
-        contains(
-          'Invalid principal argument',
-        ),
-      ),
+      throwsA(isError<ArgumentError>()),
     );
     expect(
       () => IDL.decode([IDL.Principal], '4449444c00016803caffee'.toU8a()),
-      throwsA(
-        contains(
-          'Cannot decode principal',
-        ),
-      ),
+      throwsA(isError<ArgumentError>('Cannot decode principal 03.')),
     );
   });
 
@@ -583,7 +573,7 @@ void idlTest() {
     );
     expect(
       () => IDL.encode([result], [{}]),
-      throwsA(contains('Invalid variant {ok:text; err:text} argument')),
+      throwsA(isError<ArgumentError>()),
     );
     expect(
       () => IDL.encode([
@@ -591,7 +581,7 @@ void idlTest() {
       ], [
         {'ok': 'ok', 'err': 'err'}
       ]),
-      throwsA(contains('Invalid variant {ok:text; err:text} argument')),
+      throwsA(isError<ArgumentError>()),
     );
 
     // Test that nullary constructors work as expected
@@ -615,7 +605,7 @@ void idlTest() {
       ], [
         {'err': 'uhoh'}
       ]),
-      throwsA(contains('Invalid variant {ok:text; err:empty} argument:')),
+      throwsA(isError<ArgumentError>()),
     );
 
     // Test for option
@@ -663,7 +653,7 @@ void idlTest() {
     final list = IDL.Rec();
     expect(
       () => IDL.encode([list], [[]]),
-      throwsA(contains('Recursive type uninitialized')),
+      throwsA(isError<StateError>('Recursive type uninitialized.')),
     );
     list.fill(IDL.Opt(IDL.Record({'head': IDL.Int, 'tail': list})));
     testArg(

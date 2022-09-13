@@ -63,6 +63,7 @@ class Principal {
     if (principal.toText() != text) {
       throw ArgumentError.value(
         text,
+        'Principal',
         'Principal expected to be ${principal.toText()} but got',
       );
     }

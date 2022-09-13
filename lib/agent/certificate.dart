@@ -266,7 +266,8 @@ Uint8List? lookupPathEx(List path, List tree) {
 
 Uint8List? lookupPath(List path, List tree) {
   if (path.isEmpty) {
-    switch (tree[0]) {
+    final NodeId nodeId = NodeId.fromValue(tree[0]);
+    switch (nodeId) {
       case NodeId.leaf:
         return tree[1] is Uint8List
             ? tree[1]
@@ -286,7 +287,8 @@ Uint8List? lookupPath(List path, List tree) {
 }
 
 List<List> flattenForks(List t) {
-  switch (t[0]) {
+  final NodeId nodeId = NodeId.fromValue(t[0]);
+  switch (nodeId) {
     case NodeId.empty:
       return [];
     case NodeId.fork:
@@ -303,7 +305,8 @@ List? findLabel(Uint8List l, List<List> trees) {
     return null;
   }
   for (final t in trees) {
-    if (t[0] == NodeId.labeled) {
+    final NodeId nodeId = NodeId.fromValue(t[0]);
+    if (nodeId == NodeId.labeled) {
       final p =
           t[1] is Uint8List ? t[1] : (t[1] as Uint8Buffer).buffer.asUint8List();
       if (u8aEq(l, p)) {
