@@ -44,7 +44,7 @@ BigInt bitnot(BigInt bn, {int? bitLength}) {
   // JavaScript's bitwise not doesn't work on negative BigInts (bn = ~bn; // WRONG!)
   // so we manually implement our own two's compliment (flip bits, add one)
   bn = -bn;
-  var bin = bn.toRadixString(2).replaceAll('-', '');
+  String bin = bn.toRadixString(2).replaceAll('-', '');
 
   String prefix = '';
   while (bin.length % 8 != 0) {

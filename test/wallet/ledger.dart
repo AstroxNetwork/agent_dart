@@ -153,7 +153,7 @@ void ledgerTest() {
     test('transfer to Canister', () async {
       final signer = await getSigner();
       final agent = await getAgent();
-      // var someReceiver = ICPSigner.create();
+      // final someReceiver = ICPSigner.create();
       const receiverCanister = 'qhbym-qaaaa-aaaaa-aaafq-cai';
       final senderBalance = await Ledger.accountBalance(
         agent: agent,

@@ -24,7 +24,7 @@ PollStrategy defaultStrategy() {
 }
 
 Predicate<bool> once() {
-  var first = true;
+  bool first = true;
   return (
     Principal canisterId,
     RequestId requestId,
@@ -53,7 +53,7 @@ PollStrategy conditionalDelay(Predicate<bool> condition, int timeInMsec) {
 }
 
 PollStrategy maxAttempts(int count) {
-  var attempts = count;
+  int attempts = count;
   return (
     Principal canisterId,
     RequestId requestId,

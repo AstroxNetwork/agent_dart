@@ -37,7 +37,7 @@ class SigningBlockDecoder extends ZipDecoder {
       );
     }
     final result = <SigningBlockResult>[];
-    for (var i = 0; i < _messages.length; i += 1) {
+    for (int i = 0; i < _messages.length; i += 1) {
       result.add(
         SigningBlockResult(
           algoId: _algoIds[i],

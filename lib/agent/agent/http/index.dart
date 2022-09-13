@@ -416,7 +416,7 @@ class HttpAgent implements Agent {
   }
 
   Future<HttpAgentRequest> _transform(HttpAgentRequest request) {
-    var p = Future.value(request);
+    Future<HttpAgentRequest> p = Future.value(request);
 
     for (final fn in _pipeline) {
       p = p.then((r) => fn.call(r).then((r2) => r2 ?? r));

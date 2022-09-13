@@ -779,7 +779,7 @@ class VecClass<T> extends ConstructType<List<T>> {
     if (vec is VecClass) {
       final len = lebDecode(x).toInt();
       final rets = <T>[];
-      for (var i = 0; i < len; i++) {
+      for (int i = 0; i < len; i++) {
         rets.add(_type.decodeValue(x, vec.type));
       }
       return rets;

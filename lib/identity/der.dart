@@ -107,7 +107,7 @@ Uint8List wrapDER(ByteBuffer payload, Uint8List oid) {
   // The header needs to include the unused bit count byte in its length.
   final bitStringHeaderLength = 2 + encodeLenBytes(payload.lengthInBytes + 1);
   final len = oid.lengthInBytes + bitStringHeaderLength + payload.lengthInBytes;
-  var offset = 0;
+  int offset = 0;
   final buf = Uint8List(1 + encodeLenBytes(len) + len);
   // Sequence.
   buf[offset++] = 0x30;

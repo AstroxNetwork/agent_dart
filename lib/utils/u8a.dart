@@ -75,7 +75,7 @@ Uint8List u8aFixLength(
 
 List<Uint8List> u8aSorted(List<Uint8List> u8as) {
   u8as.sort((a, b) {
-    var i = 0;
+    int i = 0;
     while (true) {
       final cmp = a[i] - b[i];
       if (cmp != 0) {

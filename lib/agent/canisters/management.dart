@@ -7,7 +7,7 @@ import 'management_idl.dart';
 CanisterActor getManagementCanister(CallConfig config) {
   CallConfig transform(String methodName, List args, CallConfig callConfig) {
     final first = args[0];
-    var effectiveCanisterId = Principal.fromHex('');
+    Principal effectiveCanisterId = Principal.fromHex('');
     if (first != null && first is Map && first['canister_id'] != null) {
       effectiveCanisterId = Principal.from(first['canister_id']);
     }
