@@ -57,7 +57,7 @@ bool isUtf8(dynamic value) {
   }
   final u8a = u8aToU8a(value);
   final len = u8a.length;
-  var i = 0;
+  int i = 0;
 
   while (i < len) {
     if (u8a[i] <= 0x7F) /* 00..7F */ {

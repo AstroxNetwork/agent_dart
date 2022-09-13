@@ -102,7 +102,7 @@ Uint8List _hashBytes(Uint8List value) {
 
 Uint8List _hashUint64(BigInt n) {
   final buf = Uint8List(10);
-  var i = 0;
+  int i = 0;
   while (true) {
     final byte = n & BigInt.from(0x7f);
     n >>= BigInt.from(7).toInt();

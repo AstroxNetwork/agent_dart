@@ -26,11 +26,10 @@ class ZipSigningBlock {
   }
 
   int getSize() {
-    var size = 0;
+    int size = 0;
     for (final sb in signingBlocks) {
       size += sb.getSize() + 12; // Uint64 should + 32
     }
-
     return size;
   }
 

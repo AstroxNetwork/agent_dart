@@ -22,7 +22,7 @@ class BufferPipe<T> {
   List<T> read(int length) {
     final list = <T>[];
 
-    for (var i = 0; i < length && _buffer.isNotEmpty; i++) {
+    for (int i = 0; i < length && _buffer.isNotEmpty; i++) {
       list.add(_buffer.removeFirst());
       _bytesRead++;
     }

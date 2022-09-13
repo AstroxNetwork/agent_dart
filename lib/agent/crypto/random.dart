@@ -48,13 +48,13 @@ class DartRandom {
 
 Uint8List getRandomValues([int length = _defaultLength]) {
   final DartRandom rn = DartRandom(math.Random.secure());
-  var entropy = rn.nextBigInteger(length * 8).toRadixString(16);
+  String entropy = rn.nextBigInteger(length * 8).toRadixString(16);
 
   if (entropy.length > length * 2) {
     entropy = entropy.substring(0, length * 2);
   }
 
-  var randomPers = rn.nextBigInteger(length * 8).toRadixString(16);
+  String randomPers = rn.nextBigInteger(length * 8).toRadixString(16);
 
   if (randomPers.length > length * 2) {
     randomPers = randomPers.substring(0, length * 2);

@@ -346,8 +346,8 @@ List<int> _createChecksum(String hrp, List<int> data) {
 }
 
 List<int> _convertBits(List<int> data, int from, int to, {bool pad = true}) {
-  var acc = 0;
-  var bits = 0;
+  int acc = 0;
+  int bits = 0;
   final List<int> result = [];
   final maxv = (1 << to) - 1;
   for (final v in data) {

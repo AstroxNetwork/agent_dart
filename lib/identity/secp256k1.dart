@@ -210,7 +210,7 @@ Uint8List signSecp256k1(String message, BinaryBlob secretKey) {
   final key = ECPrivateKey(_bytesToUnsignedInt(secretKey), secp256k1Params);
 
   signer.init(true, p_api.PrivateKeyParameter(key));
-  var sig = signer.generateSignature(blob) as ECSignature;
+  ECSignature sig = signer.generateSignature(blob) as ECSignature;
   if (sig.s.compareTo(_halfCurveOrder) > 0) {
     final canonicalizedS = secp256k1Params.n - sig.s;
     sig = ECSignature(sig.r, canonicalizedS);
@@ -218,15 +218,14 @@ Uint8List signSecp256k1(String message, BinaryBlob secretKey) {
   if (sig.r == sig.s) {
     return signSecp256k1(message, secretKey);
   }
-  var rU8a = sig.r.toU8a();
-  var sU8a = sig.s.toU8a();
+  Uint8List rU8a = sig.r.toU8a();
+  Uint8List sU8a = sig.s.toU8a();
   if (rU8a.length < 32) {
     rU8a = Uint8List.fromList([0, ...rU8a]);
   }
   if (sU8a.length < 32) {
     sU8a = Uint8List.fromList([0, ...sU8a]);
   }
-
   return u8aConcat([rU8a, sU8a]);
 }
 

@@ -22,29 +22,11 @@ class SigningBlock {
   final List<SignatureBlock> signatureBlocks;
   final List<PublicKeyBlock> publicKeyBlocks;
 
-  int messageBlocksSize() {
-    var size = 0;
-    for (final block in messageBlocks) {
-      size += block.size;
-    }
-    return size;
-  }
+  int messageBlocksSize() => messageBlocks.fold(0, (p, e) => p += e.size);
 
-  int signatureBlocksSize() {
-    var size = 0;
-    for (final block in signatureBlocks) {
-      size += block.size;
-    }
-    return size;
-  }
+  int signatureBlocksSize() => signatureBlocks.fold(0, (p, e) => p += e.size);
 
-  int publicKeyBlocksSize() {
-    var size = 0;
-    for (final block in publicKeyBlocks) {
-      size += block.size;
-    }
-    return size;
-  }
+  int publicKeyBlocksSize() => publicKeyBlocks.fold(0, (p, e) => p += e.size);
 
   int getSize() {
     return 4 +

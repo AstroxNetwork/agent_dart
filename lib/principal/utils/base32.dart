@@ -9,7 +9,7 @@ String base32Encode(Uint8List input) {
   int bits = 0;
 
   // The output string in base32.
-  var output = '';
+  String output = '';
 
   int encodeByte(int byte) {
     if (skip < 0) {
@@ -66,7 +66,7 @@ Uint8List base32Decode(String input) {
     // to use update().
     final found = lookupTable[char.toLowerCase()];
     assert(found != null, 'Invalid character: $char');
-    var val = found!;
+    int val = found!;
     // move to the high bits
     val <<= 3;
     // 32 bit shift?

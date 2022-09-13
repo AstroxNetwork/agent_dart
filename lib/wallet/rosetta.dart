@@ -218,7 +218,7 @@ class RosettaApi {
 
     final transactionCount = min(limit, blockIndex + 1);
     final transactions = <RosettaTransaction>[];
-    for (var i = 0; i < transactionCount; i++) {
+    for (int i = 0; i < transactionCount; i++) {
       transactions.add(await getTransactionByBlock(blockIndex - i));
     }
     return transactions;
