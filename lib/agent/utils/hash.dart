@@ -17,7 +17,7 @@ num idlLabelToId(String label) {
     final lb = label.substring(1, label.length - 1);
     final result = num.tryParse(lb);
     if (result != null &&
-        result is BigInt &&
+        result is! BigInt &&
         result >= 0 &&
         result < pow(2, 32)) {
       return result;

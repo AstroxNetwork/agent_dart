@@ -58,8 +58,8 @@ class Ed25519PublicKey implements auth.PublicKey {
     if (unwrapped.length != rawKeyLength) {
       throw RangeError.value(
         unwrapped.length,
-        'expected $rawKeyLength-bytes long '
-        'but got ${unwrapped.length}.',
+        'Expected $rawKeyLength-bytes long '
+        'but got ${unwrapped.length}',
       );
     }
     return unwrapped;
@@ -95,7 +95,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
       throw ArgumentError.value(
         json,
         'json',
-        'JSON must have at least 2 elements.',
+        'JSON must have at least 2 elements',
       );
     }
     if (parsed is Map) {
@@ -122,11 +122,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
         );
       }
     }
-    throw ArgumentError.value(
-      json,
-      'json',
-      'invalid json: ${jsonEncode(json)}',
-    );
+    throw ArgumentError.value(jsonEncode(json), 'json', 'Invalid json');
   }
 
   factory Ed25519KeyIdentity.fromParsedJson(List<String> obj) {
@@ -138,10 +134,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
 
   static Future<Ed25519KeyIdentity> generate(Uint8List? seed) async {
     if (seed != null && seed.length != 32) {
-      throw RangeError.value(
-        seed.length,
-        'expected 32-bytes long but got ${seed.length}.',
-      );
+      throw RangeError.value(seed.length, 'Expected 32-bytes long but got');
     }
 
     final Uint8List publicKey;

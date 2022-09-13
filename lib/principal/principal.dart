@@ -45,7 +45,7 @@ class Principal {
         null,
         data.length,
         'size',
-        'size must within the data length.',
+        'Size must within the data length',
       );
     }
     return Principal.fromBlob(data.sublist(0, uSize));
@@ -63,7 +63,7 @@ class Principal {
     if (principal.toText() != text) {
       throw ArgumentError.value(
         text,
-        'principal expected to be ${principal.toText()} but got $text.',
+        'Principal expected to be ${principal.toText()} but got',
       );
     }
     return principal;
@@ -100,7 +100,7 @@ class Principal {
     final matches = reg.allMatches(result);
     if (matches.isEmpty) {
       // This should only happen if there's no character, which is unreachable.
-      throw StateError('no characters found.');
+      throw StateError('No characters found.');
     }
     return matches.map((e) => e.group(0)).join('-');
   }
@@ -110,7 +110,7 @@ class Principal {
       throw ArgumentError.value(
         subAccount,
         'subAccount',
-        'sub-account address must be 32-bytes length.',
+        'Sub-account address must be 32-bytes length',
       );
     }
     final hash = SHA224();
@@ -132,9 +132,7 @@ class Principal {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Principal &&
-          _arr.eq(other._arr);
+      identical(this, other) || other is Principal && _arr.eq(other._arr);
 
   @override
   int get hashCode => _arr.hashCode;

@@ -20,7 +20,7 @@ void httpTest() {
       );
 
       agent.addTransform(
-        HttpAgentRequestTransformFn()..call = makeNonceTransform(() => nonce),
+        HttpAgentRequestTransformFn(call: makeNonceTransform(() => nonce)),
       );
 
       const methodName = 'greet';

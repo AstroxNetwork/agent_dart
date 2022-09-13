@@ -89,10 +89,12 @@ class SelfDescribeEncoder extends cbor.Encoder {
       writeBool(data);
     } else if (data == null) {
       writeNull();
+    } else {
+      throw UnsupportedError(
+        '${data.runtimeType.toString()}'
+        ' is not supported with CBOR serializations.',
+      );
     }
-    throw UnsupportedError(
-      'writeMapImpl::Non Iterable RT is ${data.runtimeType.toString()}',
-    );
   }
 
   void serializeIterable(Iterable data) {
@@ -280,21 +282,17 @@ BinaryBlob cborEncode(dynamic value, {SelfDescribeEncoder? withSerializer}) {
 }
 
 T cborDecode<T>(List<int> value) {
-  try {
-    final buffer = value is Uint8Buffer ? value : Uint8Buffer()
-      ..addAll(value);
-    final cbor.Input input = cbor.Input(buffer);
-    final cbor.Listener listener = cbor.ListenerStack();
-    final decodeStack = cbor.DecodeStack();
-    listener.itemStack.clear();
-    final cbor.Decoder decoder = cbor.Decoder.withListener(input, listener);
-    decoder.run();
-    decodeStack.build(listener.itemStack);
-    final walked = decodeStack.walk();
-    return walked![0] as T;
-  } catch (e) {
-    throw Exception('Cannot decode with CBOR: $e.');
-  }
+  final buffer = value is Uint8Buffer ? value : Uint8Buffer()
+    ..addAll(value);
+  final cbor.Input input = cbor.Input(buffer);
+  final cbor.Listener listener = cbor.ListenerStack();
+  final decodeStack = cbor.DecodeStack();
+  listener.itemStack.clear();
+  final cbor.Decoder decoder = cbor.Decoder.withListener(input, listener);
+  decoder.run();
+  decodeStack.build(listener.itemStack);
+  final walked = decodeStack.walk();
+  return walked![0] as T;
 }
 
 ByteBuffer serializeValue(int major, int minor, String val) {

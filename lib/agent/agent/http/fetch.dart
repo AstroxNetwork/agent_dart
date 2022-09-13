@@ -37,11 +37,7 @@ Future<Map<String, dynamic>> defaultFetch({
     }
     switch (method) {
       case FetchMethod.post:
-        fr = client.post(
-          uri,
-          headers: compactHeaders,
-          body: body,
-        );
+        fr = client.post(uri, headers: compactHeaders, body: body);
         break;
       case FetchMethod.get:
         fr = client.get(uri, headers: {...?baseHeaders, ...?headers});
@@ -50,31 +46,20 @@ Future<Map<String, dynamic>> defaultFetch({
         fr = client.head(uri, headers: {...?baseHeaders, ...?headers});
         break;
       case FetchMethod.put:
-        fr = client.put(
-          uri,
-          headers: compactHeaders,
-          body: body,
-        );
+        fr = client.put(uri, headers: compactHeaders, body: body);
         break;
       case FetchMethod.delete:
-        fr = client.delete(
-          uri,
-          headers: compactHeaders,
-          body: body,
-        );
+        fr = client.delete(uri, headers: compactHeaders, body: body);
         break;
       case FetchMethod.patch:
-        fr = client.patch(
-          uri,
-          headers: compactHeaders,
-          body: body,
-        );
+        fr = client.patch(uri, headers: compactHeaders, body: body);
         break;
       case FetchMethod.connect:
       case FetchMethod.options:
       case FetchMethod.trace:
         throw UnimplementedError(
-          'Unimplemented http request method: `${method.name.toUpperCase()}`.',
+          'HTTP request method: '
+          '`${method.name.toUpperCase()}` not implemented.',
         );
     }
 
@@ -134,7 +119,7 @@ class FetchResponse {
       'ok': ok,
       'statusCode': statusCode,
       'statusText': statusText,
-      'arrayBuffer': arrayBuffer
+      'arrayBuffer': arrayBuffer,
     };
   }
 }

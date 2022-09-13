@@ -14,7 +14,7 @@ KeyDerivator getDerivedKey(String kdf, Map<String, dynamic> params) {
     final dklen = params['dklen'];
     return _ScryptKeyDerivator(dklen, n, r, p, salt);
   } else {
-    throw UnsupportedError('only pbkdf2 and scrypt are supported');
+    throw UnsupportedError('Only pbkdf2 and scrypt are supported.');
   }
 }
 

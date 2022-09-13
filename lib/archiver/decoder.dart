@@ -26,13 +26,13 @@ class SigningBlockDecoder extends ZipDecoder {
   SigningBlockResultList getResult([bool pubKey = false]) {
     if (_messages.length != _signatures.length) {
       throw RangeError(
-        'message length ${_messages.length} is not equals to '
+        'Message length ${_messages.length} is not equals to '
         'signatures length ${_signatures.length}.',
       );
     }
     if (_signatures.length != _algoIds.length) {
       throw RangeError(
-        'algos length ${_algoIds.length} is not equals to '
+        'Algos length ${_algoIds.length} is not equals to '
         'signatures length ${_signatures.length}.',
       );
     }
@@ -62,7 +62,7 @@ class SigningBlockDecoder extends ZipDecoder {
 
   void checkMagicNumber() {
     if (!_checkMagicNumber()) {
-      throw StateError('magic number is incorrect.');
+      throw StateError('Magic number is incorrect.');
     }
   }
 

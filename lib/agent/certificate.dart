@@ -21,7 +21,7 @@ class UnverifiedCertificateError extends AgentError {
 
   @override
   String toString() => 'Cannot lookup unverified certificate. '
-      "Call 'verify()' first.";
+      "Try to call 'verify()' again.";
 }
 
 /// type HashTree =
@@ -167,14 +167,14 @@ class Certificate {
           return Future.value(_rootKey);
         }
         throw StateError(
-          'the rootKey is not exist. Try to call `fetchRootKey` again.',
+          'The rootKey is not exist. Try to call `fetchRootKey` again.',
         );
       }
       return Future.value(_rootKey);
     }
     final Certificate cert = Certificate(d, _agent);
     if (!(await cert.verify())) {
-      throw StateError('fail to verify certificate.');
+      throw StateError('Fail to verify certificate.');
     }
 
     final lookup = cert.lookupEx(['subnet', d.subnetId, 'public_key']);
@@ -196,12 +196,12 @@ Uint8List extractDER(Uint8List buf) {
   if (buf.length != expectedLength) {
     throw RangeError.value(
       buf.length,
-      'expected $expectedLength-bytes long but got ${buf.length}.',
+      'Expected $expectedLength-bytes long but got ${buf.length}.',
     );
   }
   final prefix = buf.sublist(0, _derPrefix.length);
   if (!u8aEq(prefix, _derPrefix)) {
-    throw StateError('expected prefix $_derPrefix but got $prefix.');
+    throw StateError('Expected prefix $_derPrefix but got $prefix.');
   }
   return buf.sublist(_derPrefix.length);
 }

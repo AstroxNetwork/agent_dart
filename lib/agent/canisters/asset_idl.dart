@@ -23,7 +23,7 @@ class AssetActor {
     if (res != null) {
       return res as Uint8List;
     }
-    throw StateError('request failed with the result: $res.');
+    throw StateError('Request failed with the result: $res.');
   }
 
   Future<void> store(String key, Uint8List value) async {

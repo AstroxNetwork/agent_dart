@@ -73,7 +73,7 @@ class AgentFactory {
       await _agent.fetchRootKey();
     }
     _agent.addTransform(
-      HttpAgentRequestTransformFn()..call = makeNonceTransform(),
+      HttpAgentRequestTransformFn(call: makeNonceTransform()),
     );
   }
 
