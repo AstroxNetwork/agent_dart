@@ -31,15 +31,23 @@ void principalTest() {
     // These are taken from above with the first character changed to make an invalid crc32.
     expect(
       () => Principal.fromText('0chl6-4hpzw-vqaaa-aaaaa-c').toHex(),
-      throwsA(contains('does not have a valid checksum')),
+      throwsA(
+        isError<ArgumentError>(
+          'Principal expected to be 2chl6-4hpzw-vqaaa-aaaaa-c but got',
+        ),
+      ),
     );
     expect(
       () => Principal.fromText('0aaaa-aa').toHex(),
-      throwsA(contains('does not have a valid checksum')),
+      throwsA(
+        isError<ArgumentError>('Principal expected to be aaaaa-aa but got'),
+      ),
     );
     expect(
       () => Principal.fromText('0vxsx-fae').toHex(),
-      throwsA(contains('does not have a valid checksum')),
+      throwsA(
+        isError<ArgumentError>('Principal expected to be 2vxsx-fae but got'),
+      ),
     );
   });
 

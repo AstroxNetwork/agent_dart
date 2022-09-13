@@ -100,10 +100,10 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     }
     if (parsed is Map) {
       final reParsed = jsonDecode(json);
-      final publicKey = reParsed['publicKey'];
-      final dashPublicKey = reParsed['_publicKey'];
-      final secretKey = reParsed['secretKey'];
-      final dashPrivateKey = reParsed['_privateKey'];
+      final publicKey = reParsed['publicKey']?.cast<int>();
+      final dashPublicKey = reParsed['_publicKey']?.cast<int>();
+      final secretKey = reParsed['secretKey']?.cast<int>();
+      final dashPrivateKey = reParsed['_privateKey']?.cast<int>();
 
       final pk = publicKey != null
           ? Ed25519PublicKey.fromRaw(Uint8List.fromList(publicKey))

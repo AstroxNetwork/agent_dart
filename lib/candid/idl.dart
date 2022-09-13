@@ -1310,7 +1310,7 @@ class RecClass<T> extends ConstructType<T> {
 
   void _checkType() {
     if (_type == null) {
-      throw StateError('recursive type uninitialized.');
+      throw StateError('Recursive type uninitialized.');
     }
   }
 }
@@ -1605,7 +1605,11 @@ BinaryBlob idlEncode(List<CType> argTypes, List args) {
         return buf;
       }
       if (!t.covariant(x)) {
-        throw ArgumentError.value('${t.display()} - ${toReadableString(x)}.');
+        throw ArgumentError.value(
+          t,
+          'type',
+          'Error in covariant types ${t.display()} : ${toReadableString(x)}',
+        );
       }
       return t.encodeValue(x);
     }),
