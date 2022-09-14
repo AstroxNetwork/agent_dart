@@ -38,12 +38,8 @@ class AgentDartFFI {
 
   AgentDartFFI._();
 
-  factory AgentDartFFI.run() {
-    return AgentDartFFI._();
-  }
-
   static final AgentDartFFI _instance = AgentDartFFI._();
 
-  static AgentDartImpl get impl => AgentDartFFI()._impl;
+  static AgentDartImpl get impl => _instance._impl;
   late final AgentDartImpl _impl = AgentDartImpl(getDyLib());
 }
