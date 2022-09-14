@@ -52,7 +52,7 @@ class Principal {
   }
 
   factory Principal.fromHex(String hex) {
-    return Principal(_fromHexString(hex));
+    return Principal(hex.toU8a());
   }
 
   factory Principal.fromText(String text) {
@@ -163,14 +163,6 @@ class CanisterId extends Principal {
       Principal.create(blobLength + 1, Uint8List.fromList(data)),
     );
   }
-}
-
-Uint8List _fromHexString(String hexString) {
-  return Uint8List.fromList(
-    (RegExp(r'.{1,2}').allMatches(hexString).toList())
-        .map<int>((byte) => int.parse(byte.group(0)!, radix: 16))
-        .toList(),
-  );
 }
 
 String _toHexString(Uint8List bytes) {
