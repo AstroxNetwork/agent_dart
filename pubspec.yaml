@@ -20,11 +20,11 @@ dependencies:
   collection: ^1.16.0
   convert: ^3.0.1
   crypto: ^3.0.2
-  ffi: ^1.2.1
+  ffi: ^2.0.1
   fixnum: ^1.0.1
   flutter:
     sdk: flutter
-  flutter_rust_bridge: 1.34.0
+  flutter_rust_bridge: ^1.45.0
   http: ^0.13.4
   js: ^0.6.4
   meta: ^1.7.0
