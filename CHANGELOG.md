@@ -7,7 +7,9 @@ that can be found in the LICENSE file. -->
 ## 1.0.0-dev.1
 
 - Support FFI asynchronized methods with Rust bindings.
-- Consist all namings, fields and constructors.
+- Consist all namings, fields and constructors, including:
+  - `fromMap` -> `fromJson`
+  - `toJSON` -> `toJson`
 - Better throws when exceptions occurred.
 - Remove unused codes.
 
