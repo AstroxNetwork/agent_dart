@@ -8,102 +8,116 @@ import '../api.dart';
 import 'transform.dart';
 
 class ReadRequestType {
-  // ignore: constant_identifier_names
-  static const TypeQuery = 'query';
-  // ignore: constant_identifier_names
-  static const ReadState = 'read_state';
+  const ReadRequestType._();
+
+  static const typeQuery = 'query';
+  static const readState = 'read_state';
 }
 
 class SubmitRequestType {
-  // ignore: constant_identifier_names
-  static const Call = 'call';
+  const SubmitRequestType._();
+
+  static const call = 'call';
 }
 
 class Endpoint {
-  // ignore: constant_identifier_names
-  static const Query = 'read';
-  // ignore: constant_identifier_names
-  static const ReadState = 'read_state';
-  // ignore: constant_identifier_names
-  static const Call = 'call';
+  const Endpoint._();
+
+  static const query = 'read';
+  static const readState = 'read_state';
+  static const call = 'call';
 }
 
 abstract class WithToJson {
   Map<String, dynamic> toJson();
 }
 
-abstract class BaseRequest with WithToJson {}
+abstract class BaseRequest with WithToJson {
+  const BaseRequest();
+}
 
 class ReadStateRequest extends BaseRequest {
-  // ignore: non_constant_identifier_names
-  String request_type = ReadRequestType.ReadState;
-  // ignore: non_constant_identifier_names
-  List<List<BinaryBlob>>? paths;
-  dynamic sender; //: Uint8Array | Principal;
-  // ignore: non_constant_identifier_names
-  Expiry? ingress_expiry;
+  const ReadStateRequest({
+    this.paths,
+    this.sender,
+    this.ingressExpiry,
+  });
+
+  final List<List<BinaryBlob>>? paths;
+  final Object? sender; //: Uint8Array | Principal;
+  final Expiry? ingressExpiry;
+
+  String get requestType => ReadRequestType.readState;
 
   @override
   Map<String, dynamic> toJson() {
     return {
-      "request_type": request_type,
-      "paths": paths,
-      "sender": sender,
-      "ingress_expiry": ingress_expiry,
+      'request_type': requestType,
+      'paths': paths,
+      'sender': sender,
+      'ingress_expiry': ingressExpiry,
     };
   }
 }
 
 class CallRequest extends ReadStateRequest {
-  // ignore: non_constant_identifier_names
+  CallRequest({
+    required this.canisterId,
+    required this.methodName,
+    required this.arg,
+    this.nonce,
+    super.sender,
+    super.ingressExpiry,
+  });
+
+  final Principal canisterId;
+  final String methodName;
+  final BinaryBlob arg;
+  dynamic nonce;
 
   @override
-  // ignore: non_constant_identifier_names
-  final String request_type = SubmitRequestType.Call;
-  // ignore: non_constant_identifier_names
-  late Principal canister_id;
-  // ignore: non_constant_identifier_names
-  late String method_name;
-  late BinaryBlob arg;
-
-  dynamic nonce;
+  String get requestType => SubmitRequestType.call;
 
   @override
   Map<String, dynamic> toJson() {
     return {
-      "request_type": request_type,
-      "canister_id": canister_id,
-      "method_name": method_name,
-      "arg": arg,
-      "nonce": nonce,
-      "sender": sender,
-      "ingress_expiry": ingress_expiry,
+      'request_type': requestType,
+      'canister_id': canisterId,
+      'method_name': methodName,
+      'arg': arg,
+      'nonce': nonce,
+      'sender': sender,
+      'ingress_expiry': ingressExpiry,
     };
   }
 }
 
 class QueryRequest extends BaseRequest {
-  // ignore: non_constant_identifier_names
-  late String request_type = ReadRequestType.TypeQuery;
-  // ignore: non_constant_identifier_names
-  late Principal canister_id;
-  // ignore: non_constant_identifier_names
-  late String method_name;
-  late BinaryBlob arg;
+  const QueryRequest({
+    required this.canisterId,
+    required this.methodName,
+    required this.arg,
+    required this.sender,
+    required this.ingressExpiry,
+  });
 
-  dynamic sender; //: Uint8Array | Principal;
-  // ignore: non_constant_identifier_names
-  late Expiry ingress_expiry;
+  final Principal canisterId;
+  final String methodName;
+  final BinaryBlob arg;
+  final dynamic sender; //: Uint8Array | Principal;
+  final Expiry ingressExpiry;
+
+  String get requestType => ReadRequestType.typeQuery;
 
   @override
   Map<String, dynamic> toJson() {
     return {
-      "request_type": request_type,
-      "canister_id": canister_id,
-      "method_name": method_name,
-      "arg": arg,
-      "sender": sender,
-      "ingress_expiry": ingress_expiry,
+      'request_type': requestType,
+      'canister_id': canisterId,
+      'method_name': methodName,
+      'arg': arg,
+      'sender': sender,
+      'ingress_expiry': ingressExpiry,
     };
   }
 }
@@ -111,49 +125,58 @@ class QueryRequest extends BaseRequest {
 typedef ReadRequest = ReadStateRequest;
 
 abstract class HttpAgentBaseRequest<T extends WithToJson> extends BaseRequest {
-  String? endpoint;
-  late dynamic request;
-  late T body;
+  const HttpAgentBaseRequest({
+    required this.request,
+    required this.body,
+    this.endpoint,
+  });
+
+  final Map<String, dynamic> request;
+  final T body;
+  final String? endpoint;
 }
 
 abstract class HttpAgentSubmitRequest
     extends HttpAgentBaseRequest<CallRequest> {
-  @override
-  // ignore: overridden_fields
-  String? endpoint = Endpoint.Call;
-  @override
-  late CallRequest body; // CallRequest
+  const HttpAgentSubmitRequest({
+    required super.request,
+    required super.body,
+    super.endpoint = Endpoint.call,
+  });
 }
 
 class HttpAgentQueryRequest extends HttpAgentBaseRequest<BaseRequest> {
-  @override
-  // ignore: overridden_fields
-  String? endpoint = Endpoint.Query;
-  @override
-  late BaseRequest body;
+  const HttpAgentQueryRequest({
+    required super.request,
+    required super.body,
+    super.endpoint = Endpoint.query,
+  });
 
   @override
   Map<String, dynamic> toJson() {
     return {
-      "endpoint": endpoint,
-      "body": body.toJson(),
-      "request": {...request as Map<String, dynamic>}
+      'endpoint': endpoint,
+      'body': body.toJson(),
+      'request': {...request},
     };
-  } // ReadRequest
+  }
 }
 
 abstract class UnSigned<T> {
-  late T content;
+  const UnSigned({required this.content});
+
+  final T content;
 }
 
 abstract class Signed<T> extends UnSigned<T> {
-  @override
-  // ignore: overridden_fields
-  late T content;
-  // ignore: non_constant_identifier_names
-  late BinaryBlob sender_pubkey;
-  // ignore: non_constant_identifier_names
-  late BinaryBlob sender_sig;
+  const Signed({
+    required super.content,
+    required this.senderPublicKey,
+    required this.senderSignature,
+  });
+
+  final BinaryBlob senderPublicKey;
+  final BinaryBlob senderSignature;
 }
 
 typedef Envelope<T> = UnSigned<T>;
@@ -161,35 +184,38 @@ typedef Envelope<T> = UnSigned<T>;
 typedef HttpAgentRequest = HttpAgentBaseRequest;
 
 class HttpAgentRequestTransformFn {
-  // ignore: non_constant_identifier_names
-  late HttpAgentRequestTransformFnCall call;
+  HttpAgentRequestTransformFn({required this.call, this.priority});
+
+  final HttpAgentRequestTransformFnCall call;
   int? priority;
 }
 
 typedef HttpAgentRequestTransformFnCall = Future<HttpAgentRequest?> Function(
-    HttpAgentRequest args);
+  HttpAgentRequest args,
+);
 
 class HttpResponseBody extends ResponseBody {
-  @override
-  late bool? ok;
-  @override
-  late int? status;
-  @override
-  late String? statusText;
-  late String? body;
-  late Uint8List? arrayBuffer;
-  HttpResponseBody(
-      {this.ok, this.status, this.statusText, this.body, this.arrayBuffer})
-      : super();
+  const HttpResponseBody({
+    bool? ok,
+    int? status,
+    String? statusText,
+    this.body,
+    this.arrayBuffer,
+  }) : super(ok: ok, status: status, statusText: statusText);
 
   factory HttpResponseBody.fromJson(Map<String, dynamic> map) {
     return HttpResponseBody(
-        arrayBuffer: map["arrayBuffer"],
-        ok: map["ok"],
-        status: map["status"],
-        statusText: map["statusText"],
-        body: map["body"]);
+      arrayBuffer: map['arrayBuffer'],
+      ok: map['ok'],
+      status: map['status'],
+      statusText: map['statusText'],
+      body: map['body'],
+    );
   }
+
+  final String? body;
+  final Uint8List? arrayBuffer;
+
   @override
   String toString() {
     return jsonEncode(toJson());
@@ -197,79 +223,91 @@ class HttpResponseBody extends ResponseBody {
 
   Map<String, dynamic> toJson() {
     return {
-      "ok": ok,
-      "status": status,
-      "statusText": statusText,
-      "body": body,
-      "arrayBuffer": arrayBuffer
+      'ok': ok,
+      'status': status,
+      'statusText': statusText,
+      'body': body,
+      'arrayBuffer': arrayBuffer
     };
   }
 }
 
 class CallResponseBody extends SubmitResponse {
-  @override
-  RequestId? requestId;
-  CallResponseBody(
-      {bool? ok,
-      int? status,
-      String? statusText,
-      String? body,
-      Uint8List? arrayBuffer,
-      this.requestId})
-      : super() {
-    response = HttpResponseBody(
-        arrayBuffer: arrayBuffer,
-        status: status,
-        statusText: statusText,
-        body: body,
-        ok: ok);
-  }
+  CallResponseBody({
+    bool? ok,
+    int? status,
+    String? statusText,
+    String? body,
+    Uint8List? arrayBuffer,
+    super.requestId,
+  }) : super(
+          response: HttpResponseBody(
+            arrayBuffer: arrayBuffer,
+            status: status,
+            statusText: statusText,
+            body: body,
+            ok: ok,
+          ),
+        );
+
   factory CallResponseBody.fromJson(Map<String, dynamic> map) {
     return CallResponseBody(
-        arrayBuffer: map["arrayBuffer"],
-        ok: map["ok"],
-        status: map["status"] ?? map["statusCode"],
-        statusText: map["statusText"],
-        body: map["body"],
-        requestId: map["requestId"]);
+      arrayBuffer: map['arrayBuffer'],
+      ok: map['ok'],
+      status: map['status'] ?? map['statusCode'],
+      statusText: map['statusText'],
+      body: map['body'],
+      requestId: map['requestId'],
+    );
   }
+
   @override
   Map<String, dynamic> toJson() {
     return {
-      "ok": response?.ok,
-      "status": response?.status,
-      "statusCode": response?.status,
-      "statusText": response?.statusText,
-      "body": (response as HttpResponseBody).body,
-      "arrayBuffer": (response as HttpResponseBody).arrayBuffer,
-      "requestId": requestId
+      'ok': response?.ok,
+      'status': response?.status,
+      'statusCode': response?.status,
+      'statusText': response?.statusText,
+      'body': (response as HttpResponseBody).body,
+      'arrayBuffer': (response as HttpResponseBody).arrayBuffer,
+      'requestId': requestId,
     };
   }
 }
 
 class QueryResponseWithStatus extends QueryResponse {
-  QueryResponseWithStatus();
-  factory QueryResponseWithStatus.fromMap(Map map) {
-    Reply? reply = Reply();
-    if (map["reply"] != null) {
-      reply.arg = (map["reply"]["arg"] as Uint8Buffer).buffer.asUint8List();
+  const QueryResponseWithStatus({
+    super.reply,
+    super.rejectCode,
+    super.rejectMessage,
+    required super.status,
+  });
+
+  factory QueryResponseWithStatus.fromJson(Map map) {
+    Reply? reply;
+    if (map['reply'] != null) {
+      reply = Reply(
+        (map['reply']['arg'] as Uint8Buffer).buffer.asUint8List(),
+      );
     } else {
       reply = null;
     }
-    return QueryResponseWithStatus()
-      ..status = map["status"]
-      ..reject_code = map["reject_code"]
-      ..reject_message = map["reject_message"]
-      ..reply = reply;
+    return QueryResponseWithStatus(
+      status: map['status'],
+      rejectCode: map['reject_code'],
+      rejectMessage: map['reject_message'],
+      reply: reply,
+    );
   }
-  toJson() {
+
+  Map<String, dynamic> toJson() {
     return {
-      "status": status,
-      "reply": {
-        "arg": reply?.arg,
+      'status': status,
+      'reply': {
+        'arg': reply?.arg,
       },
-      "rejected_code": reject_code,
-      "rejected_message": reject_message
+      'rejected_code': rejectCode,
+      'rejected_message': rejectMessage
     };
   }
 }

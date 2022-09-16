@@ -8,7 +8,7 @@ import 'package:agent_dart/identity/delegation.dart';
 import 'package:agent_dart/identity/ed25519.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-SignIdentity createIdentity(int seed) {
+Future<SignIdentity> createIdentity(int seed) {
   final s = Uint8List.fromList([seed, ...List.filled(31, 0)]);
   return Ed25519KeyIdentity.generate(s);
 }
@@ -22,9 +22,9 @@ void main() {
 
 void delegationTest() {
   test('delegation signs with proper keys (3)', () async {
-    final root = createIdentity(2);
-    final middle = createIdentity(1);
-    final bottom = createIdentity(0);
+    final root = await createIdentity(2);
+    final middle = await createIdentity(1);
+    final bottom = await createIdentity(0);
 
     final rootToMiddle = await DelegationChain.create(
       root,
@@ -38,43 +38,43 @@ void delegationTest() {
       previous: rootToMiddle,
     );
 
-    var result = {
-      "delegations": [
+    final result = {
+      'delegations': [
         {
-          "delegation": {
-            "expiration":
+          'delegation': {
+            'expiration':
                 BigInt.parse('1609459200000000000').toHex().hexStripPrefix(),
-            "pubkey":
-                "302A300506032B6570032100CECC1507DC1DDD7295951C290888F095ADB9044D1B73D696E6DF065D683BD4FC"
+            'pubkey':
+                '302A300506032B6570032100CECC1507DC1DDD7295951C290888F095ADB9044D1B73D696E6DF065D683BD4FC'
                     .toLowerCase(),
           },
-          "signature":
-              "B106D135E5AD7459DC67DB68A4946FDBE603E650DF4035957DB7F0FB54E7467BB463116A2AD025E1887CD1F29025E0F3607B09924ABBBBEBFAF921B675C8FF08"
+          'signature':
+              'B106D135E5AD7459DC67DB68A4946FDBE603E650DF4035957DB7F0FB54E7467BB463116A2AD025E1887CD1F29025E0F3607B09924ABBBBEBFAF921B675C8FF08'
                   .toLowerCase(),
         },
         {
-          "delegation": {
-            "expiration":
+          'delegation': {
+            'expiration':
                 BigInt.parse('1609459200000000000').toHex().hexStripPrefix(),
-            "pubkey":
-                "302A300506032B65700321003B6A27BCCEB6A42D62A3A8D02A6F0D73653215771DE243A63AC048A18B59DA29"
+            'pubkey':
+                '302A300506032B65700321003B6A27BCCEB6A42D62A3A8D02A6F0D73653215771DE243A63AC048A18B59DA29'
                     .toLowerCase(),
           },
-          "signature":
-              "5E40F3D171E499A691092E5B961B5447921091BCF8C6409CB5641541F4DC1390F501C5DFB16B10DF29D429CD153B9E396AF4E883ED3CFA090D28E214DB14C308"
+          'signature':
+              '5E40F3D171E499A691092E5B961B5447921091BCF8C6409CB5641541F4DC1390F501C5DFB16B10DF29D429CD153B9E396AF4E883ED3CFA090D28E214DB14C308'
                   .toLowerCase(),
         },
       ],
-      "publicKey":
-          "302A300506032B65700321006B79C57E6A095239282C04818E96112F3F03A4001BA97A564C23852A3F1EA5FC"
+      'publicKey':
+          '302A300506032B65700321006B79C57E6A095239282C04818E96112F3F03A4001BA97A564C23852A3F1EA5FC'
               .toLowerCase(),
     };
-    expect(middleToBottom.toJSON(), result);
+    expect(middleToBottom.toJson(), result);
   });
   test('DelegationChain can be serialized to and from JSON', () async {
-    final root = createIdentity(2);
-    final middle = createIdentity(1);
-    final bottom = createIdentity(0);
+    final root = await createIdentity(2);
+    final middle = await createIdentity(1);
+    final bottom = await createIdentity(0);
 
     final rootToMiddle = await DelegationChain.create(
       root,
@@ -90,26 +90,29 @@ void delegationTest() {
       targets: [Principal.fromText('u76ha-lyaaa-aaaab-aacha-cai')],
     );
 
-    final rootToMiddleJson = jsonEncode(rootToMiddle.toJSON());
+    final rootToMiddleJson = jsonEncode(rootToMiddle.toJson());
 
     // print(rootToMiddleJson);
-    // All strings in the JSON should be hex so it is clear how to decode this as different versions of `toJSON` evolve.
-    var revived = jsonDecode(rootToMiddleJson, reviver: (key, value) {
-      if (value is String) {
-        final byte = BigInt.tryParse(value, radix: 16);
-        if (byte == null) {
-          throw "expected all strings to be hex, but got: $value";
+    // All strings in the JSON should be hex so it is clear how to decode this as different versions of `toJson` evolve.
+    final revived = jsonDecode(
+      rootToMiddleJson,
+      reviver: (key, value) {
+        if (value is String) {
+          final byte = BigInt.tryParse(value, radix: 16);
+          if (byte == null) {
+            throw StateError('expected hex string but got $value.');
+          }
         }
-      }
-      return value;
-    });
+        return value;
+      },
+    );
 
     final rootToMiddleActual = DelegationChain.fromJSON(revived);
 
-    expect(rootToMiddleActual.toJSON(), rootToMiddle.toJSON());
+    expect(rootToMiddleActual.toJson(), rootToMiddle.toJson());
 
-    final middleToBottomJson = jsonEncode(middleToBottom.toJSON());
+    final middleToBottomJson = jsonEncode(middleToBottom.toJson());
     final middleToBottomActual = DelegationChain.fromJSON(middleToBottomJson);
-    expect(middleToBottomActual.toJSON(), middleToBottom.toJSON());
+    expect(middleToBottomActual.toJson(), middleToBottom.toJson());
   });
 }

@@ -11,14 +11,13 @@ export 'types.dart';
 export 'agent/index.dart';
 
 // bls
-// export 'crypto/crypto.dart';
-export 'crypto/random.dart';
+export 'crypto/index.dart';
 
 // canisters
-export 'canisters/canisters.dart';
+export 'canisters/index.dart';
 
 // polling
-export 'polling/index.dart';
+export 'polling/polling.dart';
 
 // utils
-export 'utils/utils.dart';
+export 'utils/index.dart';

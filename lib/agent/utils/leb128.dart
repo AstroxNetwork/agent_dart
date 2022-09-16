@@ -9,7 +9,13 @@ import 'package:agent_dart/utils/extension.dart';
 
 List<T> safeRead<T>(BufferPipe<T> pipe, int ref) {
   if (pipe.length < ref) {
-    throw 'unexpected end of buffer';
+    throw RangeError.range(
+      pipe.length,
+      ref,
+      null,
+      'pipe',
+      'Unexpected end of buffer',
+    );
   }
   return pipe.read(ref);
 }
@@ -18,17 +24,14 @@ List<T> safeRead<T>(BufferPipe<T> pipe, int ref) {
 /// nearest integer.
 /// @param value The number to encode.
 Uint8List lebEncode(dynamic value) {
-  var bn = value is BigInt ? value : BigInt.from(value);
-
+  BigInt bn = value is BigInt ? value : BigInt.from(value);
   if (bn < BigInt.zero) {
-    throw 'Cannot leb encode negative values.';
+    throw StateError('Cannot leb-encode negative values.');
   }
-
-  List<int> pipe = [];
-
+  final List<int> pipe = [];
   while (true) {
-    var i = (hexToBn(bn.toHex()) & BigInt.from(0x7f)).toInt();
-    bn = (bn ~/ BigInt.from(0x80));
+    final i = (hexToBn(bn.toHex()) & BigInt.from(0x7f)).toInt();
+    bn = bn ~/ BigInt.from(0x80);
     if (bn == BigInt.zero) {
       pipe.add(i);
       break;
@@ -36,21 +39,17 @@ Uint8List lebEncode(dynamic value) {
       pipe.add(i | 0x80);
     }
   }
-
   return Uint8List.fromList(pipe);
 }
 
-/// Decode a leb encoded buffer into a bigint. The number will always be positive (does not
-/// support signed leb encoding).
-/// @param pipe A Buffer containing the leb encoded bits.
+/// Decode a leb encoded buffer into a bigint. The number will always be positive
+/// (does not support signed leb encoding).
 BigInt lebDecode<T>(BufferPipe<T> pipe) {
-  var weight = BigInt.one;
-  var value = BigInt.zero;
-  // ignore: prefer_typing_uninitialized_variables
-  var byte;
-
+  BigInt weight = BigInt.one;
+  BigInt value = BigInt.zero;
+  int byte;
   do {
-    byte = safeRead(pipe, 1)[0];
+    byte = safeRead(pipe, 1)[0] as int;
     value += BigInt.from(byte & 0x7f) * weight;
     weight *= BigInt.from(128);
   } while (byte >= 0x80);
@@ -58,11 +57,11 @@ BigInt lebDecode<T>(BufferPipe<T> pipe) {
   return value;
 }
 
-/// Encode a number (or bigint) into a Buffer, with support for negative numbers. The number
-/// will be floored to the nearest integer.
+/// Encode a number (or bigint) into a Buffer, with support for negative numbers.
+/// The number will be floored to the nearest integer.
 /// @param value The number to encode.
 Uint8List slebEncode(Comparable value) {
-  var bn = value is BigInt ? value : BigInt.from(value as num);
+  BigInt bn = value is BigInt ? value : BigInt.from(value as num);
 
   final isNeg = bn < BigInt.zero;
   if (isNeg) {
@@ -75,15 +74,15 @@ Uint8List slebEncode(Comparable value) {
       // We swap the bits here again, and remove 1 to do two's complement.
       return (BigInt.from(0x80) - bytes - BigInt.one).toInt();
     } else {
-      return (bytes).toInt();
+      return bytes.toInt();
     }
   }
 
-  List<int> pipe = [];
+  final List<int> pipe = [];
 
   while (true) {
     final i = getLowerBytes(bn);
-    bn = (bn ~/ BigInt.from(0x80));
+    bn = bn ~/ BigInt.from(0x80);
 
     // prettier-ignore
     if ((isNeg && bn == BigInt.zero && (i & 0x40) != 0) ||
@@ -104,7 +103,7 @@ Uint8List slebEncode(Comparable value) {
 BigInt slebDecode(BufferPipe pipe) {
   // Get the size of the buffer, then cut a buffer of that size.
   final pipeView = Uint8List.fromList(pipe.buffer as List<int>);
-  var len = 0;
+  int len = 0;
   for (; len < pipeView.lengthInBytes; len++) {
     if (pipeView[len] < 0x80) {
       // If it's a positive number, we reuse lebDecode.
@@ -116,29 +115,28 @@ BigInt slebDecode(BufferPipe pipe) {
   }
 
   final bytes = Uint8List.fromList(safeRead(pipe as BufferPipe<int>, len + 1));
-  var value = BigInt.zero;
-  for (var i = bytes.lengthInBytes - 1; i >= 0; i--) {
-    value =
-        value * BigInt.from(0x80) + BigInt.from(0x80 - (bytes[i] & 0x7f) - 1);
+  BigInt v = BigInt.zero;
+  for (int i = bytes.lengthInBytes - 1; i >= 0; i--) {
+    v = v * BigInt.from(0x80) + BigInt.from(0x80 - (bytes[i] & 0x7f) - 1);
   }
-  return -value - BigInt.one;
+  return -v - BigInt.one;
 }
 
 Uint8List writeUIntLE(dynamic value, int byteLength) {
   if (bnToBn(value) < BigInt.zero) {
-    throw 'Cannot write negative values.';
+    throw ArgumentError.value(value, 'value', 'Cannot write negative values');
   }
   return writeIntLE(value, byteLength);
 }
 
 Uint8List writeIntLE(dynamic value, int byteLength) {
-  var bn = bnToBn(value);
+  final bn = bnToBn(value);
 
-  List<int> pipe = [];
-  var i = 0;
-  var mul = BigInt.from(256);
-  var sub = BigInt.zero;
-  var byte = (bn % mul).toInt();
+  final List<int> pipe = [];
+  int i = 0;
+  BigInt mul = BigInt.from(256);
+  BigInt sub = BigInt.zero;
+  int byte = (bn % mul).toInt();
   pipe.add(byte);
   while (++i < byteLength) {
     if (bn < BigInt.zero && sub == BigInt.zero && byte != 0) {
@@ -153,9 +151,9 @@ Uint8List writeIntLE(dynamic value, int byteLength) {
 }
 
 BigInt readUIntLE(BufferPipe pipe, int byteLength) {
-  var val = BigInt.from(safeRead(pipe, 1)[0]);
-  var mul = BigInt.one;
-  var i = 0;
+  BigInt val = BigInt.from(safeRead(pipe, 1)[0]);
+  BigInt mul = BigInt.one;
+  int i = 0;
   while (++i < byteLength) {
     mul *= BigInt.from(256);
     final byte = BigInt.from(safeRead(pipe, 1)[0]);
@@ -165,9 +163,10 @@ BigInt readUIntLE(BufferPipe pipe, int byteLength) {
 }
 
 BigInt readIntLE(BufferPipe pipe, int byteLength) {
-  var val = readUIntLE(pipe, byteLength);
+  BigInt val = readUIntLE(pipe, byteLength);
   final mul = BigInt.from(2).pow(
-      (BigInt.from(8) * BigInt.from(byteLength - 1) + BigInt.from(7)).toInt());
+    (BigInt.from(8) * BigInt.from(byteLength - 1) + BigInt.from(7)).toInt(),
+  );
   if (val >= mul) {
     val -= mul * BigInt.from(2);
   }

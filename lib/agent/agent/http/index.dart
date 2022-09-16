@@ -19,68 +19,69 @@ enum FetchMethod {
   patch,
 }
 
-class RequestStatusResponseStatus {
-  // ignore: constant_identifier_names
-  static const Received = 'received';
+enum RequestStatusResponseStatus {
+  received,
+  processing,
+  replied,
+  rejected,
+  unknown,
+  done;
 
-  // ignore: constant_identifier_names
-  static const Processing = 'processing';
-
-  // ignore: constant_identifier_names
-  static const Replied = 'replied';
-
-  // ignore: constant_identifier_names
-  static const Rejected = 'rejected';
-
-  // ignore: constant_identifier_names
-  static const Unknown = 'unknown';
-
-  // ignore: constant_identifier_names
-  static const Done = 'done';
+  factory RequestStatusResponseStatus.fromName(String value) {
+    return values.singleWhere((e) => e.name == value);
+  }
 }
 
-// Default delta for ingress expiry is 5 minutes.
-// ignore: constant_identifier_names
-const DEFAULT_INGRESS_EXPIRY_DELTA_IN_MSECS = 5 * 60 * 1000;
+/// Default delta for ingress expiry is 5 minutes.
+const _defaultIngressExpiryDeltaInMilliseconds = 5 * 60 * 1000;
 
-// Root public key for the IC, encoded as hex
-// ignore: constant_identifier_names
-const IC_ROOT_KEY =
-// ignore: prefer_adjacent_string_concatenation
-    '308182301d060d2b0601040182dc7c0503010201060c2b0601040182dc7c05030201036100814' +
-        'c0e6ec71fab583b08bd81373c255c3c371b2e84863c98a4f1e08b74235d14fb5d9c0cd546d968' +
-        '5f913a0c0b2cc5341583bf4b4392e467db96d65b9bb4cb717112f8472e0d5a4d14505ffd7484' +
-        'b01291091c5f87b98883463f98091a0baaae';
+/// Root public key for the IC, encoded as hex
+const _icRootKey = '308182301d060d2b0601040182dc7c0503010201060c2b0601040182dc7'
+    'c05030201036100814c0e6ec71fab583b08bd81373c255c3c371b2e84863c98a4f1e08b742'
+    '35d14fb5d9c0cd546d9685f913a0c0b2cc5341583bf4b4392e467db96d65b9bb4cb717112f'
+    '8472e0d5a4d14505ffd7484b01291091c5f87b98883463f98091a0baaae';
 
 abstract class Credentials {
-  late String? name;
-  late String? password;
+  const Credentials({this.name, this.password});
+
+  final String? name;
+  final String? password;
 }
 
 class HttpAgentOptions {
-  // Another HttpAgent to inherit configuration (pipeline and fetch) of. This
-  // is only used at construction.
-  HttpAgent? source;
+  const HttpAgentOptions({
+    this.source,
+    this.fetch,
+    this.host,
+    this.identity,
+    this.credentials,
+  });
 
-  // A surrogate to the global fetch function. Useful for testing. // axios in dart maybe
-  Function? fetch;
+  // Another HttpAgent to inherit configuration (pipeline and fetch) of.
+  // This is only used at construction.
+  final HttpAgent? source;
+
+  // A surrogate to the global fetch function. Useful for testing.
+  final void Function()? fetch;
 
   // The host to use for the client. By default, uses the same host as
   // the current page.
-  String? host;
+  final String? host;
 
   // The principal used to send messages. This cannot be empty at the request
   // time (will throw).
-  Identity? identity;
+  final Identity? identity;
 
-  Credentials? credentials;
+  final Credentials? credentials;
 }
 
-class DefaultHttpAgentOption extends HttpAgentOptions {}
+class DefaultHttpAgentOption extends HttpAgentOptions {
+  const DefaultHttpAgentOption();
+}
 
-final defaultHttpAgentOption = DefaultHttpAgentOption();
+const defaultHttpAgentOption = DefaultHttpAgentOption();
 
-typedef FetchFunc<T> = Future<T> Function({
+typedef FetchFunction<T> = Future<T> Function({
   required String endpoint,
   String? host,
   FetchMethod method,
@@ -98,33 +99,12 @@ typedef FetchFunc<T> = Future<T> Function({
 // other computations so that this class can stay as simple as possible while
 // allowing extensions.
 class HttpAgent implements Agent {
-  List<HttpAgentRequestTransformFn> _pipeline = [];
-
-  late Future<Identity>? _identity;
-
-  // _fetch: typeof fetch;
-  late String? _host;
-  late String? _credentials;
-
-  late String defaultProtocol;
-  late String defaultHost;
-  late String defaultPort;
-
-  late FetchFunc<Map<String, dynamic>>? _fetch;
-
-  late Map<String, String> _baseHeaders;
-
-  // ignore: unused_field
-  bool _rootKeyFetched = false;
-
-  @override
-  BinaryBlob? rootKey = blobFromHex(IC_ROOT_KEY);
-
-  HttpAgent(
-      {HttpAgentOptions? options,
-      this.defaultProtocol = 'https',
-      this.defaultHost = 'localhost',
-      this.defaultPort = ':8000'}) {
+  HttpAgent({
+    HttpAgentOptions? options,
+    this.defaultProtocol = 'https',
+    this.defaultHost = 'localhost',
+    this.defaultPort = 8000,
+  }) {
     if (options != null) {
       if (options.source is HttpAgent && options.source != null) {
         setPipeline(options.source!._pipeline);
@@ -138,39 +118,55 @@ class HttpAgent implements Agent {
 
       /// setHost
       if (options.host != null) {
-        setHost(defaultProtocol + '://${options.host}');
+        setHost('$defaultProtocol://${options.host}');
       } else {
-        setHost(defaultProtocol + '://$defaultHost$defaultPort');
+        setHost('$defaultProtocol://$defaultHost$defaultPort');
       }
 
       /// setIdentity
-      setIdentity(Future.value(options.identity ?? AnonymousIdentity()));
+      setIdentity(options.identity ?? const AnonymousIdentity());
 
-      /// setCrendential
+      /// setCredential
       if (options.credentials != null) {
-        var name = options.credentials?.name ?? '';
-        var password = options.credentials?.password;
-        setCredentials("$name${password != null ? ':' + password : ''}");
+        final name = options.credentials?.name ?? '';
+        final password = options.credentials?.password;
+        setCredentials("$name${password != null ? ':$password' : ''}");
       } else {
-        setCredentials("");
+        setCredentials('');
       }
-
       _baseHeaders = _createBaseHeaders();
     } else {
-      setIdentity(Future.value(AnonymousIdentity()));
-      setHost(defaultProtocol + '://$defaultHost$defaultPort');
+      setIdentity(const AnonymousIdentity());
+      setHost('$defaultProtocol://$defaultHost:$defaultPort');
       setFetch(_defaultFetch);
-      setCredentials("");
+      setCredentials('');
       // run default headers
       _baseHeaders = _createBaseHeaders();
     }
   }
 
+  List<HttpAgentRequestTransformFn> _pipeline = [];
+
+  final String defaultProtocol;
+  final String defaultHost;
+  final int defaultPort;
+
+  late Identity? _identity;
+  late String? _host;
+  late String? _credentials;
+  late FetchFunction<Map<String, dynamic>>? _fetch;
+  late Map<String, String> _baseHeaders;
+
+  bool _rootKeyFetched = false;
+
+  @override
+  BinaryBlob? rootKey = blobFromHex(_icRootKey);
+
   void setPipeline(List<HttpAgentRequestTransformFn> pl) {
     _pipeline = pl;
   }
 
-  void setIdentity(Future<Identity>? id) {
+  void setIdentity(Identity? id) {
     _identity = id;
   }
 
@@ -182,7 +178,7 @@ class HttpAgent implements Agent {
     _credentials = cred;
   }
 
-  void setFetch(FetchFunc<Map<String, dynamic>>? fetch) {
+  void setFetch(FetchFunction<Map<String, dynamic>>? fetch) {
     _fetch = fetch ?? _defaultFetch;
   }
 
@@ -196,67 +192,68 @@ class HttpAgent implements Agent {
 
   @override
   Future<SubmitResponse> call(
-      Principal canisterId, CallOptions fields, Identity? identity) async {
-    final id = (identity ?? await _identity);
-
+    Principal canisterId,
+    CallOptions fields,
+    Identity? identity,
+  ) async {
+    final id = identity ?? _identity;
     final canister = Principal.from(canisterId);
-
     final ecid = fields.effectiveCanisterId != null
         ? Principal.from(fields.effectiveCanisterId)
         : canister;
-
-    // ignore: unnecessary_null_comparison
     final sender = id != null ? id.getPrincipal() : Principal.anonymous();
 
-    CallRequest submit = CallRequest()
-      ..request_type = SubmitRequestType.Call
-      ..canister_id = canister
-      ..method_name = fields.methodName
-      ..arg = fields.arg
-      ..sender = sender
-      ..ingress_expiry = Expiry(DEFAULT_INGRESS_EXPIRY_DELTA_IN_MSECS);
+    final CallRequest submit = CallRequest(
+      canisterId: canister,
+      methodName: fields.methodName,
+      arg: fields.arg,
+      sender: sender,
+      ingressExpiry: Expiry(_defaultIngressExpiryDeltaInMilliseconds),
+    );
 
-    var rsRequest = HttpAgentCallRequest()
-      ..endpoint = Endpoint.Call
-      ..body = submit
-      ..request = {
-        "method": "POST",
-        "headers": {
+    final rsRequest = HttpAgentCallRequest(
+      request: {
+        'method': 'POST',
+        'headers': {
           'Content-Type': 'application/cbor',
           ..._baseHeaders,
         },
-      };
-    var transformedRequest = await _transform(rsRequest);
+      },
+      body: submit,
+    );
+    final transformedRequest = await _transform(rsRequest);
 
-    var newTransformed = await id!.transformRequest(transformedRequest);
-    var body = cbor.cborEncode(newTransformed["body"]);
-    var list = await Future.wait([
+    final newTransformed = await id!.transformRequest(transformedRequest);
+    final body = cbor.cborEncode(newTransformed['body']);
+    final list = await Future.wait([
       _fetch!(
-          endpoint: "/api/v2/canister/${ecid.toText()}/call",
-          method: FetchMethod.post,
-          headers: newTransformed["request"]["headers"],
-          body: body),
+        endpoint: '/api/v2/canister/${ecid.toText()}/call',
+        method: FetchMethod.post,
+        headers: newTransformed['request']['headers'],
+        body: body,
+      ),
       Future.value(requestIdOf(submit.toJson()))
     ]);
 
-    var response = list[0] as Map<String, dynamic>;
-    var requestId = list[1] as Uint8List;
-    if (!(response["ok"] as bool)) {
-      // ignore: prefer_adjacent_string_concatenation
-      throw 'Server returned an error:\n' +
-          '  Code: ${response["statusCode"]} (${response["statusText"]})\n' +
-          '  Body: ${response["body"] is Uint8List ? (response["body"] as Uint8List).u8aToString() : response["body"]}\n';
+    final response = list[0] as Map<String, dynamic>;
+    final requestId = list[1] as Uint8List;
+    if (!(response['ok'] as bool)) {
+      throw AgentFetchError(
+        statusCode: response['statusCode'],
+        statusText: response['statusText'],
+        body: response[body],
+      );
     }
 
-    return CallResponseBody.fromJson({...response, "requestId": requestId});
+    return CallResponseBody.fromJson({...response, 'requestId': requestId});
   }
 
   @override
   Future<BinaryBlob> fetchRootKey() async {
     if (_rootKeyFetched == false) {
-      var key =
-          (((await status())["root_key"]) as Uint8Buffer).buffer.asUint8List();
-      // Hex-encoded version of the replica root key
+      final key =
+          ((await status())['root_key'] as Uint8Buffer).buffer.asUint8List();
+      // Hex-encoded version of the replica root key.
       rootKey = blobFromUint8Array(key);
       _rootKeyFetched = true;
     }
@@ -265,143 +262,142 @@ class HttpAgent implements Agent {
 
   @override
   Future<Principal> getPrincipal() async {
-    try {
-      return (await _identity)!.getPrincipal();
-    } catch (e) {
-      throw "Cannot fetch identity or principal: $e";
-    }
+    return _identity!.getPrincipal();
   }
 
   @override
   Future<QueryResponse> query(
-      Principal canisterId, QueryFields options, Identity? identity) async {
+    Principal canisterId,
+    QueryFields options,
+    Identity? identity,
+  ) async {
     final canister = canisterId is String
         ? Principal.fromText(canisterId as String)
         : canisterId;
-    final id = (identity ?? await _identity);
+    final id = identity ?? _identity;
     final sender = id?.getPrincipal() ?? Principal.anonymous();
 
-    var requestBody = QueryRequest()
-      ..request_type = ReadRequestType.TypeQuery
-      ..canister_id = canister
-      ..method_name = options.methodName
-      ..arg = options.arg!
-      ..sender = sender
-      ..ingress_expiry = Expiry(DEFAULT_INGRESS_EXPIRY_DELTA_IN_MSECS);
+    final requestBody = QueryRequest(
+      canisterId: canister,
+      methodName: options.methodName,
+      arg: options.arg!,
+      sender: sender,
+      ingressExpiry: Expiry(_defaultIngressExpiryDeltaInMilliseconds),
+    );
 
-    var rsRequest = HttpAgentQueryRequest()
-      ..endpoint = Endpoint.Query
-      ..body = requestBody
-      ..request = {
-        "method": "POST",
-        "headers": {
-          'Content-Type': 'application/cbor',
-          ..._baseHeaders,
-        },
-      };
+    final rsRequest = HttpAgentQueryRequest(
+      request: {
+        'method': 'POST',
+        'headers': {'Content-Type': 'application/cbor', ..._baseHeaders},
+      },
+      body: requestBody,
+    );
 
-    var transformedRequest = await _transform(rsRequest);
-    Map<String, dynamic> newTransformed =
+    final transformedRequest = await _transform(rsRequest);
+    final Map<String, dynamic> newTransformed =
         await id!.transformRequest(transformedRequest);
 
-    var body = cbor.cborEncode(newTransformed["body"]);
+    final body = cbor.cborEncode(newTransformed['body']);
 
     final response = await _fetch!(
-        endpoint: "/api/v2/canister/${canister.toText()}/query",
-        method: FetchMethod.post,
-        headers: newTransformed["request"]["headers"],
-        body: body);
+      endpoint: '/api/v2/canister/${canister.toText()}/query',
+      method: FetchMethod.post,
+      headers: newTransformed['request']['headers'],
+      body: body,
+    );
 
-    if (!(response["ok"] as bool)) {
-      // ignore: prefer_adjacent_string_concatenation
-      throw 'Server returned an error:\n' +
-          '  Code: ${response["statusCode"]} (${response["statusText"]})\n' +
-          '  Body: ${response["body"]}\n';
+    if (!(response['ok'] as bool)) {
+      throw AgentFetchError(
+        statusCode: response['statusCode'],
+        statusText: response['statusText'],
+        body: response[body],
+      );
     }
 
-    final buffer = response["arrayBuffer"] as Uint8List;
+    final buffer = response['arrayBuffer'] as Uint8List;
 
-    return QueryResponseWithStatus.fromMap(cbor.cborDecode<Map>(buffer));
+    return QueryResponseWithStatus.fromJson(cbor.cborDecode<Map>(buffer));
   }
 
   @override
   Future<ReadStateResponse> readState(
-      Principal canisterId, ReadStateOptions fields, Identity? identity) async {
+    Principal canisterId,
+    ReadStateOptions fields,
+    Identity? identity,
+  ) async {
     final canister = canisterId is String
         ? Principal.fromText(canisterId as String)
         : canisterId;
-    final id = (identity ?? await _identity);
+    final id = identity ?? _identity;
     final sender = id?.getPrincipal() ?? Principal.anonymous();
 
-    var requestBody = ReadStateRequest()
-      ..request_type = ReadRequestType.ReadState
-      ..paths = fields.paths
-      ..sender = sender
-      ..ingress_expiry = Expiry(DEFAULT_INGRESS_EXPIRY_DELTA_IN_MSECS);
+    final requestBody = ReadStateRequest(
+      paths: fields.paths,
+      sender: sender,
+      ingressExpiry: Expiry(_defaultIngressExpiryDeltaInMilliseconds),
+    );
 
-    var rsRequest = HttpAgentReadStateRequest()
-      ..endpoint = Endpoint.ReadState
-      ..body = requestBody
-      ..request = {
-        "method": "POST",
-        "headers": {
-          'Content-Type': 'application/cbor',
-          ..._baseHeaders,
-        },
-      };
+    final rsRequest = HttpAgentReadStateRequest(
+      request: {
+        'method': 'POST',
+        'headers': {'Content-Type': 'application/cbor', ..._baseHeaders},
+      },
+      body: requestBody,
+    );
 
-    var transformedRequest = await _transform(rsRequest);
+    final transformedRequest = await _transform(rsRequest);
+    final newTransformed = await id!.transformRequest(
+      transformedRequest,
+    );
 
-    Map<String, dynamic> newTransformed =
-        await id!.transformRequest(transformedRequest);
-
-    var body = cbor.cborEncode(newTransformed["body"]);
+    final body = cbor.cborEncode(newTransformed['body']);
     final response = await _fetch!(
-      endpoint: "/api/v2/canister/$canister/read_state",
+      endpoint: '/api/v2/canister/$canister/read_state',
       method: FetchMethod.post,
-      headers: newTransformed["request"]["headers"],
+      headers: newTransformed['request']['headers'],
       body: body,
     );
 
-    if (!(response["ok"] as bool)) {
-      // ignore: prefer_adjacent_string_concatenation
-      throw 'Server returned an error:\n' +
-          '  Code: ${response["statusCode"]} (${response["statusText"]})\n' +
-          '  Body: ${response["body"]}\n';
+    if (!(response['ok'] as bool)) {
+      throw AgentFetchError(
+        statusCode: response['statusCode'],
+        statusText: response['statusText'],
+        body: response[body],
+      );
     }
 
-    final buffer = response["arrayBuffer"] as Uint8List;
+    final buffer = response['arrayBuffer'] as Uint8List;
 
-    return ReadStateResponseResult()
-      ..certificate = blobFromBuffer(
-          ((cbor.cborDecode<Map>(buffer)["certificate"]) as Uint8Buffer)
-              .buffer);
+    return ReadStateResponseResult(
+      certificate: blobFromBuffer(
+        (cbor.cborDecode<Map>(buffer)['certificate'] as Uint8Buffer).buffer,
+      ),
+    );
   }
 
   @override
   Future<Map> status() async {
-    var response = await _fetch!(
-      endpoint: "/api/v2/status",
+    final response = await _fetch!(
+      endpoint: '/api/v2/status',
       headers: {},
       method: FetchMethod.get,
     );
-
-    if (!(response["ok"] as bool)) {
-      // ignore: prefer_adjacent_string_concatenation
-      throw 'Server returned an error:\n' +
-          '  Code: ${response["statusCode"]} (${response["statusText"]})\n' +
-          '  Body: ${response["body"]}\n';
+    if (!(response['ok'] as bool)) {
+      throw AgentFetchError(
+        statusCode: response['statusCode'],
+        statusText: response['statusText'],
+        body: response['body'],
+      );
     }
-
-    final buffer = response["arrayBuffer"] as Uint8List;
-
+    final buffer = response['arrayBuffer'] as Uint8List;
     return cbor.cborDecode<Map>(buffer);
   }
 
   Map<String, String> _createBaseHeaders() {
-    return _credentials != null && _credentials!.isNotEmpty
-        ? {"Authorization": 'Basic ' + btoa(_credentials)}
-        : {};
+    return {
+      if (_credentials != null && _credentials!.isNotEmpty)
+        'Authorization': 'Basic ${btoa(_credentials)}',
+    };
   }
 
   Future<Map<String, dynamic>> _defaultFetch({
@@ -410,7 +406,7 @@ class HttpAgent implements Agent {
     FetchMethod method = FetchMethod.post,
     Map<String, String>? headers,
     dynamic body,
-  }) async {
+  }) {
     return defaultFetch(
       endpoint: endpoint,
       host: host,
@@ -423,9 +419,9 @@ class HttpAgent implements Agent {
   }
 
   Future<HttpAgentRequest> _transform(HttpAgentRequest request) {
-    var p = Future.value(request);
+    Future<HttpAgentRequest> p = Future.value(request);
 
-    for (var fn in _pipeline) {
+    for (final fn in _pipeline) {
       p = p.then((r) => fn.call(r).then((r2) => r2 ?? r));
     }
     return p;
@@ -433,29 +429,21 @@ class HttpAgent implements Agent {
 }
 
 class HttpAgentReadStateRequest extends HttpAgentQueryRequest {
-  HttpAgentReadStateRequest() : super();
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      "endpoint": endpoint,
-      "body": body.toJson(),
-      "request": {...request as Map<String, dynamic>}
-    };
-  }
+  const HttpAgentReadStateRequest({
+    required super.request,
+    required super.body,
+    super.endpoint = Endpoint.readState,
+  });
 }
 
-class HttpAgentCallRequest extends HttpAgentSubmitRequest {
-  HttpAgentCallRequest() : super();
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      "endpoint": endpoint,
-      "body": body.toJson(),
-      "request": {...request as Map<String, dynamic>}
-    };
-  }
+class HttpAgentCallRequest extends HttpAgentQueryRequest {
+  const HttpAgentCallRequest({
+    required super.request,
+    required super.body,
+    super.endpoint = Endpoint.call,
+  });
 }
 
-class ReadStateResponseResult extends ReadStateResponse {}
+class ReadStateResponseResult extends ReadStateResponse {
+  const ReadStateResponseResult({required super.certificate});
+}

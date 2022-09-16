@@ -27,7 +27,7 @@ class PrincipalId extends $pb.GeneratedMessage {
         $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
 
-  PrincipalId._() : super();
+  PrincipalId._();
   factory PrincipalId({
     $core.List<$core.int>? serializedId,
   }) {

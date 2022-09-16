@@ -1,0 +1,27 @@
+name: Build Rust bindings
+
+# TODO(Alex): Use reusable workflows once they are ready.
+on:
+  workflow_dispatch:
+#  push:
+#    branches:
+#      - main
+#  pull_request:
+#    branches:
+#      - main
+
+jobs:
+  for_android_ios_macos:
+    uses: AstroxNetwork/agent_dart/.github/workflows/reusable_build_binding.yml@1.0.0-dev
+    with:
+      runs-on: macos-latest
+
+  for_linux:
+    uses: AstroxNetwork/agent_dart/.github/workflows/reusable_build_binding.yml@1.0.0-dev
+    with:
+      runs-on: linux-latest
+
+  for_windows:
+    uses: AstroxNetwork/agent_dart/.github/workflows/reusable_build_binding.yml@1.0.0-dev
+    with:
+      runs-on: windows-latest

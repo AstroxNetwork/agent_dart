@@ -1,3 +1,18 @@
+<!-- Copyright 2022 The AstroX author. All rights reserved.
+Use of this source code is governed by an Apache license
+that can be found in the LICENSE file. -->
+
+# Changelog
+
+## 1.0.0-dev.1
+
+- Support FFI asynchronized methods with Rust bindings.
+- Consist all namings, fields and constructors, including:
+  - `fromMap` -> `fromJson`
+  - `toJSON` -> `toJson`
+- Better throws when exceptions occurred.
+- Remove unused codes.
+
 ## 0.1.24+1
 
 - Add the `cbor` argument for `defaultFetch` to allow non-cbor requests.

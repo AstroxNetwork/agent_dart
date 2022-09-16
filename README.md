@@ -1,155 +1,174 @@
-# agent_dart
-[![pub package](https://img.shields.io/pub/v/agent_dart?color=42a012&include_prereleases&label=dev&logo=dart&style=flat-square)](https://pub.dev/packages/agent_dart)  [![GitHub license](https://img.shields.io/github/license/AstroxNetwork/agent_dart?style=flat-square)](https://github.com/AstroxNetwork/agent_dart/blob/master/LICENSE) ![Discord](https://img.shields.io/discord/845497925298815036?color=purple&label=Discord)
+# Agent Dart
 
+[![Pub](https://img.shields.io/pub/v/agent_dart?color=42a012&include_prereleases&logo=dart&style=flat-square)](https://pub.dev/packages/agent_dart)
+[![License](https://img.shields.io/github/license/AstroxNetwork/agent_dart?style=flat-square)](https://github.com/AstroxNetwork/agent_dart/blob/main/LICENSE)
 
+An agent library built for Internet Computer for Dart and Flutter apps. 
 
-An agent library built for Internet Computer, a plugin package for dart and flutter apps. Developers can build ones to interact with Dfinity's blockchain directly.
-
-**Community: [https://discord.gg/aNzRuePmUY](https://discord.gg/aNzRuePmUY)** 
+**Join the Discord channel: [![Discord](https://img.shields.io/discord/845497925298815036?color=purple&logo=discord&style=flat-square)](https://discord.gg/aNzRuePmUY)** 
 
 ---
+
 
 ## 📃 Table of content
+  1. [⚡️ Quick start](#-quick-start)
+  2. [📃 Table of content](#-table-of-content)
+  3. [🚦 Prerequisites](#-prerequisites)
+  4. [🧰 Resources](#-resources)
+  5. [🧘‍♂️ Motivation](#-motivation)
+  6. [🏆 Milestones](#-milestones)
+  7. [👨‍💻 Contributing](#-contributing)
+  8. [🔗 Reference and related projects](#-reference-and-related-projects)
+  9. [⚠️ FAQ](#-faq)
 
-   1. [Table of content](#table-of-content)
-   2. [Prerequisites](#prerequisites)
-   3. [Quick start](#quick-start)
-   4. [Motivation](#motivation)
-   5. [Milestones](#milestones)
-   6. [Documentation](#documentation)
-   7. [Contributing](#contributing)
-   8. [Reference and related projects](#reference-and-related-projects)
-   9. [FAQ](#faq)
-   
 ---
 
+## ⚡️ Quick start
+
+### For Dart/Flutter app
+
+The latest stable version is:
+![pub](https://img.shields.io/pub/v/agent_dart?color=42a012&logo=dart&style=flat-square)
+
+```yaml
+dependencies:
+  agent_dart: ^latest-version
+```
+
+#### For iOS projects
+
+When you're using the plugin in your Flutter projects that contains iOS platform,
+make sure you've done the following setup the build settings.
+
+1. Open `ios/Runner.xcworkspace`.
+2. Select `Runner` on left folder view, and `Project -> Runner`.
+3. Select `Build Settings`, `All`, `Combined` and type `strip style` in the filter input field.
+4. Switch `Strip Style` and select `Non-Global Symbols`.
+
+![Settings](https://user-images.githubusercontent.com/15884415/190084879-a20e51c5-3a5d-44e2-9ddd-d098f6a587df.png)
+
+### For developing the plugin
+
+1. Clone and follow [Prerequisites](#-prerequisites), and make sure your Flutter installed properly.
+
+2. **MUST DO: Bootstrap your project**
+```shell
+./scripts/bootstrap.sh
+```
 
 ## 🚦 Prerequisites
-* [Flutter](https://flutter.dev/docs/get-started/install) version in the `agent_dart/pubspec.yaml`
-* [CMake](https://cmake.org/) v3.2.0 or later
-* [Xcode](https://developer.apple.com/xcode/) (10.12) or later (Running on macOS or iOS)
-* [Android NDK](https://developer.android.com/studio/projects/install-ndk) version `21.4.7075529` (Running on Android)
-* [Rust](https://www.rust-lang.org/) version 1.51
-* [Node.js](https://nodejs.org/) v15.0 or later, TBD
+* [CMake](https://cmake.org/) v3.2+
+* [Xcode](https://developer.apple.com/xcode/) v13+
+* [Rust](https://www.rust-lang.org/) v1.51+
+* [Node.js](https://nodejs.org/) v15+
 
----
-## ⚡️ Quick start 
-1. git clone
-2. install [Prerequisites](#prerequisites), make sure you run
-   ```
-   flutter doctor -v
-   ```
-   Without errors
+## 🧰 Resources
 
-3. To run example, follow [instructions](example/README.md) under `example` folder
-4. To run tests:
-   ```
-   flutter test
-   ```
----
+### 📖 Documentation
+
+- [Reference on pub.dev](https://pub.dev/documentation/agent_dart/latest/)
+- Docs site, WIP...
+
+### 🔧 Helpers/Tooling
+
+- [candid_dart](https://github.com/AstroxNetwork/candid_dart),
+  an automated candid builder for Dart classes
+- [agent_dart_auth](https://github.com/AstroxNetwork/agent_dart_auth),
+  an extension plugin for authorization, used for Internet-Identity authorization. 
+
+### 💡 Examples
+
+- [simple counter](https://github.com/AstroxNetwork/agent_dart_examples/tree/main/counter),
+  a simple counter demonstrate how to use agent_dart, a backend canister within.
+- [auth counter](https://github.com/AstroxNetwork/agent_dart_examples/tree/main/auth_counter),
+  a counter needs user's authorization from Internet-Identity, 
+  demonstrate how to combine with [agent_dart_auth](https://github.com/AstroxNetwork/agent_dart_auth).
+- [ledger_app](https://github.com/AstroxNetwork/agent_dart_examples/tree/main/ledger_app),
+  a ledger app demonstrate how to import seed-phrase and make transactions.
 
 ## 🧘‍♂️ Motivation
 
-The Internet Computer is powered by blockchain and its major impact is to bring WebApp to be truly decentralized. However, we are in the mobile internet era, even we can use Safari or Chrome on our cell phones. But most average people, not crypto enthusiasts, are likely to use native mobile apps, major users are there. 
+The Internet Computer is powered by blockchain and its major impact is to bring WebApp to be truly decentralized.
+However, we are in the mobile internet era, even we can use Safari or Chrome on our cell phones.
+But most average people, not crypto enthusiasts, are likely to use native mobile apps, major users are there. 
 
-It's important to attract these people to use Dapps of Internet Computer, by providing stable, fast, and fully integrated to Dfinity's blockchain. We likely to provide further solution to balancing the "Decentralization" and "Efficiency". But first things first, we have to make mobile native apps work.
+It's important to attract these people to use DApps of Internet Computer, 
+by providing stable, fast, and fully integrated to Dfinity's blockchain.
+We likely to provide further solution to balancing the "Decentralization" and "Efficiency".
+But first things first, we have to make mobile native apps work.
 
-`agent-rs` and `agent-js` are the actual lower level client-SDKs, just like `ether.js` or `web3.js` of Ethereum's ecosystem. This library is aiming to port and replicate features from them. And this library is mainly for mobile apps to connect canisters, not deploying contracts (you can do that if you want, but use dart directly).
+`agent-rs` and `agent-js` are the actual lower level client-SDKs,
+just like `ether.js` or `web3.js` of Ethereum's ecosystem.
+This library is aiming to port and replicate features from them.
+And this library is mainly for mobile apps to connect canisters,
+not deploying contracts (you can do that if you want, but use dart directly).
 
-We have tried our best to migrate most interface styles just like Javascript version, but there are limitations and differences between different programming languages, we will document them as much as possible.
+We have tried our best to migrate most interface styles just like Javascript version,
+but there are limitations and differences between different programming languages,
+we will document them as much as possible.
 
----
 ## 🏆 Milestones
-### Milestone 1: Core features/libraries migrating.
-- `agent`, core library, with crypto and encoding/decoding methods , http call/query encapsulated, for interacting with canister.
-- `auth_client`, a popup window for flutter, used for getting authentication from Identity provider(eg, Internet Identity).
-- `authentication`, a library supports `auth_client`
-- `candid`, candid library, used for encoding/decoding candid data types, and used them in dart-lang.
-- `principal`, principal library, used for generate principal for many usage cases.
-- `protobuf`, protobuf library, used for interacting with `rosetta-node` in submit/query transaction
-- `utils`, common utils, including useful helpers like extension methods in dart.
-- `wallet`, wallet library, signer, rosetta, key-smith all-in-one library.
-  
-### Milestone 2: Enhanced built tool and more example apps
-### Milestone 3: Documentation and community driven development
+- Milestone 1: ✅ Core features/libraries implementation. 
+- Milestone 2: ✅ Enhanced built tool and more example apps 
+- Milestone 3: 👷 Documentation and community driven development
 
----
-## 📘 Documentation
-[Reference on pub.dev](https://pub.dev/documentation/agent_dart/latest/)
-### Plan for docs site
-A stand-alone docs site with guides for Dfinity Dapps made in Flutter/Dart
-
----
 ## 👨‍💻 Contributing
 
 By contributing to agent_dart, you agree that your contributions will be licensed under its MIT License.
 
-0. Fork this library and add your own branch.
-   like this:
-    ```
-    {github_id}/{feat|fix|test|dep}-{detail}
-    ```
-1. Install [Prerequisites](#Prerequisites)
-    
+1. Fork this library and add your own branch like `{feat|fix|test|dep}-{detail}`.
 
-2. Build rust dependencies for all supported platform (macOS, iOS, Android, windows, linux)
+2. Follow the [Prerequisites](#-prerequisites).
 
-    ```shell
-    $ sh ./scripts/clean && ./scripts/init.sh && ./scripts/build.sh
-    ```
+3. Build rust dependencies for all supported platforms:
+```shell
+sh ./scripts/bootstrap
+```
 
-3. Start example
-   
-   Read instruction first, then run
+4. Start the example.
+```shell
+cd example
+flutter run
+```
 
-    ```shell
-    $ cd example
-    $ flutter run
-    ```
+5. Tests. (Unit Test and Integration Test)
+```shell
+flutter test
+```
 
-4. Test (Unit Test and Integration Test)
-    ```shell
-    $ flutter test
-    ```
-
-5. Commit and make a pull request, process is TBD for now. We will use CI to automate
-
----
+6. Commit and make a pull request.
 
 ## 🔗 Reference and related projects
+
+Feel free to list your project here, you can submit here.
 
 * Official libraries from Dfinity's team:
   - [agent-rs](https://github.com/dfinity/agent-rs)
   - [agent-js](https://github.com/dfinity/agent-js)
-* other projects here
-
----
+* DApps
+  - [Distrikt](https://distrikt.io/)
+  - [ICPBox](https://www.icpbox.org/)
+* Wallets
+  - [ICWallet](https://icwallet.org/)
 
 ## ⚠️ FAQ
 
 ### Build rust libraries for iOS/MacOS
-- All rust method have to be written inside `SwiftAgentDartPlugin.swift`, to avoid tree shaking of latest release build by XCode.
-- The `agent_dart_podspec` should change accordingly when this repo goes 1.0.0
-- On M1 chipset of MacOS, please install `rosetta 2`
 
-   ```bash
-   $ sudo softwareupdate --install-rosetta --agree-to-license
-   ```
+- All rust method have to be written inside `SwiftAgentDartPlugin.swift` to avoid tree shaking by XCode.
 
-
-### Network problem in iOS and MacOS
+### Network problem in macOS
 
 - If you run example or build a flutter app, you may come up with this:
   
-```bash
+```
 [macOS] SocketException: Connection failed (OS Error: Operation not permitted, errno = 1)
 ```
 
-- Go to `macos/Runner/` of macOS and `ios/Runner`
-- Edit  `DebugProfile.entitlements` and `ReleaseProfile.entitlements`,
-Add following: 
+- Go to `macos/Runner` of macOS.
+- Add following in  `DebugProfile.entitlements` and `ReleaseProfile.entitlements`:
 
-```
+```plist
 <key>com.apple.security.network.client</key>
 <true/>
 ```
