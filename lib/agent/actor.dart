@@ -11,7 +11,7 @@ import 'errors.dart';
 import 'types.dart';
 import 'request_id.dart';
 
-class ActorCallError extends AgentError {
+class ActorCallError extends AgentFetchError {
   ActorCallError(
     Principal canisterId,
     String methodName,
