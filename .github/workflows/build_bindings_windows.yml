@@ -1,9 +1,12 @@
-name: Rust Bindings for windows
+name: Rust Bindings (Windows)
 
 on:
   push:
     branches:
-      - 1.0.0-dev
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   ci:
@@ -25,7 +28,7 @@ jobs:
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Rust Toolchain
         uses: actions-rs/toolchain@v1
@@ -66,9 +69,7 @@ jobs:
         run: flutter test
 
       - name: Run git pull
-        run: |
-          git reset --hard HEAD
-          git pull
+        uses: actions/checkout@v3
 
       - name: Commit files
         uses: stefanzweifel/git-auto-commit-action@v4
