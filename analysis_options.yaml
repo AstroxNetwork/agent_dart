@@ -2,6 +2,7 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
+    - 'lib/bridge/ffi/ffi_bridge.dart'
     - 'lib/protobuf/**.dart'
     - 'rust/bridge/ffi/**.dart'
 
