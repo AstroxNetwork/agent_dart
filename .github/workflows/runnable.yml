@@ -28,3 +28,8 @@ jobs:
       - run: flutter --version
       - run: flutter pub get
       - run: flutter test ./test/agent_dart_test.dart # This is the only test that's runnable on actions.
+      - uses: k-paxian/dart-package-publisher@master
+        with:
+          credentialJson: ${{ secrets.CREDENTIAL_JSON }}
+          flutter: true
+          dryRunOnly: true
