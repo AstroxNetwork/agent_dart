@@ -1,0 +1,6 @@
+.github/
+rust/
+protobuf/
+scripts/
+
+CODEOWNERS

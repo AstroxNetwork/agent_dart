@@ -62,4 +62,5 @@ flutter:
         pluginClass: AgentDartPlugin
 
 false_secrets:
+  - /rust/ed_compact/src/pem.rs
   - /test/fixture/*.pem
