@@ -1,9 +1,12 @@
-name: Rust Bindings for ios android and mac
+name: Rust Bindings (Android & iOS & macOS)
 
 on:
   push:
     branches:
-      - ffi-async
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   ci:
@@ -25,7 +28,7 @@ jobs:
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Rust Toolchain
         uses: actions-rs/toolchain@v1
@@ -36,11 +39,8 @@ jobs:
           components: rustfmt
 
       - name: Install WASM Target
-        run: |
-          brew install filosottile/musl-cross/musl-cross
-          ln -s /usr/local/opt/musl-cross/bin/x86_64-linux-musl-gcc /usr/local/bin/musl-gcc
-          rustup target add wasm32-unknown-unknown
-         
+        run: rustup target add wasm32-unknown-unknown
+
       - name: Cache Cargo
         uses: actions/cache@v2
         with:
@@ -70,41 +70,17 @@ jobs:
         continue-on-error: true
         with:
           command: install
-          args: cargo-lipo --force
+          args: cargo-lipo
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.0.1'
-          architecture: x64
-
-      - name: Run Flutter pub get
-        run: flutter pub get
-
-      - name: Set up JDK 1.8
+      - name: Set up JDK 8
         uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
+          distribution: 'adopt'
           java-version: '8'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
-      
-      - uses: nttld/setup-ndk@v1
+      - name: Setup NDK
         id: setup-ndk
-        with:
-          ndk-version: r21e
-
-      # - name: Cache NDK
-      #   id: cache-ndk
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: /Users/runner/android/ndk-bundle
-      #     key: ${{ runner.os }}-cached-ndk
-
-      - name: Install Android NDK
-        # if: steps.cache-ndk.outputs.cache-hit != 'true'
-        run: sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager ndk-bundle
+        run: sudo echo "y" | sudo $ANDROID_HOME/tools/bin/sdkmanager "ndk;21.4.7075529"
 
       - name: Set Android NDK Env
         uses: allenevans/set-env@v2.0.0
@@ -112,7 +88,6 @@ jobs:
           ANDROID_NDK_HOME: '/Users/runner/Library/Android/sdk/ndk-bundle'
           NDK_HOME: '/Users/runner/Library/Android/sdk/ndk-bundle'
 
-      
       - name: Setup Android NDK list
         run: |
           echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/aarch64-linux-android/bin:$PATH" >> $GITHUB_PATH
@@ -120,34 +95,64 @@ jobs:
           echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/i686-linux-android/bin:$PATH" >> $GITHUB_PATH
           echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/x86_64-linux-android/bin:$PATH" >> $GITHUB_PATH
 
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Run Flutter pub get
+        run: flutter pub get
+
       - name: Install Android Targets
         run: rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+
+      - name: Execute cargo test
+        run: |
+          cd rust
+          cargo test
 
       - name: Execute build scripts
         run: |
           ./scripts/bootstrap.sh
 
       - name: Run binding/crypto tests
-        run: flutter test
-      
-      - name: Create artifact folder
         run: |
-          mkdir -p artifact/android/src/main/jniLibs/arm64-v8a
-          mkdir -p artifact/android/src/main/jniLibs/armeabi-v7a
-          mkdir -p artifact/android/src/main/jniLibs/x86
-          mkdir -p artifact/android/src/main/jniLibs/x86_64
-          mkdir -p artifact/ios
-          mkdir -p artifact/macos
-          cp android/src/main/jniLibs/arm64-v8a/libagent_dart.so artifact/android/src/main/jniLibs/arm64-v8a/libagent_dart.so
-          cp android/src/main/jniLibs/armeabi-v7a/libagent_dart.so artifact/android/src/main/jniLibs/armeabi-v7a/libagent_dart.so
-          cp android/src/main/jniLibs/x86/libagent_dart.so artifact/android/src/main/jniLibs/x86/libagent_dart.so
-          cp android/src/main/jniLibs/x86_64/libagent_dart.so artifact/android/src/main/jniLibs/x86_64/libagent_dart.so
-          cp ios/libagent_dart.a artifact/ios/libagent_dart.a
-          cp macos/libagent_dart.a artifact/macos/libagent_dart.a
+          flutter test
 
+      - name: Run git pull
+        uses: actions/checkout@v3
 
-      - name: artifact-upload-3
-        uses: actions/upload-artifact@v3
+      - name: Commit files
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          name: artifact
-          path: artifact
+          commit_message: build bindings for ios android and macos
+
+      - name: 'Run if changes have been detected'
+        if: steps.auto-commit-action.outputs.changes_detected == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+
+      - name: Create Pull Request
+        if: steps.auto-commit-action.outputs.changes_detected == 'true'
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Update build bindings for ios android and macos
+          title: 'Update build bindings for ios android and macos'
+          body: >
+            This PR is auto-generated by 
+            [create-pull-request](https://github.com/peter-evans/create-pull-request).
+          branch: main
+          labels: automerge, automated pr
+
+      - name: 'Run if no changes have been detected'
+        if: steps.auto-commit-action.outputs.changes_detected == 'false'
+        run: echo "No Changes!"
