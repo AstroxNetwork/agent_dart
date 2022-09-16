@@ -11,20 +11,22 @@ void main() {
   });
 
   test('test isAccountId', () {
-    final aid = Principal.fromText("snnxh-zyaaa-aaaah-abrfq-cai").toAccountId();
+    final aid = Principal.fromText('snnxh-zyaaa-aaaah-abrfq-cai').toAccountId();
     expect(isAccountId(aid.toHex()), true);
     // length dont match
     expect(
-        isAccountId(
-            "6202e688b3aae334a9c7ad11ed2e7c41a89b940b81bad4b3d95b2d49d0"),
-        false);
+      isAccountId('6202e688b3aae334a9c7ad11ed2e7c41a89b940b81bad4b3d95b2d49d0'),
+      false,
+    );
     // not hex
-    expect(isAccountId("hello: i am dump string"), false);
+    expect(isAccountId('hello: i am dump string'), false);
 
     // not matching checksum
     expect(
-        isAccountId(
-            "6202e688b3aae334a9c7ad11ed2e7c41a89b940b81bad4b00000000000000000"),
-        false);
+      isAccountId(
+        '6202e688b3aae334a9c7ad11ed2e7c41a89b940b81bad4b00000000000000000',
+      ),
+      false,
+    );
   });
 }
