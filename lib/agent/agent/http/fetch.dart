@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
@@ -13,10 +13,9 @@ const defaultTimeout = Duration(seconds: 30);
 /// Users can set host should be full path of http/https.
 /// Usually the usage could be `defaultHost+endpoint`
 /// and set the defaultHost to somewhere final,
-/// then change the endpoint programatically.
-/// `Duration(second: 30)` is the default timeout limit,
+/// then change the endpoint programmatically.
+/// [defaultTimeout] is the default timeout limit,
 /// and throw error directly to end the request section.
-///
 Future<Map<String, dynamic>> defaultFetch({
   required String endpoint,
   String? host,
@@ -30,19 +29,15 @@ Future<Map<String, dynamic>> defaultFetch({
 }) async {
   final client = http.Client();
   try {
-    var uri = Uri.parse(host ?? '$defaultHost$endpoint');
+    final uri = Uri.parse(host ?? '$defaultHost$endpoint');
     Future<http.Response> fr;
-    var compactHeaders = {...?baseHeaders, ...?headers};
+    final compactHeaders = {...?baseHeaders, ...?headers};
     if (cbor) {
       compactHeaders['Content-Type'] = 'application/cbor';
     }
     switch (method) {
       case FetchMethod.post:
-        fr = client.post(
-          uri,
-          headers: compactHeaders,
-          body: body,
-        );
+        fr = client.post(uri, headers: compactHeaders, body: body);
         break;
       case FetchMethod.get:
         fr = client.get(uri, headers: {...?baseHeaders, ...?headers});
@@ -51,60 +46,50 @@ Future<Map<String, dynamic>> defaultFetch({
         fr = client.head(uri, headers: {...?baseHeaders, ...?headers});
         break;
       case FetchMethod.put:
-        fr = client.put(
-          uri,
-          headers: compactHeaders,
-          body: body,
-        );
+        fr = client.put(uri, headers: compactHeaders, body: body);
         break;
       case FetchMethod.delete:
-        fr = client.delete(
-          uri,
-          headers: compactHeaders,
-          body: body,
-        );
+        fr = client.delete(uri, headers: compactHeaders, body: body);
         break;
       case FetchMethod.patch:
-        fr = client.patch(
-          uri,
-          headers: compactHeaders,
-          body: body,
-        );
+        fr = client.patch(uri, headers: compactHeaders, body: body);
         break;
       case FetchMethod.connect:
       case FetchMethod.options:
       case FetchMethod.trace:
         throw UnimplementedError(
-            "Unsupported http request method: `${method.name.toUpperCase()}`.");
+          'HTTP request method: '
+          '`${method.name.toUpperCase()}` not implemented.',
+        );
     }
 
-    var response = await fr.timeout(
-      timeout ?? defaultTimeout,
-      onTimeout: () => throw SocketException(
-        '${host ?? '$defaultHost$endpoint'} timeout',
+    final duration = timeout ?? defaultTimeout;
+    final response = await fr.timeout(
+      duration,
+      onTimeout: () => throw TimeoutException(
+        '${host ?? '$defaultHost$endpoint'} timeout.',
+        duration,
       ),
     );
-    if (response.headers["content-type"] != null &&
-        response.headers["content-type"]!.split(",").length > 1) {
-      var actualHeader = response.headers["content-type"]!.split(",").first;
-      response.headers["content-type"] = actualHeader;
+    if (response.headers['content-type'] != null &&
+        response.headers['content-type']!.split(',').length > 1) {
+      final actualHeader = response.headers['content-type']!.split(',').first;
+      response.headers['content-type'] = actualHeader;
     }
-    client.close();
     return {
-      "body": response.body,
-      "ok": response.statusCode >= 200 && response.statusCode < 300,
-      "statusCode": response.statusCode,
-      "statusText": response.reasonPhrase ?? '',
-      "arrayBuffer": response.bodyBytes,
+      'body': response.body,
+      'ok': response.statusCode >= 200 && response.statusCode < 300,
+      'statusCode': response.statusCode,
+      'statusText': response.reasonPhrase ?? '',
+      'arrayBuffer': response.bodyBytes,
     };
-  } catch (e) {
+  } finally {
     client.close();
-    rethrow;
   }
 }
 
 class FetchResponse {
-  FetchResponse(
+  const FetchResponse(
     this.body,
     this.ok,
     this.statusCode,
@@ -112,13 +97,13 @@ class FetchResponse {
     this.arrayBuffer,
   );
 
-  factory FetchResponse.fromMap(Map<String, dynamic> map) {
+  factory FetchResponse.fromJson(Map<String, dynamic> map) {
     return FetchResponse(
-      map["body"],
-      map["ok"],
-      map["statusCode"],
-      map["statusText"],
-      map["arrayBuffer"],
+      map['body'],
+      map['ok'],
+      map['statusCode'],
+      map['statusText'],
+      map['arrayBuffer'],
     );
   }
 
@@ -130,11 +115,11 @@ class FetchResponse {
 
   Map<String, dynamic> toJson() {
     return {
-      "body": body,
-      "ok": ok,
-      "statusCode": statusCode,
-      "statusText": statusText,
-      "arrayBuffer": arrayBuffer
+      'body': body,
+      'ok': ok,
+      'statusCode': statusCode,
+      'statusText': statusText,
+      'arrayBuffer': arrayBuffer,
     };
   }
 }

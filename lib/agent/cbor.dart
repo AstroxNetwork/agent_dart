@@ -8,49 +8,43 @@ import 'dart:math' as math;
 import 'types.dart';
 
 abstract class ExtraEncoder<T> {
-  String get name;
-  bool match(dynamic value);
+  const ExtraEncoder({required this.name});
+
+  final String name;
+
+  bool match(Object? value);
+
   void write(cbor.Encoder encoder, T value);
 }
 
 class SelfDescribeEncoder extends cbor.Encoder {
+  SelfDescribeEncoder(this._out) : super(_out) {
+    final valBuff = Uint8Buffer();
+    final hList = Uint8List.fromList([0xd9, 0xd9, 0xf7]);
+    valBuff.addAll(hList);
+    addBuilderOutput(valBuff);
+  }
+
+  SelfDescribeEncoder.noHead(this._out) : super(_out);
+
   late final cbor.Output _out;
   final Set<ExtraEncoder> _encoders = {};
 
-  // late cbor.BuilderHook _builderHook;
-
-  SelfDescribeEncoder(this._out) : super(_out) {
-    var valBuff = Uint8Buffer();
-    var hList = Uint8List.fromList([0xd9, 0xd9, 0xf7]);
-    valBuff.addAll(hList);
-    addBuilderOutput(valBuff);
-    // _builderHook = _hook;
-  }
-  SelfDescribeEncoder.noHead(this._out) : super(_out);
-
-  addEncoder<T>(ExtraEncoder encoder) {
+  void addEncoder<T>(ExtraEncoder encoder) {
     _encoders.add(encoder);
   }
 
-  removeEncoder<T>(String encoderName) {
+  void removeEncoder<T>(String encoderName) {
     _encoders.removeWhere((element) => element.name == encoderName);
   }
 
   ExtraEncoder? getEncoderFor<T>(dynamic value) {
-    // ignore: prefer_typing_uninitialized_variables
-    ExtraEncoder? chosenEncoder;
-
-    for (var encoder in _encoders) {
-      if (chosenEncoder == null) {
-        if (encoder.match(value)) {
-          chosenEncoder = encoder;
-        }
+    for (final encoder in _encoders) {
+      if (encoder.match(value)) {
+        return encoder;
       }
     }
-    // if (chosenEncoder == null) {
-    //   throw "Could not find an encoder for value.";
-    // }
-    return chosenEncoder;
+    return null;
   }
 
   void serialize(dynamic val) {
@@ -64,10 +58,9 @@ class SelfDescribeEncoder extends cbor.Encoder {
   }
 
   void serializeMap(Map map) {
-    // final builder = cbor.MapBuilder.builder();
     writeTypeValue(cbor.majorTypeMap, map.length);
     final entries = map.entries;
-    for (var entry in entries) {
+    for (final entry in entries) {
       if (entry.key is String) {
         writeString(entry.key);
       } else if (entry.key is int) {
@@ -80,7 +73,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
   void serializeData(dynamic data) {
     if (writeExtra(data) == true) {
       return;
-    } else if (data is ToCBorable) {
+    } else if (data is ToCborable) {
       data.write(this);
     } else if (data is Map) {
       serializeMap(data);
@@ -97,14 +90,16 @@ class SelfDescribeEncoder extends cbor.Encoder {
     } else if (data == null) {
       writeNull();
     } else {
-      // ignore: avoid_print
-      print('writeMapImpl::Non Iterable RT is ${data.runtimeType.toString()}');
+      throw UnsupportedError(
+        '${data.runtimeType.toString()}'
+        ' is not supported with CBOR serializations.',
+      );
     }
   }
 
   void serializeIterable(Iterable data) {
     if (data is Uint8Buffer) {
-      writeBuff(data, false);
+      writeBuff(data);
     } else if (data is Uint8List) {
       writeBytes(Uint8Buffer()..addAll(data));
     } else if (data.every((element) => element is int)) {
@@ -128,7 +123,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
   }
 
   bool writeExtra(dynamic data) {
-    var extraEnc = getEncoderFor(data);
+    final extraEnc = getEncoderFor(data);
     if (extraEnc != null) {
       extraEnc.write(this, data);
       return true;
@@ -137,7 +132,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
   }
 
   void writeTypeValue(int majorType, int value) {
-    var type = majorType;
+    int type = majorType;
     type <<= cbor.majorTypeShift;
     if (value < cbor.ai24) {
       // Value
@@ -169,8 +164,8 @@ class SelfDescribeEncoder extends cbor.Encoder {
       // an integer it must be greater than 2*32 so encode as 64 bit.
       final bignum = BigInt.from(value);
       if (kIsWeb) {
-        var data = serializeValue(0, 27, bignum.toRadixString(16));
-        var buf = Uint8Buffer();
+        final data = serializeValue(0, 27, bignum.toRadixString(16));
+        final buf = Uint8Buffer();
         buf.addAll(data.asUint8List());
         addBuilderOutput(buf);
       } else if (bignum.isValidInt) {
@@ -191,72 +186,52 @@ class SelfDescribeEncoder extends cbor.Encoder {
 }
 
 class PrincipalEncoder extends ExtraEncoder<Principal> {
-  @override
-  String get name => 'Principal';
-
-  PrincipalEncoder() : super();
+  const PrincipalEncoder() : super(name: 'Principal');
 
   @override
-  bool match(dynamic value) {
-    return value is Principal;
-  }
+  bool match(Object? value) => value is Principal;
 
   @override
   void write(cbor.Encoder encoder, Principal value) {
-    var valBuff = Uint8Buffer();
-    valBuff.addAll(value.toUint8Array());
+    final valBuff = Uint8Buffer();
+    valBuff.addAll(value.toUint8List());
     encoder.writeBytes(valBuff);
   }
 }
 
 class BufferEncoder extends ExtraEncoder<BinaryBlob> {
-  @override
-  String get name => 'Buffer';
-
-  BufferEncoder() : super();
+  const BufferEncoder() : super(name: 'Buffer');
 
   @override
-  bool match(dynamic value) {
-    return value is BinaryBlob;
-  }
+  bool match(Object? value) => value is BinaryBlob;
 
   @override
   void write(cbor.Encoder encoder, BinaryBlob value) {
-    var valBuff = Uint8Buffer();
+    final valBuff = Uint8Buffer();
     valBuff.addAll(value);
     encoder.writeBytes(valBuff);
   }
 }
 
 class ByteBufferEncoder extends ExtraEncoder<ByteBuffer> {
-  @override
-  String get name => 'ByteBuffer';
-
-  ByteBufferEncoder() : super();
+  const ByteBufferEncoder() : super(name: 'ByteBuffer');
 
   @override
-  bool match(dynamic value) {
-    return value is ByteBuffer;
-  }
+  bool match(Object? value) => value is ByteBuffer;
 
   @override
   void write(cbor.Encoder encoder, ByteBuffer value) {
-    var valBuff = Uint8Buffer();
+    final valBuff = Uint8Buffer();
     valBuff.addAll(value.asUint8List());
     encoder.writeBytes(valBuff);
   }
 }
 
 class BigIntEncoder extends ExtraEncoder<BigInt> {
-  @override
-  String get name => 'BigInt';
-
-  BigIntEncoder() : super();
+  const BigIntEncoder() : super(name: 'BigInt');
 
   @override
-  bool match(dynamic value) {
-    return value is BigInt;
-  }
+  bool match(Object? value) => value is BigInt;
 
   @override
   void write(cbor.Encoder encoder, BigInt value) {
@@ -264,17 +239,19 @@ class BigIntEncoder extends ExtraEncoder<BigInt> {
   }
 }
 
-abstract class ToCBorable {
+abstract class ToCborable {
+  const ToCborable();
+
   void write(cbor.Encoder encoder);
 }
 
 SelfDescribeEncoder initCborSerializer() {
   cbor.init();
   final output = cbor.OutputStandard();
-  final principalEncoder = PrincipalEncoder();
-  final bigIntEncoder = BigIntEncoder();
-  final bufferEncoder = BufferEncoder();
-  final byteBufferEncoder = ByteBufferEncoder();
+  const principalEncoder = PrincipalEncoder();
+  const bigIntEncoder = BigIntEncoder();
+  const bufferEncoder = BufferEncoder();
+  const byteBufferEncoder = ByteBufferEncoder();
 
   return SelfDescribeEncoder(output)
     ..addEncoder(principalEncoder)
@@ -286,10 +263,10 @@ SelfDescribeEncoder initCborSerializer() {
 SelfDescribeEncoder initCborSerializerNoHead() {
   cbor.init();
   final output = cbor.OutputStandard();
-  final principalEncoder = PrincipalEncoder();
-  final bigIntEncoder = BigIntEncoder();
-  final bufferEncoder = BufferEncoder();
-  final byteBufferEncoder = ByteBufferEncoder();
+  const principalEncoder = PrincipalEncoder();
+  const bigIntEncoder = BigIntEncoder();
+  const bufferEncoder = BufferEncoder();
+  const byteBufferEncoder = ByteBufferEncoder();
 
   return SelfDescribeEncoder.noHead(output)
     ..addEncoder(principalEncoder)
@@ -299,55 +276,40 @@ SelfDescribeEncoder initCborSerializerNoHead() {
 }
 
 BinaryBlob cborEncode(dynamic value, {SelfDescribeEncoder? withSerializer}) {
-  var serializer = withSerializer ?? initCborSerializer();
+  final serializer = withSerializer ?? initCborSerializer();
   serializer.serialize(value);
   return Uint8List.fromList(serializer._out.getData());
 }
 
 T cborDecode<T>(List<int> value) {
-  try {
-    final buffer = value is Uint8Buffer ? value : Uint8Buffer()
-      ..addAll(value);
-    cbor.Input input = cbor.Input(buffer);
-    final cbor.Listener listener = cbor.ListenerStack();
-    final _decodeStack = cbor.DecodeStack();
-    listener.itemStack.clear();
-    cbor.Decoder decoder = cbor.Decoder.withListener(input, listener);
-    decoder.run();
-
-    List<dynamic>? getDecodedData() {
-      try {
-        _decodeStack.build(listener.itemStack);
-        return _decodeStack.walk();
-      } catch (e) {
-        rethrow;
-      }
-    }
-
-    // print(getDecodedData());
-
-    return getDecodedData()![0] as T;
-  } catch (e) {
-    throw "Can not decode with cbor :$e";
-  }
+  final buffer = value is Uint8Buffer ? value : Uint8Buffer()
+    ..addAll(value);
+  final cbor.Input input = cbor.Input(buffer);
+  final cbor.Listener listener = cbor.ListenerStack();
+  final decodeStack = cbor.DecodeStack();
+  listener.itemStack.clear();
+  final cbor.Decoder decoder = cbor.Decoder.withListener(input, listener);
+  decoder.run();
+  decodeStack.build(listener.itemStack);
+  final walked = decodeStack.walk();
+  return walked![0] as T;
 }
 
 ByteBuffer serializeValue(int major, int minor, String val) {
   // Remove everything that's not an hexadecimal character. These are not
   // considered errors since the value was already validated and they might
   // be number decimals or sign.
-  var value = val.replaceAll('r[^0-9a-fA-F]', "");
+  String value = val.replaceAll('r[^0-9a-fA-F]', '');
   // Create the buffer from the value with left padding with 0.
   final length = math.pow(2, minor - 24).toInt();
-
-  var temp = value
-      .substring(value.length <= length * 2 ? 0 : value.length - length * 2);
-  var prefix = "0" * (2 * length - temp.length);
+  final temp = value.substring(
+    value.length <= length * 2 ? 0 : value.length - length * 2,
+  );
+  final prefix = '0' * (2 * length - temp.length);
   value = prefix + temp;
-
-  var bytes = [(major << 5) + minor];
-  var arr = <int>[];
-  for (var i = 0; i < value.length; i += 2) {
+  final bytes = [(major << 5) + minor];
+  final arr = <int>[];
+  for (int i = 0; i < value.length; i += 2) {
     arr.add(int.parse(value.substring(i, i + 2), radix: 16));
   }
   bytes.addAll(arr);

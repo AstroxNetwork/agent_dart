@@ -1,11 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:agent_dart/agent_dart.dart';
-import 'package:agent_dart/bls/bls.base.dart';
-import 'package:agent_dart/bls/wasm_interop.dart';
-import 'package:agent_dart/utils/base64.dart';
+import 'package:agent_dart/bridge/bls.base.dart';
+import 'package:agent_dart/bridge/wasm_interop.dart';
 
-final wasmBytesBase64 = '''
+final _wasmBytesBase64 = '''
     AGFzbQEAAAABXg9gAn9/AGABfwBgA39/fwBgAn9/AX9gAX8Bf2ADf39/AX9gBH9/f38AYAV/f39/fwBgBn9/f39/fwF/
     YAAAYAZ/f39/f38AYAV/fn5+fgBgAAF/YAF/AX5gAn9/AX4DvAG6AQgEAAEAAAABAgEDAAAMAAACAQEKAQAHBgEAAQEA
     AgcCAgABAgAGAAgOBAEBBAAAAQALAQkAAwMAAQQBAAICAAIBAQEBAQEGAQACAQEEAAECAQEABQMBAQMEAwQCAwAAAAEA
@@ -803,42 +802,30 @@ final wasmBytesBase64 = '''
     kLWJ5AwVydXN0Yx0xLjQ5LjAgKGUxODg0YThlMyAyMDIwLTEyLTI5KQZ3YWxydXMGMC4xOC4wDHdhc20tYmluZGdlbhIw
     LjIuNzAgKGI2MzU1YzI3MCk=
 '''
-    .replaceAll(RegExp(r"\n+"), "")
-    .replaceAll(RegExp(r"\s+"), "")
+    .replaceAll(RegExp(r'\n+'), '')
+    .replaceAll(RegExp(r'\s+'), '')
     .trim()
     .replaceAll('r[^0-9a-zA-Z/+]', '');
 
-final moduleBytes = base64Decode(wasmBytesBase64);
+final _moduleBytes = base64Decode(_wasmBytesBase64);
 
 typedef BLSVerifyFunc = int Function(int, int, int, int, int, int);
 
 class WebBls implements BaseBLS {
-  Instance? instance;
-  Uint8List? cachegetUint8Memory0;
   WebBls();
 
+  Instance? instance;
+  Uint8List? cacheGetUint8Memory0;
+  late bool _isInit;
+
   Future<void> initInstance() async {
-    instance = await Instance.fromBytesAsync(moduleBytes);
-  }
-
-  @override
-  bool blsInitSync() {
-    return true;
-  }
-
-  @override
-  bool blsVerifySync(
-    Uint8List pk,
-    Uint8List sig,
-    Uint8List msg,
-  ) {
-    return true;
+    instance = await Instance.fromBytesAsync(_moduleBytes);
   }
 
   @override
   Future<bool> blsInit() async {
-    var blsInitFunc = instance!.functions['bls_init']! as int Function();
-    return blsInitFunc() == 0 ? true : false;
+    final blsInitFunc = instance!.functions['bls_init']! as int Function();
+    return _isInit = blsInitFunc() == 0 ? true : false;
   }
 
   @override
@@ -847,58 +834,56 @@ class WebBls implements BaseBLS {
     if (blsVerifyFunc == null) {
       await initInstance();
       if (!await blsInit()) {
-        throw 'Cannot initialize BLS';
+        throw StateError('cannot initialize BLS on Web.');
       }
       blsVerifyFunc = instance!.functions['bls_verify']! as int Function(
-          int, int, int, int, int, int);
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      );
     }
 
-    var set0 = passArray8ToWasm0(sig, _malloc);
-    var set1 = passArray8ToWasm0(msg, _malloc);
-    var set2 = passArray8ToWasm0(pk, _malloc);
+    final set0 = passArray8ToWasm0(sig, _malloc);
+    final set1 = passArray8ToWasm0(msg, _malloc);
+    final set2 = passArray8ToWasm0(pk, _malloc);
 
-    return blsVerifyFunc(set0.first, set0.last, set1.first, set1.last,
-                set2.first, set2.last) ==
-            0
-        ? true
-        : false;
+    return blsVerifyFunc(
+          set0.first,
+          set0.last,
+          set1.first,
+          set1.last,
+          set2.first,
+          set2.last,
+        ) ==
+        0;
   }
 
   Uint8List get memory =>
       instance!.memories['memory']!.jsObject.buffer.asUint8List();
 
   int _malloc(int a) {
-    var mal = instance!.functions['__wbindgen_malloc']! as int Function(int);
+    final mal = instance!.functions['__wbindgen_malloc']! as int Function(int);
     return mal(a);
   }
 
   Uint8List getUint8Memory0() {
-    if (cachegetUint8Memory0 == null || !u8aEq(cachegetUint8Memory0!, memory)) {
-      cachegetUint8Memory0 = memory;
+    if (cacheGetUint8Memory0 == null || !u8aEq(cacheGetUint8Memory0!, memory)) {
+      cacheGetUint8Memory0 = memory;
     }
-    return cachegetUint8Memory0!;
+    return cacheGetUint8Memory0!;
   }
 
   List<int> passArray8ToWasm0(Uint8List arg, int Function(int) malloc) {
     final ptr = malloc(arg.length * 1);
-
-    getUint8Memory0().setAll((ptr ~/ 1), arg);
+    getUint8Memory0().setAll(ptr ~/ 1, arg);
     return [ptr, arg.length];
   }
+
+  @override
+  bool get isInit => _isInit;
 }
 
 BaseBLS createBLS() => WebBls();
-
-// let cachegetUint8Memory0: any = null;
-// function getUint8Memory0() {
-//   if (cachegetUint8Memory0 === null || cachegetUint8Memory0.buffer !== wasm.memory.buffer) {
-//     cachegetUint8Memory0 = new Uint8Array(wasm.memory.buffer);
-//   }
-//   return cachegetUint8Memory0;
-// }
-
-// function passArray8ToWasm0(arg: any, malloc: any): [number, number] {
-//   const ptr = malloc(arg.length * 1);
-//   getUint8Memory0().set(arg, ptr / 1);
-//   return [ptr, arg.length];
-// }

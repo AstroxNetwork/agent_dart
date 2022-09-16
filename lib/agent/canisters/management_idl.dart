@@ -1,49 +1,52 @@
 import 'package:agent_dart/candid/idl.dart';
 
 Service managementIDL() {
-  // ignore: non_constant_identifier_names
-  final canister_id = IDL.Principal;
-  // ignore: non_constant_identifier_names
-  final wasm_module = IDL.Vec(IDL.Nat8);
-  // ignore: non_constant_identifier_names
-  final CanisterSettings = IDL.Record({
-    "compute_allocation": IDL.Opt(IDL.Nat),
-    "memory_allocation": IDL.Opt(IDL.Nat),
+  const canisterId = IDL.Principal;
+  final wasmModule = IDL.Vec(IDL.Nat8);
+  final canisterSettings = IDL.Record({
+    'compute_allocation': IDL.Opt(IDL.Nat),
+    'memory_allocation': IDL.Opt(IDL.Nat),
   });
   return IDL.Service({
-    "provisional_create_canister_with_cycles": IDL.Func(
+    'provisional_create_canister_with_cycles': IDL.Func(
       [
         IDL.Record(
-            {"amount": IDL.Opt(IDL.Nat), "settings": IDL.Opt(CanisterSettings)})
+          {'amount': IDL.Opt(IDL.Nat), 'settings': IDL.Opt(canisterSettings)},
+        )
       ],
       [
-        IDL.Record({"canister_id": canister_id})
+        IDL.Record({'canister_id': canisterId})
       ],
       [],
     ),
-    "create_canister": IDL.Func([], [
-      IDL.Record({"canister_id": canister_id})
-    ], []),
-    "install_code": IDL.Func(
+    'create_canister': IDL.Func(
+      [],
+      [
+        IDL.Record({'canister_id': canisterId})
+      ],
+      [],
+    ),
+    'install_code': IDL.Func(
       [
         IDL.Record({
-          "mode": IDL.Variant({
-            "install": IDL.Null,
-            "reinstall": IDL.Null,
-            "upgrade": IDL.Null
+          'mode': IDL.Variant({
+            'install': IDL.Null,
+            'reinstall': IDL.Null,
+            'upgrade': IDL.Null
           }),
-          "canister_id": canister_id,
-          "wasm_module": wasm_module,
-          "arg": IDL.Vec(IDL.Nat8),
+          'canister_id': canisterId,
+          'wasm_module': wasmModule,
+          'arg': IDL.Vec(IDL.Nat8),
         }),
       ],
       [],
       [],
     ),
-    "set_controller": IDL.Func(
+    'set_controller': IDL.Func(
       [
         IDL.Record(
-            {"canister_id": canister_id, "new_controller": IDL.Principal})
+          {'canister_id': canisterId, 'new_controller': IDL.Principal},
+        )
       ],
       [],
       [],

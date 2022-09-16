@@ -11,7 +11,9 @@ import 'types.dart';
 import 'utils/leb128.dart';
 
 abstract class ToHashable {
-  Function toHash();
+  const ToHashable();
+
+  dynamic Function() toHash();
 }
 
 String requestIdToHex(RequestId requestId) {
@@ -44,11 +46,10 @@ BinaryBlob hashValue(dynamic value) {
     final vals = value.map(hashValue).toList();
     return hash(concat(vals));
   } else if (value is Principal) {
-    return hash(value.toUint8Array());
-  } else if (value is Map && (value as ToHashable).toHash is Function) {
-    return hashValue((value as ToHashable).toHash());
-    // ignore: todo
-    // TODO This should be move to a specific async method as the webauthn flow required
+    return hash(value.toUint8List());
+  } else if (value is ToHashable) {
+    return hashValue(value.toHash());
+    // TODO: This should be move to a specific async method as the webauthn flow required
     // the flow to be synchronous to ensure Safari touch id works.
     // } else if (value instanceof Promise) {
     //   return value.then(x => hashValue(x));
@@ -62,26 +63,28 @@ BinaryBlob hashValue(dynamic value) {
   } else if (value is ByteBuffer) {
     return hashValue(value.asUint8List());
   }
-  throw 'Attempt to hash a value of unsupported type: $value';
+  throw UnsupportedError(
+    'Attempt to hash a value of unsupported type: $value.',
+  );
 }
 
 int compareLists<T extends Comparable<T>>(List<T> a, List<T> b) {
-  var aLength = a.length;
-  var bLength = b.length;
-  var minLength = aLength < bLength ? aLength : bLength;
-  for (var i = 0; i < minLength; i++) {
-    var result = a[i].compareTo(b[i]);
+  final aLength = a.length;
+  final bLength = b.length;
+  final minLength = aLength < bLength ? aLength : bLength;
+  for (int i = 0; i < minLength; i++) {
+    final result = a[i].compareTo(b[i]);
     if (result != 0) return result;
   }
   return aLength - bLength;
 }
 
 int compareListsBy<T>(List<T> a, List<T> b, int Function(T a, T b) compare) {
-  var aLength = a.length;
-  var bLength = b.length;
-  var minLength = aLength < bLength ? aLength : bLength;
-  for (var i = 0; i < minLength; i++) {
-    var result = compare(a[i], b[i]);
+  final aLength = a.length;
+  final bLength = b.length;
+  final minLength = aLength < bLength ? aLength : bLength;
+  for (int i = 0; i < minLength; i++) {
+    final result = compare(a[i], b[i]);
     if (result != 0) return result;
   }
   return aLength - bLength;
@@ -101,20 +104,15 @@ extension CompareListComparableExtension<T extends Comparable<T>> on List<T> {
 /// RequestId is the result of the representation-independent-hash function.
 /// https://sdk.dfinity.org/docs/interface-spec/index.html#hash-of-map
 /// @param request - ic-ref request to hash into RequestId
-
 RequestId requestIdOf(Map<String, dynamic> request) {
-  final hashed =
-      request.entries.where((element) => element.value != null).map((e) {
+  final hashed = request.entries.where((e) => e.value != null).map((e) {
     final hashedKey = hashString(e.key);
     final hashedValue = hashValue(e.value);
     return [hashedKey, hashedValue];
   }).toList();
-
   hashed.sort((k1, k2) {
     return k1.compare(k2, (a, b) => a.compare(b, (c, d) => c - d));
   });
-
-  var concatenated = u8aConcat(hashed.map((d) => u8aConcat(d)).toList());
-
+  final concatenated = u8aConcat(hashed.map((d) => u8aConcat(d)).toList());
   return RequestId.fromList(hash(concatenated));
 }

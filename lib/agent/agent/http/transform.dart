@@ -9,24 +9,20 @@ import 'package:typed_data/typed_data.dart';
 
 import 'types.dart';
 
-// ignore: non_constant_identifier_names
-final NANOSECONDS_PER_MILLISECONDS = BigInt.from(1000000);
+final _nanoSecondsPerMilliseconds = BigInt.from(1000000);
+final _replicaPermittedDriftMilliseconds = BigInt.from(60 * 1000);
 
-// ignore: non_constant_identifier_names
-final REPLICA_PERMITTED_DRIFT_MILLISECONDS = BigInt.from(60 * 1000);
+class Expiry extends ToCborable {
+  Expiry(
+    int deltaInMSec,
+  ) : _value = (BigInt.from(DateTime.now().millisecondsSinceEpoch) +
+                BigInt.from(deltaInMSec) -
+                _replicaPermittedDriftMilliseconds) *
+            _nanoSecondsPerMilliseconds;
 
-class Expiry extends ToCBorable {
-  late BigInt _value;
+  final BigInt _value;
 
   BigInt get value => _value;
-
-  Expiry(int deltaInMSec) {
-    // Use bigint because it can overflow the maximum number allowed in a double float.
-    _value = (BigInt.from(DateTime.now().millisecondsSinceEpoch) +
-            BigInt.from(deltaInMSec) -
-            REPLICA_PERMITTED_DRIFT_MILLISECONDS) *
-        NANOSECONDS_PER_MILLISECONDS;
-  }
 
   Uint8List toHash() {
     return lebEncode(_value);
@@ -35,8 +31,8 @@ class Expiry extends ToCBorable {
   @override
   void write(cbor.Encoder encoder) {
     if (kIsWeb) {
-      var data = serializeValue(0, 27, _value.toRadixString(16));
-      var buf = Uint8Buffer();
+      final data = serializeValue(0, 27, _value.toRadixString(16));
+      final buf = Uint8Buffer();
       buf.addAll(data.asUint8List());
       encoder.addBuilderOutput(buf);
     } else {
@@ -45,14 +41,16 @@ class Expiry extends ToCBorable {
   }
 }
 
-HttpAgentRequestTransformFnCall makeNonceTransform(
-    [NonceFunc nonceFn = makeNonce]) {
+HttpAgentRequestTransformFnCall makeNonceTransform([
+  NonceFunc nonceFn = makeNonce,
+]) {
   return (HttpAgentRequest request) async {
     // Nonce are only useful for async calls, to prevent replay attacks. Other types of
     // calls don't need Nonce so we just skip creating one.
-    if (request.endpoint == Endpoint.Call) {
+    if (request.endpoint == Endpoint.call) {
       (request as HttpAgentSubmitRequest).body.nonce = nonceFn();
     }
+    return request;
   };
 }
 

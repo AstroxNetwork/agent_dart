@@ -1,89 +1,124 @@
-// import 'dart:ffi';
 import 'dart:typed_data';
-// import 'package:ffi/ffi.dart';
 import 'package:typed_data/typed_data.dart';
-// ignore: library_prefixes
-import 'hex.dart' as hexUtil;
-// ignore: library_prefixes
-import 'string.dart' as stringUtil;
 
-// ignore: library_prefixes
-import 'u8a.dart' as u8aUtil;
-// ignore: library_prefixes
-import 'bn.dart' as bnUtil;
-// ignore: library_prefixes
-import 'is.dart' as isUtil;
+import 'hex.dart' as hex_util;
+import 'string.dart' as string_util;
+import 'u8a.dart' as u8a_util;
+import 'bn.dart' as bn_util;
+import 'is.dart' as is_util;
 
-extension StringExtension on String {
+extension AgentStringExtension on String {
   bool isHex([int bitLength = -1, bool ignoreLength = false]) =>
-      isUtil.isHex(this, bitLength, ignoreLength);
-  bool isHexString() => isUtil.isHexString(this);
-  String hexAddPrefix() => hexUtil.hexAddPrefix(this);
-  String hexStripPrefix() => stringUtil.strip0xHex(this);
-  String plainToHex() => u8aUtil.u8aToHex(stringUtil.stringToU8a(this));
-  Uint8List toU8a({int bitLength = -1}) => hexUtil.hexToU8a(this, bitLength);
+      is_util.isHex(this, bitLength, ignoreLength);
+
+  bool isHexString() => is_util.isHexString(this);
+
+  String hexAddPrefix() => hex_util.hexAddPrefix(this);
+
+  String hexStripPrefix() => string_util.strip0xHex(this);
+
+  String plainToHex() => u8a_util.u8aToHex(string_util.stringToU8a(this));
+
+  Uint8List toU8a({int bitLength = -1}) => hex_util.hexToU8a(this, bitLength);
+
   Uint8List plainToU8a({String? enc, bool useDartEncode = false}) =>
-      stringUtil.stringToU8a(this, enc: enc, useDartEncode: useDartEncode);
+      string_util.stringToU8a(this, enc: enc, useDartEncode: useDartEncode);
+
   BigInt hexToBn({Endian endian = Endian.big, bool isNegative = false}) =>
-      hexUtil.hexToBn(this, endian: endian, isNegative: isNegative);
-  // Pointer<Utf8> toUtf8() => toNativeUtf8();
-  String camelCase() => stringUtil.stringCamelCase(this);
+      hex_util.hexToBn(this, endian: endian, isNegative: isNegative);
+
+  String camelCase() => string_util.stringCamelCase(this);
 }
 
-extension U8aExtension on Uint8List {
-  Uint8List toU8a() => u8aUtil.u8aToU8a(this);
+extension AgentU8aExtension on Uint8List {
+  Uint8List toU8a() => u8a_util.u8aToU8a(this);
+
   String toHex({bool include0x = false}) =>
-      u8aUtil.u8aToHex(this, include0x: include0x);
+      u8a_util.u8aToHex(this, include0x: include0x);
+
   String u8aToString({bool useDartEncode = true}) =>
-      u8aUtil.u8aToString(this, useDartEncode: useDartEncode);
-  bool eq(Uint8List other) => u8aUtil.u8aEq(this, other);
+      u8a_util.u8aToString(this, useDartEncode: useDartEncode);
+
+  bool eq(Uint8List other) => u8a_util.u8aEq(this, other);
+
   BigInt toBn({Endian endian = Endian.little}) =>
-      u8aUtil.u8aToBn(this, endian: endian);
+      u8a_util.u8aToBn(this, endian: endian);
 }
 
-extension U8aBufferExtension on Uint8Buffer {
+extension AgentU8aBufferExtension on Uint8Buffer {
   Uint8List toU8a() => Uint8List.fromList(this);
+
   String toHex({bool include0x = false}) =>
-      u8aUtil.u8aToHex(toU8a(), include0x: include0x);
+      u8a_util.u8aToHex(toU8a(), include0x: include0x);
+
   String u8aToString({bool useDartEncode = true}) =>
-      u8aUtil.u8aToString(toU8a(), useDartEncode: useDartEncode);
-  bool eq(Uint8List other) => u8aUtil.u8aEq(toU8a(), other);
+      u8a_util.u8aToString(toU8a(), useDartEncode: useDartEncode);
+
+  bool eq(Uint8List other) => u8a_util.u8aEq(toU8a(), other);
+
   BigInt toBn({Endian endian = Endian.little}) =>
-      u8aUtil.u8aToBn(toU8a(), endian: endian);
+      u8a_util.u8aToBn(toU8a(), endian: endian);
 }
 
-extension BnExtension on BigInt {
-  BigInt toBn() => bnUtil.bnToBn(this);
-  String toHex(
-          {int bitLength = -1,
-          Endian endian = Endian.big,
-          bool isNegative = false}) =>
-      bnUtil.bnToHex(this,
-          bitLength: bitLength, endian: endian, isNegative: isNegative);
-  Uint8List toU8a(
-          {int bitLength = -1,
-          Endian endian = Endian.big,
-          bool isNegative = false}) =>
-      bnUtil.bnToU8a(this,
-          bitLength: bitLength, endian: endian, isNegative: isNegative);
-  BigInt bitNot({int? bitLength}) => bnUtil.bitnot(this, bitLength: bitLength);
+extension AgentBnExtension on BigInt {
+  BigInt toBn() => bn_util.bnToBn(this);
+
+  String toHex({
+    int bitLength = -1,
+    Endian endian = Endian.big,
+    bool isNegative = false,
+  }) =>
+      bn_util.bnToHex(
+        this,
+        bitLength: bitLength,
+        endian: endian,
+        isNegative: isNegative,
+      );
+
+  Uint8List toU8a({
+    int bitLength = -1,
+    Endian endian = Endian.big,
+    bool isNegative = false,
+  }) =>
+      bn_util.bnToU8a(
+        this,
+        bitLength: bitLength,
+        endian: endian,
+        isNegative: isNegative,
+      );
+
+  BigInt bitNot({int? bitLength}) => bn_util.bitnot(this, bitLength: bitLength);
 }
 
-extension IntExtension on int {
-  BigInt toBn() => bnUtil.bnToBn(this);
-  String toHex(
-          {int bitLength = -1,
-          Endian endian = Endian.big,
-          bool isNegative = false}) =>
-      bnUtil.bnToHex(toBn(),
-          bitLength: bitLength, endian: endian, isNegative: isNegative);
-  Uint8List toU8a(
-          {int bitLength = -1,
-          Endian endian = Endian.big,
-          bool isNegative = false}) =>
-      bnUtil.bnToU8a(toBn(),
-          bitLength: bitLength, endian: endian, isNegative: isNegative);
+extension AgentIntExtension on int {
+  BigInt toBn() => bn_util.bnToBn(this);
+
+  String toHex({
+    int bitLength = -1,
+    Endian endian = Endian.big,
+    bool isNegative = false,
+  }) =>
+      bn_util.bnToHex(
+        toBn(),
+        bitLength: bitLength,
+        endian: endian,
+        isNegative: isNegative,
+      );
+
+  Uint8List toU8a({
+    int bitLength = -1,
+    Endian endian = Endian.big,
+    bool isNegative = false,
+  }) =>
+      bn_util.bnToU8a(
+        toBn(),
+        bitLength: bitLength,
+        endian: endian,
+        isNegative: isNegative,
+      );
+
   BigInt bitNot({int? bitLength}) =>
-      bnUtil.bitnot(toBn(), bitLength: bitLength);
+      bn_util.bitnot(toBn(), bitLength: bitLength);
+
   static get max => 4294967296;
 }

@@ -1,21 +1,22 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:path/path.dart' as path;
 import 'package:agent_dart/agent/agent.dart';
 import 'package:archive/archive_io.dart';
 import 'package:agent_dart/utils/extension.dart';
+
 import 'signing_block.dart';
 
 class ZipSigningBlock {
+  const ZipSigningBlock.create({required this.signingBlocks});
+
   final List<SigningBlock> signingBlocks;
-  ZipSigningBlock.create({
-    required this.signingBlocks,
-  });
 
   void write(OutputStreamBase output) {
     output.writeUint32(getSize());
 
-    for (var sb in signingBlocks) {
+    for (final sb in signingBlocks) {
       output.writeUint32(sb.getSize()); // Uint64?? 4 bytes
       writeID(output); // 4 bytes
       sb.write(output);
@@ -25,11 +26,10 @@ class ZipSigningBlock {
   }
 
   int getSize() {
-    var size = 0;
-    for (var sb in signingBlocks) {
-      size += (sb.getSize() + 12); // Uint64 should + 32
+    int size = 0;
+    for (final sb in signingBlocks) {
+      size += sb.getSize() + 12; // Uint64 should + 32
     }
-
     return size;
   }
 
@@ -39,18 +39,22 @@ class ZipSigningBlock {
 }
 
 class SigningBlockEncoder extends ZipEncoder {
-  late final ZipSigningBlock signingBlock;
-  SigningBlockEncoder.create(
-      {required Uint8List message,
-      required Uint8List signature,
-      required PublicKey publicKey,
-      int algoId = 0x0201})
-      : super() {
-    signingBlock = ZipSigningBlock.create(signingBlocks: [
-      SigningBlock.create(
-          messages: [message], signatures: [signature], publicKeys: [publicKey])
-    ]);
-  }
+  SigningBlockEncoder.create({
+    required Uint8List message,
+    required Uint8List signature,
+    required PublicKey publicKey,
+    int algoId = 0x0201,
+  }) : signingBlock = ZipSigningBlock.create(
+          signingBlocks: [
+            SigningBlock.create(
+              messages: [message],
+              signatures: [signature],
+              publicKeys: [publicKey],
+            )
+          ],
+        );
+
+  final ZipSigningBlock signingBlock;
 
   void writeBlock(OutputStreamBase output) {
     signingBlock.write(output);
@@ -58,70 +62,82 @@ class SigningBlockEncoder extends ZipEncoder {
 }
 
 class SingingBlockZipFileEncoder extends ZipFileEncoder {
-  @override
-  late String zip_path;
+  SingingBlockZipFileEncoder(SigningBlockEncoder encoder) : _encoder = encoder;
+
   late OutputFileStream _output;
   late final SigningBlockEncoder _encoder;
 
-  SingingBlockZipFileEncoder(SigningBlockEncoder encoder) : super() {
-    _encoder = encoder;
-  }
-
-  static const int STORE = 0;
-  static const int GZIP = 1;
+  static const int store = 0;
+  static const int gzip = 1;
 
   @override
-  void zipDirectory(Directory dir,
-      {String? filename,
-      int? level,
-      bool followLinks = true,
-      DateTime? modified}) {
+  void zipDirectory(
+    Directory dir, {
+    String? filename,
+    int? level,
+    bool followLinks = true,
+    DateTime? modified,
+  }) {
     final dirPath = dir.path;
-    final zip_path = filename ?? '$dirPath.zip';
-    level ??= GZIP;
-    create(zip_path, level: level);
-    addDirectory(dir,
-        includeDirName: false, level: level, followLinks: followLinks);
+    final zipPath = filename ?? '$dirPath.zip';
+    level ??= gzip;
+    create(zipPath, level: level);
+    addDirectory(
+      dir,
+      includeDirName: false,
+      level: level,
+      followLinks: followLinks,
+    );
     close();
   }
 
   @override
-  void open(String zip_path) => create(zip_path);
+  void open(String zipPath) => create(zipPath);
 
   @override
-  void create(String zip_path, {int? level, DateTime? modified}) {
-    this.zip_path = zip_path;
-    _output = OutputFileStream(zip_path);
+  void create(String zipPath, {int? level, DateTime? modified}) {
+    this.zipPath = zipPath;
+    _output = OutputFileStream(zipPath);
     _encoder.startEncode(_output, level: level);
   }
 
   @override
-  Future<void> addDirectory(Directory dir,
-      {bool includeDirName = true, int? level, bool followLinks = true}) async {
-    // _encoder.signingBlock.write(_output);
-    List files = dir.listSync(recursive: true, followLinks: followLinks);
-    var futures = <Future<void>>[];
-    for (var file in files) {
+  Future<void> addDirectory(
+    Directory dir, {
+    bool includeDirName = true,
+    int? level,
+    bool followLinks = true,
+  }) async {
+    final List files = dir.listSync(recursive: true, followLinks: followLinks);
+    final futures = <Future<void>>[];
+    for (final file in files) {
       if (file is! File) {
         continue;
       }
-
       final f = file;
-      final dir_name = path.basename(dir.path);
-      final rel_path = path.relative(f.path, from: dir.path);
-      futures.add(addFile(
-          f, includeDirName ? (dir_name + '/' + rel_path) : rel_path, level));
+      final dirName = path.basename(dir.path);
+      final relativePath = path.relative(f.path, from: dir.path);
+      futures.add(
+        addFile(
+          f,
+          includeDirName ? ('$dirName/$relativePath') : relativePath,
+          level,
+        ),
+      );
     }
     await Future.wait(futures);
   }
 
   @override
-  Future<void> addFile(File file, [String? filename, int? level = GZIP]) async {
-    var file_stream = InputFileStream(file.path);
-    var archiveFile = ArchiveFile.stream(
-        filename ?? path.basename(file.path), file.lengthSync(), file_stream);
+  Future<void> addFile(File file, [String? filename, int? level = gzip]) async {
+    final fileStream = InputFileStream(file.path);
+    final archiveFile = ArchiveFile.stream(
+      filename ?? path.basename(file.path),
+      file.lengthSync(),
+      fileStream,
+    );
 
-    if (level == STORE) {
+    if (level == store) {
       archiveFile.compress = false;
     }
 
@@ -129,7 +145,7 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
     archiveFile.mode = file.statSync().mode;
 
     _encoder.addFile(archiveFile);
-    await file_stream.close();
+    await fileStream.close();
   }
 
   @override

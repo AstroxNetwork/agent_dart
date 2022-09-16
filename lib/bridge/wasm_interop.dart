@@ -1,3 +1,4 @@
+// ignore_for_file: sort_constructors_first, library_private_types_in_public_api
 /// Dart wrapper for WebAssembly JavaScript API
 @JS()
 library wasm_interop;
@@ -85,10 +86,11 @@ class Module {
 
   static Future<Module> _fromBytesOrBufferAsync(Object bytesOrBuffer) =>
       promiseToFuture<_Module>(_compile(bytesOrBuffer))
-          .then((_module) => Module._(_module))
+          .then((module) => Module._(module))
           .catchError(
-              (Object e) => throw CompileError(getProperty(e, 'message')),
-              test: (e) => instanceof(e, _compileError));
+            (Object e) => throw CompileError(getProperty(e, 'message')),
+            test: (e) => instanceof(e, _compileError),
+          );
 
   /// Returns `true` if provided WebAssembly [Uint8List] source is valid.
   static bool validateBytes(Uint8List bytes) => _validate(bytes);
@@ -173,12 +175,16 @@ class Instance {
   ///
   /// final importObject = MyImports(env: MyEnv(log: allowInterop(print)));
   /// final instance = Instance.fromModule(module, importObject: importObject);
-  factory Instance.fromModule(Module module,
-      {Map<String, Map<String, Object>>? importMap, Object? importObject}) {
+  factory Instance.fromModule(
+    Module module, {
+    Map<String, Map<String, Object>>? importMap,
+    Object? importObject,
+  }) {
     try {
       return Instance._(
-          _Instance(module.jsObject, _reifyImports(importMap, importObject)),
-          module);
+        _Instance(module.jsObject, _reifyImports(importMap, importObject)),
+        module,
+      );
       // ignore: avoid_catches_without_on_clauses
     } catch (e) {
       if (instanceof(e, _linkError)) {
@@ -211,13 +217,17 @@ class Instance {
   /// Asynchronously instantiates compiled WebAssembly [Module] with imports.
   ///
   /// See [Instance.fromModule] regarding [importMap] and [importObject] usage.
-  static Future<Instance> fromModuleAsync(Module module,
-          {Map<String, Map<String, Object>>? importMap,
-          Object? importObject}) =>
-      promiseToFuture<_Instance>(_instantiateModule(
-              module.jsObject, _reifyImports(importMap, importObject)))
-          .then((_instance) => Instance._(_instance, module))
-          .catchError((Object e) {
+  static Future<Instance> fromModuleAsync(
+    Module module, {
+    Map<String, Map<String, Object>>? importMap,
+    Object? importObject,
+  }) =>
+      promiseToFuture<_Instance>(
+        _instantiateModule(
+          module.jsObject,
+          _reifyImports(importMap, importObject),
+        ),
+      ).then((instance) => Instance._(instance, module)).catchError((Object e) {
         if (instanceof(e, _compileError)) {
           throw CompileError(getProperty(e, 'message'));
         } else if (instanceof(e, _linkError)) {
@@ -233,25 +243,34 @@ class Instance {
   /// instantiates it with imports.
   ///
   /// See [Instance.fromModule] regarding [importMap] and [importObject] usage.
-  static Future<Instance> fromBytesAsync(Uint8List bytes,
-          {Map<String, Map<String, Object>>? importMap,
-          Object? importObject}) =>
+  static Future<Instance> fromBytesAsync(
+    Uint8List bytes, {
+    Map<String, Map<String, Object>>? importMap,
+    Object? importObject,
+  }) =>
       _fromBytesOfBufferAsync(bytes, _reifyImports(importMap, importObject));
 
   /// Asynchronously compiles WebAssembly Module from [ByteBuffer] source and
   /// instantiates it with imports.
   ///
   /// See [Instance.fromModule] regarding [importMap] and [importObject] usage.
-  static Future<Instance> fromBufferAsync(ByteBuffer buffer,
-          {Map<String, Map<String, Object>>? importMap,
-          Object? importObject}) =>
+  static Future<Instance> fromBufferAsync(
+    ByteBuffer buffer, {
+    Map<String, Map<String, Object>>? importMap,
+    Object? importObject,
+  }) =>
       _fromBytesOfBufferAsync(buffer, _reifyImports(importMap, importObject));
+
   static Future<Instance> _fromBytesOfBufferAsync(
-          Object bytesOrBuffer, Object imports) =>
+    Object bytesOrBuffer,
+    Object imports,
+  ) =>
       promiseToFuture<_WebAssemblyInstantiatedSource>(
-              _instantiate(bytesOrBuffer, imports))
-          .then((_source) =>
-              Instance._(_source.instance, Module._(_source.module)))
+        _instantiate(bytesOrBuffer, imports),
+      )
+          .then(
+        (source) => Instance._(source.instance, Module._(source.module)),
+      )
           .catchError((Object e) {
         if (instanceof(e, _compileError)) {
           throw CompileError(getProperty(e, 'message'));
@@ -263,8 +282,11 @@ class Instance {
         // ignore: only_throw_errors
         throw e;
       });
+
   static Object _reifyImports(
-      Map<String, Map<String, Object>>? importMap, Object? importObject) {
+    Map<String, Map<String, Object>>? importMap,
+    Object? importObject,
+  ) {
     assert(importMap == null || importObject == null);
     assert(importObject is! Map, 'importObject must be a JsObject.');
     if (importObject != null) {
@@ -299,8 +321,10 @@ class Instance {
             setProperty(moduleObject, name, value.jsObject);
             return;
           }
-          assert(false,
-              '$moduleName/$name value ($value) is of unsupported type.');
+          assert(
+            false,
+            '$moduleName/$name value ($value) is of unsupported type.',
+          );
         });
         setProperty(importObject, moduleName, moduleObject);
       });
@@ -329,12 +353,14 @@ class Memory {
   /// [maximum] must be greater than or equal to [initial].
   Memory.shared({required int initial, required int maximum})
       : jsObject = _Memory(_descriptor(initial, maximum, true));
+
   const Memory._(this.jsObject);
 
   /// Returns a [ByteBuffer] backing this memory object.
   ///
   /// Calling [grow] invalidates [buffer] reference.
   ByteBuffer get buffer => jsObject.buffer;
+
   // https://github.com/dart-lang/sdk/issues/33527
   /// Returns a number of bytes of [ByteBuffer] backing this memory object.
   int get lengthInBytes => getProperty(buffer, 'byteLength') as int;
@@ -358,16 +384,19 @@ class Memory {
   @override
   bool operator ==(Object other) =>
       other is Memory && other.jsObject == jsObject;
+
   @override
   int get hashCode => jsObject.hashCode;
+
   static _MemoryDescriptor _descriptor(int initial, int? maximum, bool shared) {
     assert(initial >= 0);
     assert(maximum == null || maximum >= initial);
     assert(!shared || maximum != null);
     return _MemoryDescriptor(
-        initial: initial,
-        maximum: maximum ?? _undefined,
-        shared: shared ? true : _undefined);
+      initial: initial,
+      maximum: maximum ?? _undefined,
+      shared: shared ? true : _undefined,
+    );
   }
 }
 
@@ -392,13 +421,21 @@ class Table {
   /// provided, [value] will be assigned to all table entries.
   Table.externref({required int initial, int? maximum, Object? value})
       : jsObject = _Table(_descriptor('externref', initial, maximum), value);
+
   const Table._(this.jsObject);
+
   static _TableDescriptor _descriptor(
-      String element, int initial, int? maximum) {
+    String element,
+    int initial,
+    int? maximum,
+  ) {
     assert(initial >= 0);
     assert(maximum == null || maximum >= initial);
     return _TableDescriptor(
-        element: element, initial: initial, maximum: maximum ?? _undefined);
+      element: element,
+      initial: initial,
+      maximum: maximum ?? _undefined,
+    );
   }
 
   /// Returns a table element by its index.
@@ -422,6 +459,7 @@ class Table {
   @override
   bool operator ==(Object other) =>
       other is Table && other.jsObject == jsObject;
+
   @override
   int get hashCode => jsObject.hashCode;
 }
@@ -453,6 +491,7 @@ class Global {
   /// Creates a [Global] of `externref` type with [value].
   Global.externref({Object? value, bool mutable = false})
       : jsObject = _Global(_descriptor('externref', mutable), value);
+
   const Global._(this.jsObject);
 
   /// Returns a value stored in [Global].
@@ -478,8 +517,10 @@ class Global {
   @override
   bool operator ==(Object other) =>
       other is Global && other.jsObject == jsObject;
+
   @override
   int get hashCode => jsObject.hashCode;
+
   static _GlobalDescriptor _descriptor(String value, bool mutable) =>
       _GlobalDescriptor(value: value, mutable: mutable);
 }
@@ -501,7 +542,8 @@ extension JsBigInt on BigInt {
 @JS('BigInt')
 external Object Function(String string) get _jsBigInt;
 
-/* WebAssembly IDL */
+/// WebAssembly IDL
+
 /// [Module] imports entry.
 @JS()
 @anonymous
@@ -547,6 +589,7 @@ enum ImportExportKind {
   /// [Table]
   table
 }
+
 const _importExportKindMap = {
   'function': ImportExportKind.function,
   'global': ImportExportKind.global,
@@ -557,84 +600,113 @@ const _importExportKindMap = {
 @JS()
 @anonymous
 abstract class _MemoryDescriptor {
-  external factory _MemoryDescriptor(
-      {required int initial, Object maximum, Object shared});
+  external factory _MemoryDescriptor({
+    required int initial,
+    Object maximum,
+    Object shared,
+  });
 }
 
 @JS()
 @anonymous
 abstract class _TableDescriptor {
-  external factory _TableDescriptor(
-      {required String element, required int initial, Object maximum});
+  external factory _TableDescriptor({
+    required String element,
+    required int initial,
+    Object maximum,
+  });
 }
 
 @JS()
 @anonymous
 abstract class _GlobalDescriptor {
-  external factory _GlobalDescriptor(
-      {required String value, bool mutable = false});
+  external factory _GlobalDescriptor({
+    required String value,
+    bool mutable = false,
+  });
 }
 
 @JS()
 @anonymous
 abstract class _WebAssemblyInstantiatedSource {
   external _Module get module;
+
   external _Instance get instance;
 }
 
 @JS('WebAssembly.Memory')
 external Function get _memoryConstructor;
+
 @JS('WebAssembly.Table')
 external Function get _tableConstructor;
+
 @JS('WebAssembly.Global')
 external Function get _globalConstructor;
+
 @JS('WebAssembly.validate')
 external bool _validate(Object bytesOrBuffer);
+
 @JS('WebAssembly.compile')
 external Object _compile(Object bytesOrBuffer);
+
 @JS('WebAssembly.instantiate')
 external Object _instantiate(Object bytesOrBuffer, Object import);
+
 @JS('WebAssembly.instantiate')
 external Object _instantiateModule(_Module module, Object import);
 
 @JS('WebAssembly.Module')
 class _Module {
   external _Module(Object bytesOfBuffer);
+
   // List<_ModuleExportDescriptor>
   external static List<Object> exports(_Module module);
+
   // List<_ModuleImportDescriptor>
   external static List<Object> imports(_Module module);
+
   // List<ByteBuffer>
   external static List<Object> customSections(
-      _Module module, String sectionName);
+    _Module module,
+    String sectionName,
+  );
 }
 
 @JS('WebAssembly.Instance')
 class _Instance {
   external _Instance(_Module module, Object import);
+
   external Object get exports;
 }
 
 @JS('WebAssembly.Memory')
 class _Memory {
   external _Memory(_MemoryDescriptor descriptor);
+
   external ByteBuffer get buffer;
+
   external int grow(int delta);
 }
 
 @JS('WebAssembly.Table')
 class _Table {
   external _Table(_TableDescriptor descriptor, Object? value);
+
   external int grow(int delta);
+
   external Object? get(int index);
+
   external void set(int index, Object? value);
+
   external int get length;
 }
 
 @JS('WebAssembly.Global')
 class _Global {
   external _Global(_GlobalDescriptor descriptor, Object? v);
+
   external Object? get value;
+
   external set value(Object? v);
 }
 
@@ -645,6 +717,7 @@ class CompileError extends Error {
 
   /// Message describing the problem.
   final Object? message;
+
   @override
   String toString() => Error.safeToString(message);
 }
@@ -656,6 +729,7 @@ class LinkError extends Error {
 
   /// Message describing the problem.
   final Object? message;
+
   @override
   String toString() => Error.safeToString(message);
 }
@@ -667,14 +741,17 @@ class RuntimeError extends Error {
 
   /// Message describing the problem.
   final Object? message;
+
   @override
   String toString() => Error.safeToString(message);
 }
 
 @JS('WebAssembly.CompileError')
 external Function get _compileError;
+
 @JS('WebAssembly.LinkError')
 external Function get _linkError;
+
 @JS('WebAssembly.RuntimeError')
 external Function get _runtimeError;
 

@@ -3,27 +3,33 @@ import 'dart:async';
 import 'package:agent_dart/agent/agent.dart';
 import 'package:agent_dart/principal/principal.dart';
 
-typedef PollStrategy = Future<void> Function(
-    Principal canisterId, RequestId requestId, String status);
 typedef PollStrategyFactory = PollStrategy Function();
-
+typedef PollStrategy = Future<void> Function(
+  Principal canisterId,
+  RequestId requestId,
+  RequestStatusResponseStatus status,
+);
 typedef Predicate<T> = Future<T> Function(
-    Principal canisterId, RequestId requestId, String status);
-
-// ignore: constant_identifier_names
-const FIVE_MINUTES_IN_MSEC = 5 * 60 * 1000;
+  Principal canisterId,
+  RequestId requestId,
+  RequestStatusResponseStatus status,
+);
 
 PollStrategy defaultStrategy() {
   return chain([
     conditionalDelay(once(), 1000),
     backoff(1000, 1.2),
-    timeout(FIVE_MINUTES_IN_MSEC)
+    timeout(5 * 60 * 1000)
   ]);
 }
 
 Predicate<bool> once() {
-  var first = true;
-  return (Principal canisterId, RequestId requestId, String status) async {
+  bool first = true;
+  return (
+    Principal canisterId,
+    RequestId requestId,
+    RequestStatusResponseStatus status,
+  ) async {
     if (first) {
       first = false;
       return true;
@@ -36,10 +42,10 @@ PollStrategy conditionalDelay(Predicate<bool> condition, int timeInMsec) {
   return (
     Principal canisterId,
     RequestId requestId,
-    String status,
+    RequestStatusResponseStatus status,
   ) async {
     if (await condition(canisterId, requestId, status)) {
-      var c = Completer();
+      final c = Completer();
       Future.delayed(Duration(milliseconds: timeInMsec), c.complete);
       return c.future;
     }
@@ -47,56 +53,64 @@ PollStrategy conditionalDelay(Predicate<bool> condition, int timeInMsec) {
 }
 
 PollStrategy maxAttempts(int count) {
-  var attempts = count;
+  int attempts = count;
   return (
     Principal canisterId,
     RequestId requestId,
-    String status,
+    RequestStatusResponseStatus status,
   ) async {
     if (--attempts <= 0) {
-      // ignore: prefer_adjacent_string_concatenation
-      throw "Failed to retrieve a reply for request after $count attempts:\n"
-              // ignore: prefer_adjacent_string_concatenation
-              "  Request ID: ${requestIdToHex(requestId)}\n" +
-          "  Request status: $status\n";
+      throw Exception(
+        'Failed to retrieve a reply for request after $count attempts:\n'
+        '  Request ID: ${requestIdToHex(requestId)}\n'
+        '  Request status: ${status.name}\n',
+      );
     }
   };
 }
 
 /// Throttle polling.
-/// @param throttleInMsec Amount in millisecond to wait between each polling.
-PollStrategy throttle(int throttleInMsec) {
-  return (Principal canisterId, RequestId requestId, String status) async {
-    var c = Completer();
-    Future.delayed(Duration(milliseconds: throttleInMsec), c.complete);
+/// @param throttleMilliseconds
+/// - Amount in millisecond to wait between each polling.
+PollStrategy throttle(int throttleMilliseconds) {
+  return (
+    Principal canisterId,
+    RequestId requestId,
+    RequestStatusResponseStatus status,
+  ) async {
+    final c = Completer();
+    Future.delayed(Duration(milliseconds: throttleMilliseconds), c.complete);
     return c.future;
   };
 }
 
-PollStrategy timeout(int timeInMsec) {
-  final end = DateTime.now().millisecondsSinceEpoch + timeInMsec;
+PollStrategy timeout(int milliseconds) {
+  final end = DateTime.now().millisecondsSinceEpoch + milliseconds;
   return (
     Principal canisterId,
     RequestId requestId,
-    String status,
+    RequestStatusResponseStatus status,
   ) async {
     if (DateTime.now().millisecondsSinceEpoch > end) {
-      // ignore: prefer_adjacent_string_concatenation
-      throw "Request timed out after $timeInMsec msec:\n"
-              // ignore: prefer_adjacent_string_concatenation
-              "  Request ID: ${requestIdToHex(requestId)}\n" +
-          "  Request status: $status\n";
+      throw TimeoutException(
+        'Request timed out after $milliseconds milliseconds:\n'
+        '  Request ID: ${requestIdToHex(requestId)}\n'
+        '  Request status: $status\n',
+        Duration(milliseconds: milliseconds),
+      );
     }
   };
 }
 
 PollStrategy backoff(num startingThrottleInMsec, num backoffFactor) {
-  num currentThrottling = startingThrottleInMsec;
-
-  return (Principal canisterId, RequestId requestId, String status) {
-    var c = Completer();
-    Future.delayed(Duration(milliseconds: (currentThrottling).toInt()), () {
-      currentThrottling *= backoffFactor;
+  return (
+    Principal canisterId,
+    RequestId requestId,
+    RequestStatusResponseStatus status,
+  ) {
+    final c = Completer();
+    Future.delayed(Duration(milliseconds: startingThrottleInMsec.toInt()), () {
+      startingThrottleInMsec *= backoffFactor;
       c.complete();
     });
     return c.future;
@@ -107,9 +121,9 @@ PollStrategy chain(List<PollStrategy> strategies) {
   return (
     Principal canisterId,
     RequestId requestId,
-    String status,
+    RequestStatusResponseStatus status,
   ) async {
-    for (var a in strategies) {
+    for (final a in strategies) {
       await a(canisterId, requestId, status);
     }
   };

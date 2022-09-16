@@ -49,7 +49,7 @@ class LedgerInit extends $pb.GeneratedMessage {
         $pb.PbFieldType.OU3)
     ..hasRequiredFields = false;
 
-  LedgerInit._() : super();
+  LedgerInit._();
   factory LedgerInit({
     AccountIdentifier? mintingAccount,
     $core.Iterable<Account>? initialValues,
@@ -153,7 +153,7 @@ class LedgerUpgrade extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..hasRequiredFields = false;
 
-  LedgerUpgrade._() : super();
+  LedgerUpgrade._();
   factory LedgerUpgrade() => create();
   factory LedgerUpgrade.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
@@ -237,7 +237,7 @@ class SendRequest extends $pb.GeneratedMessage {
         subBuilder: TimeStamp.create)
     ..hasRequiredFields = false;
 
-  SendRequest._() : super();
+  SendRequest._();
   factory SendRequest({
     Memo? memo,
     Payment? payment,
@@ -414,7 +414,7 @@ class SendResponse extends $pb.GeneratedMessage {
         subBuilder: BlockHeight.create)
     ..hasRequiredFields = false;
 
-  SendResponse._() : super();
+  SendResponse._();
   factory SendResponse({
     BlockHeight? resultingHeight,
   }) {
@@ -508,7 +508,7 @@ class NotifyRequest extends $pb.GeneratedMessage {
         subBuilder: Subaccount.create)
     ..hasRequiredFields = false;
 
-  NotifyRequest._() : super();
+  NotifyRequest._();
   factory NotifyRequest({
     BlockHeight? blockHeight,
     ICPTs? maxFee,
@@ -644,7 +644,7 @@ class NotifyResponse extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..hasRequiredFields = false;
 
-  NotifyResponse._() : super();
+  NotifyResponse._();
   factory NotifyResponse() => create();
   factory NotifyResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
@@ -728,7 +728,7 @@ class TransactionNotificationRequest extends $pb.GeneratedMessage {
         subBuilder: Memo.create)
     ..hasRequiredFields = false;
 
-  TransactionNotificationRequest._() : super();
+  TransactionNotificationRequest._();
   factory TransactionNotificationRequest({
     $0.PrincipalId? from,
     Subaccount? fromSubaccount,
@@ -910,7 +910,7 @@ class TransactionNotificationResponse extends $pb.GeneratedMessage {
         $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
 
-  TransactionNotificationResponse._() : super();
+  TransactionNotificationResponse._();
   factory TransactionNotificationResponse({
     $core.List<$core.int>? response,
   }) {
@@ -1010,7 +1010,7 @@ class CyclesNotificationResponse extends $pb.GeneratedMessage {
         subBuilder: ToppedUp.create)
     ..hasRequiredFields = false;
 
-  CyclesNotificationResponse._() : super();
+  CyclesNotificationResponse._();
   factory CyclesNotificationResponse({
     $0.PrincipalId? createdCanisterId,
     Refund? refund,
@@ -1123,7 +1123,7 @@ class AccountBalanceRequest extends $pb.GeneratedMessage {
         subBuilder: AccountIdentifier.create)
     ..hasRequiredFields = false;
 
-  AccountBalanceRequest._() : super();
+  AccountBalanceRequest._();
   factory AccountBalanceRequest({
     AccountIdentifier? account,
   }) {
@@ -1195,7 +1195,7 @@ class AccountBalanceResponse extends $pb.GeneratedMessage {
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
 
-  AccountBalanceResponse._() : super();
+  AccountBalanceResponse._();
   factory AccountBalanceResponse({
     ICPTs? balance,
   }) {
@@ -1261,7 +1261,7 @@ class TipOfChainRequest extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..hasRequiredFields = false;
 
-  TipOfChainRequest._() : super();
+  TipOfChainRequest._();
   factory TipOfChainRequest() => create();
   factory TipOfChainRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
@@ -1315,7 +1315,7 @@ class TipOfChainResponse extends $pb.GeneratedMessage {
         subBuilder: BlockHeight.create)
     ..hasRequiredFields = false;
 
-  TipOfChainResponse._() : super();
+  TipOfChainResponse._();
   factory TipOfChainResponse({
     Certification? certification,
     BlockHeight? chainLength,
@@ -1397,7 +1397,7 @@ class TotalSupplyRequest extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..hasRequiredFields = false;
 
-  TotalSupplyRequest._() : super();
+  TotalSupplyRequest._();
   factory TotalSupplyRequest() => create();
   factory TotalSupplyRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
@@ -1445,7 +1445,7 @@ class TotalSupplyResponse extends $pb.GeneratedMessage {
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
 
-  TotalSupplyResponse._() : super();
+  TotalSupplyResponse._();
   factory TotalSupplyResponse({
     ICPTs? totalSupply,
   }) {
@@ -1515,7 +1515,7 @@ class LedgerArchiveRequest extends $pb.GeneratedMessage {
         subBuilder: TimeStamp.create)
     ..hasRequiredFields = false;
 
-  LedgerArchiveRequest._() : super();
+  LedgerArchiveRequest._();
   factory LedgerArchiveRequest({
     TimeStamp? timestamp,
   }) {
@@ -1587,7 +1587,7 @@ class BlockRequest extends $pb.GeneratedMessage {
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
 
-  BlockRequest._() : super();
+  BlockRequest._();
   factory BlockRequest({
     $fixnum.Int64? blockHeight,
   }) {
@@ -1655,7 +1655,7 @@ class EncodedBlock extends $pb.GeneratedMessage {
         $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
 
-  EncodedBlock._() : super();
+  EncodedBlock._();
   factory EncodedBlock({
     $core.List<$core.int>? block,
   }) {
@@ -1738,7 +1738,7 @@ class BlockResponse extends $pb.GeneratedMessage {
         subBuilder: $0.PrincipalId.create)
     ..hasRequiredFields = false;
 
-  BlockResponse._() : super();
+  BlockResponse._();
   factory BlockResponse({
     EncodedBlock? block,
     $0.PrincipalId? canisterId,
@@ -1838,7 +1838,7 @@ class GetBlocksRequest extends $pb.GeneratedMessage {
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
 
-  GetBlocksRequest._() : super();
+  GetBlocksRequest._();
   factory GetBlocksRequest({
     $fixnum.Int64? start,
     $fixnum.Int64? length,
@@ -1927,7 +1927,7 @@ class Refund extends $pb.GeneratedMessage {
             : 'error')
     ..hasRequiredFields = false;
 
-  Refund._() : super();
+  Refund._();
   factory Refund({
     BlockHeight? refund,
     $core.String? error,
@@ -2006,7 +2006,7 @@ class ToppedUp extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..hasRequiredFields = false;
 
-  ToppedUp._() : super();
+  ToppedUp._();
   factory ToppedUp() => create();
   factory ToppedUp.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
@@ -2054,7 +2054,7 @@ class EncodedBlocks extends $pb.GeneratedMessage {
         subBuilder: EncodedBlock.create)
     ..hasRequiredFields = false;
 
-  EncodedBlocks._() : super();
+  EncodedBlocks._();
   factory EncodedBlocks({
     $core.Iterable<EncodedBlock>? blocks,
   }) {
@@ -2127,7 +2127,7 @@ class GetBlocksResponse extends $pb.GeneratedMessage {
             : 'error')
     ..hasRequiredFields = false;
 
-  GetBlocksResponse._() : super();
+  GetBlocksResponse._();
   factory GetBlocksResponse({
     EncodedBlocks? blocks,
     $core.String? error,
@@ -2225,7 +2225,7 @@ class IterBlocksRequest extends $pb.GeneratedMessage {
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
 
-  IterBlocksRequest._() : super();
+  IterBlocksRequest._();
   factory IterBlocksRequest({
     $fixnum.Int64? start,
     $fixnum.Int64? length,
@@ -2310,7 +2310,7 @@ class IterBlocksResponse extends $pb.GeneratedMessage {
         subBuilder: EncodedBlock.create)
     ..hasRequiredFields = false;
 
-  IterBlocksResponse._() : super();
+  IterBlocksResponse._();
   factory IterBlocksResponse({
     $core.Iterable<EncodedBlock>? blocks,
   }) {
@@ -2383,7 +2383,7 @@ class ArchiveIndexEntry extends $pb.GeneratedMessage {
         subBuilder: $0.PrincipalId.create)
     ..hasRequiredFields = false;
 
-  ArchiveIndexEntry._() : super();
+  ArchiveIndexEntry._();
   factory ArchiveIndexEntry({
     $fixnum.Int64? heightFrom,
     $fixnum.Int64? heightTo,
@@ -2486,7 +2486,7 @@ class ArchiveIndexResponse extends $pb.GeneratedMessage {
         subBuilder: ArchiveIndexEntry.create)
     ..hasRequiredFields = false;
 
-  ArchiveIndexResponse._() : super();
+  ArchiveIndexResponse._();
   factory ArchiveIndexResponse({
     $core.Iterable<ArchiveIndexEntry>? entries,
   }) {
@@ -2552,7 +2552,7 @@ class ArchiveInit extends $pb.GeneratedMessage {
         $pb.PbFieldType.OU3)
     ..hasRequiredFields = false;
 
-  ArchiveInit._() : super();
+  ArchiveInit._();
   factory ArchiveInit({
     $core.int? nodeMaxMemorySizeBytes,
     $core.int? maxMessageSizeBytes,
@@ -2636,7 +2636,7 @@ class ArchiveAddRequest extends $pb.GeneratedMessage {
         subBuilder: Block.create)
     ..hasRequiredFields = false;
 
-  ArchiveAddRequest._() : super();
+  ArchiveAddRequest._();
   factory ArchiveAddRequest({
     $core.Iterable<Block>? blocks,
   }) {
@@ -2689,7 +2689,7 @@ class ArchiveAddResponse extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..hasRequiredFields = false;
 
-  ArchiveAddResponse._() : super();
+  ArchiveAddResponse._();
   factory ArchiveAddResponse() => create();
   factory ArchiveAddResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
@@ -2731,7 +2731,7 @@ class GetNodesRequest extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..hasRequiredFields = false;
 
-  GetNodesRequest._() : super();
+  GetNodesRequest._();
   factory GetNodesRequest() => create();
   factory GetNodesRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
@@ -2780,7 +2780,7 @@ class GetNodesResponse extends $pb.GeneratedMessage {
         subBuilder: $0.PrincipalId.create)
     ..hasRequiredFields = false;
 
-  GetNodesResponse._() : super();
+  GetNodesResponse._();
   factory GetNodesResponse({
     $core.Iterable<$0.PrincipalId>? nodes,
   }) {
@@ -2840,7 +2840,7 @@ class ICPTs extends $pb.GeneratedMessage {
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
 
-  ICPTs._() : super();
+  ICPTs._();
   factory ICPTs({
     $fixnum.Int64? e8s,
   }) {
@@ -2907,7 +2907,7 @@ class Payment extends $pb.GeneratedMessage {
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
 
-  Payment._() : super();
+  Payment._();
   factory Payment({
     ICPTs? receiverGets,
   }) {
@@ -2977,7 +2977,7 @@ class BlockHeight extends $pb.GeneratedMessage {
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
 
-  BlockHeight._() : super();
+  BlockHeight._();
   factory BlockHeight({
     $fixnum.Int64? height,
   }) {
@@ -3056,7 +3056,7 @@ class Block extends $pb.GeneratedMessage {
         subBuilder: Transaction.create)
     ..hasRequiredFields = false;
 
-  Block._() : super();
+  Block._();
   factory Block({
     Hash? parentHash,
     TimeStamp? timestamp,
@@ -3161,7 +3161,7 @@ class Hash extends $pb.GeneratedMessage {
         $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
 
-  Hash._() : super();
+  Hash._();
   factory Hash({
     $core.List<$core.int>? hash,
   }) {
@@ -3234,7 +3234,7 @@ class Account extends $pb.GeneratedMessage {
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
 
-  Account._() : super();
+  Account._();
   factory Account({
     AccountIdentifier? identifier,
     ICPTs? balance,
@@ -3361,7 +3361,7 @@ class Transaction extends $pb.GeneratedMessage {
         subBuilder: TimeStamp.create)
     ..hasRequiredFields = false;
 
-  Transaction._() : super();
+  Transaction._();
   factory Transaction({
     Burn? burn,
     Mint? mint,
@@ -3542,7 +3542,7 @@ class Send extends $pb.GeneratedMessage {
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
 
-  Send._() : super();
+  Send._();
   factory Send({
     AccountIdentifier? from,
     AccountIdentifier? to,
@@ -3671,7 +3671,7 @@ class Mint extends $pb.GeneratedMessage {
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
 
-  Mint._() : super();
+  Mint._();
   factory Mint({
     AccountIdentifier? to,
     ICPTs? amount,
@@ -3764,7 +3764,7 @@ class Burn extends $pb.GeneratedMessage {
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
 
-  Burn._() : super();
+  Burn._();
   factory Burn({
     AccountIdentifier? from,
     ICPTs? amount,
@@ -3851,7 +3851,7 @@ class AccountIdentifier extends $pb.GeneratedMessage {
         $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
 
-  AccountIdentifier._() : super();
+  AccountIdentifier._();
   factory AccountIdentifier({
     $core.List<$core.int>? hash,
   }) {
@@ -3919,7 +3919,7 @@ class Subaccount extends $pb.GeneratedMessage {
         $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
 
-  Subaccount._() : super();
+  Subaccount._();
   factory Subaccount({
     $core.List<$core.int>? subAccount,
   }) {
@@ -3987,7 +3987,7 @@ class Memo extends $pb.GeneratedMessage {
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
 
-  Memo._() : super();
+  Memo._();
   factory Memo({
     $fixnum.Int64? memo,
   }) {
@@ -4055,7 +4055,7 @@ class TimeStamp extends $pb.GeneratedMessage {
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
 
-  TimeStamp._() : super();
+  TimeStamp._();
   factory TimeStamp({
     $fixnum.Int64? timestampNanos,
   }) {
@@ -4122,7 +4122,7 @@ class Certification extends $pb.GeneratedMessage {
         $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
 
-  Certification._() : super();
+  Certification._();
   factory Certification({
     $core.List<$core.int>? certification,
   }) {

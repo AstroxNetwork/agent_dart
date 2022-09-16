@@ -3,8 +3,10 @@ import 'package:agent_dart/agent_dart.dart';
 import 'init.dart';
 
 class CounterMethod {
-  static const add = "increment";
-  static const count = "getValue";
+  const CounterMethod._();
+
+  static const add = 'increment';
+  static const count = 'getValue';
 }
 
 final idl = IDL.Service({
@@ -14,30 +16,24 @@ final idl = IDL.Service({
 
 class Counter extends ActorHook {
   Counter();
+
   factory Counter.create(CanisterActor _actor) {
     return Counter()..setActor(_actor);
   }
+
   setActor(CanisterActor _actor) {
     actor = _actor;
   }
 
   Future<int> count() async {
-    try {
-      var res = await actor.getFunc(CounterMethod.count)!([]);
-      if (res != null) {
-        return (res as BigInt).toInt();
-      }
-      throw "Cannot get count but $res";
-    } catch (e) {
-      rethrow;
+    final res = await actor.getFunc(CounterMethod.count)!([]);
+    if (res != null) {
+      return (res as BigInt).toInt();
     }
+    throw StateError('Request failed with the result: $res.');
   }
 
   Future<void> add() async {
-    try {
-      await actor.getFunc(CounterMethod.add)!([]);
-    } catch (e) {
-      rethrow;
-    }
+    await actor.getFunc(CounterMethod.add)!([]);
   }
 }

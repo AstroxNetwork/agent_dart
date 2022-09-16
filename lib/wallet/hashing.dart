@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/principal/utils/get_crc.dart';
 import 'package:agent_dart/utils/u8a.dart';
+
 // ignore: implementation_imports
 import 'package:crypto/src/digest_sink.dart';
 import 'package:agent_dart/utils/extension.dart';
@@ -9,152 +10,101 @@ import 'package:crypto/crypto.dart';
 import 'package:typed_data/typed_buffers.dart';
 
 Uint8List sha256Chunks(List<dynamic> chunks) {
-  var ds = DigestSink();
-  var sha = sha256.startChunkedConversion(ds);
+  final ds = DigestSink();
+  final sha = sha256.startChunkedConversion(ds);
 
-  for (var chunk in chunks) {
+  for (final chunk in chunks) {
     sha.add(chunk is ByteBuffer ? chunk.asInt8List() : chunk);
   }
   sha.close();
   return Uint8List.fromList(ds.value.bytes);
 }
 
-///
-/// @param {object} update
-/// @returns {object}
-// ignore: non_constant_identifier_names
-Map<String, dynamic> make_read_state_from_update(Map update) {
+Map<String, dynamic> makeReadStateFromUpdate(Map update) {
   return {
-    "sender": update["sender"],
-    "paths": [
-      [("request_status".plainToU8a()), HttpCanisterUpdate_id(update)]
+    'sender': update['sender'],
+    'paths': [
+      [('request_status'.plainToU8a()), httpCanisterUpdateId(update)],
     ],
-    "ingress_expiry": update["ingress_expiry"],
+    'ingress_expiry': update['ingress_expiry'],
   };
 }
 
-///
-/// @param {object} read_state
-/// @returns {Buffer}
-// ignore: non_constant_identifier_names
-Uint8List HttpReadState_representation_independent_hash(Map readState) {
-  return hash_of_map({
-    "request_type": "read_state",
-    "ingress_expiry": readState["ingress_expiry"],
-    "paths": readState["paths"],
-    "sender": readState["sender"],
+Uint8List httpReadStateRepresentationIndependentHash(Map readState) {
+  return hashOfMap({
+    'request_type': 'read_state',
+    'ingress_expiry': readState['ingress_expiry'],
+    'paths': readState['paths'],
+    'sender': readState['sender'],
   });
 }
 
-// ignore: non_constant_identifier_names
-final DOMAIN_IC_REQUEST = ("\x0Aic-request").plainToU8a();
-
-///
-/// @param {Buffer} message_id
-/// @returns {Buffer}
-// ignore: non_constant_identifier_names
-Uint8List make_sig_data(Uint8List messageId) {
-  return u8aConcat([DOMAIN_IC_REQUEST, messageId]);
+Uint8List makeSignatureData(Uint8List messageId) {
+  return u8aConcat(['\x0Aic-request'.plainToU8a(), messageId]);
 }
 
-///
-/// @param {object} update
-/// @returns {Buffer}
-// ignore: non_constant_identifier_names
-Uint8List HttpCanisterUpdate_id(Map update) {
-  return HttpCanisterUpdate_representation_independent_hash(update);
+Uint8List httpCanisterUpdateId(Map update) {
+  return httpCanisterUpdateRepresentationIndependentHash(update);
 }
 
-///
-/// @param {object} update
-/// @returns {Buffer}
-// ignore: non_constant_identifier_names
-Uint8List HttpCanisterUpdate_representation_independent_hash(Map update) {
-  return hash_of_map({
-    "request_type": "call",
-    "canister_id": update["canister_id"],
-    "method_name": update["method_name"],
-    "arg": update["arg"],
-    "ingress_expiry": update["ingress_expiry"],
-    "sender": update["sender"],
+Uint8List httpCanisterUpdateRepresentationIndependentHash(Map update) {
+  return hashOfMap({
+    'request_type': 'call',
+    'canister_id': update['canister_id'],
+    'method_name': update['method_name'],
+    'arg': update['arg'],
+    'ingress_expiry': update['ingress_expiry'],
+    'sender': update['sender'],
   });
 }
 
-///
-/// @param {object} map
-/// @returns {Buffer}
-// ignore: non_constant_identifier_names
-Uint8List hash_of_map(Map map) {
-  var hashes = <Uint8List>[];
-
-  for (var entry in map.entries) {
-    hashes.add(hash_key_val(entry.key, entry.value));
+Uint8List hashOfMap(Map map) {
+  final hashes = <Uint8List>[];
+  for (final entry in map.entries) {
+    hashes.add(hashKeyValue(entry.key, entry.value));
   }
-
   return sha256Chunks(u8aSorted(hashes));
 }
 
-///
-/// @param {string} key
-/// @param {string|Buffer|BigInt} val
-/// @returns {Buffer}
-// ignore: non_constant_identifier_names
-Uint8List hash_key_val(dynamic key, dynamic val) {
-  return u8aConcat([hash_string(key.toString()), hash_val(val)]);
+Uint8List hashKeyValue(dynamic key, dynamic val) {
+  return u8aConcat([_hashString(key.toString()), _hashValue(val)]);
 }
 
-///
-/// @param {string|Buffer|BigInt} val
-/// @returns {Buffer}
-// ignore: non_constant_identifier_names
-Uint8List hash_val(dynamic val) {
+Uint8List _hashValue(dynamic val) {
   if (val is String) {
-    return hash_string(val);
+    return _hashString(val);
   }
   if (val is Uint8List || val is Uint8Buffer) {
-    return hash_bytes(Uint8List.fromList(val));
+    return _hashBytes(Uint8List.fromList(val));
   }
   if (val is BigInt) {
-    return hash_U64(val);
+    return _hashUint64(val);
   }
   if (val is num) {
-    return hash_U64(BigInt.from(val));
+    return _hashUint64(BigInt.from(val));
   }
   if (val is List) {
-    return hash_array(val);
+    return _hashList(val);
   }
   if (val is Map) {
-    return hash_of_map(val);
+    return hashOfMap(val);
   }
-  throw "hash_val($val) unsupported";
+  throw UnsupportedError('hashValue($val) is not supported.');
 }
 
-///
-/// @param {string} value
-/// @returns {Buffer}
-// ignore: non_constant_identifier_names
-Uint8List hash_string(String value) {
+Uint8List _hashString(String value) {
   return sha256Chunks([value.plainToU8a().buffer]);
 }
 
-///
-/// @param {Buffer} value
-/// @returns {Buffer}
-// ignore: non_constant_identifier_names
-Uint8List hash_bytes(Uint8List value) {
+Uint8List _hashBytes(Uint8List value) {
   return sha256Chunks([value.buffer]);
 }
 
-///
-/// @param {BigInt} n
-/// @returns {Buffer}
-// ignore: non_constant_identifier_names
-Uint8List hash_U64(BigInt n) {
-  // const buf = Buffer.allocUnsafe(10);
-  var buf = Uint8List(10);
-  var i = 0;
+Uint8List _hashUint64(BigInt n) {
+  final buf = Uint8List(10);
+  int i = 0;
   while (true) {
-    var byte = (n & BigInt.from(0x7f));
+    final byte = n & BigInt.from(0x7f);
     n >>= BigInt.from(7).toInt();
     if (n == BigInt.zero) {
       buf[i] = byte.toInt();
@@ -164,21 +114,15 @@ Uint8List hash_U64(BigInt n) {
       ++i;
     }
   }
-  return hash_bytes(buf.sublist(0, i + 1));
+  return _hashBytes(buf.sublist(0, i + 1));
 }
 
-///
-/// @param {Array<any>} elements
-/// @returns {Buffer}
-// ignore: non_constant_identifier_names
-Uint8List hash_array(List elements) {
-  return sha256Chunks(elements.map(hash_val).toList());
+Uint8List _hashList(List elements) {
+  return sha256Chunks(elements.map(_hashValue).toList());
 }
 
 /// Given an account address with a prepended big-endian CRC32 checksum, verify
 /// the checksum and remove it.
-/// @param {Buffer} buf
-/// @returns {Buffer}
 Uint8List crc32Del(Uint8List buf) {
   final res = buf.sublist(4);
   assert(getCrc32(res.buffer) == buf.buffer.asByteData().getUint32(0));
@@ -186,8 +130,6 @@ Uint8List crc32Del(Uint8List buf) {
 }
 
 /// Prepend a big-endian CRC32 checksum.
-/// @param {Buffer} buf
-/// @returns {Buffer}
 Uint8List crc32Add(Uint8List buf) {
   final view = ByteData(4);
   view.setUint32(0, getCrc32(buf.buffer));
