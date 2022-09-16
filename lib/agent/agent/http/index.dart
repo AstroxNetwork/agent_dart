@@ -211,15 +211,16 @@ class HttpAgent implements Agent {
       ingressExpiry: Expiry(_defaultIngressExpiryDeltaInMilliseconds),
     );
 
-    final rsRequest = HttpAgentCallRequest()
-      ..body = submit
-      ..request = {
+    final rsRequest = HttpAgentCallRequest(
+      request: {
         'method': 'POST',
         'headers': {
           'Content-Type': 'application/cbor',
           ..._baseHeaders,
         },
-      };
+      },
+      body: submit,
+    );
     final transformedRequest = await _transform(rsRequest);
 
     final newTransformed = await id!.transformRequest(transformedRequest);
@@ -237,10 +238,10 @@ class HttpAgent implements Agent {
     final response = list[0] as Map<String, dynamic>;
     final requestId = list[1] as Uint8List;
     if (!(response['ok'] as bool)) {
-      throw AgentError(
-        'Server returned an error:\n'
-        '  Code: ${response["statusCode"]} (${response["statusText"]})\n'
-        '  Body: ${response["body"] is Uint8List ? (response["body"] as Uint8List).u8aToString() : response["body"]}\n',
+      throw AgentFetchError(
+        statusCode: response['statusCode'],
+        statusText: response['statusText'],
+        body: response[body],
       );
     }
 
@@ -284,12 +285,13 @@ class HttpAgent implements Agent {
       ingressExpiry: Expiry(_defaultIngressExpiryDeltaInMilliseconds),
     );
 
-    final rsRequest = HttpAgentQueryRequest()
-      ..body = requestBody
-      ..request = {
+    final rsRequest = HttpAgentQueryRequest(
+      request: {
         'method': 'POST',
         'headers': {'Content-Type': 'application/cbor', ..._baseHeaders},
-      };
+      },
+      body: requestBody,
+    );
 
     final transformedRequest = await _transform(rsRequest);
     final Map<String, dynamic> newTransformed =
@@ -305,10 +307,10 @@ class HttpAgent implements Agent {
     );
 
     if (!(response['ok'] as bool)) {
-      throw AgentError(
-        'Server returned an error:\n'
-        '  Code: ${response["statusCode"]} (${response["statusText"]})\n'
-        '  Body: ${response["body"]}\n',
+      throw AgentFetchError(
+        statusCode: response['statusCode'],
+        statusText: response['statusText'],
+        body: response[body],
       );
     }
 
@@ -335,12 +337,13 @@ class HttpAgent implements Agent {
       ingressExpiry: Expiry(_defaultIngressExpiryDeltaInMilliseconds),
     );
 
-    final rsRequest = HttpAgentReadStateRequest()
-      ..body = requestBody
-      ..request = {
+    final rsRequest = HttpAgentReadStateRequest(
+      request: {
         'method': 'POST',
         'headers': {'Content-Type': 'application/cbor', ..._baseHeaders},
-      };
+      },
+      body: requestBody,
+    );
 
     final transformedRequest = await _transform(rsRequest);
     final newTransformed = await id!.transformRequest(
@@ -356,10 +359,10 @@ class HttpAgent implements Agent {
     );
 
     if (!(response['ok'] as bool)) {
-      throw AgentError(
-        'Server returned an error:\n'
-        '  Code: ${response["statusCode"]} (${response["statusText"]})\n'
-        '  Body: ${response["body"]}\n',
+      throw AgentFetchError(
+        statusCode: response['statusCode'],
+        statusText: response['statusText'],
+        body: response[body],
       );
     }
 
@@ -380,10 +383,10 @@ class HttpAgent implements Agent {
       method: FetchMethod.get,
     );
     if (!(response['ok'] as bool)) {
-      throw AgentError(
-        'Server returned an error:\n'
-        '  Code: ${response["statusCode"]} (${response["statusText"]})\n'
-        '  Body: ${response["body"]}\n',
+      throw AgentFetchError(
+        statusCode: response['statusCode'],
+        statusText: response['statusText'],
+        body: response['body'],
       );
     }
     final buffer = response['arrayBuffer'] as Uint8List;
@@ -426,31 +429,19 @@ class HttpAgent implements Agent {
 }
 
 class HttpAgentReadStateRequest extends HttpAgentQueryRequest {
-  @override
-  String get endpoint => Endpoint.readState;
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'endpoint': endpoint,
-      'body': body.toJson(),
-      'request': {...request as Map<String, dynamic>}
-    };
-  }
+  const HttpAgentReadStateRequest({
+    required super.request,
+    required super.body,
+    super.endpoint = Endpoint.readState,
+  });
 }
 
-class HttpAgentCallRequest extends HttpAgentSubmitRequest {
-  @override
-  String get endpoint => Endpoint.call;
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'endpoint': endpoint,
-      'body': body.toJson(),
-      'request': {...request as Map<String, dynamic>}
-    };
-  }
+class HttpAgentCallRequest extends HttpAgentQueryRequest {
+  const HttpAgentCallRequest({
+    required super.request,
+    required super.body,
+    super.endpoint = Endpoint.call,
+  });
 }
 
 class ReadStateResponseResult extends ReadStateResponse {

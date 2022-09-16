@@ -125,31 +125,41 @@ class QueryRequest extends BaseRequest {
 typedef ReadRequest = ReadStateRequest;
 
 abstract class HttpAgentBaseRequest<T extends WithToJson> extends BaseRequest {
-  HttpAgentBaseRequest({this.endpoint});
+  const HttpAgentBaseRequest({
+    required this.request,
+    required this.body,
+    this.endpoint,
+  });
 
+  final Map<String, dynamic> request;
+  final T body;
   final String? endpoint;
-
-  late dynamic request;
-  late T body;
 }
 
 abstract class HttpAgentSubmitRequest
     extends HttpAgentBaseRequest<CallRequest> {
-  HttpAgentSubmitRequest({super.endpoint = Endpoint.call});
+  const HttpAgentSubmitRequest({
+    required super.request,
+    required super.body,
+    super.endpoint = Endpoint.call,
+  });
 }
 
 class HttpAgentQueryRequest extends HttpAgentBaseRequest<BaseRequest> {
-  @override
-  String? get endpoint => Endpoint.query;
+  const HttpAgentQueryRequest({
+    required super.request,
+    required super.body,
+    super.endpoint = Endpoint.query,
+  });
 
   @override
   Map<String, dynamic> toJson() {
     return {
       'endpoint': endpoint,
       'body': body.toJson(),
-      'request': {...request as Map<String, dynamic>}
+      'request': {...request},
     };
-  } // ReadRequest
+  }
 }
 
 abstract class UnSigned<T> {

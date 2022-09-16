@@ -16,7 +16,7 @@ final BaseBLS _bls = BaseBLS();
 
 /// A certificate needs to be verified (using Certificate.prototype.verify)
 /// before it can be used.
-class UnverifiedCertificateError extends AgentError {
+class UnverifiedCertificateError extends AgentFetchError {
   UnverifiedCertificateError();
 
   @override
