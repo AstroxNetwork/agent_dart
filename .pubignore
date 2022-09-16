@@ -1,3 +1,23 @@
+.DS_Store
+.dart_tool/
+.idea/
+.vscode/
+.iml
+
+.packages
+.pub/
+
+build/
+
+.env
+pubspec.lock
+
+rust/target
+rust/Cargo.lock
+
+_main.dart
+
+# Specified to pub.dev
 .github/
 rust/
 protobuf/
