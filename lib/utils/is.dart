@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
+import 'package:agent_dart/utils/extension.dart';
 import 'package:validators/validators.dart' as validators;
 
+import '../principal/utils/get_crc.dart';
 import 'u8a.dart';
 
 bool isAscii(dynamic value) {
@@ -283,4 +287,14 @@ bool isSignature(String str) {
 
 bool isBech32(String str) {
   return validators.matches(str, 'zil1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{38}');
+}
+
+bool isAccountId(String str) {
+  if (!isHexString(str) || str.length != 64) {
+    return false;
+  }
+  final fullBytes = str.toU8a();
+  final view = ByteData(4);
+  view.setUint32(0, getCrc32((fullBytes.sublist(4)).buffer));
+  return fullBytes.sublist(0, 4).eq(view.buffer.asUint8List());
 }
