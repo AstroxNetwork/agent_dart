@@ -394,7 +394,7 @@ dynamic _createActorMethod(Actor actor, String methodName, FuncClass func) {
       );
       final newOptions = CallConfig.fromJson({
         ...options.toJson(),
-        ...presetOption != null ? presetOption.toJson() : {},
+        ...?presetOption?.toJson(),
       });
       final agent = newOptions.agent ?? actor.metadata.config!.agent;
       final canisterId =
