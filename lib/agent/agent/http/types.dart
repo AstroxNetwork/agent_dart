@@ -145,6 +145,14 @@ abstract class HttpAgentSubmitRequest
   });
 }
 
+class HttpAgentCallRequest extends HttpAgentSubmitRequest {
+  const HttpAgentCallRequest({
+    required super.request,
+    required super.body,
+    super.endpoint = Endpoint.call,
+  });
+}
+
 class HttpAgentQueryRequest extends HttpAgentBaseRequest<BaseRequest> {
   const HttpAgentQueryRequest({
     required super.request,
