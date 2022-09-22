@@ -18,9 +18,8 @@ rust/Cargo.lock
 _main.dart
 
 # Specified to pub.dev
-.github/
-rust/
-protobuf/
-scripts/
-
-CODEOWNERS
+/.github/
+/rust/
+/protobuf/
+/scripts/
+/CODEOWNERS
