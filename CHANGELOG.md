@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.2
+
+- Tweak ignored files for pub.dev.
+
 ## 1.0.0-dev.1
 
 - Support FFI asynchronized methods with Rust bindings.
