@@ -436,14 +436,6 @@ class HttpAgentReadStateRequest extends HttpAgentQueryRequest {
   });
 }
 
-class HttpAgentCallRequest extends HttpAgentQueryRequest {
-  const HttpAgentCallRequest({
-    required super.request,
-    required super.body,
-    super.endpoint = Endpoint.call,
-  });
-}
-
 class ReadStateResponseResult extends ReadStateResponse {
   const ReadStateResponseResult({required super.certificate});
 }
