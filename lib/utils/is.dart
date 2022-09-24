@@ -13,14 +13,17 @@ bool isAscii(dynamic value) {
 }
 
 bool isHex(dynamic value, [int bitLength = -1, bool ignoreLength = false]) {
-  final reg = RegExp(r'^0x[a-fA-F\d]+$');
-  final isValidHex = value == '0x' ||
-      (value is String && reg.allMatches(value.toString()).isNotEmpty);
-  if (isValidHex && bitLength != -1) {
-    return (value as String).length == (2 + (bitLength / 4).ceil());
+  if (value is! String) {
+    return false;
   }
-
-  return isValidHex && (ignoreLength || ((value as String).length % 2 == 0));
+  final reg = RegExp(r'^0x[a-fA-F\d]+$');
+  if (value == '0x' || reg.hasMatch(value)) {
+    if (bitLength != -1) {
+      return value.length == (2 + (bitLength / 4).ceil());
+    }
+    return value.length % 2 == 0;
+  }
+  return false;
 }
 
 bool isHexString(String str) {
