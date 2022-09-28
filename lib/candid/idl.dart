@@ -302,7 +302,7 @@ abstract class ConstructType<T> extends CType<T> {
 }
 
 class EmptyClass<T> extends PrimitiveType<T> {
-  const EmptyClass();
+  const EmptyClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -338,7 +338,7 @@ class EmptyClass<T> extends PrimitiveType<T> {
 
 /// Represents an IDL Bool
 class BoolClass extends PrimitiveType<bool> {
-  const BoolClass();
+  const BoolClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -376,7 +376,7 @@ class BoolClass extends PrimitiveType<bool> {
 
 // ignore: prefer_void_to_null
 class NullClass extends PrimitiveType<Null> {
-  const NullClass();
+  const NullClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -411,7 +411,7 @@ class NullClass extends PrimitiveType<Null> {
 
 /// A reserved class with no usages.
 class ReservedClass extends PrimitiveType<dynamic> {
-  const ReservedClass();
+  const ReservedClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -451,7 +451,7 @@ bool _isValidUTF8(Uint8List buf) {
 }
 
 class TextClass extends PrimitiveType<String> {
-  const TextClass();
+  const TextClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -495,7 +495,7 @@ class TextClass extends PrimitiveType<String> {
 
 /// Implicit types [BigInt] | [int].
 class IntClass extends PrimitiveType {
-  const IntClass();
+  const IntClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -531,7 +531,7 @@ class IntClass extends PrimitiveType {
 }
 
 class NatClass extends PrimitiveType {
-  const NatClass();
+  const NatClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -567,7 +567,7 @@ class NatClass extends PrimitiveType {
 }
 
 class FloatClass extends PrimitiveType<num> {
-  const FloatClass(
+  const FloatClass._(
     this._bits,
   ) : assert(_bits == 32 || _bits == 64, 'Bits is not a valid float type.');
 
@@ -626,7 +626,7 @@ class FloatClass extends PrimitiveType<num> {
 }
 
 class FixedIntClass extends PrimitiveType {
-  const FixedIntClass(this._bits);
+  const FixedIntClass._(this._bits);
 
   final int _bits;
 
@@ -687,7 +687,7 @@ class FixedIntClass extends PrimitiveType {
 }
 
 class FixedNatClass extends PrimitiveType<dynamic> {
-  const FixedNatClass(this._bits);
+  const FixedNatClass._(this._bits);
 
   final int _bits;
 
@@ -1332,7 +1332,7 @@ PrincipalId decodePrincipalId(Pipe b) {
 }
 
 class PrincipalClass extends PrimitiveType<PrincipalId> {
-  const PrincipalClass();
+  const PrincipalClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -1852,24 +1852,24 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
 class IDL {
   const IDL._();
 
-  static const Empty = EmptyClass();
-  static const Reserved = ReservedClass();
-  static const Bool = BoolClass();
-  static const Null = NullClass();
-  static const Text = TextClass();
-  static const Int = IntClass();
-  static const Nat = NatClass();
-  static const Float32 = FloatClass(32);
-  static const Float64 = FloatClass(64);
-  static const Int8 = FixedIntClass(8);
-  static const Int16 = FixedIntClass(16);
-  static const Int32 = FixedIntClass(32);
-  static const Int64 = FixedIntClass(64);
-  static const Nat8 = FixedNatClass(8);
-  static const Nat16 = FixedNatClass(16);
-  static const Nat32 = FixedNatClass(32);
-  static const Nat64 = FixedNatClass(64);
-  static const Principal = PrincipalClass();
+  static const Empty = EmptyClass._();
+  static const Reserved = ReservedClass._();
+  static const Bool = BoolClass._();
+  static const Null = NullClass._();
+  static const Text = TextClass._();
+  static const Int = IntClass._();
+  static const Nat = NatClass._();
+  static const Float32 = FloatClass._(32);
+  static const Float64 = FloatClass._(64);
+  static const Int8 = FixedIntClass._(8);
+  static const Int16 = FixedIntClass._(16);
+  static const Int32 = FixedIntClass._(32);
+  static const Int64 = FixedIntClass._(64);
+  static const Nat8 = FixedNatClass._(8);
+  static const Nat16 = FixedNatClass._(16);
+  static const Nat32 = FixedNatClass._(32);
+  static const Nat64 = FixedNatClass._(64);
+  static const Principal = PrincipalClass._();
 
   static TupleClass<List<CType>> tuple(List<CType> components) =>
       TupleClass(components);
