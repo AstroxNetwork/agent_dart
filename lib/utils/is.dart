@@ -51,7 +51,7 @@ bool isJsonObject(dynamic value) {
 }
 
 bool isTestChain(String value) {
-  return RegExp(r'/(Development|Local Testnet)\$/').hasMatch(value);
+  return RegExp(r'(Development|(Local Testnet))$').hasMatch(value);
 }
 
 bool isUtf8(dynamic value) {
