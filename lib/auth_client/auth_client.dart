@@ -7,6 +7,7 @@ import 'package:agent_dart/authentication/authentication.dart';
 import 'package:agent_dart/identity/delegation.dart';
 import 'package:agent_dart/identity/identity.dart';
 import 'package:agent_dart/utils/extension.dart';
+import 'package:meta/meta.dart';
 
 const keyLocalStorageKey = 'identity';
 const keyLocalStorageDelegation = 'delegation';
@@ -74,6 +75,7 @@ class FromStorageResult {
   final DelegationChain? delegationChain;
 }
 
+@immutable
 abstract class AuthResponse {
   const AuthResponse({required this.kind});
 

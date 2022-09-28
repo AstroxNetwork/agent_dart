@@ -1,13 +1,16 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
+import 'package:agent_dart/agent/auth.dart' as auth;
 import 'package:agent_dart/agent_dart.dart';
 import 'package:crypto/crypto.dart';
-import 'package:agent_dart/agent/auth.dart' as auth;
+import 'package:meta/meta.dart';
 
 import '../bridge/ffi/ffi.dart';
 
+@immutable
 class Ed25519KeyPair extends auth.KeyPair {
-  Ed25519KeyPair({required super.publicKey, required super.secretKey});
+  const Ed25519KeyPair({required super.publicKey, required super.secretKey});
 
   List<String> toJson() {
     return [publicKey.toDer().toHex(), secretKey.toHex()];

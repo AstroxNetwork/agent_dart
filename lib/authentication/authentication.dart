@@ -1,7 +1,7 @@
-import 'package:agent_dart/identity/delegation.dart';
-import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/agent/auth.dart';
+import 'package:agent_dart/identity/delegation.dart';
 import 'package:agent_dart/principal/principal.dart';
+import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/utils/is.dart';
 
 const _defaultIdentityProviderUrl = 'https://auth.ic0.app/authorize';

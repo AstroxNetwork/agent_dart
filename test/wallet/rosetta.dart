@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:agent_dart/wallet/rosetta.dart';
 import 'package:agent_dart/wallet/signer.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:agent_dart/wallet/rosetta.dart';
 
 void main() {
   rosettaTest();

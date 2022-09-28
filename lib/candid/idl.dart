@@ -1,4 +1,4 @@
-// ignore_for_file: constant_identifier_names, non_constant_identifier_names, prefer_void_to_null
+// ignore_for_file: constant_identifier_names
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -9,6 +9,7 @@ import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/utils/map.dart';
 import 'package:agent_dart/utils/number.dart';
 import 'package:agent_dart/utils/u8a.dart';
+import 'package:meta/meta.dart';
 
 typedef Pipe<T> = BufferPipe<T>;
 typedef PrincipalId = principal.Principal;
@@ -122,6 +123,7 @@ class TypeTable {
   }
 }
 
+@immutable
 abstract class Visitor<D, R> {
   const Visitor();
 
@@ -372,6 +374,7 @@ class BoolClass extends PrimitiveType<bool> {
   String get name => 'bool';
 }
 
+// ignore: prefer_void_to_null
 class NullClass extends PrimitiveType<Null> {
   const NullClass();
 
@@ -397,6 +400,7 @@ class NullClass extends PrimitiveType<Null> {
   }
 
   @override
+  // ignore: prefer_void_to_null
   Uint8List encodeValue(Null x) {
     return Uint8List.fromList([]);
   }

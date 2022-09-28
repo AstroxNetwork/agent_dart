@@ -4,9 +4,9 @@ import 'package:agent_dart/agent/actor.dart';
 import 'package:agent_dart/candid/idl.dart';
 
 Service assetIDL() {
-  return IDL.Service({
-    'retrieve': IDL.Func([IDL.Text], [IDL.Vec(IDL.Nat8)], ['query']),
-    'store': IDL.Func([IDL.Text, IDL.Vec(IDL.Nat8)], [], []),
+  return IDL.service({
+    'retrieve': IDL.func([IDL.Text], [IDL.vec(IDL.Nat8)], ['query']),
+    'store': IDL.func([IDL.Text, IDL.vec(IDL.Nat8)], [], []),
   });
 }
 

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:agent_dart/agent/agent/http/fetch.dart';
 import 'package:agent_dart/agent/cbor.dart' as cbor;
 import 'package:agent_dart/agent_dart.dart';
+import 'package:meta/meta.dart';
 import 'package:typed_data/typed_data.dart';
 
 const btoa = base64Encode;
@@ -41,6 +42,7 @@ const _icRootKey = '308182301d060d2b0601040182dc7c0503010201060c2b0601040182dc7'
     '35d14fb5d9c0cd546d9685f913a0c0b2cc5341583bf4b4392e467db96d65b9bb4cb717112f'
     '8472e0d5a4d14505ffd7484b01291091c5f87b98883463f98091a0baaae';
 
+@immutable
 abstract class Credentials {
   const Credentials({this.name, this.password});
 

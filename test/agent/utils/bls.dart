@@ -1,7 +1,6 @@
 import 'package:agent_dart/bridge/bls.base.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:agent_dart/utils/extension.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   blsTest();

@@ -414,7 +414,7 @@ class RosettaApi {
     final netId = networkIdentifier;
     final oper1 = rosetta.Operation.fromJson(
       {
-        'operation_identifier': {'index': 0},
+        'operation_identifier': const {'index': 0},
         'type': 'TRANSACTION',
         'account': {
           'address': getAccountIdFromEd25519PublicKey(srcPub).toHex(),
@@ -427,7 +427,7 @@ class RosettaApi {
     ).toJson();
     final oper2 = rosetta.Operation.fromJson(
       {
-        'operation_identifier': {'index': 1},
+        'operation_identifier': const {'index': 1},
         'type': 'TRANSACTION',
         'account': {'address': crc32Add(destAddr).toHex()},
         'amount': {
@@ -438,7 +438,7 @@ class RosettaApi {
     ).toJson();
     final oper3 = rosetta.Operation.fromJson(
       {
-        'operation_identifier': {'index': 2},
+        'operation_identifier': const {'index': 2},
         'type': 'FEE',
         'account': {
           'address': getAccountIdFromEd25519PublicKey(srcPub).toHex(),

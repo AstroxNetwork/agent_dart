@@ -1,12 +1,14 @@
+import 'dart:math' as math;
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:agent_dart/principal/principal.dart';
 import 'package:cbor/cbor.dart' as cbor;
+import 'package:flutter/foundation.dart' show immutable, kIsWeb;
 import 'package:typed_data/typed_data.dart';
-import 'dart:math' as math;
 
 import 'types.dart';
 
+@immutable
 abstract class ExtraEncoder<T> {
   const ExtraEncoder({required this.name});
 
@@ -239,6 +241,7 @@ class BigIntEncoder extends ExtraEncoder<BigInt> {
   }
 }
 
+@immutable
 abstract class ToCborable {
   const ToCborable();
 

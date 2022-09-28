@@ -1,5 +1,8 @@
+import 'package:meta/meta.dart';
+
 /// The network identifier specifies which network a particular object is
 /// associated with.
+@immutable
 class NetworkIdentifier {
   const NetworkIdentifier(
     this.blockchain,
@@ -37,6 +40,7 @@ class NetworkIdentifier {
 /// In blockchains with sharded state, the SubNetworkIdentifier is required to
 /// query some object on a specific shard. This identifier is optional for all
 /// non-sharded blockchains.
+@immutable
 class SubNetworkIdentifier {
   const SubNetworkIdentifier(this.network, this.metadata);
 
@@ -58,7 +62,8 @@ class SubNetworkIdentifier {
   }
 }
 
-/// The block_identifier uniquely identifies a block in a particular network.
+/// Uniquely identifies a block in a particular network.
+@immutable
 class BlockIdentifier {
   const BlockIdentifier(this.index, this.hash);
 
@@ -81,6 +86,7 @@ class BlockIdentifier {
 /// When fetching data by BlockIdentifier, it may be possible to only specify
 /// the index or hash. If neither property is specified, it is assumed that
 /// the client is making a request at the current block.
+@immutable
 class PartialBlockIdentifier {
   const PartialBlockIdentifier(this.index, this.hash);
 
@@ -101,6 +107,7 @@ class PartialBlockIdentifier {
 
 /// The transaction_identifier uniquely identifies a transaction in a particular
 /// network and block or in the mem-pool.
+@immutable
 class TransactionIdentifier {
   const TransactionIdentifier(this.hash);
 
@@ -117,7 +124,8 @@ class TransactionIdentifier {
   }
 }
 
-/// The operation_identifier uniquely identifies an operation within a transaction.
+/// Uniquely identifies an operation within a transaction.
+@immutable
 class OperationIdentifier {
   const OperationIdentifier(this.index, this.networkIndex);
 
@@ -150,6 +158,7 @@ class OperationIdentifier {
 /// The account identifier uniquely identifies an account within a network.
 /// All fields in the [AccountIdentifier] are utilized to determine
 /// this uniqueness (including the [metadata] field, if populated).
+@immutable
 class AccountIdentifier {
   const AccountIdentifier(this.address, this.subAccount, this.metadata);
 
@@ -186,6 +195,7 @@ class AccountIdentifier {
 /// An account may have state specific to a contract address (ERC-20 token)
 /// and/or a stake (delegated balance). The [SubAccountIdentifier] should
 /// specify which state (if applicable) an account instantiation refers to.
+@immutable
 class SubAccountIdentifier {
   const SubAccountIdentifier(this.address, this.metadata);
 
@@ -211,12 +221,13 @@ class SubAccountIdentifier {
   }
 }
 
-/// Blocks contain an array of Transactions that occurred at
+/// [Block]s contain an array of [Transaction]s that occurred at
 /// a particular [BlockIdentifier]. A hard requirement for blocks returned by
 /// Rosetta implementations is that they MUST be _unalterable_:
 /// once a client has requested and received a block identified by a specific
 /// [BlockIdentifier], all future calls for that same BlockIdentifier must
 /// return the same block contents.
+@immutable
 class Block {
   const Block(
     this.blockIdentifier,
@@ -255,7 +266,7 @@ class Block {
   }
 }
 
-/// Transactions contain an array of [Operation]s that are attributable to
+/// [Transaction]s contain an array of [Operation]s that are attributable to
 /// the same [TransactionIdentifier].
 class Transaction {
   const Transaction(this.transactionIdentifier, this.operations, this.metadata);
@@ -285,12 +296,13 @@ class Transaction {
   }
 }
 
-/// Operations contain all balance-changing information within a transaction.
+/// [Operations] contain all balance-changing information within a transaction.
 /// They are always one-sided (only affect 1 AccountIdentifier) and can succeed
 /// or fail independently from a Transaction. Operations are used both to
 /// represent on-chain data (Data API) and to construct new transactions
 /// (Construction API), creating a standard interface for reading
 /// and writing to blockchains.
+@immutable
 class Operation {
   const Operation(
     this.type,
@@ -374,7 +386,9 @@ class Operation {
   }
 }
 
-/// Amount is some Value of a Currency. It is considered invalid to specify a Value without a Currency.
+/// [Amount] is some [value] of a [Currency].
+/// It is considered invalid to specify a [value] without a [Currency].
+@immutable
 class Amount {
   const Amount(this.value, this.currency, this.metadata);
 
@@ -393,6 +407,8 @@ class Amount {
   final Currency currency;
   final Map<String, dynamic>? metadata;
 
+  BigInt get valueInBigInt => BigInt.parse(value);
+
   Map<String, dynamic> toJson() {
     return {
       'value': value,
@@ -402,9 +418,10 @@ class Amount {
   }
 }
 
-/// Currency is composed of a canonical Symbol and Decimals.
+/// [Currency] is composed of a canonical Symbol and Decimals.
 /// This Decimals value is used to convert an Amount.Value from atomic units
 /// (Satoshi) to standard units (Bitcoin).
+@immutable
 class Currency {
   const Currency(this.symbol, this.decimals, this.metadata);
 
@@ -434,11 +451,12 @@ class Currency {
   }
 }
 
-/// SyncStatus is used to provide additional context about an implementation's
+/// [SyncStatus] is used to provide additional context about an implementation's
 /// sync status. It is often used to indicate that an implementation is healthy
 /// when it cannot be queried  until some sync phase occurs.
 /// If an implementation is immediately queryable,
 /// this model is often not populated.
+@immutable
 class SyncStatus {
   const SyncStatus(this.currentIndex, this.targetIndex, this.stage);
 
@@ -465,7 +483,8 @@ class SyncStatus {
   }
 }
 
-/// A Peer is a representation of a node's peer.
+/// A [Peer] is a representation of a node's peer.
+@immutable
 class Peer {
   const Peer(this.peerId, this.metadata);
 
@@ -484,8 +503,9 @@ class Peer {
   }
 }
 
-/// The Version object is utilized to inform the client of the versions of
+/// The [Version] object is utilized to inform the client of the versions of
 /// different components of the Rosetta implementation.
+@immutable
 class Version {
   const Version(
     this.rosettaVersion,
@@ -531,11 +551,12 @@ class Version {
   }
 }
 
-/// Allow specifies supported Operation status, Operation types,
+/// [Allow] specifies supported Operation status, Operation types,
 /// and all possible error statuses. This Allow object is used by clients to
 /// validate the correctness of a Rosetta Server implementation.
 /// It is expected that these clients will error if they receive some response
 /// that contains any of the above information that is not specified here.
+@immutable
 class Allow {
   const Allow(
     this.operationStatus,
@@ -626,7 +647,8 @@ class Allow {
   }
 }
 
-/// OperationStatus is utilized to indicate which Operation status are considered successful.
+/// Utilized to indicate which Operation status are considered successful.
+@immutable
 class OperationStatus {
   const OperationStatus(this.status, this.successful);
 
@@ -663,6 +685,7 @@ typedef Timestamp = int;
 /// PublicKey contains a public key byte array for a particular [CurveType]
 /// encoded in hex. Note that there is no PrivateKey struct as this is
 /// NEVER the concern of an implementation.
+@immutable
 class PublicKey {
   // "secp256k1" | "secp256r1" | "edwards25519" | "tweedle";
   const PublicKey(this.hexBytes, this.curveType);
@@ -683,16 +706,11 @@ class PublicKey {
   }
 }
 
-/// [CurveType] is the type of cryptographic curve associated with a PublicKey.
-///   * secp256k1: SEC compressed - `33 bytes` (https://secg.org/sec1-v2.pdf#subsubsection.2.3.3)
-///   * secp256r1: SEC compressed - `33 bytes` (https://secg.org/sec1-v2.pdf#subsubsection.2.3.3)
-///   * edwards25519: `y (255-bits) || x-sign-bit (1-bit)` - `32 bytes` (https://ed25519.cr.yp.to/ed25519-20110926.pdf)
-///   * tweedle: 1st pk : Fq.t (32 bytes) || 2nd pk : Fq.t (32 bytes) (https://github.com/CodaProtocol/coda/blob/develop/rfcs/0038-rosetta-construction-api.md#marshal-keys)
-///
 /// [SigningPayload] is signed by the client with the keypair associated with an
-/// [AccountIdentifier] using the specified [signatureType].
+/// [accountIdentifier] using the specified [signatureType].
 /// [signatureType] can be optionally populated if there is a restriction on the
 /// signature scheme that can be used to sign the payload.
+@immutable
 class SigningPayload {
   const SigningPayload(
     this.hexBytes,
@@ -729,11 +747,12 @@ class SigningPayload {
   }
 }
 
-/// Signature contains the payload that was signed, the public keys of the
+/// [Signature] contains the payload that was signed, the public keys of the
 /// key-pairs used to produce the signature, the signature (encoded in hex),
 /// and the SignatureType. PublicKey is often times not known during
 /// construction of the signing payloads but may be needed to
 /// combine signatures properly.
+@immutable
 class Signature {
   const Signature(
     this.signingPayload,
@@ -773,7 +792,8 @@ class Signature {
   }
 }
 
-/// CoinIdentifier uniquely identifies a Coin.
+/// [CoinIdentifier] uniquely identifies a Coin.
+@immutable
 class CoinIdentifier {
   const CoinIdentifier(this.identifier);
 
@@ -792,12 +812,13 @@ class CoinIdentifier {
   }
 }
 
-/// CoinChange is used to represent a change in state of a some coin identified
+/// [CoinChange] is used to represent a change in state of a some coin identified
 /// by a [coinIdentifier]. This object is part of the [Operation] model
 /// and must be populated for UTXO-based blockchains. Coincidentally,
 /// this abstraction of UTXOs allows for supporting both account-based transfers
 /// and UTXO-based transfers on the same blockchain
 /// (when a transfer is account-based, don't poputhis model).
+@immutable
 class CoinChange {
   /// "coin_created" | "coin_spent";
   const CoinChange(this.coinAction, this.coinIdentifier);
@@ -820,7 +841,8 @@ class CoinChange {
   }
 }
 
-/// Coin contains its unique identifier and the amount it represents.
+/// [Coin] contains its unique identifier and the amount it represents.
+@immutable
 class Coin {
   const Coin(this.amount, this.coinIdentifier);
 
@@ -854,6 +876,7 @@ class Coin {
 /// If your implementation relies on any [BalanceExemption]s, you MUST implement
 /// historical balance lookup
 /// (the ability to query an account balance at any [BlockIdentifier]).
+@immutable
 class BalanceExemption {
   /// "greater_or_equal" | "less_or_equal" | "dynamic";
   const BalanceExemption(
@@ -906,6 +929,7 @@ class BalanceExemption {
 /// [BlockEvent] represents the addition or removal of a [BlockIdentifier]
 /// from storage. Streaming [BlockEvent]s allows lightweight clients to update
 /// their own state without needing to implement their own syncing logic.
+@immutable
 class BlockEvent {
   // "block_added" | "block_removed"
   const BlockEvent(this.sequence, this.blockIdentifier, this.type);
@@ -933,7 +957,9 @@ class BlockEvent {
   }
 }
 
-/// BlockTransaction contains a populated Transaction and the BlockIdentifier that contains it.
+/// [BlockTransaction] contains a populated Transaction and the
+/// [BlockIdentifier] that contains it.
+@immutable
 class BlockTransaction {
   const BlockTransaction(this.blockIdentifier, this.transaction);
 
@@ -959,6 +985,7 @@ class BlockTransaction {
 /// on the /account/balance endpoint.
 /// If the [blockIdentifier] is populated, a historical balance query
 /// should be performed.
+@immutable
 class AccountBalanceRequest {
   const AccountBalanceRequest(
     this.networkIdentifier,
@@ -1004,6 +1031,7 @@ class AccountBalanceRequest {
 /// If an account has a balance for each [AccountIdentifier] describing it
 /// (ex: an ERC-20 token balance on a few smart contracts),
 /// an account balance request must be made with each [AccountIdentifier].
+@immutable
 class AccountBalanceResponse {
   const AccountBalanceResponse(
     this.blockIdentifier,
@@ -1040,6 +1068,7 @@ class AccountBalanceResponse {
 
 /// [AccountCoinsRequest] is utilized to make a request
 /// on the /account/coins endpoint.
+@immutable
 class AccountCoinsRequest {
   const AccountCoinsRequest(
     this.networkIdentifier,
@@ -1086,6 +1115,7 @@ class AccountCoinsRequest {
 
 /// [AccountCoinsResponse] is returned on the /account/coins endpoint and
 /// includes all unspent [Coin]s owned by an [AccountIdentifier].
+@immutable
 class AccountCoinsResponse {
   const AccountCoinsResponse(this.blockIdentifier, this.coins, this.metadata);
 
@@ -1121,6 +1151,7 @@ class AccountCoinsResponse {
 }
 
 /// A [BlockRequest] is utilized to make a block request on the /block endpoint.
+@immutable
 class BlockRequest {
   const BlockRequest(this.networkIdentifier, this.blockIdentifier);
 
@@ -1151,6 +1182,7 @@ class BlockRequest {
 /// still form a canonical, connected chain of blocks where each block has a
 /// unique index. In other words, the [PartialBlockIdentifier] of a block after
 /// an omitted block should reference the last non-omitted block.
+@immutable
 class BlockResponse {
   /// Some blockchains may require additional transactions to be fetched that
   /// weren't returned in the block response
@@ -1184,6 +1216,7 @@ class BlockResponse {
 
 /// A [BlockTransactionRequest] is used to fetch a [Transaction] included in
 /// a block that is not returned in a [BlockResponse].
+@immutable
 class BlockTransactionRequest {
   const BlockTransactionRequest(
     this.networkIdentifier,
@@ -1213,6 +1246,7 @@ class BlockTransactionRequest {
 }
 
 /// A [BlockTransactionResponse] contains information about a block transaction.
+@immutable
 class BlockTransactionResponse {
   const BlockTransactionResponse(this.transaction);
 
@@ -1231,6 +1265,7 @@ class BlockTransactionResponse {
 
 /// A [MempoolResponse] contains all transaction identifiers in the mempool
 /// for a particular [NetworkIdentifier].
+@immutable
 class MempoolResponse {
   const MempoolResponse(this.transactionIdentifiers);
 
@@ -1254,6 +1289,7 @@ class MempoolResponse {
 
 /// A [MempoolTransactionRequest] is utilized to retrieve a transaction
 /// from the mempool.
+@immutable
 class MempoolTransactionRequest {
   const MempoolTransactionRequest(
     this.networkIdentifier,
@@ -1281,6 +1317,7 @@ class MempoolTransactionRequest {
 /// A MempoolTransactionResponse contains an estimate of a mempool transaction.
 /// It may not be possible to know the full impact of a transaction
 /// in the mempool (ex: fee paid).
+@immutable
 class MempoolTransactionResponse {
   const MempoolTransactionResponse(this.transaction, this.metadata);
 
@@ -1304,6 +1341,7 @@ class MempoolTransactionResponse {
 
 /// A [MetadataRequest] is utilized in any request where the only argument
 /// is optional metadata.
+@immutable
 class MetadataRequest {
   const MetadataRequest(this.metadata);
 
@@ -1320,6 +1358,7 @@ class MetadataRequest {
 
 /// A [NetworkListResponse] contains all [NetworkIdentifier]s that the node
 /// can serve information for.
+@immutable
 class NetworkListResponse {
   const NetworkListResponse(this.networkIdentifiers);
 
@@ -1342,6 +1381,7 @@ class NetworkListResponse {
 
 /// A [NetworkRequest] is utilized to retrieve some data specific exclusively
 /// to a [NetworkIdentifier].
+@immutable
 class NetworkRequest {
   const NetworkRequest(this.networkIdentifier, this.metadata);
 
@@ -1374,6 +1414,7 @@ class NetworkRequest {
 /// before it is possible to query blocks, sync_status should be populated
 /// so that clients can still monitor healthiness. Without this field, it may
 /// appear that the implementation is stuck syncing and needs to be terminated.
+@immutable
 class NetworkStatusResponse {
   const NetworkStatusResponse(
     this.currentBlockIdentifier,
@@ -1416,6 +1457,7 @@ class NetworkStatusResponse {
 
 /// [NetworkOptionsResponse] contains information about the versioning
 /// of the node and the allowed operation statuses, operation types, and errors.
+@immutable
 class NetworkOptionsResponse {
   const NetworkOptionsResponse(this.version, this.allow);
 
@@ -1437,13 +1479,14 @@ class NetworkOptionsResponse {
   }
 }
 
-/// A [ConstructionMetadataRequest] is utilized to get information required to
-/// construct a transaction. The [options] object used to specify which metadata
-/// to return is left purposely unstructured to allow flexibility
-/// for implementers. [options] is not required in the case that there is
-/// network-wide metadata of interest. Optionally, the request can also include
-/// an array of [PublicKey]s associated with the
-/// [AccountIdentifiers] returned in [ConstructionPreprocessResponse].
+/// Utilized to get information required to construct a transaction.
+/// The [options] object used to specify which metadata to return is
+/// left purposely unstructured to allow flexibility for implementers.
+/// [options] is not required in the case that there is network-wide metadata
+/// of interest. Optionally, the request can also include an array of
+/// [PublicKey]s associated with the [AccountIdentifiers] returned in
+/// [ConstructionPreprocessResponse].
+@immutable
 class ConstructionMetadataRequest {
   const ConstructionMetadataRequest(
     this.networkIdentifier,
@@ -1491,6 +1534,7 @@ class ConstructionMetadataRequest {
 /// to create a transaction with a different account that can pay the
 /// suggested fee. Suggested fee is an array in case fee payment must occur
 /// in multiple currencies.
+@immutable
 class ConstructionMetadataResponse {
   const ConstructionMetadataResponse(this.metadata, this.suggestedFee);
 
@@ -1517,11 +1561,12 @@ class ConstructionMetadataResponse {
   }
 }
 
-/// [ConstructionDeriveRequest] is passed to the `/construction/derive` endpoint.
+/// Passed to the `/construction/derive` endpoint.
 /// Network is provided in the request because some blockchains have
 /// different address formats for different networks. Metadata is provided
 /// in the request because some blockchains allow for multiple address types
 /// (i.e. different address for validators vs normal accounts).
+@immutable
 class ConstructionDeriveRequest {
   const ConstructionDeriveRequest(
     this.networkIdentifier,
@@ -1551,8 +1596,8 @@ class ConstructionDeriveRequest {
   }
 }
 
-/// [ConstructionDeriveResponse] is returned by the
-/// `/construction/derive` endpoint.
+/// Returned by the `/construction/derive` endpoint.
+@immutable
 class ConstructionDeriveResponse {
   const ConstructionDeriveResponse(
     this.address,
@@ -1583,17 +1628,19 @@ class ConstructionDeriveResponse {
   }
 }
 
-/// [ConstructionPreprocessRequest] is passed to the
+/// Passed to the
 /// `/construction/preprocess` endpoint so that a Rosetta implementation
 /// can determine which [metadata] it needs to request for construction.
 /// [metadata] provided in this object should NEVER be a product of live data
 /// (i.e. the caller must follow some network-specific data fetching strategy
 /// outside of the Construction API to populate required [metadata]).
+///
 /// If live data is required for construction, it MUST be fetched in the call
 /// to `/construction/metadata`. The caller can provide a max fee they are
 /// willing to pay for a transaction. This is an array in the case fees must be
 /// paid in multiple currencies. The caller can also provide a suggested
 /// fee multiplier to indicate that the suggested fee should be scaled.
+///
 /// This may be used to set higher fees for urgent transactions or to pay lower
 /// fees when there is less urgency. It is assumed that providing a very low
 /// multiplier (like 0.0001) will never lead to a transaction being created with
@@ -1601,6 +1648,7 @@ class ConstructionDeriveResponse {
 /// the caller provides both a max fee and a suggested fee multiplier,
 /// the max fee will set an upper bound on the suggested fee
 /// (regardless of the multiplier provided).
+@immutable
 class ConstructionPreprocessRequest {
   const ConstructionPreprocessRequest(
     this.networkIdentifier,
@@ -1650,6 +1698,7 @@ class ConstructionPreprocessRequest {
 /// [AccountIdentifier]s associated with the desired [PublicKey]s.
 /// If it is not necessary to retrieve any [PublicKey]s for construction,
 /// `required_public_keys` should be omitted.
+@immutable
 class ConstructionPreprocessResponse {
   const ConstructionPreprocessResponse(
     this.options,
@@ -1686,6 +1735,7 @@ class ConstructionPreprocessResponse {
 /// that was returned by the call to `/construction/metadata`.
 /// Optionally, the request can also include an array of [PublicKey]s associated
 /// with the [AccountIdentifier]s returned in [ConstructionPreprocessResponse].
+@immutable
 class ConstructionPayloadsRequest {
   const ConstructionPayloadsRequest(
     this.networkIdentifier,
@@ -1722,6 +1772,7 @@ class ConstructionPayloadsRequest {
   }
 }
 
+@immutable
 abstract class SignablePayload {
   const SignablePayload(this.unsignedTransaction, this.payloads);
 
@@ -1761,6 +1812,7 @@ class ConstructionPayloadsResponse extends SignablePayload {
 /// `/construction/combine` endpoint. It contains the unsigned transaction blob
 /// returned by `/construction/payloads` and all required signatures to
 /// create a network transaction.
+@immutable
 class ConstructionCombineRequest {
   const ConstructionCombineRequest(
     this.networkIdentifier,
@@ -1789,6 +1841,7 @@ class ConstructionCombineRequest {
   }
 }
 
+@immutable
 class ConstructionCombineRequestPart {
   const ConstructionCombineRequestPart(
     this.networkIdentifier,
@@ -1822,6 +1875,7 @@ class ConstructionCombineRequestPart {
 /// [ConstructionCombineResponse] is returned by `/construction/combine`.
 /// The network payload will be sent directly to the
 /// `construction/submit` endpoint.
+@immutable
 class ConstructionCombineResponse {
   const ConstructionCombineResponse(this.signedTransaction);
 
@@ -1840,6 +1894,7 @@ class ConstructionCombineResponse {
 
 /// [ConstructionParseRequest] is the input to the `/construction/parse` endpoint.
 /// It allows the caller to parse either an unsigned or signed transaction.
+@immutable
 class ConstructionParseRequest {
   const ConstructionParseRequest(
     this.networkIdentifier,
@@ -1877,6 +1932,7 @@ class ConstructionParseRequest {
 /// [ConstructionParseResponse] contains an array of operations that occur in
 /// a transaction blob. This should match the array of operations provided to
 /// `/construction/preprocess` and `/construction/payloads`.
+@immutable
 class ConstructionParseResponse {
   const ConstructionParseResponse(
     this.operations,
@@ -1921,6 +1977,7 @@ class ConstructionParseResponse {
 }
 
 /// [ConstructionHashRequest] is the input to the `/construction/hash` endpoint.
+@immutable
 class ConstructionHashRequest {
   const ConstructionHashRequest(this.networkIdentifier, this.signedTransaction);
 
@@ -1943,6 +2000,7 @@ class ConstructionHashRequest {
 }
 
 /// The transaction submission request includes a signed transaction.
+@immutable
 class ConstructionSubmitRequest {
   const ConstructionSubmitRequest(
     this.networkIdentifier,
@@ -1970,6 +2028,7 @@ class ConstructionSubmitRequest {
 /// [TransactionIdentifierResponse] contains the [transactionIdentifier] of
 /// a transaction that was submitted to either `/construction/hash`
 /// or `/construction/submit`.
+@immutable
 class TransactionIdentifierResponse {
   const TransactionIdentifierResponse(
     this.transactionIdentifier,
@@ -1995,6 +2054,7 @@ class TransactionIdentifierResponse {
 }
 
 /// [CallRequest] is the input to the `/call` endpoint.
+@immutable
 class CallRequest {
   const CallRequest(this.networkIdentifier, this.method, this.parameters);
 
@@ -2030,6 +2090,7 @@ class CallRequest {
 }
 
 /// [CallResponse] contains the result of a `/call` invocation.
+@immutable
 class CallResponse {
   const CallResponse(this.result, this.idempotent);
 
@@ -2061,6 +2122,7 @@ class CallResponse {
 /// [EventsBlocksRequest] is utilized to fetch a sequence of [BlockEvent]s
 /// indicating which blocks were added and removed from storage to reach
 /// the current state.
+@immutable
 class EventsBlocksRequest {
   const EventsBlocksRequest(this.networkIdentifier, this.offset, this.limit);
 
@@ -2094,6 +2156,7 @@ class EventsBlocksRequest {
 
 /// [EventsBlocksResponse] contains an ordered collection of [BlockEvent]s
 /// and the max retrievable sequence.
+@immutable
 class EventsBlocksResponse {
   const EventsBlocksResponse(this.maxSequence, this.events);
 
@@ -2123,6 +2186,7 @@ class EventsBlocksResponse {
 
 /// [SearchTransactionsRequest] is used to search for transactions matching
 /// a set of provided conditions in canonical blocks.
+@immutable
 class SearchTransactionsRequest {
   const SearchTransactionsRequest(
     this.networkIdentifier,
@@ -2225,6 +2289,7 @@ class SearchTransactionsRequest {
 /// [SearchTransactionsResponse] contains an ordered collection of
 /// [BlockTransaction]s that match the query in [SearchTransactionsRequest].
 /// These [BlockTransaction]s are sorted from most recent block to oldest block.
+@immutable
 class SearchTransactionsResponse {
   const SearchTransactionsResponse(
     this.transactions,
@@ -2270,6 +2335,7 @@ class SearchTransactionsResponse {
 /// rich errors are returned using this object.
 /// Both the code and message fields can be individually used to correctly
 /// identify an error. Implementations MUST use unique values for both fields.
+@immutable
 class RosettaError {
   const RosettaError(
     this.code,

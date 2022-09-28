@@ -4,8 +4,8 @@ import 'candid/idl.dart' as candid;
 import 'identity/identity.dart' as identity;
 import 'principal/index.dart' as principal;
 import 'utils/utils_test.dart' as utils;
-import 'wallet/signer.dart' as signer;
 import 'wallet/pem.dart' as pem;
+import 'wallet/signer.dart' as signer;
 
 void main() {
   agent.main();

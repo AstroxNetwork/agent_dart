@@ -12,6 +12,7 @@ linter:
   rules:
     avoid_print: false
     avoid_redundant_argument_values: true
+    directives_ordering: true
     prefer_const_constructors: true
     prefer_const_constructors_in_immutables: true
     prefer_const_declarations: true

@@ -5,11 +5,11 @@ import 'package:agent_dart/agent/agent/api.dart';
 import 'package:agent_dart/agent/canisters/management.dart';
 import 'package:agent_dart/agent/polling/polling.dart';
 import 'package:agent_dart/candid/idl.dart';
-
 import 'package:agent_dart/principal/principal.dart';
+
 import 'errors.dart';
-import 'types.dart';
 import 'request_id.dart';
+import 'types.dart';
 
 class ActorCallError extends AgentFetchError {
   ActorCallError(

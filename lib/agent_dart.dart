@@ -1,26 +1,16 @@
 export 'agent/agent.dart';
-
 // archiver
 export 'archiver/archiver.dart';
-
 // auth_clinet;
 export 'auth_client/auth_client.dart';
-
-// principal;
-export 'principal/principal.dart';
-
 // authentication
 export 'authentication/authentication.dart';
-
-// identity
-export 'identity/identity.dart';
-
 // candid
 export 'candid/idl.dart';
-
-// wallet
-export 'wallet/wallet.dart';
-
+// identity
+export 'identity/identity.dart';
+// principal;
+export 'principal/principal.dart';
 // utils
 export 'utils/base64.dart';
 export 'utils/bech32.dart';
@@ -32,3 +22,5 @@ export 'utils/map.dart';
 export 'utils/number.dart';
 export 'utils/string.dart';
 export 'utils/u8a.dart';
+// wallet
+export 'wallet/wallet.dart';

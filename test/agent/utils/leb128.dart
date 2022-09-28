@@ -2,9 +2,8 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent/utils/buffer_pipe.dart';
 import 'package:agent_dart/agent/utils/leb128.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:agent_dart/utils/extension.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   leb128Test();

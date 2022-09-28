@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/principal/principal.dart';
+import 'package:meta/meta.dart';
 import 'package:typed_data/typed_buffers.dart';
 import '../api.dart';
 import 'transform.dart';
@@ -124,6 +125,7 @@ class QueryRequest extends BaseRequest {
 
 typedef ReadRequest = ReadStateRequest;
 
+@immutable
 abstract class HttpAgentBaseRequest<T extends WithToJson> extends BaseRequest {
   const HttpAgentBaseRequest({
     required this.request,
@@ -136,6 +138,7 @@ abstract class HttpAgentBaseRequest<T extends WithToJson> extends BaseRequest {
   final String? endpoint;
 }
 
+@immutable
 abstract class HttpAgentSubmitRequest
     extends HttpAgentBaseRequest<CallRequest> {
   const HttpAgentSubmitRequest({
@@ -162,12 +165,14 @@ class HttpAgentQueryRequest extends HttpAgentBaseRequest<BaseRequest> {
   }
 }
 
+@immutable
 abstract class UnSigned<T> {
   const UnSigned({required this.content});
 
   final T content;
 }
 
+@immutable
 abstract class Signed<T> extends UnSigned<T> {
   const Signed({
     required super.content,
