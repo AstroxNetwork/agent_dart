@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.4
+
+- Fix `isHex` and `isTestChain`.
+
 ## 1.0.0-dev.3
 
 - Use the correct super class for `HttpAgentCallRequest`. (#39)
