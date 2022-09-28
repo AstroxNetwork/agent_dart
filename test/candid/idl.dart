@@ -75,7 +75,7 @@ void idlTest() {
       'Text with unicode',
     );
     testArg(
-      IDL.Opt(IDL.Text),
+      IDL.opt(IDL.Text),
       ['Hi ☃\n'],
       '4449444c016e7101000107486920e298830a',
       'Nested text with unicode',
@@ -90,7 +90,7 @@ void idlTest() {
     );
     expect(
       () => IDL.decode(
-        [IDL.Vec(IDL.Nat8)],
+        [IDL.vec(IDL.Nat8)],
         '4449444c00017107486920e298830a'.toU8a(),
       ),
       throwsA(isError<TypeError>()),
@@ -120,13 +120,13 @@ void idlTest() {
       'Negative Int',
     );
     testArg(
-      IDL.Opt(IDL.Int),
+      IDL.opt(IDL.Int),
       [BigInt.from(42)],
       '4449444c016e7c0100012a',
       'Nested Int',
     );
     testEncode(
-      IDL.Opt(IDL.Int),
+      IDL.opt(IDL.Int),
       [42],
       '4449444c016e7c0100012a',
       'Nested Int (number)',
@@ -154,7 +154,7 @@ void idlTest() {
       'Positive BigInt',
     );
     testEncode(
-      IDL.Opt(IDL.Nat),
+      IDL.opt(IDL.Nat),
       [BigInt.from(42)],
       '4449444c016e7d0100012a',
       'Nested Nat (number)',
@@ -262,14 +262,14 @@ void idlTest() {
   test('IDL encoding (tuple)', () {
     // Tuple
     testArg(
-      IDL.Tuple([IDL.Int, IDL.Text]),
+      IDL.tuple([IDL.Int, IDL.Text]),
       [BigInt.from(42), '💩'],
       '4449444c016c02007c017101002a04f09f92a9',
       'Pairs',
     );
     expect(
       () => IDL.encode([
-        IDL.Tuple([IDL.Int, IDL.Text])
+        IDL.tuple([IDL.Int, IDL.Text])
       ], [
         [0]
       ]),
@@ -279,25 +279,25 @@ void idlTest() {
 
   test('IDL encoding (arraybuffer)', () {
     testArg(
-      IDL.Vec(IDL.Nat8),
+      IDL.vec(IDL.Nat8),
       Uint8List.fromList([0, 1, 2, 3]),
       '4449444c016d7b01000400010203',
       'Array of Nat8s',
     );
     testArg(
-      IDL.Vec(IDL.Int8),
+      IDL.vec(IDL.Int8),
       Int8List.fromList([0, 1, 2, 3]),
       '4449444c016d7701000400010203',
       'Array of Int8s',
     );
     testArg(
-      IDL.Vec(IDL.Int16),
+      IDL.vec(IDL.Int16),
       Int16List.fromList([0, 1, 2, 3, 32767, -1]),
       '4449444c016d760100060000010002000300ff7fffff',
       'Array of Int16s',
     );
     testArg(
-      IDL.Vec(IDL.Nat64),
+      IDL.vec(IDL.Nat64),
       <BigInt>[
         BigInt.from(0),
         BigInt.from(1),
@@ -307,10 +307,10 @@ void idlTest() {
       '4449444c016d780100040000000000000000010000000000000000000000000000100d00000000000000',
       'Array of Nat64s',
     );
-    IDL.encode([IDL.Vec(IDL.Nat8)], [Uint8List.fromList([])]);
-    IDL.encode([IDL.Vec(IDL.Nat8)], [Uint8List.fromList(List.filled(100, 42))]);
+    IDL.encode([IDL.vec(IDL.Nat8)], [Uint8List.fromList([])]);
+    IDL.encode([IDL.vec(IDL.Nat8)], [Uint8List.fromList(List.filled(100, 42))]);
     IDL.encode(
-      [IDL.Vec(IDL.Nat16)],
+      [IDL.vec(IDL.Nat16)],
       [Uint16List.fromList(List.filled(200, 42))],
     );
   });
@@ -318,18 +318,18 @@ void idlTest() {
   test('IDL encoding (array)', () {
     // Array
     testArg(
-      IDL.Vec(IDL.Int),
+      IDL.vec(IDL.Int),
       [0, 1, 2, 3].map((x) => BigInt.from(x)).toList(),
       '4449444c016d7c01000400010203',
       'Array of Ints',
     );
     expect(
-      () => IDL.encode([IDL.Vec(IDL.Int)], [BigInt.from(0)]),
+      () => IDL.encode([IDL.vec(IDL.Int)], [BigInt.from(0)]),
       throwsA(isError<ArgumentError>()),
     );
     expect(
       () => IDL.encode([
-        IDL.Vec(IDL.Int)
+        IDL.vec(IDL.Int)
       ], [
         ['fail']
       ]),
@@ -340,7 +340,7 @@ void idlTest() {
   test('IDL encoding (array + tuples)', () {
     // Array of Tuple
     testArg(
-      IDL.Vec(IDL.Tuple([IDL.Int, IDL.Text])),
+      IDL.vec(IDL.tuple([IDL.Int, IDL.Text])),
       [
         [BigInt.from(42), 'text']
       ],
@@ -350,10 +350,10 @@ void idlTest() {
 
     // Nested Tuples
     testArg(
-      IDL.Tuple([
-        IDL.Tuple([
-          IDL.Tuple([
-            IDL.Tuple([IDL.Null])
+      IDL.tuple([
+        IDL.tuple([
+          IDL.tuple([
+            IDL.tuple([IDL.Null])
           ])
         ])
       ]),
@@ -371,10 +371,10 @@ void idlTest() {
 
   test('IDL encoding (record)', () {
     // Record
-    testArg(IDL.Record({}), {}, '4449444c016c000100', 'Empty record');
+    testArg(IDL.record({}), {}, '4449444c016c000100', 'Empty record');
     expect(
       () => IDL.encode([
-        IDL.Record({'a': IDL.Text})
+        IDL.record({'a': IDL.Text})
       ], [
         {'b': 'b'}
       ]),
@@ -383,7 +383,7 @@ void idlTest() {
 
     // Test that additional keys are ignored
     testEncode(
-      IDL.Record({
+      IDL.record({
         'foo': IDL.Text,
         'bar': IDL.Int,
       }),
@@ -392,7 +392,7 @@ void idlTest() {
       'Record',
     );
     testEncode(
-      IDL.Record({'foo': IDL.Text, 'bar': IDL.Int}),
+      IDL.record({'foo': IDL.Text, 'bar': IDL.Int}),
       {'foo': '💩', 'bar': BigInt.from(42)},
       '4449444c016c02d3e3aa027c868eb7027101002a04f09f92a9',
       'Record',
@@ -401,21 +401,21 @@ void idlTest() {
 
   test('IDL decoding (skip fields)', () {
     testDecode(
-      IDL.Record({'foo': IDL.Text, 'bar': IDL.Int}),
+      IDL.record({'foo': IDL.Text, 'bar': IDL.Int}),
       {'foo': '💩', 'bar': BigInt.from(42)},
       '4449444c016c04017f027ed3e3aa027c868eb702710100012a04f09f92a9',
       'ignore record fields',
     );
     testDecode(
-      IDL.Variant({'ok': IDL.Text, 'err': IDL.Text}),
+      IDL.variant({'ok': IDL.Text, 'err': IDL.Text}),
       {'ok': 'good'},
       '4449444c016b03017e9cc20171e58eb4027101000104676f6f64',
       'adjust variant index',
     );
-    final recordType = IDL.Record({'foo': IDL.Int32, 'bar': IDL.Bool});
+    final recordType = IDL.record({'foo': IDL.Int32, 'bar': IDL.Bool});
     final recordValue = {'foo': 42, 'bar': true};
     testArg(
-      IDL.Record({
+      IDL.record({
         'foo': IDL.Int32,
         'bar': recordType,
         'baz': recordType,
@@ -426,8 +426,8 @@ void idlTest() {
       'nested record',
     );
     testDecode(
-      IDL.Record({
-        'baz': IDL.Record({'foo': IDL.Int32})
+      IDL.record({
+        'baz': IDL.record({'foo': IDL.Int32})
       }),
       {
         'baz': {'foo': 42}
@@ -440,22 +440,22 @@ void idlTest() {
   test('IDL encoding (numbered record)', () {
     // Record
     testArg(
-      IDL.Record({'_0_': IDL.Int8, '_1_': IDL.Bool}),
+      IDL.record({'_0_': IDL.Int8, '_1_': IDL.Bool}),
       {'_0_': 42, '_1_': true},
       '4449444c016c020077017e01002a01',
       'Numbered record',
     );
     // Test Tuple and numbered record are exact the same
     testArg(
-      IDL.Tuple([IDL.Int8, IDL.Bool]),
+      IDL.tuple([IDL.Int8, IDL.Bool]),
       [42, true],
       '4449444c016c020077017e01002a01',
       'Tuple',
     );
     testArg(
-      IDL.Tuple([
-        IDL.Tuple([IDL.Int8, IDL.Bool]),
-        IDL.Record({'_0_': IDL.Int8, '_1_': IDL.Bool})
+      IDL.tuple([
+        IDL.tuple([IDL.Int8, IDL.Bool]),
+        IDL.record({'_0_': IDL.Int8, '_1_': IDL.Bool})
       ]),
       [
         [42, true],
@@ -465,7 +465,7 @@ void idlTest() {
       'Tuple and Record',
     );
     testArg(
-      IDL.Record({'_2_': IDL.Int8, '2': IDL.Bool}),
+      IDL.record({'_2_': IDL.Int8, '2': IDL.Bool}),
       {'_2_': 42, '2': true},
       '4449444c016c020277327e01002a01',
       'Mixed record',
@@ -513,13 +513,13 @@ void idlTest() {
   test('IDL encoding (function)', () {
     // Function
     testArg(
-      IDL.Func([IDL.Text], [IDL.Nat], []),
+      IDL.func([IDL.Text], [IDL.Nat], []),
       [Principal.fromText('w7x7r-cok77-xa'), 'foo'],
       '4449444c016a0171017d000100010103caffee03666f6f',
       'function',
     );
     testArg(
-      IDL.Func([IDL.Text], [IDL.Nat], ['query']),
+      IDL.func([IDL.Text], [IDL.Nat], ['query']),
       [Principal.fromText('w7x7r-cok77-xa'), 'foo'],
       '4449444c016a0171017d01010100010103caffee03666f6f',
       'query function',
@@ -529,25 +529,25 @@ void idlTest() {
   test('IDL encoding (service)', () {
     // Service
     testArg(
-      IDL.Service({
-        'foo': IDL.Func([IDL.Text], [IDL.Nat], [])
+      IDL.service({
+        'foo': IDL.func([IDL.Text], [IDL.Nat], [])
       }),
       Principal.fromText('w7x7r-cok77-xa'),
       '4449444c026a0171017d00690103666f6f0001010103caffee',
       'service',
     );
     testArg(
-      IDL.Service({
-        'foo': IDL.Func([IDL.Text], [IDL.Nat], ['query'])
+      IDL.service({
+        'foo': IDL.func([IDL.Text], [IDL.Nat], ['query'])
       }),
       Principal.fromText('w7x7r-cok77-xa'),
       '4449444c026a0171017d0101690103666f6f0001010103caffee',
       'service',
     );
     testArg(
-      IDL.Service({
-        'foo': IDL.Func([IDL.Text], [IDL.Nat], []),
-        'foo2': IDL.Func([IDL.Text], [IDL.Nat], []),
+      IDL.service({
+        'foo': IDL.func([IDL.Text], [IDL.Nat], []),
+        'foo2': IDL.func([IDL.Text], [IDL.Nat], []),
       }),
       Principal.fromText('w7x7r-cok77-xa'),
       '4449444c026a0171017d00690203666f6f0004666f6f320001010103caffee',
@@ -558,7 +558,7 @@ void idlTest() {
   test('IDL encoding (variants)', () {
     // Variants
 
-    final result = IDL.Variant({'ok': IDL.Text, 'err': IDL.Text});
+    final result = IDL.variant({'ok': IDL.Text, 'err': IDL.Text});
     testArg(
       result,
       {'ok': 'good'},
@@ -586,7 +586,7 @@ void idlTest() {
 
     // Test that nullary constructors work as expected
     testArg(
-      IDL.Variant({'foo': IDL.Null}),
+      IDL.variant({'foo': IDL.Null}),
       {'foo': null},
       '4449444c016b01868eb7027f010000',
       'Nullary constructor in variant',
@@ -594,14 +594,14 @@ void idlTest() {
 
     // Test that Empty within variants works as expected
     testArg(
-      IDL.Variant({'ok': IDL.Text, 'err': IDL.Empty}),
+      IDL.variant({'ok': IDL.Text, 'err': IDL.Empty}),
       {'ok': 'good'},
       '4449444c016b029cc20171e58eb4026f01000004676f6f64',
       'Empty within variants',
     );
     expect(
       () => IDL.encode([
-        IDL.Variant({'ok': IDL.Text, 'err': IDL.Empty})
+        IDL.variant({'ok': IDL.Text, 'err': IDL.Empty})
       ], [
         {'err': 'uhoh'}
       ]),
@@ -609,15 +609,15 @@ void idlTest() {
     );
 
     // Test for option
-    testArg(IDL.Opt(IDL.Nat), [], '4449444c016e7d010000', 'None option');
+    testArg(IDL.opt(IDL.Nat), [], '4449444c016e7d010000', 'None option');
     testArg(
-      IDL.Opt(IDL.Nat),
+      IDL.opt(IDL.Nat),
       [BigInt.from(1)],
       '4449444c016e7d01000101',
       'Some option',
     );
     testArg(
-      IDL.Opt(IDL.Opt(IDL.Nat)),
+      IDL.opt(IDL.opt(IDL.Nat)),
       [
         [BigInt.from(1)]
       ],
@@ -625,7 +625,7 @@ void idlTest() {
       'Nested option',
     );
     testArg(
-      IDL.Opt(IDL.Opt(IDL.Null)),
+      IDL.opt(IDL.opt(IDL.Null)),
       [
         [null]
       ],
@@ -635,11 +635,11 @@ void idlTest() {
 
     // Type description sharing
     testArg(
-      IDL.Tuple([
-        IDL.Vec(IDL.Int),
-        IDL.Vec(IDL.Nat),
-        IDL.Vec(IDL.Int),
-        IDL.Vec(IDL.Nat)
+      IDL.tuple([
+        IDL.vec(IDL.Int),
+        IDL.vec(IDL.Nat),
+        IDL.vec(IDL.Int),
+        IDL.vec(IDL.Nat)
       ]),
       [[], [], [], []],
       '4449444c036d7c6d7d6c040000010102000301010200000000',
@@ -650,12 +650,12 @@ void idlTest() {
   test('IDL encoding (rec)', () {
     // Test for recursive types
 
-    final list = IDL.Rec();
+    final list = IDL.rec();
     expect(
       () => IDL.encode([list], [[]]),
       throwsA(isError<StateError>('Recursive type uninitialized.')),
     );
-    list.fill(IDL.Opt(IDL.Record({'head': IDL.Int, 'tail': list})));
+    list.fill(IDL.opt(IDL.record({'head': IDL.Int, 'tail': list})));
     testArg(
       list,
       [],
@@ -678,11 +678,11 @@ void idlTest() {
 
     // Mutual recursion
 
-    final list1 = IDL.Rec();
+    final list1 = IDL.rec();
 
-    final list2 = IDL.Rec();
-    list1.fill(IDL.Opt(list2));
-    list2.fill(IDL.Record({'head': IDL.Int, 'tail': list1}));
+    final list2 = IDL.rec();
+    list1.fill(IDL.opt(list2));
+    list2.fill(IDL.record({'head': IDL.Int, 'tail': list1}));
     testArg(
       list1,
       [],
@@ -705,10 +705,10 @@ void idlTest() {
   });
 
   test('IDL encoding (multiple arguments)', () {
-    final result = IDL.Variant({'ok': IDL.Text, 'err': IDL.Text});
+    final result = IDL.variant({'ok': IDL.Text, 'err': IDL.Text});
     // Test for multiple arguments
     testArgs(
-      [IDL.Nat, IDL.Opt(IDL.Text), result],
+      [IDL.Nat, IDL.opt(IDL.Text), result],
       [
         BigInt.from(42),
         ['test'],

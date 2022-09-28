@@ -1871,28 +1871,28 @@ class IDL {
   static const Nat64 = FixedNatClass(64);
   static const Principal = PrincipalClass();
 
-  static TupleClass<List<CType>> Tuple(List<CType> components) =>
+  static TupleClass<List<CType>> tuple(List<CType> components) =>
       TupleClass(components);
 
-  static VecClass<T> Vec<T>(CType<T> type) => VecClass(type);
+  static VecClass<T> vec<T>(CType<T> type) => VecClass(type);
 
-  static OptClass Opt<T>(CType<T> type) => OptClass(type);
+  static OptClass opt<T>(CType<T> type) => OptClass(type);
 
-  static RecordClass Record(Map? fields) => RecordClass(fields);
+  static RecordClass record(Map? fields) => RecordClass(fields);
 
-  static VariantClass Variant(Map<String, CType<dynamic>> fields) =>
+  static VariantClass variant(Map<String, CType<dynamic>> fields) =>
       VariantClass(fields);
 
-  static RecClass Rec() => RecClass();
+  static RecClass rec() => RecClass();
 
-  static FuncClass Func(
+  static FuncClass func(
     List<CType<dynamic>> argTypes,
     List<CType<dynamic>> retTypes,
     List<String> annotations,
   ) =>
       FuncClass(argTypes, retTypes, annotations);
 
-  static ServiceClass Service(Map<String, FuncClass> fields) =>
+  static ServiceClass service(Map<String, FuncClass> fields) =>
       ServiceClass(fields);
 
   static BinaryBlob encode(List<CType> argTypes, List args) =>

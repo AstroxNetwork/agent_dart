@@ -9,9 +9,9 @@ class CounterMethod {
   static const count = 'getValue';
 }
 
-final idl = IDL.Service({
-  CounterMethod.count: IDL.Func([], [IDL.Nat], ['query']),
-  CounterMethod.add: IDL.Func([], [], []),
+final idl = IDL.service({
+  CounterMethod.count: IDL.func([], [IDL.Nat], ['query']),
+  CounterMethod.add: IDL.func([], [], []),
 });
 
 class Counter extends ActorHook {
