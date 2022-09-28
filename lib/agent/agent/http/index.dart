@@ -122,7 +122,7 @@ class HttpAgent implements Agent {
       if (options.host != null) {
         setHost('$defaultProtocol://${options.host}');
       } else {
-        setHost('$defaultProtocol://$defaultHost$defaultPort');
+        setHost('$defaultProtocol://$defaultHost:$defaultPort');
       }
 
       /// setIdentity
