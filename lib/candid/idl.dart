@@ -1253,10 +1253,12 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
 
 /// Represents a reference to IDL type, used for defining recursive data types.
 class RecClass<T> extends ConstructType<T> {
-  static int _counter = 0;
+  RecClass() : _id = _incrementId++;
 
-  final int _id = RecClass._counter++;
+  final int _id;
+
   ConstructType<T>? _type;
+  static int _incrementId = 0;
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
