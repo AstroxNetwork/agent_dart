@@ -339,7 +339,7 @@ dynamic decodeReturnValue(List<CType> types, BinaryBlob msg) {
 
 typedef MethodCaller = Future Function(CallConfig options, List args);
 
-dynamic _createActorMethod(Actor actor, String methodName, FuncClass func) {
+dynamic _createActorMethod(Actor actor, String methodName, Func func) {
   MethodCaller caller;
   if (func.annotations.contains('query')) {
     caller = (CallConfig options, List args) async {

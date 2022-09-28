@@ -15,7 +15,7 @@ class AgentFactory {
         _url = url;
 
   static CanisterActor createActor(
-    ServiceClass idl,
+    Service idl,
     HttpAgent agent,
     Principal canisterId,
   ) {

@@ -1,4 +1,4 @@
-// ignore_for_file: constant_identifier_names
+// ignore_for_file: constant_identifier_names, non_constant_identifier_names
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -185,35 +185,35 @@ abstract class Visitor<D, R> {
     return visitType(t, data);
   }
 
-  R visitVec<T>(VecClass<T> t, CType<T> ty, D data) {
+  R visitVec<T>(Vec<T> t, CType<T> ty, D data) {
     return visitConstruct(t, data);
   }
 
-  R visitOpt<T>(OptClass<T> t, CType<T> ty, D data) {
+  R visitOpt<T>(Opt<T> t, CType<T> ty, D data) {
     return visitConstruct(t, data);
   }
 
-  R visitRecord(RecordClass t, List<dynamic> fields, D data) {
+  R visitRecord<T>(Record t, List<dynamic> fields, D data) {
     return visitConstruct(t, data);
   }
 
-  R visitTuple(TupleClass t, List<CType> components, D data) {
+  R visitTuple<T>(Tuple t, List<CType> components, D data) {
     return visitConstruct(t, data);
   }
 
-  R visitVariant(VariantClass t, List fields, D data) {
+  R visitVariant(Variant t, List fields, D data) {
     return visitConstruct(t, data);
   }
 
-  R visitRec<T>(RecClass<T> t, ConstructType<T> ty, D data) {
+  R visitRec<T>(Rec<T> t, ConstructType<T> ty, D data) {
     return visitConstruct(ty, data);
   }
 
-  R visitFunc(FuncClass t, D data) {
+  R visitFunc(Func t, D data) {
     return visitConstruct(t, data);
   }
 
-  R visitService(ServiceClass t, D data) {
+  R visitService(Service t, D data) {
     return visitConstruct(t, data);
   }
 }
@@ -1871,28 +1871,28 @@ class IDL {
   static const Nat64 = FixedNatClass._(64);
   static const Principal = PrincipalClass._();
 
-  static TupleClass<List<CType>> tuple(List<CType> components) =>
+  static TupleClass<List> Tuple(List<CType> components) =>
       TupleClass(components);
 
-  static VecClass<T> vec<T>(CType<T> type) => VecClass(type);
+  static VecClass<T> Vec<T>(CType<T> type) => VecClass(type);
 
-  static OptClass opt<T>(CType<T> type) => OptClass(type);
+  static OptClass<T> Opt<T>(CType<T> type) => OptClass(type);
 
-  static RecordClass record(Map? fields) => RecordClass(fields);
+  static RecordClass Record(Map? fields) => RecordClass(fields);
 
-  static VariantClass variant(Map<String, CType<dynamic>> fields) =>
+  static VariantClass Variant(Map<String, CType<dynamic>> fields) =>
       VariantClass(fields);
 
-  static RecClass rec() => RecClass();
+  static RecClass<T> Rec<T>() => RecClass<T>();
 
-  static FuncClass func(
+  static FuncClass Func(
     List<CType<dynamic>> argTypes,
     List<CType<dynamic>> retTypes,
     List<String> annotations,
   ) =>
       FuncClass(argTypes, retTypes, annotations);
 
-  static ServiceClass service(Map<String, FuncClass> fields) =>
+  static ServiceClass Service(Map<String, FuncClass> fields) =>
       ServiceClass(fields);
 
   static BinaryBlob encode(List<CType> argTypes, List args) =>
@@ -1902,11 +1902,11 @@ class IDL {
       idlDecode(retTypes, bytes);
 }
 
-typedef Tuple = TupleClass;
-typedef Vec = VecClass;
-typedef Opt = OptClass;
+typedef Tuple<T> = TupleClass<List>;
+typedef Vec<T> = VecClass<T>;
+typedef Opt<T> = OptClass<T>;
 typedef Record = RecordClass;
 typedef Variant = VariantClass;
-typedef Rec = RecClass;
+typedef Rec<T> = RecClass<T>;
 typedef Func = FuncClass;
 typedef Service = ServiceClass;

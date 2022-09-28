@@ -2,49 +2,49 @@ import 'package:agent_dart/candid/idl.dart';
 
 Service managementIDL() {
   const canisterId = IDL.Principal;
-  final wasmModule = IDL.vec(IDL.Nat8);
-  final canisterSettings = IDL.record({
-    'compute_allocation': IDL.opt(IDL.Nat),
-    'memory_allocation': IDL.opt(IDL.Nat),
+  final wasmModule = IDL.Vec(IDL.Nat8);
+  final canisterSettings = IDL.Record({
+    'compute_allocation': IDL.Opt(IDL.Nat),
+    'memory_allocation': IDL.Opt(IDL.Nat),
   });
-  return IDL.service({
-    'provisional_create_canister_with_cycles': IDL.func(
+  return IDL.Service({
+    'provisional_create_canister_with_cycles': IDL.Func(
       [
-        IDL.record(
-          {'amount': IDL.opt(IDL.Nat), 'settings': IDL.opt(canisterSettings)},
+        IDL.Record(
+          {'amount': IDL.Opt(IDL.Nat), 'settings': IDL.Opt(canisterSettings)},
         )
       ],
       [
-        IDL.record({'canister_id': canisterId})
+        IDL.Record({'canister_id': canisterId})
       ],
       [],
     ),
-    'create_canister': IDL.func(
+    'create_canister': IDL.Func(
       [],
       [
-        IDL.record({'canister_id': canisterId})
+        IDL.Record({'canister_id': canisterId})
       ],
       [],
     ),
-    'install_code': IDL.func(
+    'install_code': IDL.Func(
       [
-        IDL.record({
-          'mode': IDL.variant({
+        IDL.Record({
+          'mode': IDL.Variant({
             'install': IDL.Null,
             'reinstall': IDL.Null,
             'upgrade': IDL.Null
           }),
           'canister_id': canisterId,
           'wasm_module': wasmModule,
-          'arg': IDL.vec(IDL.Nat8),
+          'arg': IDL.Vec(IDL.Nat8),
         }),
       ],
       [],
       [],
     ),
-    'set_controller': IDL.func(
+    'set_controller': IDL.Func(
       [
-        IDL.record(
+        IDL.Record(
           {'canister_id': canisterId, 'new_controller': IDL.Principal},
         )
       ],

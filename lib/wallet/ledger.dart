@@ -14,7 +14,7 @@ class PayloadDuration {
   final BigInt secs;
   final int nanos;
 
-  static Record idl = IDL.record({'secs': IDL.Nat64, 'nanos': IDL.Nat32});
+  static Record idl = IDL.Record({'secs': IDL.Nat64, 'nanos': IDL.Nat32});
 
   Map<String, dynamic> toJson() {
     return {'secs': secs, 'nanos': nanos}
@@ -41,9 +41,9 @@ class ArchiveOptions {
   final int? nodeMaxMemorySizeBytes;
   final Principal controllerId;
 
-  static Record idl = IDL.record({
-    'max_message_size_bytes': IDL.opt(IDL.Nat32),
-    'node_max_memory_size_bytes': IDL.opt(IDL.Nat32),
+  static Record idl = IDL.Record({
+    'max_message_size_bytes': IDL.Opt(IDL.Nat32),
+    'node_max_memory_size_bytes': IDL.Opt(IDL.Nat32),
     'controller_id': IDL.Principal,
   });
 
@@ -65,7 +65,7 @@ class ICPTs {
 
   final BigInt e8s;
 
-  static Record idl = IDL.record({'e8s': IDL.Nat64});
+  static Record idl = IDL.Record({'e8s': IDL.Nat64});
 
   Map<String, dynamic> toJson() {
     return {'e8s': e8s}..removeWhere((key, value) => value == null);
@@ -108,13 +108,13 @@ class LedgerCanisterInitPayload {
   final int? maxMessageSizeBytes;
   final ArchiveOptions? archiveOptions;
 
-  static Record idl = IDL.record({
-    'send_whitelist': IDL.vec(IDL.tuple([IDL.Principal])),
+  static Record idl = IDL.Record({
+    'send_whitelist': IDL.Vec(IDL.Tuple([IDL.Principal])),
     'minting_account': _accountIdentifier,
-    'transaction_window': IDL.opt(PayloadDuration.idl),
-    'max_message_size_bytes': IDL.opt(IDL.Nat32),
-    'archive_options': IDL.opt(ArchiveOptions.idl),
-    'initial_values': IDL.vec(IDL.tuple([_accountIdentifier, ICPTs.idl])),
+    'transaction_window': IDL.Opt(PayloadDuration.idl),
+    'max_message_size_bytes': IDL.Opt(IDL.Nat32),
+    'archive_options': IDL.Opt(ArchiveOptions.idl),
+    'initial_values': IDL.Vec(IDL.Tuple([_accountIdentifier, ICPTs.idl])),
   });
 
   Map<String, dynamic> toJson() {
@@ -147,14 +147,14 @@ class AccountBalanceArgs {
 
   final String account;
 
-  static Record idl = IDL.record({'account': _accountIdentifier});
+  static Record idl = IDL.Record({'account': _accountIdentifier});
 
   Map<String, dynamic> toJson() {
     return {'account': account}..removeWhere((key, value) => value == null);
   }
 }
 
-final SubAccount = IDL.vec(IDL.Nat8);
+final SubAccount = IDL.Vec(IDL.Nat8);
 
 const _blockHeight = IDL.Nat64;
 
@@ -183,9 +183,9 @@ class NotifyCanisterArgs {
   final ICPTs maxFee;
   final BigInt blockHeight;
 
-  static final idl = IDL.record({
-    'to_subaccount': IDL.opt(SubAccount),
-    'from_subaccount': IDL.opt(SubAccount),
+  static final idl = IDL.Record({
+    'to_subaccount': IDL.Opt(SubAccount),
+    'from_subaccount': IDL.Opt(SubAccount),
     'to_canister': IDL.Principal,
     'max_fee': ICPTs.idl,
     'block_height': _blockHeight,
@@ -216,7 +216,7 @@ class TimeStamp {
 
   final BigInt timestampNanos;
 
-  static Record idl = IDL.record({'timestamp_nanos': IDL.Nat64});
+  static Record idl = IDL.Record({'timestamp_nanos': IDL.Nat64});
 
   Map<String, dynamic> toJson() {
     return {'timestamp_nanos': timestampNanos}
@@ -256,12 +256,12 @@ class SendArgs {
   final TimeStamp? createdAtTime;
   final ICPTs amount;
 
-  static Record idl = IDL.record({
+  static Record idl = IDL.Record({
     'to': _accountIdentifier,
     'fee': ICPTs.idl,
     'memo': _memo,
-    'from_subaccount': IDL.opt(SubAccount),
-    'created_at_time': IDL.opt(TimeStamp.idl),
+    'from_subaccount': IDL.Opt(SubAccount),
+    'created_at_time': IDL.Opt(TimeStamp.idl),
     'amount': ICPTs.idl,
   });
 
@@ -277,7 +277,7 @@ class SendArgs {
   }
 }
 
-final AccountIdentifierNew = IDL.vec(IDL.Nat8);
+final AccountIdentifierNew = IDL.Vec(IDL.Nat8);
 
 class AccountBalanceArgsNew {
   const AccountBalanceArgsNew({required this.account});
@@ -288,7 +288,7 @@ class AccountBalanceArgsNew {
 
   final List<int> account;
 
-  static Record idl = IDL.record({'account': AccountIdentifierNew});
+  static Record idl = IDL.Record({'account': AccountIdentifierNew});
 
   Map<String, dynamic> toJson() {
     return {'account': account}..removeWhere((key, value) => value == null);
@@ -304,7 +304,7 @@ class Tokens {
 
   final BigInt e8s;
 
-  static Record idl = IDL.record({'e8s': IDL.Nat64});
+  static Record idl = IDL.Record({'e8s': IDL.Nat64});
 
   Map<String, dynamic> toJson() {
     return {'e8s': e8s}..removeWhere((key, value) => value == null);
@@ -347,12 +347,12 @@ class TransferArgs {
   final TimeStamp? createdAtTime;
   final Tokens amount;
 
-  static Record idl = IDL.record({
+  static Record idl = IDL.Record({
     'to': AccountIdentifierNew,
     'fee': Tokens.idl,
     'memo': _memo,
-    'from_subaccount': IDL.opt(SubAccount),
-    'created_at_time': IDL.opt(TimeStamp.idl),
+    'from_subaccount': IDL.Opt(SubAccount),
+    'created_at_time': IDL.Opt(TimeStamp.idl),
     'amount': Tokens.idl,
   });
 
@@ -398,12 +398,12 @@ class TransferError {
   final bool? txCreatedInFuture;
   final Map? insufficientFunds;
 
-  static Variant idl = IDL.variant({
-    'TxTooOld': IDL.record({'allowed_window_nanos': IDL.Nat64}),
-    'BadFee': IDL.record({'expected_fee': Tokens.idl}),
-    'TxDuplicate': IDL.record({'duplicate_of': _blockIndex}),
+  static Variant idl = IDL.Variant({
+    'TxTooOld': IDL.Record({'allowed_window_nanos': IDL.Nat64}),
+    'BadFee': IDL.Record({'expected_fee': Tokens.idl}),
+    'TxDuplicate': IDL.Record({'duplicate_of': _blockIndex}),
     'TxCreatedInFuture': IDL.Null,
-    'InsufficientFunds': IDL.record({'balance': Tokens.idl}),
+    'InsufficientFunds': IDL.Record({'balance': Tokens.idl}),
   });
 
   Map<String, dynamic> toJson() {
@@ -434,7 +434,7 @@ class TransferResult {
   final BigInt? ok;
   final TransferError? err;
 
-  static Variant idl = IDL.variant({
+  static Variant idl = IDL.Variant({
     'Ok': _blockIndex,
     'Err': TransferError.idl,
   });
@@ -445,20 +445,20 @@ class TransferResult {
   }
 }
 
-final Service ledgerIdl = IDL.service({
-  'account_balance': IDL.func(
+final Service ledgerIdl = IDL.Service({
+  'account_balance': IDL.Func(
     [AccountBalanceArgsNew.idl],
     [Tokens.idl],
     ['query'],
   ),
-  'account_balance_dfx': IDL.func(
+  'account_balance_dfx': IDL.Func(
     [AccountBalanceArgs.idl],
     [ICPTs.idl],
     ['query'],
   ),
-  'notify_dfx': IDL.func([NotifyCanisterArgs.idl], [], []),
-  'send_dfx': IDL.func([SendArgs.idl], [_blockHeight], []),
-  'transfer': IDL.func([TransferArgs.idl], [TransferResult.idl], []),
+  'notify_dfx': IDL.Func([NotifyCanisterArgs.idl], [], []),
+  'send_dfx': IDL.Func([SendArgs.idl], [_blockHeight], []),
+  'transfer': IDL.Func([TransferArgs.idl], [TransferResult.idl], []),
 });
 
 class LedgerMethods {
