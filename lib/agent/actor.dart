@@ -5,11 +5,11 @@ import 'package:agent_dart/agent/agent/api.dart';
 import 'package:agent_dart/agent/canisters/management.dart';
 import 'package:agent_dart/agent/polling/polling.dart';
 import 'package:agent_dart/candid/idl.dart';
-
 import 'package:agent_dart/principal/principal.dart';
+
 import 'errors.dart';
-import 'types.dart';
 import 'request_id.dart';
+import 'types.dart';
 
 class ActorCallError extends AgentFetchError {
   ActorCallError(
@@ -339,7 +339,7 @@ dynamic decodeReturnValue(List<CType> types, BinaryBlob msg) {
 
 typedef MethodCaller = Future Function(CallConfig options, List args);
 
-dynamic _createActorMethod(Actor actor, String methodName, FuncClass func) {
+dynamic _createActorMethod(Actor actor, String methodName, Func func) {
   MethodCaller caller;
   if (func.annotations.contains('query')) {
     caller = (CallConfig options, List args) async {

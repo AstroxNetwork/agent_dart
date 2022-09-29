@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:agent_dart/agent/agent.dart';
-import 'package:agent_dart/principal/principal.dart';
-import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/identity/delegation.dart';
 import 'package:agent_dart/identity/ed25519.dart';
+import 'package:agent_dart/principal/principal.dart';
+import 'package:agent_dart/utils/extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Future<SignIdentity> createIdentity(int seed) {

@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent/cbor.dart';
 import 'package:agent_dart/agent/types.dart';
-import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/principal/principal.dart';
+import 'package:agent_dart/utils/extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:typed_data/typed_data.dart';
 

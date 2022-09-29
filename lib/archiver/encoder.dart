@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:path/path.dart' as path;
 import 'package:agent_dart/agent/agent.dart';
-import 'package:archive/archive_io.dart';
 import 'package:agent_dart/utils/extension.dart';
+import 'package:archive/archive_io.dart';
+import 'package:path/path.dart' as path;
 
 import 'signing_block.dart';
 

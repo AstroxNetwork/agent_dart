@@ -1,7 +1,7 @@
+import 'dart:convert' as convert;
 import 'dart:typed_data';
 
 import 'u8a.dart';
-import 'dart:convert' as convert;
 
 bool base64Validate(String? value) {
   assert(value != null, 'expected non-null & non-empty base64 input.');

@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:agent_dart/agent/auth.dart';
 import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/principal/principal.dart';
+import 'package:meta/meta.dart';
 
 import 'api.dart';
 
@@ -24,6 +25,7 @@ class ProxyMessageKind {
   static const statusResponse = 'sr';
 }
 
+@immutable
 abstract class ProxyMessageBase {
   const ProxyMessageBase({this.id, this.type});
 
