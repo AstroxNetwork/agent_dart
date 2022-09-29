@@ -151,7 +151,7 @@ bool isIdentityDescriptor(dynamic value) {
       case 'AnonymousIdentity':
         return true;
       case 'PublicKeyIdentity':
-        return isHex(value.publicKey);
+        return value.publicKey != null && isHexString(value.publicKey!);
     }
   }
   return false;
