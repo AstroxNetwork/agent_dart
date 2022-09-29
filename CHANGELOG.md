@@ -7,6 +7,7 @@ that can be found in the LICENSE file. -->
 ## 1.0.0-dev.5
 
 - Fix `isHex` and `isTestChain`.
+- Remove `IdentityDescriptor`.
 
 ## 1.0.0-dev.4
 

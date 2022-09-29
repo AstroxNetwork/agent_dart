@@ -1,16 +1,13 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart/agent/request_id.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/utils/extension.dart';
-import 'package:agent_dart/utils/is.dart';
 import 'package:agent_dart/utils/u8a.dart';
 import 'package:meta/meta.dart';
 
-import './agent/http/types.dart';
+import 'agent/http/types.dart';
+import 'request_id.dart';
 import 'types.dart';
-
-final _domainSeparator = '\x0Aic-request'.plainToU8a();
 
 /// A Key Pair, containing a secret and public key.
 @immutable
@@ -80,7 +77,10 @@ abstract class SignIdentity implements Identity {
         'content': request.body.toJson(),
         'sender_pubkey': getPublicKey().toDer(),
         'sender_sig': await sign(
-          u8aConcat([_domainSeparator, requestId.buffer]),
+          u8aConcat([
+            '\x0Aic-request'.plainToU8a(), // Domain separator
+            requestId.buffer,
+          ]),
         ),
       },
     };
@@ -101,58 +101,4 @@ class AnonymousIdentity implements Identity {
       'body': {'content': request.body.toJson()}
     });
   }
-}
-
-/// We need to communicate with other agents on the page about identities,
-/// but those messages may need to go across boundaries where it's not possible
-/// to serialize/deserialize object prototypes easily. So these are lightweight,
-/// serializable objects that contain enough information to recreate
-/// [SignIdentity]s, but don't commit to having all methods of [SignIdentity].
-///
-/// Use Case:
-///  * DOM Events that let differently-versioned components communicate to
-///    one another about [Identity], even if they're using slightly different
-///    versions of agent packages to create/interpret them.
-///
-/// Create an IdentityDescriptor from a @dfinity/authentication Identity
-/// @param identity - identity describe in returned descriptor
-@immutable
-class IdentityDescriptor {
-  const IdentityDescriptor({required this.type, this.publicKey});
-
-  factory IdentityDescriptor.fromJson(Map<String, dynamic> json) {
-    return IdentityDescriptor(
-      type: json['type'] ?? 'AnonymousIdentity',
-      publicKey: json['publicKey'],
-    );
-  }
-
-  final String type;
-  final String? publicKey;
-
-  Map<String, dynamic> toJson() {
-    return {'type': type, if (publicKey != null) 'publicKey': publicKey};
-  }
-}
-
-IdentityDescriptor createIdentityDescriptor(Identity identity) {
-  final isSignIdentity = identity is SignIdentity;
-  final identityIndicator = {
-    'type': isSignIdentity ? 'PublicKeyIdentity' : 'AnonymousIdentity',
-    if (isSignIdentity) 'publicKey': identity.getPublicKey().toDer().toHex(),
-  };
-  return IdentityDescriptor.fromJson(identityIndicator);
-}
-
-/// Type Guard for whether the unknown value is an [IdentityDescriptor] or not.
-bool isIdentityDescriptor(dynamic value) {
-  if (value is IdentityDescriptor) {
-    switch (value.type) {
-      case 'AnonymousIdentity':
-        return true;
-      case 'PublicKeyIdentity':
-        return value.publicKey != null && isHexString(value.publicKey!);
-    }
-  }
-  return false;
 }
