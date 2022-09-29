@@ -1,15 +1,17 @@
 import 'dart:typed_data';
-import 'package:crypto/crypto.dart';
-import 'package:typed_data/typed_buffers.dart';
 
 import 'package:agent_dart/principal/principal.dart';
-import 'package:agent_dart/utils/u8a.dart';
 import 'package:agent_dart/utils/extension.dart';
+import 'package:agent_dart/utils/u8a.dart';
+import 'package:crypto/crypto.dart';
+import 'package:meta/meta.dart';
+import 'package:typed_data/typed_buffers.dart';
 
 import 'agent/index.dart';
 import 'types.dart';
 import 'utils/leb128.dart';
 
+@immutable
 abstract class ToHashable {
   const ToHashable();
 

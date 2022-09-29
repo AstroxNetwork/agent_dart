@@ -4,9 +4,17 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
-## 1.0.0-dev.4
+## 1.0.0-dev.5
 
 - Fix `isHex` and `isTestChain`.
+
+## 1.0.0-dev.4
+
+- Improve all import/export sorts.
+- Add `@immutable` as much as possible.
+- Better construct for `RosettaTransaction` and `RecClass`.
+- Make `PrimitiveType`'s constructor private.
+- Constraint Android API support range to 23~32.
 
 ## 1.0.0-dev.3
 

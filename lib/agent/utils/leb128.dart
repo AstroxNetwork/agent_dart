@@ -4,8 +4,8 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent/utils/buffer_pipe.dart';
 import 'package:agent_dart/utils/bn.dart';
-import 'package:agent_dart/utils/hex.dart';
 import 'package:agent_dart/utils/extension.dart';
+import 'package:agent_dart/utils/hex.dart';
 
 List<T> safeRead<T>(BufferPipe<T> pipe, int ref) {
   if (pipe.length < ref) {

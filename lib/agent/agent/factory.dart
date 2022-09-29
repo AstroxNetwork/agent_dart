@@ -1,6 +1,6 @@
 import 'package:agent_dart/agent/agent.dart';
-import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/candid/idl.dart';
+import 'package:agent_dart/principal/principal.dart';
 
 class AgentFactory {
   AgentFactory({
@@ -15,7 +15,7 @@ class AgentFactory {
         _url = url;
 
   static CanisterActor createActor(
-    ServiceClass idl,
+    Service idl,
     HttpAgent agent,
     Principal canisterId,
   ) {

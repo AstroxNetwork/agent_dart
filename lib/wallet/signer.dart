@@ -16,6 +16,10 @@ enum SignType { ecdsa, ed25519 }
 
 enum SourceType { ii, plug, keySmith, base }
 
+/// [CurveType] is the type of cryptographic curve associated with a [PublicKey].
+///  * [secp256k1] SEC compressed - `33 bytes` (https://secg.org/sec1-v2.pdf#subsubsection.2.3.3)
+///  * [ed25519]  `y (255-bits) || x-sign-bit (1-bit)` - `32 bytes` (https://ed25519.cr.yp.to/ed25519-20110926.pdf)
+///  * [all] both above.
 enum CurveType { secp256k1, ed25519, all }
 
 abstract class Signer<T extends SignablePayload, R> {

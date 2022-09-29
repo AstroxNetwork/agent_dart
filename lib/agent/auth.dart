@@ -2,9 +2,10 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent/request_id.dart';
 import 'package:agent_dart/principal/principal.dart';
+import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/utils/is.dart';
 import 'package:agent_dart/utils/u8a.dart';
-import 'package:agent_dart/utils/extension.dart';
+import 'package:meta/meta.dart';
 
 import './agent/http/types.dart';
 import 'types.dart';
@@ -12,6 +13,7 @@ import 'types.dart';
 final _domainSeparator = '\x0Aic-request'.plainToU8a();
 
 /// A Key Pair, containing a secret and public key.
+@immutable
 abstract class KeyPair {
   const KeyPair({required this.secretKey, required this.publicKey});
 
@@ -19,6 +21,7 @@ abstract class KeyPair {
   final PublicKey publicKey;
 }
 
+@immutable
 abstract class PublicKey {
   const PublicKey();
 
@@ -84,6 +87,7 @@ abstract class SignIdentity implements Identity {
   }
 }
 
+@immutable
 class AnonymousIdentity implements Identity {
   const AnonymousIdentity();
 
@@ -112,6 +116,7 @@ class AnonymousIdentity implements Identity {
 ///
 /// Create an IdentityDescriptor from a @dfinity/authentication Identity
 /// @param identity - identity describe in returned descriptor
+@immutable
 class IdentityDescriptor {
   const IdentityDescriptor({required this.type, this.publicKey});
 
@@ -139,8 +144,7 @@ IdentityDescriptor createIdentityDescriptor(Identity identity) {
   return IdentityDescriptor.fromJson(identityIndicator);
 }
 
-/// Type Guard for whether the unknown value is an IdentityDescriptor or not.
-/// @param value - value to type guard
+/// Type Guard for whether the unknown value is an [IdentityDescriptor] or not.
 bool isIdentityDescriptor(dynamic value) {
   if (value is IdentityDescriptor) {
     switch (value.type) {

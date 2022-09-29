@@ -1,9 +1,12 @@
 import 'package:agent_dart/agent/auth.dart';
 import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/principal/principal.dart';
+import 'package:meta/meta.dart';
 
 /// Codes used by the replica for rejecting a message.
-/// See {@link https://sdk.dfinity.org/docs/interface-spec/#reject-codes | the interface spec}.
+/// See https://sdk.dfinity.org/docs/interface-spec/#reject-codes
+/// for the interface spec.
+@immutable
 class ReplicaRejectCode {
   const ReplicaRejectCode._();
 
@@ -14,7 +17,8 @@ class ReplicaRejectCode {
   static const canisterError = 5;
 }
 
-/// Options when doing a {@link Agent.readState} call.
+/// Options when doing a [Agent.readState] call.
+@immutable
 class ReadStateOptions {
   const ReadStateOptions({required this.paths});
 
@@ -22,8 +26,8 @@ class ReadStateOptions {
   final List<List<BinaryBlob>> paths;
 }
 
-// export type QueryResponse = QueryResponseReplied | QueryResponseRejected;
-
+/// type QueryResponse = QueryResponseReplied | QueryResponseRejected;
+@immutable
 class QueryResponseStatus {
   const QueryResponseStatus._();
 
@@ -31,12 +35,14 @@ class QueryResponseStatus {
   static const rejected = 'rejected';
 }
 
+@immutable
 abstract class QueryResponseBase {
   const QueryResponseBase({required this.status});
 
   final String status;
 }
 
+@immutable
 abstract class QueryResponse extends QueryResponseBase {
   const QueryResponse({
     this.reply,
@@ -50,6 +56,7 @@ abstract class QueryResponse extends QueryResponseBase {
   final String? rejectMessage;
 }
 
+@immutable
 class Reply {
   const Reply(this.arg);
 
@@ -71,7 +78,8 @@ class QueryResponseRejected extends QueryResponseBase {
   final String? rejectMessage;
 }
 
-/// Options when doing a {@link Agent.query} call.
+/// Options when doing a [Agent.query] call.
+@immutable
 class QueryFields {
   const QueryFields({required this.methodName, this.arg});
 
@@ -82,7 +90,8 @@ class QueryFields {
   final BinaryBlob? arg;
 }
 
-/// Options when doing a {@link Agent.call} call.
+/// Options when doing a [Agent.call] call.
+@immutable
 class CallOptions {
   const CallOptions({
     required this.methodName,
@@ -101,12 +110,14 @@ class CallOptions {
   final Principal? effectiveCanisterId;
 }
 
+@immutable
 abstract class ReadStateResponse {
   const ReadStateResponse({required this.certificate});
 
   final BinaryBlob certificate;
 }
 
+@immutable
 abstract class ResponseBody {
   const ResponseBody({this.ok, this.status, this.statusText});
 
@@ -115,6 +126,7 @@ abstract class ResponseBody {
   final String? statusText;
 }
 
+@immutable
 abstract class SubmitResponse {
   const SubmitResponse({this.requestId, this.response});
 
