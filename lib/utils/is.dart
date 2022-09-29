@@ -16,8 +16,7 @@ bool isHex(dynamic value, [int bitLength = -1, bool ignoreLength = false]) {
   if (value is! String) {
     return false;
   }
-  final reg = RegExp(r'^0x[a-fA-F\d]+$');
-  if (value == '0x' || reg.hasMatch(value)) {
+  if (RegExp(r'^0x[a-fA-F\d]*$').hasMatch(value)) {
     if (bitLength != -1) {
       return value.length == (2 + (bitLength / 4).ceil());
     }
