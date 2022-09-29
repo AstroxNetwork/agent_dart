@@ -3,8 +3,8 @@ description: |
   An agent library built for Internet Computer,
   a plugin package for dart and flutter apps.
   Developers can build ones to interact with Dfinity's blockchain directly.
-version: 1.0.0-dev.1
 repository: https://github.com/AstroxNetwork/agent_dart
+version: 1.0.0-dev.3
 
 environment:
   sdk: '>=2.17.0 <3.0.0'
@@ -62,4 +62,5 @@ flutter:
         pluginClass: AgentDartPlugin
 
 false_secrets:
+  - /rust/ed_compact/src/pem.rs
   - /test/fixture/*.pem

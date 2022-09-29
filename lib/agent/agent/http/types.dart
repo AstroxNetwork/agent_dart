@@ -136,6 +136,15 @@ abstract class HttpAgentBaseRequest<T extends WithToJson> extends BaseRequest {
   final Map<String, dynamic> request;
   final T body;
   final String? endpoint;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'endpoint': endpoint,
+      'body': body.toJson(),
+      'request': {...request},
+    };
+  }
 }
 
 @immutable
@@ -148,21 +157,20 @@ abstract class HttpAgentSubmitRequest
   });
 }
 
+class HttpAgentCallRequest extends HttpAgentSubmitRequest {
+  const HttpAgentCallRequest({
+    required super.request,
+    required super.body,
+    super.endpoint = Endpoint.call,
+  });
+}
+
 class HttpAgentQueryRequest extends HttpAgentBaseRequest<BaseRequest> {
   const HttpAgentQueryRequest({
     required super.request,
     required super.body,
     super.endpoint = Endpoint.query,
   });
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'endpoint': endpoint,
-      'body': body.toJson(),
-      'request': {...request},
-    };
-  }
 }
 
 @immutable
