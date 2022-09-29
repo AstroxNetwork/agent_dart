@@ -18,35 +18,21 @@ class IDLTypeIds {
   const IDLTypeIds._();
 
   static const Null = -1;
-
   static const Bool = -2;
-
   static const Nat = -3;
-
   static const Int = -4;
 
   static const Float32 = -13;
-
   static const Float64 = -14;
-
   static const Text = -15;
-
   static const Reserved = -16;
-
   static const Empty = -17;
-
   static const Opt = -18;
-
   static const Vector = -19;
-
   static const Record = -20;
-
   static const Variant = -21;
-
   static const Func = -22;
-
   static const Service = -23;
-
   static const Principal = -24;
 }
 
