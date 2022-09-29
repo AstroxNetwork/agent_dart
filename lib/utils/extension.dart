@@ -1,11 +1,12 @@
 import 'dart:typed_data';
+
 import 'package:typed_data/typed_data.dart';
 
+import 'bn.dart' as bn_util;
 import 'hex.dart' as hex_util;
+import 'is.dart' as is_util;
 import 'string.dart' as string_util;
 import 'u8a.dart' as u8a_util;
-import 'bn.dart' as bn_util;
-import 'is.dart' as is_util;
 
 extension AgentStringExtension on String {
   bool isHex([int bitLength = -1, bool ignoreLength = false]) =>

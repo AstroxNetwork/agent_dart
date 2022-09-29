@@ -1,11 +1,14 @@
-import 'dart:typed_data';
 import 'dart:math';
+import 'dart:typed_data';
+
 import 'package:agent_dart/utils/extension.dart';
+import 'package:meta/meta.dart';
 
 import 'utils/leb128.dart';
 
 enum BlobType { binary, der, nonce, requestId }
 
+@immutable
 abstract class BaseBlob {
   const BaseBlob(
     Uint8List buffer,

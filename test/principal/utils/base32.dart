@@ -1,6 +1,6 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:agent_dart/principal/utils/base32.dart';
 import 'package:agent_dart/utils/extension.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   base32Test();

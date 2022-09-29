@@ -1,4 +1,4 @@
-// ignore_for_file: constant_identifier_names, non_constant_identifier_names, prefer_void_to_null
+// ignore_for_file: constant_identifier_names, non_constant_identifier_names
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -9,6 +9,7 @@ import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/utils/map.dart';
 import 'package:agent_dart/utils/number.dart';
 import 'package:agent_dart/utils/u8a.dart';
+import 'package:meta/meta.dart';
 
 typedef Pipe<T> = BufferPipe<T>;
 typedef PrincipalId = principal.Principal;
@@ -17,35 +18,21 @@ class IDLTypeIds {
   const IDLTypeIds._();
 
   static const Null = -1;
-
   static const Bool = -2;
-
   static const Nat = -3;
-
   static const Int = -4;
 
   static const Float32 = -13;
-
   static const Float64 = -14;
-
   static const Text = -15;
-
   static const Reserved = -16;
-
   static const Empty = -17;
-
   static const Opt = -18;
-
   static const Vector = -19;
-
   static const Record = -20;
-
   static const Variant = -21;
-
   static const Func = -22;
-
   static const Service = -23;
-
   static const Principal = -24;
 }
 
@@ -122,6 +109,7 @@ class TypeTable {
   }
 }
 
+@immutable
 abstract class Visitor<D, R> {
   const Visitor();
 
@@ -183,35 +171,35 @@ abstract class Visitor<D, R> {
     return visitType(t, data);
   }
 
-  R visitVec<T>(VecClass<T> t, CType<T> ty, D data) {
+  R visitVec<T>(Vec<T> t, CType<T> ty, D data) {
     return visitConstruct(t, data);
   }
 
-  R visitOpt<T>(OptClass<T> t, CType<T> ty, D data) {
+  R visitOpt<T>(Opt<T> t, CType<T> ty, D data) {
     return visitConstruct(t, data);
   }
 
-  R visitRecord(RecordClass t, List<dynamic> fields, D data) {
+  R visitRecord<T>(Record t, List<dynamic> fields, D data) {
     return visitConstruct(t, data);
   }
 
-  R visitTuple(TupleClass t, List<CType> components, D data) {
+  R visitTuple<T>(Tuple t, List<CType> components, D data) {
     return visitConstruct(t, data);
   }
 
-  R visitVariant(VariantClass t, List fields, D data) {
+  R visitVariant(Variant t, List fields, D data) {
     return visitConstruct(t, data);
   }
 
-  R visitRec<T>(RecClass<T> t, ConstructType<T> ty, D data) {
+  R visitRec<T>(Rec<T> t, ConstructType<T> ty, D data) {
     return visitConstruct(ty, data);
   }
 
-  R visitFunc(FuncClass t, D data) {
+  R visitFunc(Func t, D data) {
     return visitConstruct(t, data);
   }
 
-  R visitService(ServiceClass t, D data) {
+  R visitService(Service t, D data) {
     return visitConstruct(t, data);
   }
 }
@@ -300,7 +288,7 @@ abstract class ConstructType<T> extends CType<T> {
 }
 
 class EmptyClass<T> extends PrimitiveType<T> {
-  const EmptyClass();
+  const EmptyClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -336,7 +324,7 @@ class EmptyClass<T> extends PrimitiveType<T> {
 
 /// Represents an IDL Bool
 class BoolClass extends PrimitiveType<bool> {
-  const BoolClass();
+  const BoolClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -372,8 +360,9 @@ class BoolClass extends PrimitiveType<bool> {
   String get name => 'bool';
 }
 
+// ignore: prefer_void_to_null
 class NullClass extends PrimitiveType<Null> {
-  const NullClass();
+  const NullClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -397,6 +386,7 @@ class NullClass extends PrimitiveType<Null> {
   }
 
   @override
+  // ignore: prefer_void_to_null
   Uint8List encodeValue(Null x) {
     return Uint8List.fromList([]);
   }
@@ -407,7 +397,7 @@ class NullClass extends PrimitiveType<Null> {
 
 /// A reserved class with no usages.
 class ReservedClass extends PrimitiveType<dynamic> {
-  const ReservedClass();
+  const ReservedClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -447,7 +437,7 @@ bool _isValidUTF8(Uint8List buf) {
 }
 
 class TextClass extends PrimitiveType<String> {
-  const TextClass();
+  const TextClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -491,7 +481,7 @@ class TextClass extends PrimitiveType<String> {
 
 /// Implicit types [BigInt] | [int].
 class IntClass extends PrimitiveType {
-  const IntClass();
+  const IntClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -527,7 +517,7 @@ class IntClass extends PrimitiveType {
 }
 
 class NatClass extends PrimitiveType {
-  const NatClass();
+  const NatClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -563,7 +553,7 @@ class NatClass extends PrimitiveType {
 }
 
 class FloatClass extends PrimitiveType<num> {
-  const FloatClass(
+  const FloatClass._(
     this._bits,
   ) : assert(_bits == 32 || _bits == 64, 'Bits is not a valid float type.');
 
@@ -622,7 +612,7 @@ class FloatClass extends PrimitiveType<num> {
 }
 
 class FixedIntClass extends PrimitiveType {
-  const FixedIntClass(this._bits);
+  const FixedIntClass._(this._bits);
 
   final int _bits;
 
@@ -683,7 +673,7 @@ class FixedIntClass extends PrimitiveType {
 }
 
 class FixedNatClass extends PrimitiveType<dynamic> {
-  const FixedNatClass(this._bits);
+  const FixedNatClass._(this._bits);
 
   final int _bits;
 
@@ -1249,10 +1239,12 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
 
 /// Represents a reference to IDL type, used for defining recursive data types.
 class RecClass<T> extends ConstructType<T> {
-  static int _counter = 0;
+  RecClass() : _id = _incrementId++;
 
-  final int _id = RecClass._counter++;
+  final int _id;
+
   ConstructType<T>? _type;
+  static int _incrementId = 0;
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -1326,7 +1318,7 @@ PrincipalId decodePrincipalId(Pipe b) {
 }
 
 class PrincipalClass extends PrimitiveType<PrincipalId> {
-  const PrincipalClass();
+  const PrincipalClass._();
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -1846,38 +1838,38 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
 class IDL {
   const IDL._();
 
-  static const Empty = EmptyClass();
-  static const Reserved = ReservedClass();
-  static const Bool = BoolClass();
-  static const Null = NullClass();
-  static const Text = TextClass();
-  static const Int = IntClass();
-  static const Nat = NatClass();
-  static const Float32 = FloatClass(32);
-  static const Float64 = FloatClass(64);
-  static const Int8 = FixedIntClass(8);
-  static const Int16 = FixedIntClass(16);
-  static const Int32 = FixedIntClass(32);
-  static const Int64 = FixedIntClass(64);
-  static const Nat8 = FixedNatClass(8);
-  static const Nat16 = FixedNatClass(16);
-  static const Nat32 = FixedNatClass(32);
-  static const Nat64 = FixedNatClass(64);
-  static const Principal = PrincipalClass();
+  static const Empty = EmptyClass._();
+  static const Reserved = ReservedClass._();
+  static const Bool = BoolClass._();
+  static const Null = NullClass._();
+  static const Text = TextClass._();
+  static const Int = IntClass._();
+  static const Nat = NatClass._();
+  static const Float32 = FloatClass._(32);
+  static const Float64 = FloatClass._(64);
+  static const Int8 = FixedIntClass._(8);
+  static const Int16 = FixedIntClass._(16);
+  static const Int32 = FixedIntClass._(32);
+  static const Int64 = FixedIntClass._(64);
+  static const Nat8 = FixedNatClass._(8);
+  static const Nat16 = FixedNatClass._(16);
+  static const Nat32 = FixedNatClass._(32);
+  static const Nat64 = FixedNatClass._(64);
+  static const Principal = PrincipalClass._();
 
-  static TupleClass<List<CType>> Tuple(List<CType> components) =>
+  static TupleClass<List> Tuple(List<CType> components) =>
       TupleClass(components);
 
   static VecClass<T> Vec<T>(CType<T> type) => VecClass(type);
 
-  static OptClass Opt<T>(CType<T> type) => OptClass(type);
+  static OptClass<T> Opt<T>(CType<T> type) => OptClass(type);
 
   static RecordClass Record(Map? fields) => RecordClass(fields);
 
   static VariantClass Variant(Map<String, CType<dynamic>> fields) =>
       VariantClass(fields);
 
-  static RecClass Rec() => RecClass();
+  static RecClass<T> Rec<T>() => RecClass<T>();
 
   static FuncClass Func(
     List<CType<dynamic>> argTypes,
@@ -1896,11 +1888,11 @@ class IDL {
       idlDecode(retTypes, bytes);
 }
 
-typedef Tuple = TupleClass;
-typedef Vec = VecClass;
-typedef Opt = OptClass;
+typedef Tuple<T> = TupleClass<List>;
+typedef Vec<T> = VecClass<T>;
+typedef Opt<T> = OptClass<T>;
 typedef Record = RecordClass;
 typedef Variant = VariantClass;
-typedef Rec = RecClass;
+typedef Rec<T> = RecClass<T>;
 typedef Func = FuncClass;
 typedef Service = ServiceClass;

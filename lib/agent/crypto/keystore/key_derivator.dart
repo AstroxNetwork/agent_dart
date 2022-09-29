@@ -1,5 +1,6 @@
 part of 'key_store.dart';
 
+@immutable
 abstract class KeyDerivator {
   const KeyDerivator();
 
@@ -23,7 +24,7 @@ class _PBDKDF2KeyDerivator extends KeyDerivator {
 
   @override
   Uint8List deriveKey(List<int> password) {
-    final impl = pbkdf2.PBKDF2KeyDerivator(mac)
+    final impl = PBKDF2KeyDerivator(mac)
       ..init(Pbkdf2Parameters(salt, iterations, dklen));
     return impl.process(Uint8List.fromList(password));
   }
@@ -53,7 +54,7 @@ class _ScryptKeyDerivator extends KeyDerivator {
 
   @override
   Uint8List deriveKey(List<int> password) {
-    final impl = scrypt.Scrypt()
+    final impl = Scrypt()
       ..init(ScryptParameters(n, r, p, dklen, Uint8List.fromList(salt)));
     return impl.process(Uint8List.fromList(password));
   }

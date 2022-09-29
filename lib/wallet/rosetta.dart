@@ -68,35 +68,32 @@ class RosettaTransaction extends rosetta.Transaction {
     timestamp = DateTime.fromMillisecondsSinceEpoch(timestampMs.toInt());
     final operations = rosettaTransaction.operations;
     if (operations.isNotEmpty) {
-      type = operations[0].type;
-      status = operations[0].status;
-      account1Address = operations[0].account?.address;
-      amount = operations[0].amount != null
-          ? BigInt.parse(operations[0].amount!.value)
-          : null;
+      final firstOperation = operations[0];
+      type = firstOperation.type;
+      status = firstOperation.status;
+      account1Address = firstOperation.account?.address;
+      BigInt amountValue = firstOperation.amount?.valueInBigInt ?? BigInt.zero;
       // Negate amount for TRANSACTION and BURN,
       // so that they appear in the UI as positive values.
-      if ((operations[0].type == 'TRANSACTION' ||
-              operations[0].type == 'BURN') &&
-          amount! != BigInt.zero) {
-        amount = -amount!;
+      if ((type == 'TRANSACTION' || type == 'BURN') &&
+          amountValue != BigInt.zero) {
+        amountValue = -amountValue;
       }
+      amount = amountValue;
     } else {
-      type = '';
-      status = '';
-      account1Address = '';
+      type = null;
+      status = null;
+      account1Address = null;
       amount = BigInt.zero;
     }
     if (operations.length >= 2 && operations[1].type == 'TRANSACTION') {
       account2Address = operations[1].account?.address;
     } else {
-      account2Address = '';
+      account2Address = null;
     }
-
     if (operations.length >= 3 && operations[2].type == 'FEE') {
-      fee = operations[2].amount?.value != null
-          ? -BigInt.parse(operations[2].amount!.value)
-          : null;
+      fee = (operations[2].amount?.valueInBigInt ?? BigInt.zero) * -BigInt.one;
+      memo = null;
     } else {
       fee = BigInt.zero;
       memo = rosettaTransaction.metadata?['memo'] != null
@@ -106,15 +103,15 @@ class RosettaTransaction extends rosetta.Transaction {
   }
 
   final int blockIndex;
-  late String hash;
-  late String type;
-  late String? status;
-  late String? account1Address;
-  late String? account2Address;
-  late BigInt? amount;
-  late BigInt? fee;
-  late BigInt? memo;
-  late DateTime? timestamp;
+  late final String hash;
+  late final DateTime? timestamp;
+  late final String? type;
+  late final String? status;
+  late final String? account1Address;
+  late final String? account2Address;
+  late final BigInt amount;
+  late final BigInt fee;
+  late final BigInt? memo;
 }
 
 /// Manages Rosetta API calls.
@@ -147,7 +144,7 @@ class RosettaApi {
   /// a TransactionError for error.
   Future<BigInt> getAccountBalance(accountAddress) async {
     final response = await accountBalanceByAddress(accountAddress);
-    return BigInt.parse(response.balances[0].value);
+    return response.balances[0].valueInBigInt;
   }
 
   /// Return the latest block index.
@@ -168,7 +165,7 @@ class RosettaApi {
         orElse: () => throw StateError('No fee found.'),
       );
       if (fee != null) {
-        suggestedFee = BigInt.parse(fee.value);
+        suggestedFee = fee.valueInBigInt;
         currency = fee.currency;
       }
     }
@@ -414,7 +411,7 @@ class RosettaApi {
     final netId = networkIdentifier;
     final oper1 = rosetta.Operation.fromJson(
       {
-        'operation_identifier': {'index': 0},
+        'operation_identifier': const {'index': 0},
         'type': 'TRANSACTION',
         'account': {
           'address': getAccountIdFromEd25519PublicKey(srcPub).toHex(),
@@ -427,7 +424,7 @@ class RosettaApi {
     ).toJson();
     final oper2 = rosetta.Operation.fromJson(
       {
-        'operation_identifier': {'index': 1},
+        'operation_identifier': const {'index': 1},
         'type': 'TRANSACTION',
         'account': {'address': crc32Add(destAddr).toHex()},
         'amount': {
@@ -438,7 +435,7 @@ class RosettaApi {
     ).toJson();
     final oper3 = rosetta.Operation.fromJson(
       {
-        'operation_identifier': {'index': 2},
+        'operation_identifier': const {'index': 2},
         'type': 'FEE',
         'account': {
           'address': getAccountIdFromEd25519PublicKey(srcPub).toHex(),
