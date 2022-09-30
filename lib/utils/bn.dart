@@ -14,11 +14,12 @@ BigInt bnToBn(dynamic value) {
     return value;
   } else if (value is int) {
     return BigInt.from(value);
-  } else if (isHex(value)) {
-    return hexToBn(value.toString());
   } else if (value is Map<String, dynamic>) {
     return compactToBn(value);
-  } else if (value is String && !isHex(value)) {
+  } else if (value is String) {
+    if (isHex(value)) {
+      return hexToBn(value);
+    }
     result = BigInt.tryParse(value, radix: 10);
   }
   if (result != null) {
