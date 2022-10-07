@@ -30,7 +30,7 @@ Uint8List lebEncode(dynamic value) {
   }
   final List<int> pipe = [];
   while (true) {
-    final i = (hexToBn(bn.toHex()) & BigInt.from(0x7f)).toInt();
+    final i = (hexToBn(bn.toHex(include0x: true)) & BigInt.from(0x7f)).toInt();
     bn = bn ~/ BigInt.from(0x80);
     if (bn == BigInt.zero) {
       pipe.add(i);
