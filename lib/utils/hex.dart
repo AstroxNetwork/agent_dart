@@ -10,7 +10,7 @@ import 'string.dart';
 import 'u8a.dart';
 
 bool hexHasPrefix(String value) {
-  return isHex(value, -1, true) && value.substring(0, 2) == '0x';
+  return isHex(value, ignoreLength: true) && value.substring(0, 2) == '0x';
 }
 
 String hexStripPrefix(String value) {
@@ -32,23 +32,19 @@ BigInt hexToBn(
   Endian endian = Endian.big,
   bool isNegative = false,
 }) {
-  if (value == null) return BigInt.from(0);
+  if (value == null) {
+    return BigInt.from(0);
+  }
   if (isNegative == false) {
     if (isHex(value)) {
-      final sValue = value is num
+      String sValue = value is num
           ? int.parse(value.toString(), radix: 10).toRadixString(16)
           : value;
+      sValue = hexStripPrefix(sValue);
       if (endian == Endian.big) {
-        return BigInt.parse(
-          hexStripPrefix(sValue) == '' ? '0' : hexStripPrefix(sValue),
-          radix: 16,
-        );
+        return BigInt.parse(sValue.isEmpty ? '0' : sValue, radix: 16);
       } else {
-        return decodeBigInt(
-          hexToBytes(
-            hexStripPrefix(sValue) == '' ? '0' : hexStripPrefix(sValue),
-          ),
-        );
+        return decodeBigInt(hexToBytes(sValue.isEmpty ? '0' : sValue));
       }
     }
     final sValue = value is num
@@ -168,5 +164,8 @@ String hexFixLength(
       beforeAdd = stripped2.substring(stripped2.length - 1 * strLength);
     }
   }
-  return hexAddPrefix(beforeAdd);
+  if (include0x) {
+    return hexAddPrefix(beforeAdd);
+  }
+  return beforeAdd;
 }

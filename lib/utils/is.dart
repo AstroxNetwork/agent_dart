@@ -12,15 +12,15 @@ bool isAscii(dynamic value) {
   );
 }
 
-bool isHex(dynamic value, [int bitLength = -1, bool ignoreLength = false]) {
+bool isHex(dynamic value, {int bits = -1, bool ignoreLength = false}) {
   if (value is! String) {
     return false;
   }
   if (RegExp(r'^0x[a-fA-F\d]*$').hasMatch(value)) {
-    if (bitLength != -1) {
-      return value.length == (2 + (bitLength / 4).ceil());
+    if (bits != -1) {
+      return value.length == (2 + (bits / 4).ceil());
     }
-    return value.length % 2 == 0;
+    return ignoreLength || value.length % 2 == 0;
   }
   return false;
 }

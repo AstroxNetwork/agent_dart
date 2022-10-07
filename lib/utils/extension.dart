@@ -9,8 +9,8 @@ import 'string.dart' as string_util;
 import 'u8a.dart' as u8a_util;
 
 extension AgentStringExtension on String {
-  bool isHex([int bitLength = -1, bool ignoreLength = false]) =>
-      is_util.isHex(this, bitLength, ignoreLength);
+  bool isHex({int bits = -1, bool ignoreLength = false}) =>
+      is_util.isHex(this, bits: bits, ignoreLength: ignoreLength);
 
   bool isHexString() => is_util.isHexString(this);
 
