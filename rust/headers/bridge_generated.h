@@ -323,6 +323,8 @@ void wire_secp256k1_from_seed(int64_t port_, struct wire_Secp256k1FromSeedReq *r
 
 void wire_secp256k1_sign(int64_t port_, struct wire_Secp256k1SignWithSeedReq *req);
 
+void wire_secp256k1_sign_recoverable(int64_t port_, struct wire_Secp256k1SignWithSeedReq *req);
+
 void wire_secp256k1_verify(int64_t port_, struct wire_Secp256k1VerifyReq *req);
 
 void wire_aes_128_ctr_encrypt(int64_t port_, struct wire_AesEncryptReq *req);
@@ -374,6 +376,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_ed25519_verify);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_from_seed);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_sign);
+    dummy_var ^= ((int64_t) (void*) wire_secp256k1_sign_recoverable);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_verify);
     dummy_var ^= ((int64_t) (void*) wire_aes_128_ctr_encrypt);
     dummy_var ^= ((int64_t) (void*) wire_aes_128_ctr_decrypt);
