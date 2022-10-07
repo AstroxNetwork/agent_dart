@@ -68,12 +68,14 @@ extension AgentBnExtension on BigInt {
     int bitLength = -1,
     Endian endian = Endian.big,
     bool isNegative = false,
+    bool include0x = false,
   }) =>
       bn_util.bnToHex(
         this,
         bitLength: bitLength,
         endian: endian,
         isNegative: isNegative,
+        include0x: include0x,
       );
 
   Uint8List toU8a({
@@ -98,12 +100,14 @@ extension AgentIntExtension on int {
     int bitLength = -1,
     Endian endian = Endian.big,
     bool isNegative = false,
+    bool include0x = false,
   }) =>
       bn_util.bnToHex(
         toBn(),
         bitLength: bitLength,
         endian: endian,
         isNegative: isNegative,
+        include0x: include0x,
       );
 
   Uint8List toU8a({

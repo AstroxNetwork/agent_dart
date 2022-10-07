@@ -36,7 +36,7 @@ void leb128Test() {
     expect(
       lebDecode(
         BufferPipe<int>('ef9baf8589cf959a92deb7de8a929eabb424'.toU8a()),
-      ).toHex().hexStripPrefix(),
+      ).toHex(),
       '1234567890abcdef1234567890abcdef',
     );
   });

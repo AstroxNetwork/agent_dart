@@ -72,6 +72,7 @@ String bnToHex(
   int bitLength = -1,
   Endian endian = Endian.big,
   bool isNegative = false,
+  bool include0x = false,
 }) {
   final u8a = bnToU8a(
     bn,
@@ -79,7 +80,7 @@ String bnToHex(
     endian: endian,
     isNegative: isNegative,
   );
-  return u8aToHex(u8a);
+  return u8aToHex(u8a, include0x: include0x);
 }
 
 class Options {

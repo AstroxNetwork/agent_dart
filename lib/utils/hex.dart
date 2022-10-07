@@ -147,10 +147,11 @@ String hexAddPrefix(String? value) {
 }
 
 String hexFixLength(
-  String value, [
+  String value, {
   int bitLength = -1,
   bool withPadding = false,
-]) {
+  bool include0x = true,
+}) {
   final strLength = (bitLength / 4).ceil();
   final hexLength = strLength + 2;
   String beforeAdd;
