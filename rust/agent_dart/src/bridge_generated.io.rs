@@ -47,6 +47,14 @@ pub extern "C" fn wire_secp256k1_sign(port_: i64, req: *mut wire_Secp256k1SignWi
 }
 
 #[no_mangle]
+pub extern "C" fn wire_secp256k1_sign_recoverable(
+    port_: i64,
+    req: *mut wire_Secp256k1SignWithSeedReq,
+) {
+    wire_secp256k1_sign_recoverable_impl(port_, req)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_secp256k1_verify(port_: i64, req: *mut wire_Secp256k1VerifyReq) {
     wire_secp256k1_verify_impl(port_, req)
 }

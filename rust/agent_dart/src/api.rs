@@ -72,6 +72,12 @@ pub fn secp256k1_sign(req: Secp256k1SignWithSeedReq) -> SignatureFFI {
         .unwrap()
 }
 
+pub fn secp256k1_sign_recoverable(req: Secp256k1SignWithSeedReq) -> SignatureFFI {
+    Secp256k1FFI::from_seed(Secp256k1FromSeedReq { seed: req.seed })
+        .sign_recoverable(Secp256k1SignReq { msg: req.msg })
+        .unwrap()
+}
+
 pub fn secp256k1_verify(req: Secp256k1VerifyReq) -> bool {
     Secp256k1FFI::verify_signature(req)
 }
