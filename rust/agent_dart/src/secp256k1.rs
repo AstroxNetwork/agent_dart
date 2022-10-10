@@ -1,7 +1,8 @@
 use crate::types::{Secp256k1FromSeedReq, Secp256k1SignReq, Secp256k1VerifyReq};
 use bip32::{PublicKey, PublicKeyBytes};
+use k256::ecdsa::signature::hazmat::PrehashSigner;
 use k256::ecdsa::signature::{Signer, Verifier};
-use k256::ecdsa::{signature, Signature, SigningKey, VerifyingKey};
+use k256::ecdsa::{recoverable, signature, Signature, SigningKey, VerifyingKey};
 use k256::pkcs8::der::Decode;
 use k256::pkcs8::DecodePublicKey;
 use k256::{
@@ -82,6 +83,30 @@ impl Secp256k1FFI {
         }
         bytes[(32 - r.len())..32].clone_from_slice(&r);
         bytes[32 + (32 - s.len())..].clone_from_slice(&s);
+        let signature = Some(bytes.to_vec());
+        let public_key = Some(self.der_encoded_public_key.as_ref().to_vec());
+        Ok(SignatureFFI {
+            public_key,
+            signature,
+        })
+    }
+
+    pub fn sign_recoverable(&self, req: Secp256k1SignReq) -> Result<SignatureFFI, String> {
+        let ecdsa_sig: recoverable::Signature =
+            self.private_key
+                .sign_prehash(req.msg.as_slice())
+                .map_err(|err| format!("Cannot create secp256k1 signature: {}", err))?;
+        let r = ecdsa_sig.r().as_ref().to_bytes();
+        let s = ecdsa_sig.s().as_ref().to_bytes();
+        let v = u8::from(ecdsa_sig.recovery_id());
+
+        let mut bytes = [0u8; 65];
+        if r.len() > 32 || s.len() > 32 {
+            return Err("Cannot create secp256k1 signature: malformed signature.".to_string());
+        }
+        bytes[0..32].clone_from_slice(&r);
+        bytes[32..64].clone_from_slice(&s);
+        bytes[64] = v;
         let signature = Some(bytes.to_vec());
         let public_key = Some(self.der_encoded_public_key.as_ref().to_vec());
         Ok(SignatureFFI {
