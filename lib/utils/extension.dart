@@ -12,8 +12,6 @@ extension AgentStringExtension on String {
   bool isHex({int bits = -1, bool ignoreLength = false}) =>
       is_util.isHex(this, bits: bits, ignoreLength: ignoreLength);
 
-  bool isHexString() => is_util.isHexString(this);
-
   String hexAddPrefix() => hex_util.hexAddPrefix(this);
 
   String hexStripPrefix() => string_util.strip0xHex(this);

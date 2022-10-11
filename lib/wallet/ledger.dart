@@ -324,7 +324,7 @@ class TransferArgs {
   factory TransferArgs.fromJson(Map map) {
     return TransferArgs(
       to: map['to'] is String
-          ? isHexString(map['to'])
+          ? isHex(map['to'])
               ? (map['to'] as String).toU8a().toList()
               : Principal.fromText(map['to'] as String).toAccountId().toList()
           : (u8aToU8a(map['to']).toList()),
@@ -527,7 +527,7 @@ class Ledger {
     SignIdentity? identity,
   }) async {
     final ledgerInstance = Ledger.hook(agent)..setIdentity(identity);
-    final accountId = isHexString(accountIdOrPrincipal)
+    final accountId = isHex(accountIdOrPrincipal)
         ? accountIdOrPrincipal.toU8a().toList()
         : Principal.fromText(accountIdOrPrincipal).toAccountId().toList();
     final res = await ledgerInstance.agent.actor!

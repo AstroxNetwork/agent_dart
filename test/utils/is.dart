@@ -7,17 +7,13 @@ import 'package:agent_dart/utils/is.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  isTest();
-}
-
-void isTest() {
   test('isHex', () {
     const testNum = '1234abcd';
     expect(isHex('0x'), true);
     expect(isHex('0x$testNum'), true);
     expect(isHex('0x${testNum}0'), false);
     expect(isHex('0x${testNum.toUpperCase()}'), true);
-    expect(isHex(testNum), false);
+    expect(isHex(testNum), true);
     expect(isHex(false), false);
     expect(isHex('0x12', bits: 8), true);
     expect(isHex('0x1234', bits: 8), false);
@@ -26,7 +22,7 @@ void isTest() {
     expect(isHex('0x123456', bits: 24), true);
     expect(isHex('0x12345678', bits: 24), false);
     expect(isHex('0x12345678', bits: 32), true);
-    expect(isHex('1234'), false);
+    expect(isHex('1234'), true);
     expect(isHex('0x12345'), false); // Invalid length
     expect(isHex('0x12345', ignoreLength: true), true);
   });
@@ -45,7 +41,7 @@ void isTest() {
     // print("\n");
   });
 
-  test('testChain', () {
+  test('isTestChain', () {
     expect(isTestChain('Development'), true);
     expect(isTestChain('Local Testnet'), true);
 
@@ -80,7 +76,7 @@ void isTest() {
     // print("\n");
   });
 
-  test('test isAccountId', () {
+  test('isAccountId', () {
     final aid = Principal.fromText('snnxh-zyaaa-aaaah-abrfq-cai').toAccountId();
     expect(isAccountId(aid.toHex()), true);
     // length dont match

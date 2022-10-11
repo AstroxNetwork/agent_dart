@@ -93,12 +93,8 @@ int? hexToNumber(dynamic value) {
 
 /// [value] should be `0x` hex string.
 Uint8List hexToU8a(String value, [int bitLength = -1]) {
-  if (!isHex(value) && !isHexString(value)) {
-    throw ArgumentError.value(
-      value,
-      'value',
-      '$value is not a valid hex string',
-    );
+  if (!isHex(value)) {
+    throw ArgumentError.value(value, 'value', 'Not a valid hex string');
   }
   final newValue = hexStripPrefix(value);
   final valLength = newValue.length / 2;
