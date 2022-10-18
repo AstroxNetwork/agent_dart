@@ -6,16 +6,10 @@ import 'package:recase/recase.dart';
 import 'number.dart';
 
 String strip0xHex(String hex) {
-  if (hex.startsWith('0x')) return hex.substring(2);
+  if (hex.startsWith('0x')) {
+    return hex.substring(2);
+  }
   return hex;
-}
-
-String toHex(Iterable<dynamic> msg) {
-  return msg.map((e) => zero2(numberToHex(e))).join();
-}
-
-String zero2(word) {
-  return word.length == 1 ? '0$word' : word;
 }
 
 Uint8List stringToU8a(String msg, {String? enc, bool useDartEncode = true}) {

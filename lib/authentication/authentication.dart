@@ -94,7 +94,7 @@ String? getAccessTokenFromURL(dynamic url) {
 /// @param accessToken The access token extracted from a redirect URL.
 DelegationChain createDelegationChainFromAccessToken(String accessToken) {
   // Transform the HEXADECIMAL string into the JSON it represents.
-  if (!isHexadecimal(accessToken) || (accessToken.length % 2) != 0) {
+  if (!isHex(accessToken)) {
     throw ArgumentError.value(
       accessToken,
       'accessToken',

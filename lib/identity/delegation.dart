@@ -45,7 +45,7 @@ class Delegation extends ToCborable {
 
   Map<String, dynamic> toJson() {
     return {
-      'expiration': expiration.toHex().hexStripPrefix(),
+      'expiration': expiration.toHex(),
       'pubkey': pubkey.toHex(),
       'targets': targets?.map((e) => e.toHex()).toList(),
     }..removeWhere((key, value) => value == null);
