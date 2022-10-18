@@ -4,6 +4,14 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.6
+
+- `bnToHex` not produce `0x` by default.
+- `hexFixLength` and `isHex` now use named arguments.
+- Remove `isHexString` and `isHexadecimal`.
+- Allow to configure `include0x` with `toHex`.
+- Add `secp256K1SignRecoverable` with FFI upgrade.
+
 ## 1.0.0-dev.5
 
 - Fix `isHex` and `isTestChain`.

@@ -9,10 +9,8 @@ import 'string.dart' as string_util;
 import 'u8a.dart' as u8a_util;
 
 extension AgentStringExtension on String {
-  bool isHex([int bitLength = -1, bool ignoreLength = false]) =>
-      is_util.isHex(this, bitLength, ignoreLength);
-
-  bool isHexString() => is_util.isHexString(this);
+  bool isHex({int bits = -1, bool ignoreLength = false}) =>
+      is_util.isHex(this, bits: bits, ignoreLength: ignoreLength);
 
   String hexAddPrefix() => hex_util.hexAddPrefix(this);
 
@@ -68,12 +66,14 @@ extension AgentBnExtension on BigInt {
     int bitLength = -1,
     Endian endian = Endian.big,
     bool isNegative = false,
+    bool include0x = false,
   }) =>
       bn_util.bnToHex(
         this,
         bitLength: bitLength,
         endian: endian,
         isNegative: isNegative,
+        include0x: include0x,
       );
 
   Uint8List toU8a({
@@ -98,12 +98,14 @@ extension AgentIntExtension on int {
     int bitLength = -1,
     Endian endian = Endian.big,
     bool isNegative = false,
+    bool include0x = false,
   }) =>
       bn_util.bnToHex(
         toBn(),
         bitLength: bitLength,
         endian: endian,
         isNegative: isNegative,
+        include0x: include0x,
       );
 
   Uint8List toU8a({
