@@ -4,7 +4,7 @@ description: |
   a plugin package for dart and flutter apps.
   Developers can build ones to interact with Dfinity's blockchain directly.
 repository: https://github.com/AstroxNetwork/agent_dart
-version: 1.0.0-dev.6
+version: 1.0.0-dev.7
 
 environment:
   sdk: '>=2.17.0 <3.0.0'
