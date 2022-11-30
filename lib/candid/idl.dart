@@ -891,7 +891,11 @@ class RecordClass extends ConstructType<Map> {
   @override
   bool covariant(dynamic x) {
     if (x is! Map) {
-      return false;
+      try {
+        x = x.toJson();
+      } catch (e) {
+        return false;
+      }
     }
     return _fields.every((entry) {
       final k = entry.key;
