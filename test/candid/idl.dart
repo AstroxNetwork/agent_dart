@@ -397,6 +397,12 @@ void idlTest() {
       '4449444c016c02d3e3aa027c868eb7027101002a04f09f92a9',
       'Record',
     );
+
+    final foobar = FooBar.fromJson({'foo': '💩', 'bar': BigInt.from(42)});
+    final encode = IDL.encode([IDL.Opt(IDL.Record({'foo': IDL.Text, 'bar': IDL.Int}))], [[foobar]]);
+    final decode = IDL.decode([IDL.Opt(IDL.Record({'foo': IDL.Text, 'bar': IDL.Int}))], encode);
+    final newFoobar = FooBar.fromJson((decode.first as List).first);
+    expect(foobar, newFoobar);
   });
 
   test('IDL decoding (skip fields)', () {
@@ -719,4 +725,55 @@ void idlTest() {
     );
     testArgs([], [], '4449444c0000', 'empty args');
   });
+}
+
+class FooBar {
+  const FooBar({
+    required this.foo,
+    required this.bar,
+  });
+
+  factory FooBar.fromJson(
+      Map<dynamic, dynamic> map,
+      ) {
+    return FooBar(
+      foo: map['foo'],
+      bar: map['bar'],
+    );
+  }
+
+  final String foo;
+  final BigInt bar;
+
+  static final RecordClass idl = IDL.Record(
+    <String, dynamic>{
+      'foo': IDL.Text,
+      'bar': IDL.Int,
+    },
+  );
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'foo': foo,
+      'bar': bar,
+    }..removeWhere((String key, dynamic value) {
+      return value == null;
+    });
+  }
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FooBar &&
+          runtimeType == other.runtimeType &&
+          foo == other.foo &&
+          bar == other.bar;
+
+  @override
+  int get hashCode => foo.hashCode ^ bar.hashCode;
 }
