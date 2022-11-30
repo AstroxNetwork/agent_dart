@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.7
+
+- Fix RecordClass `covariant`.
+
 ## 1.0.0-dev.6
 
 - `bnToHex` not produce `0x` by default.
