@@ -24,7 +24,7 @@ dependencies:
   fixnum: ^1.0.1
   flutter:
     sdk: flutter
-  flutter_rust_bridge: ^1.48.1
+  flutter_rust_bridge: ^1.59.0
   http: ^0.13.4
   js: ^0.6.4
   meta: ^1.7.0
@@ -44,7 +44,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   freezed: ^2.0.3+1
-  ffigen: ^6.1.2
+  ffigen: ^7.2.4
 
 flutter:
   plugin:

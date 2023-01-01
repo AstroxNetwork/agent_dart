@@ -98,6 +98,23 @@ final oidEd25519 = Uint8List.fromList([
   ...[0x2b, 0x65, 0x70], // id-Ed25519 OID
 ]);
 
+final canisterCOSEDer = Uint8List.fromList([
+  ...[0x30, 0x0c], // SEQUENCE
+  ...[0x06, 0x0a], // OID with 10 bytes
+  ...[
+    0x2b,
+    0x06,
+    0x01,
+    0x04,
+    0x01,
+    0x83,
+    0xb8,
+    0x43,
+    0x01,
+    0x02, // canister signature tag
+  ], // DER encoded COSE.
+]);
+
 /// Wraps the given [payload] in a DER encoding tagged with the given encoded
 /// [oid] like so: `SEQUENCE(oid, BITSTRING(payload))`
 ///

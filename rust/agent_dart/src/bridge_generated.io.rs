@@ -60,6 +60,14 @@ pub extern "C" fn wire_secp256k1_verify(port_: i64, req: *mut wire_Secp256k1Veri
 }
 
 #[no_mangle]
+pub extern "C" fn wire_secp256k1_get_shared_secret(
+    port_: i64,
+    req: *mut wire_Secp256k1ShareSecretReq,
+) {
+    wire_secp256k1_get_shared_secret_impl(port_, req)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_aes_128_ctr_encrypt(port_: i64, req: *mut wire_AesEncryptReq) {
     wire_aes_128_ctr_encrypt_impl(port_, req)
 }
@@ -132,6 +140,12 @@ pub extern "C" fn new_box_autoadd_secp_256_k_1_from_seed_req_0() -> *mut wire_Se
 }
 
 #[no_mangle]
+pub extern "C" fn new_box_autoadd_secp_256_k_1_share_secret_req_0(
+) -> *mut wire_Secp256k1ShareSecretReq {
+    support::new_leak_box_ptr(wire_Secp256k1ShareSecretReq::new_with_null_ptr())
+}
+
+#[no_mangle]
 pub extern "C" fn new_box_autoadd_secp_256_k_1_sign_with_seed_req_0(
 ) -> *mut wire_Secp256k1SignWithSeedReq {
     support::new_leak_box_ptr(wire_Secp256k1SignWithSeedReq::new_with_null_ptr())
@@ -155,6 +169,8 @@ pub extern "C" fn new_uint_8_list_0(len: i32) -> *mut wire_uint_8_list {
     };
     support::new_leak_box_ptr(ans)
 }
+
+// Section: related functions
 
 // Section: impl Wire2Api
 
@@ -251,6 +267,12 @@ impl Wire2Api<Secp256k1FromSeedReq> for *mut wire_Secp256k1FromSeedReq {
         Wire2Api::<Secp256k1FromSeedReq>::wire2api(*wrap).into()
     }
 }
+impl Wire2Api<Secp256k1ShareSecretReq> for *mut wire_Secp256k1ShareSecretReq {
+    fn wire2api(self) -> Secp256k1ShareSecretReq {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<Secp256k1ShareSecretReq>::wire2api(*wrap).into()
+    }
+}
 impl Wire2Api<Secp256k1SignWithSeedReq> for *mut wire_Secp256k1SignWithSeedReq {
     fn wire2api(self) -> Secp256k1SignWithSeedReq {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
@@ -325,6 +347,14 @@ impl Wire2Api<Secp256k1FromSeedReq> for wire_Secp256k1FromSeedReq {
     fn wire2api(self) -> Secp256k1FromSeedReq {
         Secp256k1FromSeedReq {
             seed: self.seed.wire2api(),
+        }
+    }
+}
+impl Wire2Api<Secp256k1ShareSecretReq> for wire_Secp256k1ShareSecretReq {
+    fn wire2api(self) -> Secp256k1ShareSecretReq {
+        Secp256k1ShareSecretReq {
+            seed: self.seed.wire2api(),
+            public_key_der_bytes: self.public_key_der_bytes.wire2api(),
         }
     }
 }
@@ -438,6 +468,13 @@ pub struct wire_ScriptDeriveReq {
 #[derive(Clone)]
 pub struct wire_Secp256k1FromSeedReq {
     seed: *mut wire_uint_8_list,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_Secp256k1ShareSecretReq {
+    seed: *mut wire_uint_8_list,
+    public_key_der_bytes: *mut wire_uint_8_list,
 }
 
 #[repr(C)]
@@ -577,6 +614,15 @@ impl NewWithNullPtr for wire_Secp256k1FromSeedReq {
     }
 }
 
+impl NewWithNullPtr for wire_Secp256k1ShareSecretReq {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            seed: core::ptr::null_mut(),
+            public_key_der_bytes: core::ptr::null_mut(),
+        }
+    }
+}
+
 impl NewWithNullPtr for wire_Secp256k1SignWithSeedReq {
     fn new_with_null_ptr() -> Self {
         Self {
@@ -608,8 +654,8 @@ impl NewWithNullPtr for wire_SeedToKeyReq {
 // Section: sync execution mode utility
 
 #[no_mangle]
-pub extern "C" fn free_WireSyncReturnStruct(val: support::WireSyncReturnStruct) {
+pub extern "C" fn free_WireSyncReturn(ptr: support::WireSyncReturn) {
     unsafe {
-        let _ = support::vec_from_leak_ptr(val.ptr, val.len);
-    }
+        let _ = support::box_from_leak_ptr(ptr);
+    };
 }

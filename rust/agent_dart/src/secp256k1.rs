@@ -1,15 +1,19 @@
-use crate::types::{Secp256k1FromSeedReq, Secp256k1SignReq, Secp256k1VerifyReq};
-use bip32::{PublicKey, PublicKeyBytes};
+
+use crate::types::{Secp256k1FromSeedReq, Secp256k1ShareSecretReq, Secp256k1SignReq, Secp256k1VerifyReq};
+use aes::cipher::generic_array::GenericArray;
+use bip32::PublicKeyBytes;
 use k256::ecdsa::signature::hazmat::PrehashSigner;
 use k256::ecdsa::signature::{Signer, Verifier};
 use k256::ecdsa::{recoverable, signature, Signature, SigningKey, VerifyingKey};
+use k256::elliptic_curve::ecdh::EphemeralSecret;
 use k256::pkcs8::der::Decode;
 use k256::pkcs8::DecodePublicKey;
 use k256::{
     ecdsa,
     pkcs8::{Document, EncodePublicKey},
-    SecretKey,
+    PublicKey, Secp256k1, SecretKey,
 };
+use std::convert::{TryFrom, TryInto};
 
 #[derive(Clone, Debug)]
 pub struct SignatureFFI {
@@ -113,5 +117,33 @@ impl Secp256k1FFI {
             public_key,
             signature,
         })
+    }
+
+    pub fn get_share_secret(req: Secp256k1ShareSecretReq) -> Result<Vec<u8>, String> {
+        // assert_eq!(req.public_key_bytes.len(), 65);
+        match SecretKey::from_be_bytes(req.seed.as_slice()) {
+            Ok(sk) => {
+                let dh = k256::ecdh::diffie_hellman::<Secp256k1>(
+                    sk.to_nonzero_scalar(),
+                    PublicKey::from_public_key_der(req.public_key_der_bytes.clone().as_slice())
+                        .map_err(|e| {
+                            panic!(
+                                "{}",
+                                format!("der pub key error: {}", e.to_string())
+                            )
+                        }).unwrap()
+                        .as_affine()
+                );
+                Ok(dh.raw_secret_bytes().to_vec())
+
+            },
+            Err(err) => {
+                panic!("{}", err.to_string())
+            }
+        }
+
+
+
+
     }
 }

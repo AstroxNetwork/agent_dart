@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+typedef struct _Dart_Handle* Dart_Handle;
 
 #define ECB 0
 
@@ -208,6 +209,8 @@
 
 #define KEY_LENGTH_AES (KEY_LENGTH / 2)
 
+typedef struct DartCObject DartCObject;
+
 typedef int64_t DartPort;
 
 typedef bool (*DartPostCObjectFnType)(DartPort port_id, void *message);
@@ -263,6 +266,11 @@ typedef struct wire_Secp256k1VerifyReq {
   struct wire_uint_8_list *public_key_bytes;
 } wire_Secp256k1VerifyReq;
 
+typedef struct wire_Secp256k1ShareSecretReq {
+  struct wire_uint_8_list *seed;
+  struct wire_uint_8_list *public_key_der_bytes;
+} wire_Secp256k1ShareSecretReq;
+
 typedef struct wire_AesEncryptReq {
   struct wire_uint_8_list *key;
   struct wire_uint_8_list *iv;
@@ -289,11 +297,7 @@ typedef struct wire_ScriptDeriveReq {
   uint32_t r;
 } wire_ScriptDeriveReq;
 
-typedef struct WireSyncReturnStruct {
-  uint8_t *ptr;
-  int32_t len;
-  bool success;
-} WireSyncReturnStruct;
+typedef struct DartCObject *WireSyncReturn;
 
 typedef int64_t Chunk;
 
@@ -308,6 +312,14 @@ typedef int64_t Chunk;
 #define MCONST 140737475470229501
 
 void store_dart_post_cobject(DartPostCObjectFnType ptr);
+
+Dart_Handle get_dart_object(uintptr_t ptr);
+
+void drop_dart_object(uintptr_t ptr);
+
+uintptr_t new_dart_opaque(Dart_Handle handle);
+
+intptr_t init_frb_dart_api_dl(void *obj);
 
 void wire_mnemonic_phrase_to_seed(int64_t port_, struct wire_PhraseToSeedReq *req);
 
@@ -330,6 +342,8 @@ void wire_secp256k1_sign(int64_t port_, struct wire_Secp256k1SignWithSeedReq *re
 void wire_secp256k1_sign_recoverable(int64_t port_, struct wire_Secp256k1SignWithSeedReq *req);
 
 void wire_secp256k1_verify(int64_t port_, struct wire_Secp256k1VerifyReq *req);
+
+void wire_secp256k1_get_shared_secret(int64_t port_, struct wire_Secp256k1ShareSecretReq *req);
 
 void wire_aes_128_ctr_encrypt(int64_t port_, struct wire_AesEncryptReq *req);
 
@@ -359,6 +373,8 @@ struct wire_ScriptDeriveReq *new_box_autoadd_script_derive_req_0(void);
 
 struct wire_Secp256k1FromSeedReq *new_box_autoadd_secp_256_k_1_from_seed_req_0(void);
 
+struct wire_Secp256k1ShareSecretReq *new_box_autoadd_secp_256_k_1_share_secret_req_0(void);
+
 struct wire_Secp256k1SignWithSeedReq *new_box_autoadd_secp_256_k_1_sign_with_seed_req_0(void);
 
 struct wire_Secp256k1VerifyReq *new_box_autoadd_secp_256_k_1_verify_req_0(void);
@@ -367,7 +383,7 @@ struct wire_SeedToKeyReq *new_box_autoadd_seed_to_key_req_0(void);
 
 struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
 
-void free_WireSyncReturnStruct(struct WireSyncReturnStruct val);
+void free_WireSyncReturn(WireSyncReturn ptr);
 
 static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
@@ -382,6 +398,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_sign);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_sign_recoverable);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_verify);
+    dummy_var ^= ((int64_t) (void*) wire_secp256k1_get_shared_secret);
     dummy_var ^= ((int64_t) (void*) wire_aes_128_ctr_encrypt);
     dummy_var ^= ((int64_t) (void*) wire_aes_128_ctr_decrypt);
     dummy_var ^= ((int64_t) (void*) wire_pbkdf2_derive_key);
@@ -396,11 +413,15 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_phrase_to_seed_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_script_derive_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_from_seed_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_share_secret_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_sign_with_seed_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_verify_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_seed_to_key_req_0);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
-    dummy_var ^= ((int64_t) (void*) free_WireSyncReturnStruct);
+    dummy_var ^= ((int64_t) (void*) free_WireSyncReturn);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);
+    dummy_var ^= ((int64_t) (void*) get_dart_object);
+    dummy_var ^= ((int64_t) (void*) drop_dart_object);
+    dummy_var ^= ((int64_t) (void*) new_dart_opaque);
     return dummy_var;
 }

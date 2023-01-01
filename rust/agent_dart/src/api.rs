@@ -6,8 +6,8 @@ use crate::secp256k1::{Secp256k1FFI, Secp256k1IdentityExport, SignatureFFI};
 use crate::types::{
     AesDecryptReq, AesEncryptReq, BLSVerifyReq, CreatePhraseReq, ED25519FromSeedReq, ED25519Res,
     ED25519SignReq, ED25519VerifyReq, KeyDerivedRes, PBKDFDeriveReq, PhraseToSeedReq,
-    ScriptDeriveReq, Secp256k1FromSeedReq, Secp256k1SignReq, Secp256k1SignWithSeedReq,
-    Secp256k1VerifyReq, SeedToKeyReq, SymmError,
+    ScriptDeriveReq, Secp256k1FromSeedReq, Secp256k1ShareSecretReq, Secp256k1SignReq,
+    Secp256k1SignWithSeedReq, Secp256k1VerifyReq, SeedToKeyReq, SymmError,
 };
 
 /// --------------------
@@ -80,6 +80,10 @@ pub fn secp256k1_sign_recoverable(req: Secp256k1SignWithSeedReq) -> SignatureFFI
 
 pub fn secp256k1_verify(req: Secp256k1VerifyReq) -> bool {
     Secp256k1FFI::verify_signature(req)
+}
+
+pub fn secp256k1_get_shared_secret(req: Secp256k1ShareSecretReq) -> Vec<u8> {
+    Secp256k1FFI::get_share_secret(req).unwrap()
 }
 
 /// ---------------------
