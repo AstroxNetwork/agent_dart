@@ -86,6 +86,10 @@ pub fn secp256k1_get_shared_secret(req: Secp256k1ShareSecretReq) -> Vec<u8> {
     Secp256k1FFI::get_share_secret(req).unwrap()
 }
 
+pub fn secp256k1_get_shared_secret_der_pub_key(req: Secp256k1ShareSecretReq) -> Vec<u8> {
+    Secp256k1FFI::get_share_secret_der_pub_key(req).unwrap()
+}
+
 /// ---------------------
 /// aes
 /// ---------------------

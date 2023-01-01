@@ -217,6 +217,22 @@ fn wire_secp256k1_get_shared_secret_impl(
         },
     )
 }
+fn wire_secp256k1_get_shared_secret_der_pub_key_impl(
+    port_: MessagePort,
+    req: impl Wire2Api<Secp256k1ShareSecretReq> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "secp256k1_get_shared_secret_der_pub_key",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_req = req.wire2api();
+            move |task_callback| Ok(secp256k1_get_shared_secret_der_pub_key(api_req))
+        },
+    )
+}
 fn wire_aes_128_ctr_encrypt_impl(
     port_: MessagePort,
     req: impl Wire2Api<AesEncryptReq> + UnwindSafe,

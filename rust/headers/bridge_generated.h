@@ -341,6 +341,9 @@ void wire_secp256k1_verify(int64_t port_, struct wire_Secp256k1VerifyReq *req);
 
 void wire_secp256k1_get_shared_secret(int64_t port_, struct wire_Secp256k1ShareSecretReq *req);
 
+void wire_secp256k1_get_shared_secret_der_pub_key(int64_t port_,
+                                                  struct wire_Secp256k1ShareSecretReq *req);
+
 void wire_aes_128_ctr_encrypt(int64_t port_, struct wire_AesEncryptReq *req);
 
 void wire_aes_128_ctr_decrypt(int64_t port_, struct wire_AesDecryptReq *req);
@@ -395,6 +398,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_sign_recoverable);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_verify);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_get_shared_secret);
+    dummy_var ^= ((int64_t) (void*) wire_secp256k1_get_shared_secret_der_pub_key);
     dummy_var ^= ((int64_t) (void*) wire_aes_128_ctr_encrypt);
     dummy_var ^= ((int64_t) (void*) wire_aes_128_ctr_decrypt);
     dummy_var ^= ((int64_t) (void*) wire_pbkdf2_derive_key);

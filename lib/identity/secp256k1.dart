@@ -270,3 +270,29 @@ bool verifySecp256k1Blob(
   signer.init(false, p_api.PublicKeyParameter(pub));
   return signer.verifySignature(blob, sig);
 }
+
+Future<Uint8List> getECShareSecret(
+  Uint8List privateKey,
+  Uint8List derEncodedPublicKey,
+) async {
+  final result = await AgentDartFFI.impl.secp256K1GetSharedSecret(
+    req: Secp256k1ShareSecretReq(
+      seed: privateKey,
+      publicKeyDerBytes: derEncodedPublicKey,
+    ),
+  );
+  return result;
+}
+
+Future<Secp256k1PublicKey> getECShareSecretPubKey(
+  Uint8List privateKey,
+  Uint8List derEncodedPublicKey,
+) async {
+  final result = await AgentDartFFI.impl.secp256K1GetSharedSecretDerPubKey(
+    req: Secp256k1ShareSecretReq(
+      seed: privateKey,
+      publicKeyDerBytes: derEncodedPublicKey,
+    ),
+  );
+  return Secp256k1PublicKey.fromDer(result);
+}

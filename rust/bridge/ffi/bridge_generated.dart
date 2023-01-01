@@ -86,6 +86,12 @@ abstract class AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kSecp256K1GetSharedSecretConstMeta;
 
+  Future<Uint8List> secp256K1GetSharedSecretDerPubKey(
+      {required Secp256k1ShareSecretReq req, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta
+      get kSecp256K1GetSharedSecretDerPubKeyConstMeta;
+
   /// ---------------------
   /// aes
   /// ---------------------
@@ -533,6 +539,27 @@ class AgentDartImpl implements AgentDart {
         debugName: "secp256k1_get_shared_secret",
         argNames: ["req"],
       );
+
+  Future<Uint8List> secp256K1GetSharedSecretDerPubKey(
+      {required Secp256k1ShareSecretReq req, dynamic hint}) {
+    var arg0 =
+        _platform.api2wire_box_autoadd_secp_256_k_1_share_secret_req(req);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner
+          .wire_secp256k1_get_shared_secret_der_pub_key(port_, arg0),
+      parseSuccessData: _wire2api_uint_8_list,
+      constMeta: kSecp256K1GetSharedSecretDerPubKeyConstMeta,
+      argValues: [req],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta
+      get kSecp256K1GetSharedSecretDerPubKeyConstMeta =>
+          const FlutterRustBridgeTaskConstMeta(
+            debugName: "secp256k1_get_shared_secret_der_pub_key",
+            argNames: ["req"],
+          );
 
   Future<Uint8List> aes128CtrEncrypt(
       {required AesEncryptReq req, dynamic hint}) {
@@ -1283,6 +1310,25 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
       'wire_secp256k1_get_shared_secret');
   late final _wire_secp256k1_get_shared_secret =
       _wire_secp256k1_get_shared_secretPtr.asFunction<
+          void Function(int, ffi.Pointer<wire_Secp256k1ShareSecretReq>)>();
+
+  void wire_secp256k1_get_shared_secret_der_pub_key(
+    int port_,
+    ffi.Pointer<wire_Secp256k1ShareSecretReq> req,
+  ) {
+    return _wire_secp256k1_get_shared_secret_der_pub_key(
+      port_,
+      req,
+    );
+  }
+
+  late final _wire_secp256k1_get_shared_secret_der_pub_keyPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Void Function(
+                  ffi.Int64, ffi.Pointer<wire_Secp256k1ShareSecretReq>)>>(
+      'wire_secp256k1_get_shared_secret_der_pub_key');
+  late final _wire_secp256k1_get_shared_secret_der_pub_key =
+      _wire_secp256k1_get_shared_secret_der_pub_keyPtr.asFunction<
           void Function(int, ffi.Pointer<wire_Secp256k1ShareSecretReq>)>();
 
   void wire_aes_128_ctr_encrypt(

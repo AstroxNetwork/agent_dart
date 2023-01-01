@@ -68,6 +68,14 @@ pub extern "C" fn wire_secp256k1_get_shared_secret(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_secp256k1_get_shared_secret_der_pub_key(
+    port_: i64,
+    req: *mut wire_Secp256k1ShareSecretReq,
+) {
+    wire_secp256k1_get_shared_secret_der_pub_key_impl(port_, req)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_aes_128_ctr_encrypt(port_: i64, req: *mut wire_AesEncryptReq) {
     wire_aes_128_ctr_encrypt_impl(port_, req)
 }
