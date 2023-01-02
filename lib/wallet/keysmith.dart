@@ -83,10 +83,15 @@ Uint8List getAccountIdFromPrincipalID(String id) {
   return Principal.fromText(id).toAccountId();
 }
 
-ECKeys getECKeys(String mnemonic, {String passphrase = '', int index = 0}) {
+ECKeys getECKeys(
+  String mnemonic, {
+  String passphrase = '',
+  int index = 0,
+  int coinType = CoinType.icp,
+}) {
   assert(validateMnemonic(mnemonic), 'Mnemonic phrases is not valid $mnemonic');
   final seed = mnemonicToSeed(mnemonic, passphrase: passphrase);
-  return ecKeysfromSeed(seed, index: index);
+  return ecKeysfromSeed(seed, index: index, coinType: coinType);
 }
 
 Future<ECKeys> getECKeysAsync(
@@ -132,8 +137,11 @@ Future<ECKeys> getECkeyFromPrivateKey(Uint8List prv) async {
   );
 }
 
-ECKeys ecKeysfromSeed(Uint8List seed,
-    {int index = 0, int coinType = CoinType.icp}) {
+ECKeys ecKeysfromSeed(
+  Uint8List seed, {
+  int index = 0,
+  int coinType = CoinType.icp,
+}) {
   final basePath = getPathWithCoinType(coinType: coinType);
   final node = bip32.BIP32.fromSeed(seed);
 
