@@ -86,12 +86,6 @@ abstract class AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kSecp256K1GetSharedSecretConstMeta;
 
-  Future<Uint8List> secp256K1GetSharedSecretDerPubKey(
-      {required Secp256k1ShareSecretReq req, dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta
-      get kSecp256K1GetSharedSecretDerPubKeyConstMeta;
-
   /// ---------------------
   /// schnorr
   /// ---------------------
@@ -121,6 +115,16 @@ abstract class AgentDart {
       {required AesDecryptReq req, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kAes128CtrDecryptConstMeta;
+
+  Future<Uint8List> aes256CbcEncrypt(
+      {required AesEncryptReq req, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kAes256CbcEncryptConstMeta;
+
+  Future<Uint8List> aes256CbcDecrypt(
+      {required AesDecryptReq req, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kAes256CbcDecryptConstMeta;
 
   Future<KeyDerivedRes> pbkdf2DeriveKey(
       {required PBKDFDeriveReq req, dynamic hint});
@@ -299,11 +303,11 @@ class Secp256k1IdentityExport {
 
 class Secp256k1ShareSecretReq {
   final Uint8List seed;
-  final Uint8List publicKeyDerBytes;
+  final Uint8List publicKeyRawBytes;
 
   Secp256k1ShareSecretReq({
     required this.seed,
-    required this.publicKeyDerBytes,
+    required this.publicKeyRawBytes,
   });
 }
 
@@ -579,27 +583,6 @@ class AgentDartImpl implements AgentDart {
         argNames: ["req"],
       );
 
-  Future<Uint8List> secp256K1GetSharedSecretDerPubKey(
-      {required Secp256k1ShareSecretReq req, dynamic hint}) {
-    var arg0 =
-        _platform.api2wire_box_autoadd_secp_256_k_1_share_secret_req(req);
-    return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner
-          .wire_secp256k1_get_shared_secret_der_pub_key(port_, arg0),
-      parseSuccessData: _wire2api_uint_8_list,
-      constMeta: kSecp256K1GetSharedSecretDerPubKeyConstMeta,
-      argValues: [req],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta
-      get kSecp256K1GetSharedSecretDerPubKeyConstMeta =>
-          const FlutterRustBridgeTaskConstMeta(
-            debugName: "secp256k1_get_shared_secret_der_pub_key",
-            argNames: ["req"],
-          );
-
   Future<SchnorrIdentityExport> schnorrFromSeed(
       {required Secp256k1FromSeedReq req, dynamic hint}) {
     var arg0 = _platform.api2wire_box_autoadd_secp_256_k_1_from_seed_req(req);
@@ -686,6 +669,42 @@ class AgentDartImpl implements AgentDart {
   FlutterRustBridgeTaskConstMeta get kAes128CtrDecryptConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "aes_128_ctr_decrypt",
+        argNames: ["req"],
+      );
+
+  Future<Uint8List> aes256CbcEncrypt(
+      {required AesEncryptReq req, dynamic hint}) {
+    var arg0 = _platform.api2wire_box_autoadd_aes_encrypt_req(req);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_aes_256_cbc_encrypt(port_, arg0),
+      parseSuccessData: _wire2api_uint_8_list,
+      constMeta: kAes256CbcEncryptConstMeta,
+      argValues: [req],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kAes256CbcEncryptConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "aes_256_cbc_encrypt",
+        argNames: ["req"],
+      );
+
+  Future<Uint8List> aes256CbcDecrypt(
+      {required AesDecryptReq req, dynamic hint}) {
+    var arg0 = _platform.api2wire_box_autoadd_aes_decrypt_req(req);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_aes_256_cbc_decrypt(port_, arg0),
+      parseSuccessData: _wire2api_uint_8_list,
+      constMeta: kAes256CbcDecryptConstMeta,
+      argValues: [req],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kAes256CbcDecryptConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "aes_256_cbc_decrypt",
         argNames: ["req"],
       );
 
@@ -1115,8 +1134,8 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
   void _api_fill_to_wire_secp_256_k_1_share_secret_req(
       Secp256k1ShareSecretReq apiObj, wire_Secp256k1ShareSecretReq wireObj) {
     wireObj.seed = api2wire_uint_8_list(apiObj.seed);
-    wireObj.public_key_der_bytes =
-        api2wire_uint_8_list(apiObj.publicKeyDerBytes);
+    wireObj.public_key_raw_bytes =
+        api2wire_uint_8_list(apiObj.publicKeyRawBytes);
   }
 
   void _api_fill_to_wire_secp_256_k_1_sign_with_seed_req(
@@ -1441,25 +1460,6 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
       _wire_secp256k1_get_shared_secretPtr.asFunction<
           void Function(int, ffi.Pointer<wire_Secp256k1ShareSecretReq>)>();
 
-  void wire_secp256k1_get_shared_secret_der_pub_key(
-    int port_,
-    ffi.Pointer<wire_Secp256k1ShareSecretReq> req,
-  ) {
-    return _wire_secp256k1_get_shared_secret_der_pub_key(
-      port_,
-      req,
-    );
-  }
-
-  late final _wire_secp256k1_get_shared_secret_der_pub_keyPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(
-                  ffi.Int64, ffi.Pointer<wire_Secp256k1ShareSecretReq>)>>(
-      'wire_secp256k1_get_shared_secret_der_pub_key');
-  late final _wire_secp256k1_get_shared_secret_der_pub_key =
-      _wire_secp256k1_get_shared_secret_der_pub_keyPtr.asFunction<
-          void Function(int, ffi.Pointer<wire_Secp256k1ShareSecretReq>)>();
-
   void wire_schnorr_from_seed(
     int port_,
     ffi.Pointer<wire_Secp256k1FromSeedReq> req,
@@ -1544,6 +1544,40 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
           ffi.Void Function(ffi.Int64,
               ffi.Pointer<wire_AesDecryptReq>)>>('wire_aes_128_ctr_decrypt');
   late final _wire_aes_128_ctr_decrypt = _wire_aes_128_ctr_decryptPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_AesDecryptReq>)>();
+
+  void wire_aes_256_cbc_encrypt(
+    int port_,
+    ffi.Pointer<wire_AesEncryptReq> req,
+  ) {
+    return _wire_aes_256_cbc_encrypt(
+      port_,
+      req,
+    );
+  }
+
+  late final _wire_aes_256_cbc_encryptPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_AesEncryptReq>)>>('wire_aes_256_cbc_encrypt');
+  late final _wire_aes_256_cbc_encrypt = _wire_aes_256_cbc_encryptPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_AesEncryptReq>)>();
+
+  void wire_aes_256_cbc_decrypt(
+    int port_,
+    ffi.Pointer<wire_AesDecryptReq> req,
+  ) {
+    return _wire_aes_256_cbc_decrypt(
+      port_,
+      req,
+    );
+  }
+
+  late final _wire_aes_256_cbc_decryptPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_AesDecryptReq>)>>('wire_aes_256_cbc_decrypt');
+  late final _wire_aes_256_cbc_decrypt = _wire_aes_256_cbc_decryptPtr
       .asFunction<void Function(int, ffi.Pointer<wire_AesDecryptReq>)>();
 
   void wire_pbkdf2_derive_key(
@@ -1853,7 +1887,7 @@ class wire_Secp256k1VerifyReq extends ffi.Struct {
 class wire_Secp256k1ShareSecretReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> seed;
 
-  external ffi.Pointer<wire_uint_8_list> public_key_der_bytes;
+  external ffi.Pointer<wire_uint_8_list> public_key_raw_bytes;
 }
 
 class wire_SchnorrSignWithSeedReq extends ffi.Struct {

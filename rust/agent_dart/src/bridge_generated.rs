@@ -219,22 +219,6 @@ fn wire_secp256k1_get_shared_secret_impl(
         },
     )
 }
-fn wire_secp256k1_get_shared_secret_der_pub_key_impl(
-    port_: MessagePort,
-    req: impl Wire2Api<Secp256k1ShareSecretReq> + UnwindSafe,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "secp256k1_get_shared_secret_der_pub_key",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || {
-            let api_req = req.wire2api();
-            move |task_callback| Ok(secp256k1_get_shared_secret_der_pub_key(api_req))
-        },
-    )
-}
 fn wire_schnorr_from_seed_impl(
     port_: MessagePort,
     req: impl Wire2Api<Secp256k1FromSeedReq> + UnwindSafe,
@@ -312,6 +296,38 @@ fn wire_aes_128_ctr_decrypt_impl(
         move || {
             let api_req = req.wire2api();
             move |task_callback| Ok(aes_128_ctr_decrypt(api_req))
+        },
+    )
+}
+fn wire_aes_256_cbc_encrypt_impl(
+    port_: MessagePort,
+    req: impl Wire2Api<AesEncryptReq> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "aes_256_cbc_encrypt",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_req = req.wire2api();
+            move |task_callback| Ok(aes_256_cbc_encrypt(api_req))
+        },
+    )
+}
+fn wire_aes_256_cbc_decrypt_impl(
+    port_: MessagePort,
+    req: impl Wire2Api<AesDecryptReq> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "aes_256_cbc_decrypt",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_req = req.wire2api();
+            move |task_callback| Ok(aes_256_cbc_decrypt(api_req))
         },
     )
 }

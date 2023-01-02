@@ -88,10 +88,6 @@ pub fn secp256k1_get_shared_secret(req: Secp256k1ShareSecretReq) -> Vec<u8> {
     Secp256k1FFI::get_share_secret(req).unwrap()
 }
 
-pub fn secp256k1_get_shared_secret_der_pub_key(req: Secp256k1ShareSecretReq) -> Vec<u8> {
-    Secp256k1FFI::get_share_secret_der_pub_key(req).unwrap()
-}
-
 /// ---------------------
 /// schnorr
 /// ---------------------
@@ -122,6 +118,14 @@ pub fn aes_128_ctr_encrypt(req: AesEncryptReq) -> Vec<u8> {
 
 pub fn aes_128_ctr_decrypt(req: AesDecryptReq) -> Vec<u8> {
     KeystoreFFI::decrypt_128_ctr(req)
+}
+
+pub fn aes_256_cbc_encrypt(req: AesEncryptReq) -> Vec<u8> {
+    KeystoreFFI::encrypt_256_cbc(req)
+}
+
+pub fn aes_256_cbc_decrypt(req: AesDecryptReq) -> Vec<u8> {
+    KeystoreFFI::decrypt_256_cbc(req)
 }
 
 pub fn pbkdf2_derive_key(req: PBKDFDeriveReq) -> KeyDerivedRes {

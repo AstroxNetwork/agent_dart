@@ -97,24 +97,13 @@ void secp256k1Test() {
     final key2 = await getECKeysAsync(generateMnemonic());
     final ss = await getECShareSecret(
       key1.ecPrivateKey!,
-      Secp256k1PublicKey.fromRaw(key2.ecPublicKey!).toDer(),
+      key2.ecPublicKey!,
     );
     final ss2 = await getECShareSecret(
       key2.ecPrivateKey!,
-      Secp256k1PublicKey.fromRaw(key1.ecPublicKey!).toDer(),
-    );
-
-    final ssPub = await getECShareSecretPubKey(
-      key1.ecPrivateKey!,
-      Secp256k1PublicKey.fromRaw(key2.ecPublicKey!).toDer(),
-    );
-
-    final ss2Pub = await getECShareSecretPubKey(
-      key2.ecPrivateKey!,
-      Secp256k1PublicKey.fromRaw(key1.ecPublicKey!).toDer(),
+      key1.ecPublicKey!,
     );
 
     expect(ss2.toHex(), ss.toHex());
-    expect(ss2Pub.toRaw().toHex(), ssPub.toRaw().toHex());
   });
 }

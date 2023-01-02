@@ -268,7 +268,7 @@ typedef struct wire_Secp256k1VerifyReq {
 
 typedef struct wire_Secp256k1ShareSecretReq {
   struct wire_uint_8_list *seed;
-  struct wire_uint_8_list *public_key_der_bytes;
+  struct wire_uint_8_list *public_key_raw_bytes;
 } wire_Secp256k1ShareSecretReq;
 
 typedef struct wire_SchnorrSignWithSeedReq {
@@ -351,9 +351,6 @@ void wire_secp256k1_verify(int64_t port_, struct wire_Secp256k1VerifyReq *req);
 
 void wire_secp256k1_get_shared_secret(int64_t port_, struct wire_Secp256k1ShareSecretReq *req);
 
-void wire_secp256k1_get_shared_secret_der_pub_key(int64_t port_,
-                                                  struct wire_Secp256k1ShareSecretReq *req);
-
 void wire_schnorr_from_seed(int64_t port_, struct wire_Secp256k1FromSeedReq *req);
 
 void wire_schnorr_sign(int64_t port_, struct wire_SchnorrSignWithSeedReq *req);
@@ -363,6 +360,10 @@ void wire_schnorr_verify(int64_t port_, struct wire_Secp256k1VerifyReq *req);
 void wire_aes_128_ctr_encrypt(int64_t port_, struct wire_AesEncryptReq *req);
 
 void wire_aes_128_ctr_decrypt(int64_t port_, struct wire_AesDecryptReq *req);
+
+void wire_aes_256_cbc_encrypt(int64_t port_, struct wire_AesEncryptReq *req);
+
+void wire_aes_256_cbc_decrypt(int64_t port_, struct wire_AesDecryptReq *req);
 
 void wire_pbkdf2_derive_key(int64_t port_, struct wire_PBKDFDeriveReq *req);
 
@@ -416,12 +417,13 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_sign_recoverable);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_verify);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_get_shared_secret);
-    dummy_var ^= ((int64_t) (void*) wire_secp256k1_get_shared_secret_der_pub_key);
     dummy_var ^= ((int64_t) (void*) wire_schnorr_from_seed);
     dummy_var ^= ((int64_t) (void*) wire_schnorr_sign);
     dummy_var ^= ((int64_t) (void*) wire_schnorr_verify);
     dummy_var ^= ((int64_t) (void*) wire_aes_128_ctr_encrypt);
     dummy_var ^= ((int64_t) (void*) wire_aes_128_ctr_decrypt);
+    dummy_var ^= ((int64_t) (void*) wire_aes_256_cbc_encrypt);
+    dummy_var ^= ((int64_t) (void*) wire_aes_256_cbc_decrypt);
     dummy_var ^= ((int64_t) (void*) wire_pbkdf2_derive_key);
     dummy_var ^= ((int64_t) (void*) wire_scrypt_derive_key);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_aes_decrypt_req_0);

@@ -17,6 +17,7 @@ pbkdf2 = "0.11.0"
 scrypt = "0.10.0"
 sha2 = "0.10.2"
 hmac = "0.12.1"
+block-modes= "0.8.1"
 aes = { version = "0.7.5", features = [ "ctr" ], default-features = false }
 k256 = { version = "0.11.4", default-features = false, features = [ "ecdsa", "sha256", "pem", "keccak256", "ecdh", "schnorr" ] }
 rand = "0.8.5"
@@ -25,6 +26,7 @@ serde_json = "1.0.79"
 serde_bytes = "0.11.5"
 serde_cbor = "0.11.2"
 serde_with = "1.12.0"
+bytebuffer = "0.2.1"
 flutter_rust_bridge = "1.59.0"
 
 [profile.release]

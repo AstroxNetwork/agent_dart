@@ -68,14 +68,6 @@ pub extern "C" fn wire_secp256k1_get_shared_secret(
 }
 
 #[no_mangle]
-pub extern "C" fn wire_secp256k1_get_shared_secret_der_pub_key(
-    port_: i64,
-    req: *mut wire_Secp256k1ShareSecretReq,
-) {
-    wire_secp256k1_get_shared_secret_der_pub_key_impl(port_, req)
-}
-
-#[no_mangle]
 pub extern "C" fn wire_schnorr_from_seed(port_: i64, req: *mut wire_Secp256k1FromSeedReq) {
     wire_schnorr_from_seed_impl(port_, req)
 }
@@ -98,6 +90,16 @@ pub extern "C" fn wire_aes_128_ctr_encrypt(port_: i64, req: *mut wire_AesEncrypt
 #[no_mangle]
 pub extern "C" fn wire_aes_128_ctr_decrypt(port_: i64, req: *mut wire_AesDecryptReq) {
     wire_aes_128_ctr_decrypt_impl(port_, req)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_aes_256_cbc_encrypt(port_: i64, req: *mut wire_AesEncryptReq) {
+    wire_aes_256_cbc_encrypt_impl(port_, req)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_aes_256_cbc_decrypt(port_: i64, req: *mut wire_AesDecryptReq) {
+    wire_aes_256_cbc_decrypt_impl(port_, req)
 }
 
 #[no_mangle]
@@ -399,7 +401,7 @@ impl Wire2Api<Secp256k1ShareSecretReq> for wire_Secp256k1ShareSecretReq {
     fn wire2api(self) -> Secp256k1ShareSecretReq {
         Secp256k1ShareSecretReq {
             seed: self.seed.wire2api(),
-            public_key_der_bytes: self.public_key_der_bytes.wire2api(),
+            public_key_raw_bytes: self.public_key_raw_bytes.wire2api(),
         }
     }
 }
@@ -527,7 +529,7 @@ pub struct wire_Secp256k1FromSeedReq {
 #[derive(Clone)]
 pub struct wire_Secp256k1ShareSecretReq {
     seed: *mut wire_uint_8_list,
-    public_key_der_bytes: *mut wire_uint_8_list,
+    public_key_raw_bytes: *mut wire_uint_8_list,
 }
 
 #[repr(C)]
@@ -681,7 +683,7 @@ impl NewWithNullPtr for wire_Secp256k1ShareSecretReq {
     fn new_with_null_ptr() -> Self {
         Self {
             seed: core::ptr::null_mut(),
-            public_key_der_bytes: core::ptr::null_mut(),
+            public_key_raw_bytes: core::ptr::null_mut(),
         }
     }
 }

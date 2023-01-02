@@ -58,7 +58,7 @@ pub struct Secp256k1VerifyReq {
 #[derive(Clone, Debug, Serialize)]
 pub struct Secp256k1ShareSecretReq {
     pub seed: Vec<u8>,
-    pub public_key_der_bytes: Vec<u8>,
+    pub public_key_raw_bytes: Vec<u8>,
 }
 
 #[derive(Clone, Debug, Serialize)]

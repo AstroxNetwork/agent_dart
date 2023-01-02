@@ -255,26 +255,13 @@ bool verifySecp256k1Blob(
 
 Future<Uint8List> getECShareSecret(
   Uint8List privateKey,
-  Uint8List derEncodedPublicKey,
+  Uint8List rawPublicKey,
 ) async {
   final result = await AgentDartFFI.impl.secp256K1GetSharedSecret(
     req: Secp256k1ShareSecretReq(
       seed: privateKey,
-      publicKeyDerBytes: derEncodedPublicKey,
+      publicKeyRawBytes: rawPublicKey,
     ),
   );
   return result;
-}
-
-Future<Secp256k1PublicKey> getECShareSecretPubKey(
-  Uint8List privateKey,
-  Uint8List derEncodedPublicKey,
-) async {
-  final result = await AgentDartFFI.impl.secp256K1GetSharedSecretDerPubKey(
-    req: Secp256k1ShareSecretReq(
-      seed: privateKey,
-      publicKeyDerBytes: derEncodedPublicKey,
-    ),
-  );
-  return Secp256k1PublicKey.fromDer(result);
 }
