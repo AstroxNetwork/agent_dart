@@ -22,7 +22,7 @@ void secp256k1Test() {
       auxRand: Uint8List(32)..fillRange(0, 32, 0),
     );
     expect(res.length, 64);
-    print(res.toHex());
+
     final isValid = await verifySchnorrAsync(
       msg.plainToU8a(),
       res,
