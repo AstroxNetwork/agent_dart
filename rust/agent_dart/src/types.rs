@@ -72,9 +72,22 @@ pub struct Secp256k1SignReq {
 }
 
 #[derive(Clone, Debug, Serialize)]
+pub struct SchnorrSignReq {
+    pub msg: Vec<u8>,
+    pub aux_rand: Option<Vec<u8>>,
+}
+
+#[derive(Clone, Debug, Serialize)]
 pub struct Secp256k1SignWithSeedReq {
     pub msg: Vec<u8>,
     pub seed: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct SchnorrSignWithSeedReq {
+    pub msg: Vec<u8>,
+    pub seed: Vec<u8>,
+    pub aux_rand: Option<Vec<u8>>,
 }
 
 #[derive(Clone, Debug, Serialize)]

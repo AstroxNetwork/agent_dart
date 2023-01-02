@@ -2,12 +2,14 @@ use crate::bls_ffi::BlsFFI;
 use crate::ed25519::ED25519FFI;
 use crate::keyring::KeyRingFFI;
 use crate::keystore::KeystoreFFI;
+use crate::schnorr::{SchnorrFFI, SchnorrIdentityExport};
 use crate::secp256k1::{Secp256k1FFI, Secp256k1IdentityExport, SignatureFFI};
 use crate::types::{
     AesDecryptReq, AesEncryptReq, BLSVerifyReq, CreatePhraseReq, ED25519FromSeedReq, ED25519Res,
     ED25519SignReq, ED25519VerifyReq, KeyDerivedRes, PBKDFDeriveReq, PhraseToSeedReq,
-    ScriptDeriveReq, Secp256k1FromSeedReq, Secp256k1ShareSecretReq, Secp256k1SignReq,
-    Secp256k1SignWithSeedReq, Secp256k1VerifyReq, SeedToKeyReq, SymmError,
+    SchnorrSignReq, SchnorrSignWithSeedReq, ScriptDeriveReq, Secp256k1FromSeedReq,
+    Secp256k1ShareSecretReq, Secp256k1SignReq, Secp256k1SignWithSeedReq, Secp256k1VerifyReq,
+    SeedToKeyReq, SymmError,
 };
 
 /// --------------------
@@ -88,6 +90,27 @@ pub fn secp256k1_get_shared_secret(req: Secp256k1ShareSecretReq) -> Vec<u8> {
 
 pub fn secp256k1_get_shared_secret_der_pub_key(req: Secp256k1ShareSecretReq) -> Vec<u8> {
     Secp256k1FFI::get_share_secret_der_pub_key(req).unwrap()
+}
+
+/// ---------------------
+/// schnorr
+/// ---------------------
+
+pub fn schnorr_from_seed(req: Secp256k1FromSeedReq) -> SchnorrIdentityExport {
+    SchnorrIdentityExport::from_raw(SchnorrFFI::from_seed(req))
+}
+
+pub fn schnorr_sign(req: SchnorrSignWithSeedReq) -> SignatureFFI {
+    SchnorrFFI::from_seed(Secp256k1FromSeedReq { seed: req.seed })
+        .sign(SchnorrSignReq {
+            msg: req.msg,
+            aux_rand: req.aux_rand,
+        })
+        .unwrap()
+}
+
+pub fn schnorr_verify(req: Secp256k1VerifyReq) -> bool {
+    SchnorrFFI::verify_signature(req)
 }
 
 /// ---------------------

@@ -12,6 +12,7 @@ mod types;
 mod bls;
 mod ed25519;
 mod keystore;
+mod schnorr;
 mod secp256k1;
 mod sha;
 

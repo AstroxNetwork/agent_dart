@@ -139,6 +139,7 @@ class Secp256k1PublicKey implements PublicKey {
   late final derKey = Secp256k1PublicKey.derEncode(rawKey);
 
   static const rawKeyLength = 65;
+  static const subKeyLength = 32;
 
   static final derPrefix = Uint8List.fromList([
     0x30,
@@ -167,10 +168,11 @@ class Secp256k1PublicKey implements PublicKey {
   ]);
 
   static Uint8List derEncode(BinaryBlob publicKey) {
-    if (publicKey.byteLength != Secp256k1PublicKey.rawKeyLength) {
+    if ((publicKey.byteLength != Secp256k1PublicKey.rawKeyLength) &&
+        (publicKey.byteLength != Secp256k1PublicKey.subKeyLength)) {
       throw RangeError.value(
         publicKey.byteLength,
-        'Expected ${Secp256k1PublicKey.rawKeyLength}-bytes long '
+        'Expected ${Secp256k1PublicKey.rawKeyLength} or ${Secp256k1PublicKey.subKeyLength}-bytes long '
         'but got ${publicKey.byteLength}',
       );
     }
@@ -183,10 +185,13 @@ class Secp256k1PublicKey implements PublicKey {
   static Uint8List derDecode(BinaryBlob publicKey) {
     final expectedLength =
         Secp256k1PublicKey.derPrefix.length + Secp256k1PublicKey.rawKeyLength;
-    if (publicKey.byteLength != expectedLength) {
+    final expectedSubLength =
+        Secp256k1PublicKey.derPrefix.length + Secp256k1PublicKey.subKeyLength;
+    if ((publicKey.byteLength != expectedLength) &&
+        (publicKey.byteLength != expectedSubLength)) {
       throw RangeError.value(
         publicKey.byteLength,
-        'Expected ${Secp256k1PublicKey.rawKeyLength}-bytes long '
+        'Expected ${Secp256k1PublicKey.rawKeyLength} or ${Secp256k1PublicKey.subKeyLength}-bytes long '
         'but got ${publicKey.byteLength}',
       );
     }

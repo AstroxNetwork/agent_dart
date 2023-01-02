@@ -18,7 +18,7 @@ scrypt = "0.10.0"
 sha2 = "0.10.2"
 hmac = "0.12.1"
 aes = { version = "0.7.5", features = [ "ctr" ], default-features = false }
-k256 = { version = "0.11.4", default-features = false, features = [ "ecdsa", "sha256", "pem", "keccak256", "ecdh" ] }
+k256 = { version = "0.11.4", default-features = false, features = [ "ecdsa", "sha256", "pem", "keccak256", "ecdh", "schnorr" ] }
 rand = "0.8.5"
 serde = { version = "1.0.137", features = ["derive"] }
 serde_json = "1.0.79"

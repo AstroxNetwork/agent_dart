@@ -267,6 +267,12 @@ typedef struct wire_Secp256k1ShareSecretReq {
   struct wire_uint_8_list *public_key_der_bytes;
 } wire_Secp256k1ShareSecretReq;
 
+typedef struct wire_SchnorrSignWithSeedReq {
+  struct wire_uint_8_list *msg;
+  struct wire_uint_8_list *seed;
+  struct wire_uint_8_list *aux_rand;
+} wire_SchnorrSignWithSeedReq;
+
 typedef struct wire_AesEncryptReq {
   struct wire_uint_8_list *key;
   struct wire_uint_8_list *iv;
@@ -344,6 +350,12 @@ void wire_secp256k1_get_shared_secret(int64_t port_, struct wire_Secp256k1ShareS
 void wire_secp256k1_get_shared_secret_der_pub_key(int64_t port_,
                                                   struct wire_Secp256k1ShareSecretReq *req);
 
+void wire_schnorr_from_seed(int64_t port_, struct wire_Secp256k1FromSeedReq *req);
+
+void wire_schnorr_sign(int64_t port_, struct wire_SchnorrSignWithSeedReq *req);
+
+void wire_schnorr_verify(int64_t port_, struct wire_Secp256k1VerifyReq *req);
+
 void wire_aes_128_ctr_encrypt(int64_t port_, struct wire_AesEncryptReq *req);
 
 void wire_aes_128_ctr_decrypt(int64_t port_, struct wire_AesDecryptReq *req);
@@ -367,6 +379,8 @@ struct wire_ED25519VerifyReq *new_box_autoadd_ed_25519_verify_req_0(void);
 struct wire_PBKDFDeriveReq *new_box_autoadd_pbkdf_derive_req_0(void);
 
 struct wire_PhraseToSeedReq *new_box_autoadd_phrase_to_seed_req_0(void);
+
+struct wire_SchnorrSignWithSeedReq *new_box_autoadd_schnorr_sign_with_seed_req_0(void);
 
 struct wire_ScriptDeriveReq *new_box_autoadd_script_derive_req_0(void);
 
@@ -399,6 +413,9 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_verify);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_get_shared_secret);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_get_shared_secret_der_pub_key);
+    dummy_var ^= ((int64_t) (void*) wire_schnorr_from_seed);
+    dummy_var ^= ((int64_t) (void*) wire_schnorr_sign);
+    dummy_var ^= ((int64_t) (void*) wire_schnorr_verify);
     dummy_var ^= ((int64_t) (void*) wire_aes_128_ctr_encrypt);
     dummy_var ^= ((int64_t) (void*) wire_aes_128_ctr_decrypt);
     dummy_var ^= ((int64_t) (void*) wire_pbkdf2_derive_key);
@@ -411,6 +428,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_ed_25519_verify_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_pbkdf_derive_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_phrase_to_seed_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_schnorr_sign_with_seed_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_script_derive_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_from_seed_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_share_secret_req_0);

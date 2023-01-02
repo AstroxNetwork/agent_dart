@@ -19,6 +19,7 @@ use std::sync::Arc;
 
 // Section: imports
 
+use crate::schnorr::SchnorrIdentityExport;
 use crate::secp256k1::Secp256k1IdentityExport;
 use crate::secp256k1::SignatureFFI;
 use crate::types::AesDecryptReq;
@@ -31,6 +32,7 @@ use crate::types::ED25519VerifyReq;
 use crate::types::KeyDerivedRes;
 use crate::types::PBKDFDeriveReq;
 use crate::types::PhraseToSeedReq;
+use crate::types::SchnorrSignWithSeedReq;
 use crate::types::ScriptDeriveReq;
 use crate::types::Secp256k1FromSeedReq;
 use crate::types::Secp256k1ShareSecretReq;
@@ -233,6 +235,54 @@ fn wire_secp256k1_get_shared_secret_der_pub_key_impl(
         },
     )
 }
+fn wire_schnorr_from_seed_impl(
+    port_: MessagePort,
+    req: impl Wire2Api<Secp256k1FromSeedReq> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "schnorr_from_seed",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_req = req.wire2api();
+            move |task_callback| Ok(schnorr_from_seed(api_req))
+        },
+    )
+}
+fn wire_schnorr_sign_impl(
+    port_: MessagePort,
+    req: impl Wire2Api<SchnorrSignWithSeedReq> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "schnorr_sign",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_req = req.wire2api();
+            move |task_callback| Ok(schnorr_sign(api_req))
+        },
+    )
+}
+fn wire_schnorr_verify_impl(
+    port_: MessagePort,
+    req: impl Wire2Api<Secp256k1VerifyReq> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "schnorr_verify",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_req = req.wire2api();
+            move |task_callback| Ok(schnorr_verify(api_req))
+        },
+    )
+}
 fn wire_aes_128_ctr_encrypt_impl(
     port_: MessagePort,
     req: impl Wire2Api<AesEncryptReq> + UnwindSafe,
@@ -346,6 +396,17 @@ impl support::IntoDart for KeyDerivedRes {
     }
 }
 impl support::IntoDartExceptPrimitive for KeyDerivedRes {}
+
+impl support::IntoDart for SchnorrIdentityExport {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.private_key_hash.into_dart(),
+            self.public_key_hash.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for SchnorrIdentityExport {}
 
 impl support::IntoDart for Secp256k1IdentityExport {
     fn into_dart(self) -> support::DartAbi {

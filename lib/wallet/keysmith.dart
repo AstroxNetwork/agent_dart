@@ -19,6 +19,7 @@ class ECKeys {
     this.ecChainCode,
     this.ecPrivateKey,
     this.ecPublicKey,
+    this.ecSchnorrPublicKey,
     this.ecCompressedPublicKey,
     this.extendedECPublicKey,
   });
@@ -26,6 +27,7 @@ class ECKeys {
   final Uint8List? ecChainCode;
   final Uint8List? ecPrivateKey;
   final Uint8List? ecPublicKey;
+  final Uint8List? ecSchnorrPublicKey;
   final Uint8List? ecCompressedPublicKey;
   final String? extendedECPublicKey;
 
@@ -94,9 +96,14 @@ Future<ECKeys> getECKeysAsync(
   final kp = await AgentDartFFI.impl.secp256K1FromSeed(
     req: Secp256k1FromSeedReq(seed: prv),
   );
+  final kpSchnorr = await AgentDartFFI.impl.schnorrFromSeed(
+    req: Secp256k1FromSeedReq(seed: prv),
+  );
   return ECKeys(
     ecPrivateKey: prv,
     ecPublicKey: Secp256k1PublicKey.fromDer(kp.derEncodedPublicKey).toRaw(),
+    ecSchnorrPublicKey:
+        Secp256k1PublicKey.fromRaw(kpSchnorr.publicKeyHash).toRaw(),
   );
 }
 
@@ -104,9 +111,14 @@ Future<ECKeys> getECkeyFromPrivateKey(Uint8List prv) async {
   final kp = await AgentDartFFI.impl.secp256K1FromSeed(
     req: Secp256k1FromSeedReq(seed: prv),
   );
+  final kpSchnorr = await AgentDartFFI.impl.schnorrFromSeed(
+    req: Secp256k1FromSeedReq(seed: prv),
+  );
   return ECKeys(
     ecPrivateKey: prv,
     ecPublicKey: Secp256k1PublicKey.fromDer(kp.derEncodedPublicKey).toRaw(),
+    ecSchnorrPublicKey:
+        Secp256k1PublicKey.fromRaw(kpSchnorr.publicKeyHash).toRaw(),
   );
 }
 
@@ -154,4 +166,11 @@ Future<Uint8List> getDerFromFFI(Uint8List seed) async {
     req: Secp256k1FromSeedReq(seed: seed),
   );
   return ffiIdentity.derEncodedPublicKey;
+}
+
+Future<Uint8List> getSchnorrPubFromFFI(Uint8List seed) async {
+  final ffiIdentity = await AgentDartFFI.impl.schnorrFromSeed(
+    req: Secp256k1FromSeedReq(seed: seed),
+  );
+  return ffiIdentity.publicKeyHash;
 }

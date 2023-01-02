@@ -93,6 +93,23 @@ abstract class AgentDart {
       get kSecp256K1GetSharedSecretDerPubKeyConstMeta;
 
   /// ---------------------
+  /// schnorr
+  /// ---------------------
+  Future<SchnorrIdentityExport> schnorrFromSeed(
+      {required Secp256k1FromSeedReq req, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kSchnorrFromSeedConstMeta;
+
+  Future<SignatureFFI> schnorrSign(
+      {required SchnorrSignWithSeedReq req, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kSchnorrSignConstMeta;
+
+  Future<bool> schnorrVerify({required Secp256k1VerifyReq req, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kSchnorrVerifyConstMeta;
+
+  /// ---------------------
   /// aes
   /// ---------------------
   Future<Uint8List> aes128CtrEncrypt(
@@ -221,6 +238,28 @@ class PhraseToSeedReq {
   PhraseToSeedReq({
     required this.phrase,
     required this.password,
+  });
+}
+
+class SchnorrIdentityExport {
+  final Uint8List privateKeyHash;
+  final Uint8List publicKeyHash;
+
+  SchnorrIdentityExport({
+    required this.privateKeyHash,
+    required this.publicKeyHash,
+  });
+}
+
+class SchnorrSignWithSeedReq {
+  final Uint8List msg;
+  final Uint8List seed;
+  final Uint8List? auxRand;
+
+  SchnorrSignWithSeedReq({
+    required this.msg,
+    required this.seed,
+    this.auxRand,
   });
 }
 
@@ -561,6 +600,59 @@ class AgentDartImpl implements AgentDart {
             argNames: ["req"],
           );
 
+  Future<SchnorrIdentityExport> schnorrFromSeed(
+      {required Secp256k1FromSeedReq req, dynamic hint}) {
+    var arg0 = _platform.api2wire_box_autoadd_secp_256_k_1_from_seed_req(req);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_schnorr_from_seed(port_, arg0),
+      parseSuccessData: _wire2api_schnorr_identity_export,
+      constMeta: kSchnorrFromSeedConstMeta,
+      argValues: [req],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kSchnorrFromSeedConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "schnorr_from_seed",
+        argNames: ["req"],
+      );
+
+  Future<SignatureFFI> schnorrSign(
+      {required SchnorrSignWithSeedReq req, dynamic hint}) {
+    var arg0 = _platform.api2wire_box_autoadd_schnorr_sign_with_seed_req(req);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_schnorr_sign(port_, arg0),
+      parseSuccessData: _wire2api_signature_ffi,
+      constMeta: kSchnorrSignConstMeta,
+      argValues: [req],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kSchnorrSignConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "schnorr_sign",
+        argNames: ["req"],
+      );
+
+  Future<bool> schnorrVerify({required Secp256k1VerifyReq req, dynamic hint}) {
+    var arg0 = _platform.api2wire_box_autoadd_secp_256_k_1_verify_req(req);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_schnorr_verify(port_, arg0),
+      parseSuccessData: _wire2api_bool,
+      constMeta: kSchnorrVerifyConstMeta,
+      argValues: [req],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kSchnorrVerifyConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "schnorr_verify",
+        argNames: ["req"],
+      );
+
   Future<Uint8List> aes128CtrEncrypt(
       {required AesEncryptReq req, dynamic hint}) {
     var arg0 = _platform.api2wire_box_autoadd_aes_encrypt_req(req);
@@ -664,6 +756,16 @@ class AgentDartImpl implements AgentDart {
 
   Uint8List? _wire2api_opt_uint_8_list(dynamic raw) {
     return raw == null ? null : _wire2api_uint_8_list(raw);
+  }
+
+  SchnorrIdentityExport _wire2api_schnorr_identity_export(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return SchnorrIdentityExport(
+      privateKeyHash: _wire2api_uint_8_list(arr[0]),
+      publicKeyHash: _wire2api_uint_8_list(arr[1]),
+    );
   }
 
   Secp256k1IdentityExport _wire2api_secp_256_k_1_identity_export(dynamic raw) {
@@ -784,6 +886,15 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
   }
 
   @protected
+  ffi.Pointer<wire_SchnorrSignWithSeedReq>
+      api2wire_box_autoadd_schnorr_sign_with_seed_req(
+          SchnorrSignWithSeedReq raw) {
+    final ptr = inner.new_box_autoadd_schnorr_sign_with_seed_req_0();
+    _api_fill_to_wire_schnorr_sign_with_seed_req(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   ffi.Pointer<wire_ScriptDeriveReq> api2wire_box_autoadd_script_derive_req(
       ScriptDeriveReq raw) {
     final ptr = inner.new_box_autoadd_script_derive_req_0();
@@ -832,6 +943,11 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
     final ptr = inner.new_box_autoadd_seed_to_key_req_0();
     _api_fill_to_wire_seed_to_key_req(raw, ptr.ref);
     return ptr;
+  }
+
+  @protected
+  ffi.Pointer<wire_uint_8_list> api2wire_opt_uint_8_list(Uint8List? raw) {
+    return raw == null ? ffi.nullptr : api2wire_uint_8_list(raw);
   }
 
   @protected
@@ -905,6 +1021,12 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
     _api_fill_to_wire_phrase_to_seed_req(apiObj, wireObj.ref);
   }
 
+  void _api_fill_to_wire_box_autoadd_schnorr_sign_with_seed_req(
+      SchnorrSignWithSeedReq apiObj,
+      ffi.Pointer<wire_SchnorrSignWithSeedReq> wireObj) {
+    _api_fill_to_wire_schnorr_sign_with_seed_req(apiObj, wireObj.ref);
+  }
+
   void _api_fill_to_wire_box_autoadd_script_derive_req(
       ScriptDeriveReq apiObj, ffi.Pointer<wire_ScriptDeriveReq> wireObj) {
     _api_fill_to_wire_script_derive_req(apiObj, wireObj.ref);
@@ -967,6 +1089,13 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
       PhraseToSeedReq apiObj, wire_PhraseToSeedReq wireObj) {
     wireObj.phrase = api2wire_String(apiObj.phrase);
     wireObj.password = api2wire_String(apiObj.password);
+  }
+
+  void _api_fill_to_wire_schnorr_sign_with_seed_req(
+      SchnorrSignWithSeedReq apiObj, wire_SchnorrSignWithSeedReq wireObj) {
+    wireObj.msg = api2wire_uint_8_list(apiObj.msg);
+    wireObj.seed = api2wire_uint_8_list(apiObj.seed);
+    wireObj.aux_rand = api2wire_opt_uint_8_list(apiObj.auxRand);
   }
 
   void _api_fill_to_wire_script_derive_req(
@@ -1331,6 +1460,58 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
       _wire_secp256k1_get_shared_secret_der_pub_keyPtr.asFunction<
           void Function(int, ffi.Pointer<wire_Secp256k1ShareSecretReq>)>();
 
+  void wire_schnorr_from_seed(
+    int port_,
+    ffi.Pointer<wire_Secp256k1FromSeedReq> req,
+  ) {
+    return _wire_schnorr_from_seed(
+      port_,
+      req,
+    );
+  }
+
+  late final _wire_schnorr_from_seedPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Void Function(
+                  ffi.Int64, ffi.Pointer<wire_Secp256k1FromSeedReq>)>>(
+      'wire_schnorr_from_seed');
+  late final _wire_schnorr_from_seed = _wire_schnorr_from_seedPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_Secp256k1FromSeedReq>)>();
+
+  void wire_schnorr_sign(
+    int port_,
+    ffi.Pointer<wire_SchnorrSignWithSeedReq> req,
+  ) {
+    return _wire_schnorr_sign(
+      port_,
+      req,
+    );
+  }
+
+  late final _wire_schnorr_signPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_SchnorrSignWithSeedReq>)>>('wire_schnorr_sign');
+  late final _wire_schnorr_sign = _wire_schnorr_signPtr.asFunction<
+      void Function(int, ffi.Pointer<wire_SchnorrSignWithSeedReq>)>();
+
+  void wire_schnorr_verify(
+    int port_,
+    ffi.Pointer<wire_Secp256k1VerifyReq> req,
+  ) {
+    return _wire_schnorr_verify(
+      port_,
+      req,
+    );
+  }
+
+  late final _wire_schnorr_verifyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_Secp256k1VerifyReq>)>>('wire_schnorr_verify');
+  late final _wire_schnorr_verify = _wire_schnorr_verifyPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_Secp256k1VerifyReq>)>();
+
   void wire_aes_128_ctr_encrypt(
     int port_,
     ffi.Pointer<wire_AesEncryptReq> req,
@@ -1487,6 +1668,19 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _new_box_autoadd_phrase_to_seed_req_0 =
       _new_box_autoadd_phrase_to_seed_req_0Ptr
           .asFunction<ffi.Pointer<wire_PhraseToSeedReq> Function()>();
+
+  ffi.Pointer<wire_SchnorrSignWithSeedReq>
+      new_box_autoadd_schnorr_sign_with_seed_req_0() {
+    return _new_box_autoadd_schnorr_sign_with_seed_req_0();
+  }
+
+  late final _new_box_autoadd_schnorr_sign_with_seed_req_0Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<wire_SchnorrSignWithSeedReq>
+              Function()>>('new_box_autoadd_schnorr_sign_with_seed_req_0');
+  late final _new_box_autoadd_schnorr_sign_with_seed_req_0 =
+      _new_box_autoadd_schnorr_sign_with_seed_req_0Ptr
+          .asFunction<ffi.Pointer<wire_SchnorrSignWithSeedReq> Function()>();
 
   ffi.Pointer<wire_ScriptDeriveReq> new_box_autoadd_script_derive_req_0() {
     return _new_box_autoadd_script_derive_req_0();
@@ -1660,6 +1854,14 @@ class wire_Secp256k1ShareSecretReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> seed;
 
   external ffi.Pointer<wire_uint_8_list> public_key_der_bytes;
+}
+
+class wire_SchnorrSignWithSeedReq extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> msg;
+
+  external ffi.Pointer<wire_uint_8_list> seed;
+
+  external ffi.Pointer<wire_uint_8_list> aux_rand;
 }
 
 class wire_AesEncryptReq extends ffi.Struct {

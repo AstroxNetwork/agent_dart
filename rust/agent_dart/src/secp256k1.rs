@@ -143,8 +143,8 @@ impl Secp256k1FFI {
         // assert_eq!(req.public_key_bytes.len(), 65);
         match Secp256k1FFI::get_share_secret(req) {
             Ok(dh) => {
-                let dh_sk = SecretKey::from_be_bytes(dh.as_slice())
-                    .expect("From secret bytes failed");
+                let dh_sk =
+                    SecretKey::from_be_bytes(dh.as_slice()).expect("From secret bytes failed");
                 Ok(dh_sk
                     .public_key()
                     .to_public_key_der()
