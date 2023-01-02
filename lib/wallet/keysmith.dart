@@ -12,7 +12,11 @@ import 'package:pointycastle/ecc/curves/secp256k1.dart';
 
 final ECCurve_secp256k1 secp256k1Params = ECCurve_secp256k1();
 
-const icpPath = "m/44'/223'/0'";
+abstract class CoinType {
+  static const icp = 223;
+  static const eth = 60;
+  static const btc = 0;
+}
 
 class ECKeys {
   const ECKeys({
@@ -36,6 +40,10 @@ class ECKeys {
 
   String? get ecPrincipal =>
       ecPublicKey != null ? getPrincipalFromECPublicKey(ecPublicKey!) : null;
+}
+
+String getPathWithCoinType({int coinType = CoinType.icp}) {
+  return "m/44'/$coinType'/0'";
 }
 
 String generateMnemonic({int bitLength = 128}) {
@@ -85,13 +93,15 @@ Future<ECKeys> getECKeysAsync(
   String phrase, {
   String passphrase = '',
   int index = 0,
+  int coinType = CoinType.icp,
 }) async {
+  final basePath = getPathWithCoinType(coinType: coinType);
   final seed = await AgentDartFFI.impl.mnemonicPhraseToSeed(
     req: PhraseToSeedReq(phrase: phrase, password: passphrase),
   );
 
   final prv = await AgentDartFFI.impl.mnemonicSeedToKey(
-    req: SeedToKeyReq(seed: seed, path: '$icpPath/0/$index'),
+    req: SeedToKeyReq(seed: seed, path: '$basePath/0/$index'),
   );
   final kp = await AgentDartFFI.impl.secp256K1FromSeed(
     req: Secp256k1FromSeedReq(seed: prv),
@@ -122,11 +132,13 @@ Future<ECKeys> getECkeyFromPrivateKey(Uint8List prv) async {
   );
 }
 
-ECKeys ecKeysfromSeed(Uint8List seed, {int index = 0}) {
+ECKeys ecKeysfromSeed(Uint8List seed,
+    {int index = 0, int coinType = CoinType.icp}) {
+  final basePath = getPathWithCoinType(coinType: coinType);
   final node = bip32.BIP32.fromSeed(seed);
 
-  final masterPrv = node.derivePath('$icpPath/0/$index');
-  final masterPrvRaw = node.derivePath(icpPath);
+  final masterPrv = node.derivePath('$basePath/0/$index');
+  final masterPrvRaw = node.derivePath(basePath);
   final xpub = masterPrvRaw.toBase58();
 
   final prv = masterPrv.privateKey;
