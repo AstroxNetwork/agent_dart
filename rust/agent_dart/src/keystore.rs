@@ -53,7 +53,9 @@ impl KeystoreFFI {
     pub fn encrypt_256_cbc(req: AesEncryptReq) -> Vec<u8> {
         let plain_len = req.message.len();
 
-        let mut text = [0u8; 256];
+        let c_mod = plain_len % 256;
+
+        let mut text = vec![0u8; plain_len + 256 - c_mod];
 
         if req.key.len() != 32 {
             panic!("SymmError::InvalidKey")

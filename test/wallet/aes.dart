@@ -16,6 +16,9 @@ void main() {
     final id1 = await Secp256k1KeyIdentity.fromSecretKey(key1.ecPrivateKey!);
     final id2 = await Secp256k1KeyIdentity.fromSecretKey(key2.ecPrivateKey!);
 
+    print(id1.getPrincipal().toText());
+    print(id2.getPrincipal().toText());
+
     const message =
         'usage depart wait tiny depart edit another rebuild ginger panel injury share';
 
