@@ -129,7 +129,7 @@ Future<bool> verifySchnorrAsync(
   Secp256k1PublicKey publicKey,
 ) async {
   final result = await AgentDartFFI.impl.schnorrVerify(
-    req: Secp256k1VerifyReq(
+    req: SchnorrVerifyReq(
       messageHash: blob,
       signatureBytes: signature,
       publicKeyBytes: publicKey.toRaw(),
