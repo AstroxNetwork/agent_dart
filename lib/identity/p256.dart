@@ -42,7 +42,6 @@ class P256PublicKey implements PublicKey {
   late final derKey = P256PublicKey.derEncode(rawKey);
 
   static Uint8List derEncode(BinaryBlob publicKey) {
-    // we are not sure yet
     return wrapDER(publicKey.buffer, oidP256);
   }
 

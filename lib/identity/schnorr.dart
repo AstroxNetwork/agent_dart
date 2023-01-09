@@ -31,7 +31,10 @@ class SchnorrPublicKey implements PublicKey {
   late final derKey = SchnorrPublicKey.derEncode(rawKey);
 
   static Uint8List derEncode(BinaryBlob publicKey) {
-    // we are not sure yet
+    // BIP340 Schnorr scheme doesn't apply to ASN.1 standard, although other
+    // form of oid existed, we just borrow secp256k1 as ref.
+    // Since this protocol can not use on IC directly. We just want the function
+    // works.
     return wrapDER(publicKey.buffer, oidSecp256k1);
   }
 
