@@ -115,6 +115,22 @@ final canisterCOSEDer = Uint8List.fromList([
   ], // DER encoded COSE.
 ]);
 
+// 1.2.840.10045.3
+final oidP256 = Uint8List.fromList([
+  ...[0x30, 0x13], // SEQUENCE
+  ...[0x06, 0x08], // OID with 8 bytes
+  ...[
+    0x2a,
+    0x86,
+    0x48,
+    0xce,
+    0x3d,
+    0x03,
+    0x01,
+    0x07,
+  ]
+]);
+
 /// Wraps the given [payload] in a DER encoding tagged with the given encoded
 /// [oid] like so: `SEQUENCE(oid, BITSTRING(payload))`
 ///
