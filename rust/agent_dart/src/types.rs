@@ -1,5 +1,13 @@
 use serde::Serialize;
 
+#[derive(Clone, Debug)]
+pub struct SignatureFFI {
+    /// This is the DER-encoded public key.
+    pub public_key: Option<Vec<u8>>,
+    /// The signature bytes.
+    pub signature: Option<Vec<u8>>,
+}
+
 #[derive(Clone, Debug, Serialize)]
 pub struct CreatePhraseReq {
     pub length: u8,
@@ -72,6 +80,47 @@ pub struct Secp256k1SignReq {
 }
 
 #[derive(Clone, Debug, Serialize)]
+pub struct P256VerifyReq {
+    pub message_hash: Vec<u8>,
+    pub signature_bytes: Vec<u8>,
+    pub public_key_bytes: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct P256ShareSecretReq {
+    pub seed: Vec<u8>,
+    pub public_key_raw_bytes: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct P256FromSeedReq {
+    pub seed: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct P256SignReq {
+    pub msg: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct SchnorrVerifyReq {
+    pub message_hash: Vec<u8>,
+    pub signature_bytes: Vec<u8>,
+    pub public_key_bytes: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct SchnorrShareSecretReq {
+    pub seed: Vec<u8>,
+    pub public_key_raw_bytes: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct SchnorrFromSeedReq {
+    pub seed: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Serialize)]
 pub struct SchnorrSignReq {
     pub msg: Vec<u8>,
     pub aux_rand: Option<Vec<u8>>,
@@ -79,6 +128,12 @@ pub struct SchnorrSignReq {
 
 #[derive(Clone, Debug, Serialize)]
 pub struct Secp256k1SignWithSeedReq {
+    pub msg: Vec<u8>,
+    pub seed: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct P256SignWithSeedReq {
     pub msg: Vec<u8>,
     pub seed: Vec<u8>,
 }
@@ -104,13 +159,13 @@ pub struct AesDecryptReq {
     pub cipher_text: Vec<u8>,
 }
 
-/// Error type for the AES symmetric encryption
-#[derive(Debug)]
-pub enum SymmError {
-    InvalidKey,
-    InvalidNonce,
-    SourceDestinationMismatch,
-}
+// /// Error type for the AES symmetric encryption
+// #[derive(Clone, Debug)]
+// pub enum SymmError {
+//     InvalidKey,
+//     InvalidNonce,
+//     SourceDestinationMismatch,
+// }
 
 #[derive(Clone, Debug)]
 pub struct KeyDerivedRes {

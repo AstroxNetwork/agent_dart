@@ -1,14 +1,9 @@
-use crate::secp256k1::SignatureFFI;
-use crate::types::{SchnorrSignReq, Secp256k1FromSeedReq, Secp256k1SignReq, Secp256k1VerifyReq};
+use crate::types::{SchnorrFromSeedReq, SchnorrSignReq, SchnorrVerifyReq, SignatureFFI};
 use k256::ecdsa::digest::{Digest, FixedOutput};
 use k256::elliptic_curve::rand_core::{OsRng, RngCore};
-use k256::pkcs8::{DecodePublicKey, Document, EncodePublicKey};
-use k256::schnorr::signature::{RandomizedSigner, Signature, Signer, Verifier};
+use k256::schnorr::signature::{Signature, Verifier};
 use k256::schnorr::{SigningKey, VerifyingKey};
-use k256::{PublicKey, SecretKey};
 use sha2::Sha256;
-use std::borrow::BorrowMut;
-use std::convert::TryFrom;
 
 #[derive(Clone)]
 pub struct SchnorrFFI {
@@ -32,7 +27,7 @@ impl SchnorrIdentityExport {
 }
 
 impl SchnorrFFI {
-    pub fn verify_signature(req: Secp256k1VerifyReq) -> bool {
+    pub fn verify_signature(req: SchnorrVerifyReq) -> bool {
         let signature =
             Signature::from_bytes(req.signature_bytes.as_slice()).expect("Signature is not valid");
         let verifying_key = VerifyingKey::from_bytes(req.public_key_bytes.as_slice())
@@ -42,7 +37,7 @@ impl SchnorrFFI {
             .is_ok()
     }
 
-    pub fn from_seed(req: Secp256k1FromSeedReq) -> Self {
+    pub fn from_seed(req: SchnorrFromSeedReq) -> Self {
         match SigningKey::from_bytes(req.seed.as_slice()) {
             Ok(sk) => SchnorrFFI::from_signing_key(sk),
             Err(err) => {

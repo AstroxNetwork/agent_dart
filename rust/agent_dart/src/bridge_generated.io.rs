@@ -68,7 +68,27 @@ pub extern "C" fn wire_secp256k1_get_shared_secret(
 }
 
 #[no_mangle]
-pub extern "C" fn wire_schnorr_from_seed(port_: i64, req: *mut wire_Secp256k1FromSeedReq) {
+pub extern "C" fn wire_p256k1_from_seed(port_: i64, req: *mut wire_P256FromSeedReq) {
+    wire_p256k1_from_seed_impl(port_, req)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_p256k1_sign(port_: i64, req: *mut wire_P256SignWithSeedReq) {
+    wire_p256k1_sign_impl(port_, req)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_p256k1_verify(port_: i64, req: *mut wire_P256VerifyReq) {
+    wire_p256k1_verify_impl(port_, req)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_p256k1_get_shared_secret(port_: i64, req: *mut wire_P256ShareSecretReq) {
+    wire_p256k1_get_shared_secret_impl(port_, req)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_schnorr_from_seed(port_: i64, req: *mut wire_SchnorrFromSeedReq) {
     wire_schnorr_from_seed_impl(port_, req)
 }
 
@@ -78,7 +98,7 @@ pub extern "C" fn wire_schnorr_sign(port_: i64, req: *mut wire_SchnorrSignWithSe
 }
 
 #[no_mangle]
-pub extern "C" fn wire_schnorr_verify(port_: i64, req: *mut wire_Secp256k1VerifyReq) {
+pub extern "C" fn wire_schnorr_verify(port_: i64, req: *mut wire_SchnorrVerifyReq) {
     wire_schnorr_verify_impl(port_, req)
 }
 
@@ -145,6 +165,26 @@ pub extern "C" fn new_box_autoadd_ed_25519_verify_req_0() -> *mut wire_ED25519Ve
 }
 
 #[no_mangle]
+pub extern "C" fn new_box_autoadd_p_256_from_seed_req_0() -> *mut wire_P256FromSeedReq {
+    support::new_leak_box_ptr(wire_P256FromSeedReq::new_with_null_ptr())
+}
+
+#[no_mangle]
+pub extern "C" fn new_box_autoadd_p_256_share_secret_req_0() -> *mut wire_P256ShareSecretReq {
+    support::new_leak_box_ptr(wire_P256ShareSecretReq::new_with_null_ptr())
+}
+
+#[no_mangle]
+pub extern "C" fn new_box_autoadd_p_256_sign_with_seed_req_0() -> *mut wire_P256SignWithSeedReq {
+    support::new_leak_box_ptr(wire_P256SignWithSeedReq::new_with_null_ptr())
+}
+
+#[no_mangle]
+pub extern "C" fn new_box_autoadd_p_256_verify_req_0() -> *mut wire_P256VerifyReq {
+    support::new_leak_box_ptr(wire_P256VerifyReq::new_with_null_ptr())
+}
+
+#[no_mangle]
 pub extern "C" fn new_box_autoadd_pbkdf_derive_req_0() -> *mut wire_PBKDFDeriveReq {
     support::new_leak_box_ptr(wire_PBKDFDeriveReq::new_with_null_ptr())
 }
@@ -155,9 +195,19 @@ pub extern "C" fn new_box_autoadd_phrase_to_seed_req_0() -> *mut wire_PhraseToSe
 }
 
 #[no_mangle]
+pub extern "C" fn new_box_autoadd_schnorr_from_seed_req_0() -> *mut wire_SchnorrFromSeedReq {
+    support::new_leak_box_ptr(wire_SchnorrFromSeedReq::new_with_null_ptr())
+}
+
+#[no_mangle]
 pub extern "C" fn new_box_autoadd_schnorr_sign_with_seed_req_0() -> *mut wire_SchnorrSignWithSeedReq
 {
     support::new_leak_box_ptr(wire_SchnorrSignWithSeedReq::new_with_null_ptr())
+}
+
+#[no_mangle]
+pub extern "C" fn new_box_autoadd_schnorr_verify_req_0() -> *mut wire_SchnorrVerifyReq {
+    support::new_leak_box_ptr(wire_SchnorrVerifyReq::new_with_null_ptr())
 }
 
 #[no_mangle]
@@ -274,6 +324,30 @@ impl Wire2Api<ED25519VerifyReq> for *mut wire_ED25519VerifyReq {
         Wire2Api::<ED25519VerifyReq>::wire2api(*wrap).into()
     }
 }
+impl Wire2Api<P256FromSeedReq> for *mut wire_P256FromSeedReq {
+    fn wire2api(self) -> P256FromSeedReq {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<P256FromSeedReq>::wire2api(*wrap).into()
+    }
+}
+impl Wire2Api<P256ShareSecretReq> for *mut wire_P256ShareSecretReq {
+    fn wire2api(self) -> P256ShareSecretReq {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<P256ShareSecretReq>::wire2api(*wrap).into()
+    }
+}
+impl Wire2Api<P256SignWithSeedReq> for *mut wire_P256SignWithSeedReq {
+    fn wire2api(self) -> P256SignWithSeedReq {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<P256SignWithSeedReq>::wire2api(*wrap).into()
+    }
+}
+impl Wire2Api<P256VerifyReq> for *mut wire_P256VerifyReq {
+    fn wire2api(self) -> P256VerifyReq {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<P256VerifyReq>::wire2api(*wrap).into()
+    }
+}
 impl Wire2Api<PBKDFDeriveReq> for *mut wire_PBKDFDeriveReq {
     fn wire2api(self) -> PBKDFDeriveReq {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
@@ -286,10 +360,22 @@ impl Wire2Api<PhraseToSeedReq> for *mut wire_PhraseToSeedReq {
         Wire2Api::<PhraseToSeedReq>::wire2api(*wrap).into()
     }
 }
+impl Wire2Api<SchnorrFromSeedReq> for *mut wire_SchnorrFromSeedReq {
+    fn wire2api(self) -> SchnorrFromSeedReq {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<SchnorrFromSeedReq>::wire2api(*wrap).into()
+    }
+}
 impl Wire2Api<SchnorrSignWithSeedReq> for *mut wire_SchnorrSignWithSeedReq {
     fn wire2api(self) -> SchnorrSignWithSeedReq {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
         Wire2Api::<SchnorrSignWithSeedReq>::wire2api(*wrap).into()
+    }
+}
+impl Wire2Api<SchnorrVerifyReq> for *mut wire_SchnorrVerifyReq {
+    fn wire2api(self) -> SchnorrVerifyReq {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<SchnorrVerifyReq>::wire2api(*wrap).into()
     }
 }
 impl Wire2Api<ScriptDeriveReq> for *mut wire_ScriptDeriveReq {
@@ -353,6 +439,38 @@ impl Wire2Api<ED25519VerifyReq> for wire_ED25519VerifyReq {
     }
 }
 
+impl Wire2Api<P256FromSeedReq> for wire_P256FromSeedReq {
+    fn wire2api(self) -> P256FromSeedReq {
+        P256FromSeedReq {
+            seed: self.seed.wire2api(),
+        }
+    }
+}
+impl Wire2Api<P256ShareSecretReq> for wire_P256ShareSecretReq {
+    fn wire2api(self) -> P256ShareSecretReq {
+        P256ShareSecretReq {
+            seed: self.seed.wire2api(),
+            public_key_raw_bytes: self.public_key_raw_bytes.wire2api(),
+        }
+    }
+}
+impl Wire2Api<P256SignWithSeedReq> for wire_P256SignWithSeedReq {
+    fn wire2api(self) -> P256SignWithSeedReq {
+        P256SignWithSeedReq {
+            msg: self.msg.wire2api(),
+            seed: self.seed.wire2api(),
+        }
+    }
+}
+impl Wire2Api<P256VerifyReq> for wire_P256VerifyReq {
+    fn wire2api(self) -> P256VerifyReq {
+        P256VerifyReq {
+            message_hash: self.message_hash.wire2api(),
+            signature_bytes: self.signature_bytes.wire2api(),
+            public_key_bytes: self.public_key_bytes.wire2api(),
+        }
+    }
+}
 impl Wire2Api<PBKDFDeriveReq> for wire_PBKDFDeriveReq {
     fn wire2api(self) -> PBKDFDeriveReq {
         PBKDFDeriveReq {
@@ -370,12 +488,28 @@ impl Wire2Api<PhraseToSeedReq> for wire_PhraseToSeedReq {
         }
     }
 }
+impl Wire2Api<SchnorrFromSeedReq> for wire_SchnorrFromSeedReq {
+    fn wire2api(self) -> SchnorrFromSeedReq {
+        SchnorrFromSeedReq {
+            seed: self.seed.wire2api(),
+        }
+    }
+}
 impl Wire2Api<SchnorrSignWithSeedReq> for wire_SchnorrSignWithSeedReq {
     fn wire2api(self) -> SchnorrSignWithSeedReq {
         SchnorrSignWithSeedReq {
             msg: self.msg.wire2api(),
             seed: self.seed.wire2api(),
             aux_rand: self.aux_rand.wire2api(),
+        }
+    }
+}
+impl Wire2Api<SchnorrVerifyReq> for wire_SchnorrVerifyReq {
+    fn wire2api(self) -> SchnorrVerifyReq {
+        SchnorrVerifyReq {
+            message_hash: self.message_hash.wire2api(),
+            signature_bytes: self.signature_bytes.wire2api(),
+            public_key_bytes: self.public_key_bytes.wire2api(),
         }
     }
 }
@@ -488,6 +622,34 @@ pub struct wire_ED25519VerifyReq {
 
 #[repr(C)]
 #[derive(Clone)]
+pub struct wire_P256FromSeedReq {
+    seed: *mut wire_uint_8_list,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_P256ShareSecretReq {
+    seed: *mut wire_uint_8_list,
+    public_key_raw_bytes: *mut wire_uint_8_list,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_P256SignWithSeedReq {
+    msg: *mut wire_uint_8_list,
+    seed: *mut wire_uint_8_list,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_P256VerifyReq {
+    message_hash: *mut wire_uint_8_list,
+    signature_bytes: *mut wire_uint_8_list,
+    public_key_bytes: *mut wire_uint_8_list,
+}
+
+#[repr(C)]
+#[derive(Clone)]
 pub struct wire_PBKDFDeriveReq {
     password: *mut wire_uint_8_list,
     salt: *mut wire_uint_8_list,
@@ -503,10 +665,24 @@ pub struct wire_PhraseToSeedReq {
 
 #[repr(C)]
 #[derive(Clone)]
+pub struct wire_SchnorrFromSeedReq {
+    seed: *mut wire_uint_8_list,
+}
+
+#[repr(C)]
+#[derive(Clone)]
 pub struct wire_SchnorrSignWithSeedReq {
     msg: *mut wire_uint_8_list,
     seed: *mut wire_uint_8_list,
     aux_rand: *mut wire_uint_8_list,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_SchnorrVerifyReq {
+    message_hash: *mut wire_uint_8_list,
+    signature_bytes: *mut wire_uint_8_list,
+    public_key_bytes: *mut wire_uint_8_list,
 }
 
 #[repr(C)]
@@ -630,6 +806,42 @@ impl NewWithNullPtr for wire_ED25519VerifyReq {
     }
 }
 
+impl NewWithNullPtr for wire_P256FromSeedReq {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            seed: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl NewWithNullPtr for wire_P256ShareSecretReq {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            seed: core::ptr::null_mut(),
+            public_key_raw_bytes: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl NewWithNullPtr for wire_P256SignWithSeedReq {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            msg: core::ptr::null_mut(),
+            seed: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl NewWithNullPtr for wire_P256VerifyReq {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            message_hash: core::ptr::null_mut(),
+            signature_bytes: core::ptr::null_mut(),
+            public_key_bytes: core::ptr::null_mut(),
+        }
+    }
+}
+
 impl NewWithNullPtr for wire_PBKDFDeriveReq {
     fn new_with_null_ptr() -> Self {
         Self {
@@ -649,12 +861,30 @@ impl NewWithNullPtr for wire_PhraseToSeedReq {
     }
 }
 
+impl NewWithNullPtr for wire_SchnorrFromSeedReq {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            seed: core::ptr::null_mut(),
+        }
+    }
+}
+
 impl NewWithNullPtr for wire_SchnorrSignWithSeedReq {
     fn new_with_null_ptr() -> Self {
         Self {
             msg: core::ptr::null_mut(),
             seed: core::ptr::null_mut(),
             aux_rand: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl NewWithNullPtr for wire_SchnorrVerifyReq {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            message_hash: core::ptr::null_mut(),
+            signature_bytes: core::ptr::null_mut(),
+            public_key_bytes: core::ptr::null_mut(),
         }
     }
 }

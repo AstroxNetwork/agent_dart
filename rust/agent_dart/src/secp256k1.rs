@@ -1,13 +1,11 @@
 use crate::types::{
     Secp256k1FromSeedReq, Secp256k1ShareSecretReq, Secp256k1SignReq, Secp256k1VerifyReq,
+    SignatureFFI,
 };
-use aes::cipher::generic_array::GenericArray;
-use bip32::PublicKeyBytes;
+
 use k256::ecdsa::signature::hazmat::PrehashSigner;
 use k256::ecdsa::signature::{Signer, Verifier};
 use k256::ecdsa::{recoverable, signature, Signature, SigningKey, VerifyingKey};
-use k256::elliptic_curve::ecdh::EphemeralSecret;
-use k256::elliptic_curve::sec1::ToEncodedPoint;
 
 use k256::pkcs8::DecodePublicKey;
 use k256::{
@@ -15,15 +13,6 @@ use k256::{
     pkcs8::{Document, EncodePublicKey},
     PublicKey, Secp256k1, SecretKey,
 };
-use std::convert::{TryFrom, TryInto};
-
-#[derive(Clone, Debug)]
-pub struct SignatureFFI {
-    /// This is the DER-encoded public key.
-    pub public_key: Option<Vec<u8>>,
-    /// The signature bytes.
-    pub signature: Option<Vec<u8>>,
-}
 
 #[derive(Clone, Debug)]
 pub struct Secp256k1FFI {

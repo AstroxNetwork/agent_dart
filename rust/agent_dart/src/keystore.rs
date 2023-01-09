@@ -1,18 +1,15 @@
 use crate::types::{
     AesDecryptReq, AesEncryptReq, KeyDerivedRes, MACDeriveReq, PBKDFDeriveReq, ScriptDeriveReq,
-    SymmError,
 };
 use aes::cipher::generic_array::GenericArray;
 use aes::cipher::{FromBlockCipher, StreamCipher};
-use aes::{Aes128, Aes128Ctr, Aes256, Aes256Ctr, NewBlockCipher};
+use aes::{Aes128, Aes128Ctr, Aes256, NewBlockCipher};
 
 use block_modes::block_padding::Pkcs7;
 use block_modes::{BlockMode, Cbc};
-use std::borrow::BorrowMut;
 
 use hmac::Hmac;
 use pbkdf2::pbkdf2;
-use scrypt::errors::InvalidParams as ScryptError;
 use sha2::Sha256;
 
 pub const KEY_LENGTH: usize = 32;
@@ -31,7 +28,7 @@ impl KeystoreFFI {
     pub fn encrypt_128_ctr(req: AesEncryptReq) -> Vec<u8> {
         let plain_len = req.message.len();
 
-        let mut ciphertext = (vec![0u8; plain_len]);
+        let mut ciphertext = vec![0u8; plain_len];
 
         if req.key.len() != 16 {
             panic!("SymmError::InvalidKey")
@@ -139,6 +136,7 @@ impl KeystoreFFI {
         }
     }
 
+    #[allow(dead_code)]
     pub fn derive_mac(req: MACDeriveReq) -> Vec<u8> {
         let mut mac = vec![0u8; KEY_LENGTH_AES + req.cipher_text.len()];
         mac[0..KEY_LENGTH_AES].copy_from_slice(req.derived_left_bits.as_slice());
