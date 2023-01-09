@@ -12,12 +12,12 @@ class P256KeyPair extends KeyPair {
   }
 }
 
-typedef Future<Uint8List> SigningFunc(
+typedef SigningFunc = Future<Uint8List> Function(
   Uint8List blob,
   Uint8List seed,
 );
 
-typedef Future<bool> VerifyFunc(
+typedef VerifyFunc = Future<bool> Function(
   Uint8List blob,
   Uint8List signature,
   P256PublicKey publicKey,
