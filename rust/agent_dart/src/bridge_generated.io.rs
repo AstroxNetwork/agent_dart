@@ -68,23 +68,23 @@ pub extern "C" fn wire_secp256k1_get_shared_secret(
 }
 
 #[no_mangle]
-pub extern "C" fn wire_p256k1_from_seed(port_: i64, req: *mut wire_P256FromSeedReq) {
-    wire_p256k1_from_seed_impl(port_, req)
+pub extern "C" fn wire_p256_from_seed(port_: i64, req: *mut wire_P256FromSeedReq) {
+    wire_p256_from_seed_impl(port_, req)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_p256k1_sign(port_: i64, req: *mut wire_P256SignWithSeedReq) {
-    wire_p256k1_sign_impl(port_, req)
+pub extern "C" fn wire_p256_sign(port_: i64, req: *mut wire_P256SignWithSeedReq) {
+    wire_p256_sign_impl(port_, req)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_p256k1_verify(port_: i64, req: *mut wire_P256VerifyReq) {
-    wire_p256k1_verify_impl(port_, req)
+pub extern "C" fn wire_p256_verify(port_: i64, req: *mut wire_P256VerifyReq) {
+    wire_p256_verify_impl(port_, req)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_p256k1_get_shared_secret(port_: i64, req: *mut wire_P256ShareSecretReq) {
-    wire_p256k1_get_shared_secret_impl(port_, req)
+pub extern "C" fn wire_p256_get_shared_secret(port_: i64, req: *mut wire_P256ShareSecretReq) {
+    wire_p256_get_shared_secret_impl(port_, req)
 }
 
 #[no_mangle]

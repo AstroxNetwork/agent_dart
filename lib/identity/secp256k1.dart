@@ -138,45 +138,12 @@ class Secp256k1PublicKey implements PublicKey {
   final BinaryBlob rawKey;
   late final derKey = Secp256k1PublicKey.derEncode(rawKey);
 
-  static final derPrefix = Uint8List.fromList([
-    0x30,
-    0x56,
-    0x30,
-    0x10,
-    0x06,
-    0x07,
-    0x2a,
-    0x86,
-    0x48,
-    0xce,
-    0x3d,
-    0x02,
-    0x01,
-    0x06,
-    0x05,
-    0x2b,
-    0x81,
-    0x04,
-    0x00,
-    0x0a,
-    0x03,
-    0x42,
-    0x00, // no padding
-  ]);
-
   static Uint8List derEncode(BinaryBlob publicKey) {
-    return Uint8List.fromList([
-      ...Secp256k1PublicKey.derPrefix,
-      ...Uint8List.fromList(publicKey),
-    ]);
+    return wrapDER(publicKey.buffer, oidSecp256k1);
   }
 
   static Uint8List derDecode(BinaryBlob publicKey) {
-    final rawKey = publicKey.sublist(Secp256k1PublicKey.derPrefix.length);
-    if (!u8aEq(derEncode(rawKey), publicKey)) {
-      throw StateError('Expected prefix ${Secp256k1PublicKey.derPrefix}.');
-    }
-    return rawKey;
+    return unwrapDER(publicKey.buffer, oidSecp256k1);
   }
 
   @override

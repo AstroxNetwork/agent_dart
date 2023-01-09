@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/bridge/ffi/ffi.dart';
-import 'package:agent_dart/identity/secp256k1.dart';
 
 class SchnorrKeyPair extends KeyPair {
   const SchnorrKeyPair({required super.publicKey, required super.secretKey});
@@ -13,15 +12,48 @@ class SchnorrKeyPair extends KeyPair {
   }
 }
 
+class SchnorrPublicKey implements PublicKey {
+  SchnorrPublicKey(this.rawKey);
+
+  factory SchnorrPublicKey.fromRaw(BinaryBlob rawKey) {
+    return SchnorrPublicKey(rawKey);
+  }
+
+  factory SchnorrPublicKey.fromDer(BinaryBlob derKey) {
+    return SchnorrPublicKey(SchnorrPublicKey.derDecode(derKey));
+  }
+
+  factory SchnorrPublicKey.from(PublicKey key) {
+    return SchnorrPublicKey.fromDer(key.toDer());
+  }
+
+  final BinaryBlob rawKey;
+  late final derKey = SchnorrPublicKey.derEncode(rawKey);
+
+  static Uint8List derEncode(BinaryBlob publicKey) {
+    // we are not sure yet
+    return wrapDER(publicKey.buffer, oidSecp256k1);
+  }
+
+  static Uint8List derDecode(BinaryBlob publicKey) {
+    return unwrapDER(publicKey.buffer, oidSecp256k1);
+  }
+
+  @override
+  Uint8List toDer() => derKey;
+
+  Uint8List toRaw() => rawKey;
+}
+
 class SchnorrIdentity extends SignIdentity {
   SchnorrIdentity(
     PublicKey publicKey,
     this._privateKey,
-  ) : _publicKey = Secp256k1PublicKey.from(publicKey);
+  ) : _publicKey = SchnorrPublicKey.from(publicKey);
 
   factory SchnorrIdentity.fromParsedJson(List<String> obj) {
     return SchnorrIdentity(
-      Secp256k1PublicKey.fromRaw(blobFromHex(obj[0])),
+      SchnorrPublicKey.fromRaw(blobFromHex(obj[0])),
       blobFromHex(obj[1]),
     );
   }
@@ -43,8 +75,8 @@ class SchnorrIdentity extends SignIdentity {
       final secretKey = parsed['secretKey'];
       final dashPrivateKey = parsed['_privateKey'];
       final pk = publicKey != null
-          ? Secp256k1PublicKey.fromRaw(Uint8List.fromList(publicKey.data))
-          : Secp256k1PublicKey.fromDer(Uint8List.fromList(dashPublicKey.data));
+          ? SchnorrPublicKey.fromRaw(Uint8List.fromList(publicKey.data))
+          : SchnorrPublicKey.fromDer(Uint8List.fromList(dashPublicKey.data));
 
       if (publicKey && secretKey && secretKey.data) {
         return SchnorrIdentity(pk, Uint8List.fromList(secretKey.data));
@@ -64,12 +96,12 @@ class SchnorrIdentity extends SignIdentity {
     BinaryBlob privateKey,
   ) {
     return SchnorrIdentity(
-      Secp256k1PublicKey.fromRaw(publicKey),
+      SchnorrPublicKey.fromRaw(publicKey),
       privateKey,
     );
   }
 
-  final Secp256k1PublicKey _publicKey;
+  final SchnorrPublicKey _publicKey;
   final BinaryBlob _privateKey;
 
   static Future<SchnorrIdentity> fromSecretKey(Uint8List secretKey) async {
@@ -93,7 +125,7 @@ class SchnorrIdentity extends SignIdentity {
 
   /// Return the public key.
   @override
-  Secp256k1PublicKey getPublicKey() => _publicKey;
+  SchnorrPublicKey getPublicKey() => _publicKey;
 
   /// Signs a blob of data, with this identity's private key.
   /// [blob] is challenge to sign with this identity's secretKey,
@@ -126,7 +158,7 @@ Future<Uint8List> signSchnorrAsync(
 Future<bool> verifySchnorrAsync(
   Uint8List blob,
   Uint8List signature,
-  Secp256k1PublicKey publicKey,
+  SchnorrPublicKey publicKey,
 ) async {
   final result = await AgentDartFFI.impl.schnorrVerify(
     req: SchnorrVerifyReq(

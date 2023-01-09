@@ -226,61 +226,58 @@ fn wire_secp256k1_get_shared_secret_impl(
         },
     )
 }
-fn wire_p256k1_from_seed_impl(
-    port_: MessagePort,
-    req: impl Wire2Api<P256FromSeedReq> + UnwindSafe,
-) {
+fn wire_p256_from_seed_impl(port_: MessagePort, req: impl Wire2Api<P256FromSeedReq> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "p256k1_from_seed",
+            debug_name: "p256_from_seed",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
         move || {
             let api_req = req.wire2api();
-            move |task_callback| Ok(p256k1_from_seed(api_req))
+            move |task_callback| Ok(p256_from_seed(api_req))
         },
     )
 }
-fn wire_p256k1_sign_impl(port_: MessagePort, req: impl Wire2Api<P256SignWithSeedReq> + UnwindSafe) {
+fn wire_p256_sign_impl(port_: MessagePort, req: impl Wire2Api<P256SignWithSeedReq> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "p256k1_sign",
+            debug_name: "p256_sign",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
         move || {
             let api_req = req.wire2api();
-            move |task_callback| Ok(p256k1_sign(api_req))
+            move |task_callback| Ok(p256_sign(api_req))
         },
     )
 }
-fn wire_p256k1_verify_impl(port_: MessagePort, req: impl Wire2Api<P256VerifyReq> + UnwindSafe) {
+fn wire_p256_verify_impl(port_: MessagePort, req: impl Wire2Api<P256VerifyReq> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "p256k1_verify",
+            debug_name: "p256_verify",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
         move || {
             let api_req = req.wire2api();
-            move |task_callback| Ok(p256k1_verify(api_req))
+            move |task_callback| Ok(p256_verify(api_req))
         },
     )
 }
-fn wire_p256k1_get_shared_secret_impl(
+fn wire_p256_get_shared_secret_impl(
     port_: MessagePort,
     req: impl Wire2Api<P256ShareSecretReq> + UnwindSafe,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "p256k1_get_shared_secret",
+            debug_name: "p256_get_shared_secret",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
         move || {
             let api_req = req.wire2api();
-            move |task_callback| Ok(p256k1_get_shared_secret(api_req))
+            move |task_callback| Ok(p256_get_shared_secret(api_req))
         },
     )
 }

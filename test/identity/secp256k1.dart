@@ -87,6 +87,11 @@ void secp256k1Test() {
     final seed = mnemonicToSeed(mnemonic);
     final keys = ecKeysfromSeed(seed);
     final derExpect = Secp256k1PublicKey.fromRaw(keys.ecPublicKey!).toDer();
+    final rawExpect = Secp256k1PublicKey.derDecode(derExpect);
+    expect(
+        rawExpect.toHex(),
+        Secp256k1PublicKey.derDecode(await getDerFromFFI(keys.ecPrivateKey!))
+            .toHex());
     expect(
       derExpect.toHex(),
       (await getDerFromFFI(keys.ecPrivateKey!)).toHex(),

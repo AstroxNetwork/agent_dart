@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/bridge/ffi/ffi.dart';
 import 'package:agent_dart/identity/identity.dart';
+import 'package:agent_dart/identity/p256.dart';
+import 'package:agent_dart/identity/schnorr.dart';
 import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/utils/extension.dart';
@@ -24,6 +26,7 @@ class ECKeys {
     this.ecPrivateKey,
     this.ecPublicKey,
     this.ecSchnorrPublicKey,
+    this.ecP256PublicKey,
     this.ecCompressedPublicKey,
     this.extendedECPublicKey,
   });
@@ -31,6 +34,7 @@ class ECKeys {
   final Uint8List? ecChainCode;
   final Uint8List? ecPrivateKey;
   final Uint8List? ecPublicKey;
+  final Uint8List? ecP256PublicKey;
   final Uint8List? ecSchnorrPublicKey;
   final Uint8List? ecCompressedPublicKey;
   final String? extendedECPublicKey;
@@ -114,11 +118,15 @@ Future<ECKeys> getECKeysAsync(
   final kpSchnorr = await AgentDartFFI.impl.schnorrFromSeed(
     req: SchnorrFromSeedReq(seed: prv),
   );
+  final kpP256 = await AgentDartFFI.impl.p256FromSeed(
+    req: P256FromSeedReq(seed: prv),
+  );
   return ECKeys(
     ecPrivateKey: prv,
     ecPublicKey: Secp256k1PublicKey.fromDer(kp.derEncodedPublicKey).toRaw(),
     ecSchnorrPublicKey:
-        Secp256k1PublicKey.fromRaw(kpSchnorr.publicKeyHash).toRaw(),
+        SchnorrPublicKey.fromRaw(kpSchnorr.publicKeyHash).toRaw(),
+    ecP256PublicKey: P256PublicKey.fromDer(kpP256.derEncodedPublicKey).toRaw(),
   );
 }
 
@@ -129,11 +137,16 @@ Future<ECKeys> getECkeyFromPrivateKey(Uint8List prv) async {
   final kpSchnorr = await AgentDartFFI.impl.schnorrFromSeed(
     req: SchnorrFromSeedReq(seed: prv),
   );
+  final kpP256 = await AgentDartFFI.impl.p256FromSeed(
+    req: P256FromSeedReq(seed: prv),
+  );
+
   return ECKeys(
     ecPrivateKey: prv,
     ecPublicKey: Secp256k1PublicKey.fromDer(kp.derEncodedPublicKey).toRaw(),
     ecSchnorrPublicKey:
         Secp256k1PublicKey.fromRaw(kpSchnorr.publicKeyHash).toRaw(),
+    ecP256PublicKey: P256PublicKey.fromDer(kpP256.derEncodedPublicKey).toRaw(),
   );
 }
 
@@ -193,4 +206,11 @@ Future<Uint8List> getSchnorrPubFromFFI(Uint8List seed) async {
     req: SchnorrFromSeedReq(seed: seed),
   );
   return ffiIdentity.publicKeyHash;
+}
+
+Future<Uint8List> getP256DerPubFromFFI(Uint8List seed) async {
+  final ffiIdentity = await AgentDartFFI.impl.p256FromSeed(
+    req: P256FromSeedReq(seed: seed),
+  );
+  return ffiIdentity.derEncodedPublicKey;
 }

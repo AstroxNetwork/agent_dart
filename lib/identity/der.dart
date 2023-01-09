@@ -98,6 +98,14 @@ final oidEd25519 = Uint8List.fromList([
   ...[0x2b, 0x65, 0x70], // id-Ed25519 OID
 ]);
 
+final oidSecp256k1 = Uint8List.fromList([
+  ...[0x30, 0x10], // SEQUENCE
+  ...[0x06, 0x07], // OID with 7 bytes
+  ...[0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01], // OID ECDSA
+  ...[0x06, 0x05], // OID with 5 bytes
+  ...[0x2b, 0x81, 0x04, 0x00, 0x0a], // OID secp256k1
+]);
+
 final canisterCOSEDer = Uint8List.fromList([
   ...[0x30, 0x0c], // SEQUENCE
   ...[0x06, 0x0a], // OID with 10 bytes
@@ -115,9 +123,11 @@ final canisterCOSEDer = Uint8List.fromList([
   ], // DER encoded COSE.
 ]);
 
-// 1.2.840.10045.3
+// 1.2.840.10045.3.1.7
 final oidP256 = Uint8List.fromList([
-  ...[0x30, 0x13], // SEQUENCE
+  ...[0x30, 0x13],
+  ...[0x06, 0x07], // OID with 7 bytes
+  ...[0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01], // SEQUENCE
   ...[0x06, 0x08], // OID with 8 bytes
   ...[
     0x2a,

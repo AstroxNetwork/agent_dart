@@ -89,24 +89,24 @@ abstract class AgentDart {
   /// ---------------------
   /// secp256k1
   /// ---------------------
-  Future<P256IdentityExport> p256K1FromSeed(
+  Future<P256IdentityExport> p256FromSeed(
       {required P256FromSeedReq req, dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kP256K1FromSeedConstMeta;
+  FlutterRustBridgeTaskConstMeta get kP256FromSeedConstMeta;
 
-  Future<SignatureFFI> p256K1Sign(
+  Future<SignatureFFI> p256Sign(
       {required P256SignWithSeedReq req, dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kP256K1SignConstMeta;
+  FlutterRustBridgeTaskConstMeta get kP256SignConstMeta;
 
-  Future<bool> p256K1Verify({required P256VerifyReq req, dynamic hint});
+  Future<bool> p256Verify({required P256VerifyReq req, dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kP256K1VerifyConstMeta;
+  FlutterRustBridgeTaskConstMeta get kP256VerifyConstMeta;
 
-  Future<Uint8List> p256K1GetSharedSecret(
+  Future<Uint8List> p256GetSharedSecret(
       {required P256ShareSecretReq req, dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kP256K1GetSharedSecretConstMeta;
+  FlutterRustBridgeTaskConstMeta get kP256GetSharedSecretConstMeta;
 
   /// ---------------------
   /// schnorr
@@ -675,75 +675,75 @@ class AgentDartImpl implements AgentDart {
         argNames: ["req"],
       );
 
-  Future<P256IdentityExport> p256K1FromSeed(
+  Future<P256IdentityExport> p256FromSeed(
       {required P256FromSeedReq req, dynamic hint}) {
     var arg0 = _platform.api2wire_box_autoadd_p_256_from_seed_req(req);
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_p256k1_from_seed(port_, arg0),
+      callFfi: (port_) => _platform.inner.wire_p256_from_seed(port_, arg0),
       parseSuccessData: _wire2api_p_256_identity_export,
-      constMeta: kP256K1FromSeedConstMeta,
+      constMeta: kP256FromSeedConstMeta,
       argValues: [req],
       hint: hint,
     ));
   }
 
-  FlutterRustBridgeTaskConstMeta get kP256K1FromSeedConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kP256FromSeedConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "p256k1_from_seed",
+        debugName: "p256_from_seed",
         argNames: ["req"],
       );
 
-  Future<SignatureFFI> p256K1Sign(
+  Future<SignatureFFI> p256Sign(
       {required P256SignWithSeedReq req, dynamic hint}) {
     var arg0 = _platform.api2wire_box_autoadd_p_256_sign_with_seed_req(req);
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_p256k1_sign(port_, arg0),
+      callFfi: (port_) => _platform.inner.wire_p256_sign(port_, arg0),
       parseSuccessData: _wire2api_signature_ffi,
-      constMeta: kP256K1SignConstMeta,
+      constMeta: kP256SignConstMeta,
       argValues: [req],
       hint: hint,
     ));
   }
 
-  FlutterRustBridgeTaskConstMeta get kP256K1SignConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kP256SignConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "p256k1_sign",
+        debugName: "p256_sign",
         argNames: ["req"],
       );
 
-  Future<bool> p256K1Verify({required P256VerifyReq req, dynamic hint}) {
+  Future<bool> p256Verify({required P256VerifyReq req, dynamic hint}) {
     var arg0 = _platform.api2wire_box_autoadd_p_256_verify_req(req);
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_p256k1_verify(port_, arg0),
+      callFfi: (port_) => _platform.inner.wire_p256_verify(port_, arg0),
       parseSuccessData: _wire2api_bool,
-      constMeta: kP256K1VerifyConstMeta,
+      constMeta: kP256VerifyConstMeta,
       argValues: [req],
       hint: hint,
     ));
   }
 
-  FlutterRustBridgeTaskConstMeta get kP256K1VerifyConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kP256VerifyConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "p256k1_verify",
+        debugName: "p256_verify",
         argNames: ["req"],
       );
 
-  Future<Uint8List> p256K1GetSharedSecret(
+  Future<Uint8List> p256GetSharedSecret(
       {required P256ShareSecretReq req, dynamic hint}) {
     var arg0 = _platform.api2wire_box_autoadd_p_256_share_secret_req(req);
     return _platform.executeNormal(FlutterRustBridgeTask(
       callFfi: (port_) =>
-          _platform.inner.wire_p256k1_get_shared_secret(port_, arg0),
+          _platform.inner.wire_p256_get_shared_secret(port_, arg0),
       parseSuccessData: _wire2api_uint_8_list,
-      constMeta: kP256K1GetSharedSecretConstMeta,
+      constMeta: kP256GetSharedSecretConstMeta,
       argValues: [req],
       hint: hint,
     ));
   }
 
-  FlutterRustBridgeTaskConstMeta get kP256K1GetSharedSecretConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kP256GetSharedSecretConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "p256k1_get_shared_secret",
+        debugName: "p256_get_shared_secret",
         argNames: ["req"],
       );
 
@@ -1750,73 +1750,73 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
       _wire_secp256k1_get_shared_secretPtr.asFunction<
           void Function(int, ffi.Pointer<wire_Secp256k1ShareSecretReq>)>();
 
-  void wire_p256k1_from_seed(
+  void wire_p256_from_seed(
     int port_,
     ffi.Pointer<wire_P256FromSeedReq> req,
   ) {
-    return _wire_p256k1_from_seed(
+    return _wire_p256_from_seed(
       port_,
       req,
     );
   }
 
-  late final _wire_p256k1_from_seedPtr = _lookup<
+  late final _wire_p256_from_seedPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_P256FromSeedReq>)>>('wire_p256k1_from_seed');
-  late final _wire_p256k1_from_seed = _wire_p256k1_from_seedPtr
+              ffi.Pointer<wire_P256FromSeedReq>)>>('wire_p256_from_seed');
+  late final _wire_p256_from_seed = _wire_p256_from_seedPtr
       .asFunction<void Function(int, ffi.Pointer<wire_P256FromSeedReq>)>();
 
-  void wire_p256k1_sign(
+  void wire_p256_sign(
     int port_,
     ffi.Pointer<wire_P256SignWithSeedReq> req,
   ) {
-    return _wire_p256k1_sign(
+    return _wire_p256_sign(
       port_,
       req,
     );
   }
 
-  late final _wire_p256k1_signPtr = _lookup<
+  late final _wire_p256_signPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_P256SignWithSeedReq>)>>('wire_p256k1_sign');
-  late final _wire_p256k1_sign = _wire_p256k1_signPtr
+              ffi.Pointer<wire_P256SignWithSeedReq>)>>('wire_p256_sign');
+  late final _wire_p256_sign = _wire_p256_signPtr
       .asFunction<void Function(int, ffi.Pointer<wire_P256SignWithSeedReq>)>();
 
-  void wire_p256k1_verify(
+  void wire_p256_verify(
     int port_,
     ffi.Pointer<wire_P256VerifyReq> req,
   ) {
-    return _wire_p256k1_verify(
+    return _wire_p256_verify(
       port_,
       req,
     );
   }
 
-  late final _wire_p256k1_verifyPtr = _lookup<
+  late final _wire_p256_verifyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_P256VerifyReq>)>>('wire_p256k1_verify');
-  late final _wire_p256k1_verify = _wire_p256k1_verifyPtr
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_P256VerifyReq>)>>('wire_p256_verify');
+  late final _wire_p256_verify = _wire_p256_verifyPtr
       .asFunction<void Function(int, ffi.Pointer<wire_P256VerifyReq>)>();
 
-  void wire_p256k1_get_shared_secret(
+  void wire_p256_get_shared_secret(
     int port_,
     ffi.Pointer<wire_P256ShareSecretReq> req,
   ) {
-    return _wire_p256k1_get_shared_secret(
+    return _wire_p256_get_shared_secret(
       port_,
       req,
     );
   }
 
-  late final _wire_p256k1_get_shared_secretPtr = _lookup<
+  late final _wire_p256_get_shared_secretPtr = _lookup<
           ffi.NativeFunction<
               ffi.Void Function(
                   ffi.Int64, ffi.Pointer<wire_P256ShareSecretReq>)>>(
-      'wire_p256k1_get_shared_secret');
-  late final _wire_p256k1_get_shared_secret = _wire_p256k1_get_shared_secretPtr
+      'wire_p256_get_shared_secret');
+  late final _wire_p256_get_shared_secret = _wire_p256_get_shared_secretPtr
       .asFunction<void Function(int, ffi.Pointer<wire_P256ShareSecretReq>)>();
 
   void wire_schnorr_from_seed(

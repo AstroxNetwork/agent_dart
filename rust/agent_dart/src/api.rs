@@ -94,21 +94,21 @@ pub fn secp256k1_get_shared_secret(req: Secp256k1ShareSecretReq) -> Vec<u8> {
 /// secp256k1
 /// ---------------------
 
-pub fn p256k1_from_seed(req: P256FromSeedReq) -> P256IdentityExport {
+pub fn p256_from_seed(req: P256FromSeedReq) -> P256IdentityExport {
     P256IdentityExport::from_raw(P256FFI::from_seed(req))
 }
 
-pub fn p256k1_sign(req: P256SignWithSeedReq) -> SignatureFFI {
+pub fn p256_sign(req: P256SignWithSeedReq) -> SignatureFFI {
     P256FFI::from_seed(P256FromSeedReq { seed: req.seed })
         .sign(P256SignReq { msg: req.msg })
         .unwrap()
 }
 
-pub fn p256k1_verify(req: P256VerifyReq) -> bool {
+pub fn p256_verify(req: P256VerifyReq) -> bool {
     P256FFI::verify_signature(req)
 }
 
-pub fn p256k1_get_shared_secret(req: P256ShareSecretReq) -> Vec<u8> {
+pub fn p256_get_shared_secret(req: P256ShareSecretReq) -> Vec<u8> {
     P256FFI::get_share_secret(req).unwrap()
 }
 

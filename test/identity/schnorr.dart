@@ -7,10 +7,10 @@ import 'package:flutter_test/flutter_test.dart';
 // import 'package:agent_dart/utils/extension.dart';
 
 void main() {
-  secp256k1Test();
+  schnorrTest();
 }
 
-void secp256k1Test() {
+void schnorrTest() {
   const prv =
       '4af1bceebf7f3634ec3cff8a2c38e51178d5d4ce585c52d6043e5e2cc3418bb0';
   const msg = 'Hello World';

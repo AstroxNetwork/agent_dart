@@ -381,13 +381,13 @@ void wire_secp256k1_verify(int64_t port_, struct wire_Secp256k1VerifyReq *req);
 
 void wire_secp256k1_get_shared_secret(int64_t port_, struct wire_Secp256k1ShareSecretReq *req);
 
-void wire_p256k1_from_seed(int64_t port_, struct wire_P256FromSeedReq *req);
+void wire_p256_from_seed(int64_t port_, struct wire_P256FromSeedReq *req);
 
-void wire_p256k1_sign(int64_t port_, struct wire_P256SignWithSeedReq *req);
+void wire_p256_sign(int64_t port_, struct wire_P256SignWithSeedReq *req);
 
-void wire_p256k1_verify(int64_t port_, struct wire_P256VerifyReq *req);
+void wire_p256_verify(int64_t port_, struct wire_P256VerifyReq *req);
 
-void wire_p256k1_get_shared_secret(int64_t port_, struct wire_P256ShareSecretReq *req);
+void wire_p256_get_shared_secret(int64_t port_, struct wire_P256ShareSecretReq *req);
 
 void wire_schnorr_from_seed(int64_t port_, struct wire_SchnorrFromSeedReq *req);
 
@@ -467,10 +467,10 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_sign_recoverable);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_verify);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_get_shared_secret);
-    dummy_var ^= ((int64_t) (void*) wire_p256k1_from_seed);
-    dummy_var ^= ((int64_t) (void*) wire_p256k1_sign);
-    dummy_var ^= ((int64_t) (void*) wire_p256k1_verify);
-    dummy_var ^= ((int64_t) (void*) wire_p256k1_get_shared_secret);
+    dummy_var ^= ((int64_t) (void*) wire_p256_from_seed);
+    dummy_var ^= ((int64_t) (void*) wire_p256_sign);
+    dummy_var ^= ((int64_t) (void*) wire_p256_verify);
+    dummy_var ^= ((int64_t) (void*) wire_p256_get_shared_secret);
     dummy_var ^= ((int64_t) (void*) wire_schnorr_from_seed);
     dummy_var ^= ((int64_t) (void*) wire_schnorr_sign);
     dummy_var ^= ((int64_t) (void*) wire_schnorr_verify);
