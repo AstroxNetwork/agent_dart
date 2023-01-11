@@ -1,8 +1,9 @@
 use crate::types::{P256FromSeedReq, P256ShareSecretReq, P256SignReq, P256VerifyReq, SignatureFFI};
-use p256::ecdsa::signature::{Signer, Verifier};
-use p256::ecdsa::{signature, Signature, SigningKey, VerifyingKey};
+use p256::ecdsa::signature::{RandomizedSigner, Signature as P256Sig, Verifier};
+use p256::ecdsa::{Signature, SigningKey, VerifyingKey};
 use p256::elliptic_curve::pkcs8::{DecodePublicKey, Document, EncodePublicKey};
-use p256::{ecdsa, NistP256, PublicKey, SecretKey};
+use p256::elliptic_curve::rand_core::OsRng;
+use p256::{NistP256, PublicKey, SecretKey};
 
 #[derive(Clone, Debug)]
 pub struct P256FFI {
@@ -27,8 +28,15 @@ impl P256IdentityExport {
 
 impl P256FFI {
     pub fn verify_signature(req: P256VerifyReq) -> bool {
-        let signature: Signature = signature::Signature::from_bytes(req.signature_bytes.as_slice())
-            .expect("Signature is not valid");
+        let signature: Signature;
+
+        if req.signature_bytes.len() == 64 {
+            signature = Signature::from_bytes(req.signature_bytes.as_slice())
+                .expect("Signature is not valid");
+        } else {
+            signature = Signature::from_der(req.signature_bytes.as_slice())
+                .expect("Signature is not valid");
+        }
 
         let verifying_key = VerifyingKey::from_public_key_der(req.public_key_bytes.as_slice())
             .expect("VerifyingKey is not valid");
@@ -57,10 +65,12 @@ impl P256FFI {
         }
     }
     pub fn sign(&self, req: P256SignReq) -> Result<SignatureFFI, String> {
-        let ecdsa_sig: ecdsa::Signature = self
-            .private_key
-            .try_sign(req.msg.as_slice())
-            .map_err(|err| format!("Cannot create secp256k1 signature: {}", err))?;
+        // let ecdsa_sig: Signature = self.private_key.sign(req.msg.as_slice());
+        // let  rng = OsRng;
+        // let mut aux_rand = [0u8; 32];
+        // rng.fill_bytes(&mut aux_rand);
+        let ecdsa_sig: Signature = self.private_key.sign_with_rng(OsRng, req.msg.as_slice());
+
         let r = ecdsa_sig.r().as_ref().to_bytes();
         let s = ecdsa_sig.s().as_ref().to_bytes();
         let mut bytes = [0u8; 64];

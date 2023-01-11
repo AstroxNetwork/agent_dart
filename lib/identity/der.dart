@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:tuple/tuple.dart';
+
 bool bufEquals(ByteBuffer b1, ByteBuffer b2) {
   if (b1.lengthInBytes != b2.lengthInBytes) return false;
   final u1 = Uint8List.fromList(b1.asUint8List());
@@ -203,4 +205,89 @@ Uint8List unwrapDER(ByteBuffer derEncoded, Uint8List oid) {
   offset += decodeLenBytes(buf, offset);
   check(0x00, '0 padding');
   return buf.sublist(offset);
+}
+
+enum DerSignatureType { ECDSA }
+
+// ECDSA DER Signature
+// 0x30|b1|0x02|b2|r|0x02|b3|s
+// b1 = Length of remaining data
+// b2 = Length of r
+// b3 = Length of s
+// if the first byte is higher than 0x80, an additional 0x00 byte is prepended to the value.
+
+Uint8List unwrapDerSignature(
+  Uint8List derEncoded, [
+  DerSignatureType signatureType = DerSignatureType.ECDSA,
+]) {
+  if (derEncoded.length == 64) return derEncoded;
+
+  final buf = Uint8List.fromList(derEncoded);
+
+  const first = 0x30;
+  const spliter = 0x02;
+  final b1 = buf[1];
+
+  if (b1 != buf.length - 2) {
+    throw 'Bytes long is not correct';
+  }
+  if (buf[2] != spliter) {
+    throw 'Splitter not found';
+  }
+
+  Tuple2<int, Uint8List> getBytes(Uint8List remaining) {
+    int length = 0;
+    Uint8List bytes;
+
+    if (remaining[0] != spliter) {
+      throw 'Splitter not found';
+    }
+    if (remaining[1] > 32) {
+      if (remaining[2] != 0x0 || remaining[3] <= 0x80) {
+        throw 'r value is not correct';
+      } else {
+        length = remaining[1];
+        bytes = remaining.sublist(3, 2 + length);
+      }
+    } else {
+      length = remaining[1];
+      bytes = remaining.sublist(2, 2 + length);
+    }
+    return Tuple2(length, bytes);
+  }
+
+  final rRemaining = buf.sublist(2);
+  final rBytes = getBytes(rRemaining);
+  final b2 = rBytes.item1;
+  final r = Uint8List.fromList(rBytes.item2);
+  final sRemaining = rRemaining.sublist(b2 + 2);
+
+  final sBytes = getBytes(sRemaining);
+  final b3 = sBytes.item1;
+  final s = Uint8List.fromList(sBytes.item2);
+  return Uint8List.fromList([...r, ...s]);
+}
+
+Uint8List wrapDerSignature(Uint8List rawSignature) {
+  if (rawSignature.length != 64) {
+    throw 'Raw signature length has to be length 64';
+  }
+
+  final r = rawSignature.sublist(0, 32);
+  final s = rawSignature.sublist(32);
+
+  Uint8List joinBytes(Uint8List arr) {
+    if (arr[0] > 0x80) {
+      return Uint8List.fromList([0x02, 0x21, 0x0, ...arr]);
+    } else {
+      return Uint8List.fromList([0x02, 0x20, ...arr]);
+    }
+  }
+
+  final rBytes = joinBytes(r);
+  final sBytes = joinBytes(s);
+
+  final b1 = rBytes.length + sBytes.length;
+
+  return Uint8List.fromList([0x30, b1, ...rBytes, ...sBytes]);
 }
