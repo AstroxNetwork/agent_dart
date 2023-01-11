@@ -224,14 +224,14 @@ Uint8List unwrapDerSignature(
 
   final buf = Uint8List.fromList(derEncoded);
 
-  const first = 0x30;
-  const spliter = 0x02;
+  const prefix = 0x30;
+  const splitter = 0x02;
   final b1 = buf[1];
 
   if (b1 != buf.length - 2) {
     throw 'Bytes long is not correct';
   }
-  if (buf[2] != spliter) {
+  if (buf[2] != splitter) {
     throw 'Splitter not found';
   }
 
@@ -239,7 +239,7 @@ Uint8List unwrapDerSignature(
     int length = 0;
     Uint8List bytes;
 
-    if (remaining[0] != spliter) {
+    if (remaining[0] != splitter) {
       throw 'Splitter not found';
     }
     if (remaining[1] > 32) {
