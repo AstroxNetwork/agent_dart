@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:tuple/tuple.dart';
 import 'package:agent_dart/utils/extension.dart';
+import 'package:tuple/tuple.dart';
 
 bool bufEquals(ByteBuffer b1, ByteBuffer b2) {
   if (b1.lengthInBytes != b2.lengthInBytes) return false;
@@ -149,7 +149,7 @@ final oidP256 = Uint8List.fromList([
 ///
 /// [payload] is the payload to encode as the bit string.
 /// [oid] is the DER encoded (SEQUENCE wrapped) OID to tag the [payload] with.
-Uint8List wrapDER(Uint8List payload, Uint8List oid) {
+Uint8List bytesWrapDer(Uint8List payload, Uint8List oid) {
   // The header needs to include the unused bit count byte in its length.
   final bitStringHeaderLength = 2 + encodeLenBytes(payload.lengthInBytes + 1);
   final len = oid.lengthInBytes + bitStringHeaderLength + payload.lengthInBytes;
@@ -178,7 +178,7 @@ Uint8List wrapDER(Uint8List payload, Uint8List oid) {
 ///
 /// [derEncoded] is the DER encoded and tagged data.
 /// [oid] is the DER encoded (and SEQUENCE wrapped!) expected OID
-Uint8List unwrapDER(Uint8List derEncoded, Uint8List oid) {
+Uint8List bytesUnwrapDer(Uint8List derEncoded, Uint8List oid) {
   int offset = 0;
   final buf = Uint8List.fromList(derEncoded);
 
@@ -208,19 +208,43 @@ Uint8List unwrapDER(Uint8List derEncoded, Uint8List oid) {
   return buf.sublist(offset);
 }
 
-// ECDSA DER Signature
-// 0x30|b1|0x02|b2|r|0x02|b3|s
-// b1 = Length of remaining data
-// b2 = Length of r
-// b3 = Length of s
-// if the first byte is higher than 0x80, an additional 0x00 byte is prepended to the value.
+Uint8List bytesWrapDerSignature(Uint8List rawSignature) {
+  if (rawSignature.length != 64) {
+    throw 'Raw signature length has to be length 64';
+  }
 
-Uint8List unwrapDerSignature(Uint8List derEncoded) {
+  final r = rawSignature.sublist(0, 32);
+  final s = rawSignature.sublist(32);
+
+  Uint8List joinBytes(Uint8List arr) {
+    if (arr[0] > 0x80) {
+      return Uint8List.fromList([0x02, 0x21, 0x0, ...arr]);
+    } else {
+      return Uint8List.fromList([0x02, 0x20, ...arr]);
+    }
+  }
+
+  final rBytes = joinBytes(r);
+  final sBytes = joinBytes(s);
+
+  final b1 = rBytes.length + sBytes.length;
+
+  return Uint8List.fromList([0x30, b1, ...rBytes, ...sBytes]);
+}
+
+/// ECDSA DER Signature
+/// 0x30|b1|0x02|b2|r|0x02|b3|s
+/// b1 = Length of remaining data
+/// b2 = Length of r
+/// b3 = Length of s
+///
+/// If the first byte is higher than 0x80, an additional 0x00 byte is prepended
+/// to the value.
+Uint8List bytesUnwrapDerSignature(Uint8List derEncoded) {
   if (derEncoded.length == 64) return derEncoded;
 
   final buf = Uint8List.fromList(derEncoded);
 
-  const prefix = 0x30;
   const splitter = 0x02;
   final b1 = buf[1];
 
@@ -264,37 +288,13 @@ Uint8List unwrapDerSignature(Uint8List derEncoded) {
   return Uint8List.fromList([...r, ...s]);
 }
 
-Uint8List wrapDerSignature(Uint8List rawSignature) {
-  if (rawSignature.length != 64) {
-    throw 'Raw signature length has to be length 64';
-  }
-
-  final r = rawSignature.sublist(0, 32);
-  final s = rawSignature.sublist(32);
-
-  Uint8List joinBytes(Uint8List arr) {
-    if (arr[0] > 0x80) {
-      return Uint8List.fromList([0x02, 0x21, 0x0, ...arr]);
-    } else {
-      return Uint8List.fromList([0x02, 0x20, ...arr]);
-    }
-  }
-
-  final rBytes = joinBytes(r);
-  final sBytes = joinBytes(s);
-
-  final b1 = rBytes.length + sBytes.length;
-
-  return Uint8List.fromList([0x30, b1, ...rBytes, ...sBytes]);
-}
-
-bool isDerPubkey(Uint8List pub, Uint8List oid) {
+bool isDerPublicKey(Uint8List pub, Uint8List oid) {
   final oidLength = oid.length;
   if (!pub.sublist(0, oidLength).eq(oid)) {
     return false;
   } else {
     try {
-      return wrapDER(unwrapDER(pub, oid), oid).eq(pub);
+      return bytesWrapDer(bytesUnwrapDer(pub, oid), oid).eq(pub);
     } catch (e) {
       return false;
     }
@@ -303,7 +303,7 @@ bool isDerPubkey(Uint8List pub, Uint8List oid) {
 
 bool isDerSignature(Uint8List sig) {
   try {
-    return wrapDerSignature(unwrapDerSignature(sig)).eq(sig);
+    return bytesWrapDerSignature(bytesUnwrapDerSignature(sig)).eq(sig);
   } catch (e) {
     return false;
   }

@@ -35,11 +35,11 @@ class SchnorrPublicKey implements PublicKey {
     // form of oid existed, we just borrow secp256k1 as ref.
     // Since this protocol can not use on IC directly. We just want the function
     // works.
-    return wrapDER(publicKey, oidSecp256k1);
+    return bytesWrapDer(publicKey, oidSecp256k1);
   }
 
   static Uint8List derDecode(BinaryBlob publicKey) {
-    return unwrapDER(publicKey, oidSecp256k1);
+    return bytesUnwrapDer(publicKey, oidSecp256k1);
   }
 
   @override

@@ -139,11 +139,11 @@ class Secp256k1PublicKey implements PublicKey {
   late final derKey = Secp256k1PublicKey.derEncode(rawKey);
 
   static Uint8List derEncode(BinaryBlob publicKey) {
-    return wrapDER(publicKey, oidSecp256k1);
+    return bytesWrapDer(publicKey, oidSecp256k1);
   }
 
   static Uint8List derDecode(BinaryBlob publicKey) {
-    return unwrapDER(publicKey, oidSecp256k1);
+    return bytesUnwrapDer(publicKey, oidSecp256k1);
   }
 
   @override
