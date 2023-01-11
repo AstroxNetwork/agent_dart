@@ -42,11 +42,11 @@ class P256PublicKey implements PublicKey {
   late final derKey = P256PublicKey.derEncode(rawKey);
 
   static Uint8List derEncode(BinaryBlob publicKey) {
-    return wrapDER(publicKey.buffer, oidP256);
+    return wrapDER(publicKey, oidP256);
   }
 
   static Uint8List derDecode(BinaryBlob publicKey) {
-    return unwrapDER(publicKey.buffer, oidP256);
+    return unwrapDER(publicKey, oidP256);
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:tuple/tuple.dart';
+import 'package:agent_dart/utils/extension.dart';
 
 bool bufEquals(ByteBuffer b1, ByteBuffer b2) {
   if (b1.lengthInBytes != b2.lengthInBytes) return false;
@@ -148,7 +149,7 @@ final oidP256 = Uint8List.fromList([
 ///
 /// [payload] is the payload to encode as the bit string.
 /// [oid] is the DER encoded (SEQUENCE wrapped) OID to tag the [payload] with.
-Uint8List wrapDER(ByteBuffer payload, Uint8List oid) {
+Uint8List wrapDER(Uint8List payload, Uint8List oid) {
   // The header needs to include the unused bit count byte in its length.
   final bitStringHeaderLength = 2 + encodeLenBytes(payload.lengthInBytes + 1);
   final len = oid.lengthInBytes + bitStringHeaderLength + payload.lengthInBytes;
@@ -166,7 +167,7 @@ Uint8List wrapDER(ByteBuffer payload, Uint8List oid) {
   offset += encodeLen(buf, offset, payload.lengthInBytes + 1);
   // 0 padding.
   buf[offset++] = 0x00;
-  buf.setAll(offset, Uint8List.fromList(payload.asUint8List()));
+  buf.setAll(offset, Uint8List.fromList(payload));
   return buf;
 }
 
@@ -177,9 +178,9 @@ Uint8List wrapDER(ByteBuffer payload, Uint8List oid) {
 ///
 /// [derEncoded] is the DER encoded and tagged data.
 /// [oid] is the DER encoded (and SEQUENCE wrapped!) expected OID
-Uint8List unwrapDER(ByteBuffer derEncoded, Uint8List oid) {
+Uint8List unwrapDER(Uint8List derEncoded, Uint8List oid) {
   int offset = 0;
-  final buf = Uint8List.fromList(derEncoded.asUint8List());
+  final buf = Uint8List.fromList(derEncoded);
 
   check(int expected, String name) {
     if (buf[offset] != expected) {
@@ -207,8 +208,6 @@ Uint8List unwrapDER(ByteBuffer derEncoded, Uint8List oid) {
   return buf.sublist(offset);
 }
 
-enum DerSignatureType { ECDSA }
-
 // ECDSA DER Signature
 // 0x30|b1|0x02|b2|r|0x02|b3|s
 // b1 = Length of remaining data
@@ -216,10 +215,7 @@ enum DerSignatureType { ECDSA }
 // b3 = Length of s
 // if the first byte is higher than 0x80, an additional 0x00 byte is prepended to the value.
 
-Uint8List unwrapDerSignature(
-  Uint8List derEncoded, [
-  DerSignatureType signatureType = DerSignatureType.ECDSA,
-]) {
+Uint8List unwrapDerSignature(Uint8List derEncoded) {
   if (derEncoded.length == 64) return derEncoded;
 
   final buf = Uint8List.fromList(derEncoded);
@@ -290,4 +286,25 @@ Uint8List wrapDerSignature(Uint8List rawSignature) {
   final b1 = rBytes.length + sBytes.length;
 
   return Uint8List.fromList([0x30, b1, ...rBytes, ...sBytes]);
+}
+
+bool isDerPubkey(Uint8List pub, Uint8List oid) {
+  final oidLength = oid.length;
+  if (!pub.sublist(0, oidLength).eq(oid)) {
+    return false;
+  } else {
+    try {
+      return wrapDER(unwrapDER(pub, oid), oid).eq(pub);
+    } catch (e) {
+      return false;
+    }
+  }
+}
+
+bool isDerSignature(Uint8List sig) {
+  try {
+    return wrapDerSignature(unwrapDerSignature(sig)).eq(sig);
+  } catch (e) {
+    return false;
+  }
 }
