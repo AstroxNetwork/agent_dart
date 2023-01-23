@@ -232,3 +232,16 @@ Future<Uint8List> getECShareSecret(
   );
   return result;
 }
+
+Future<Uint8List> getP256ShareSecret(
+  Uint8List privateKey,
+  Uint8List rawPublicKey,
+) async {
+  final result = await AgentDartFFI.impl.p256GetSharedSecret(
+    req: P256ShareSecretReq(
+      seed: privateKey,
+      publicKeyRawBytes: rawPublicKey,
+    ),
+  );
+  return result;
+}

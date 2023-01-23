@@ -324,6 +324,36 @@ Future<EncryptMessageResponse> encryptMessage({
   );
 }
 
+Future<E2EResponse> encryptP256Message({
+  required P256Identity identity,
+  required P256PublicKey theirPublicKey,
+  required String text,
+}) async {
+  final sharedPoint = await getP256ShareSecret(
+    identity.getKeyPair().secretKey,
+    theirPublicKey.toRaw(),
+  );
+
+  final sharedX = sharedPoint.sublist(0, 32);
+
+  final List<int> iv = randomAsU8a(16);
+  // randomAsU8a(16);
+
+  final encryptedMessage256 = await _encryptPhraseAsync256(
+    key: sharedX,
+    iv: Uint8List.fromList(iv),
+    message: text,
+  );
+  final encryptedMessage = base64Encode(encryptedMessage256);
+  final ivBase64 = base64Encode(iv);
+
+  return E2EResponse(
+    content: '$encryptedMessage?iv=$ivBase64',
+    createdAt: (DateTime.now().millisecondsSinceEpoch / 1000).floor(),
+    pubKey: identity.getPublicKey().toRaw().toHex(),
+  );
+}
+
 Future<String> decryptMessage({
   required Secp256k1KeyIdentity identity,
   required Secp256k1PublicKey theirPublicKey,
@@ -334,6 +364,31 @@ Future<String> decryptMessage({
   final iv = arr[1];
 
   final sharedPoint = await getECShareSecret(
+    identity.getKeyPair().secretKey,
+    theirPublicKey.toRaw(),
+  );
+
+  final sharedX = sharedPoint.sublist(0, 32);
+
+  final decryptedMessage256 = await _decryptPhraseAsync256(
+    key: sharedX,
+    iv: base64Decode(iv),
+    cipherText: base64Decode(emsg),
+  );
+
+  return decryptedMessage256.u8aToString();
+}
+
+Future<String> decryptP256Message({
+  required P256Identity identity,
+  required P256PublicKey theirPublicKey,
+  required String cipherText,
+}) async {
+  final arr = cipherText.split('?iv=');
+  final emsg = arr[0];
+  final iv = arr[1];
+
+  final sharedPoint = await getP256ShareSecret(
     identity.getKeyPair().secretKey,
     theirPublicKey.toRaw(),
   );
@@ -380,4 +435,26 @@ class EncryptMessageResponse {
         'created_at': createdAt,
         'pubkey': pubKey
       };
+}
+
+class E2EResponse {
+  const E2EResponse({
+    required this.pubKey,
+    required this.createdAt,
+    required this.content,
+  });
+
+  final String pubKey;
+  final int createdAt;
+  final String content;
+
+  factory E2EResponse.fromJson(Map<String, dynamic> map) {
+    return E2EResponse(
+        content: map['content'],
+        createdAt: map['create_at'],
+        pubKey: map['pubkey']);
+  }
+
+  Map<String, dynamic> toJson() =>
+      {'content': content, 'created_at': createdAt, 'pubkey': pubKey};
 }
