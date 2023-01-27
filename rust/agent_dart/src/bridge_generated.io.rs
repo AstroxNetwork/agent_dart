@@ -68,6 +68,11 @@ pub extern "C" fn wire_secp256k1_get_shared_secret(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_secp256k1_recover(port_: i64, req: *mut wire_Secp256k1RecoverReq) {
+    wire_secp256k1_recover_impl(port_, req)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_p256_from_seed(port_: i64, req: *mut wire_P256FromSeedReq) {
     wire_p256_from_seed_impl(port_, req)
 }
@@ -221,6 +226,11 @@ pub extern "C" fn new_box_autoadd_secp_256_k_1_from_seed_req_0() -> *mut wire_Se
 }
 
 #[no_mangle]
+pub extern "C" fn new_box_autoadd_secp_256_k_1_recover_req_0() -> *mut wire_Secp256k1RecoverReq {
+    support::new_leak_box_ptr(wire_Secp256k1RecoverReq::new_with_null_ptr())
+}
+
+#[no_mangle]
 pub extern "C" fn new_box_autoadd_secp_256_k_1_share_secret_req_0(
 ) -> *mut wire_Secp256k1ShareSecretReq {
     support::new_leak_box_ptr(wire_Secp256k1ShareSecretReq::new_with_null_ptr())
@@ -240,6 +250,11 @@ pub extern "C" fn new_box_autoadd_secp_256_k_1_verify_req_0() -> *mut wire_Secp2
 #[no_mangle]
 pub extern "C" fn new_box_autoadd_seed_to_key_req_0() -> *mut wire_SeedToKeyReq {
     support::new_leak_box_ptr(wire_SeedToKeyReq::new_with_null_ptr())
+}
+
+#[no_mangle]
+pub extern "C" fn new_box_autoadd_u8_0(value: u8) -> *mut u8 {
+    support::new_leak_box_ptr(value)
 }
 
 #[no_mangle]
@@ -390,6 +405,12 @@ impl Wire2Api<Secp256k1FromSeedReq> for *mut wire_Secp256k1FromSeedReq {
         Wire2Api::<Secp256k1FromSeedReq>::wire2api(*wrap).into()
     }
 }
+impl Wire2Api<Secp256k1RecoverReq> for *mut wire_Secp256k1RecoverReq {
+    fn wire2api(self) -> Secp256k1RecoverReq {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<Secp256k1RecoverReq>::wire2api(*wrap).into()
+    }
+}
 impl Wire2Api<Secp256k1ShareSecretReq> for *mut wire_Secp256k1ShareSecretReq {
     fn wire2api(self) -> Secp256k1ShareSecretReq {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
@@ -412,6 +433,11 @@ impl Wire2Api<SeedToKeyReq> for *mut wire_SeedToKeyReq {
     fn wire2api(self) -> SeedToKeyReq {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
         Wire2Api::<SeedToKeyReq>::wire2api(*wrap).into()
+    }
+}
+impl Wire2Api<u8> for *mut u8 {
+    fn wire2api(self) -> u8 {
+        unsafe { *support::box_from_leak_ptr(self) }
     }
 }
 impl Wire2Api<ED25519FromSeedReq> for wire_ED25519FromSeedReq {
@@ -528,6 +554,15 @@ impl Wire2Api<Secp256k1FromSeedReq> for wire_Secp256k1FromSeedReq {
     fn wire2api(self) -> Secp256k1FromSeedReq {
         Secp256k1FromSeedReq {
             seed: self.seed.wire2api(),
+        }
+    }
+}
+impl Wire2Api<Secp256k1RecoverReq> for wire_Secp256k1RecoverReq {
+    fn wire2api(self) -> Secp256k1RecoverReq {
+        Secp256k1RecoverReq {
+            message_pre_hashed: self.message_pre_hashed.wire2api(),
+            signature_bytes: self.signature_bytes.wire2api(),
+            chain_id: self.chain_id.wire2api(),
         }
     }
 }
@@ -699,6 +734,14 @@ pub struct wire_ScriptDeriveReq {
 #[derive(Clone)]
 pub struct wire_Secp256k1FromSeedReq {
     seed: *mut wire_uint_8_list,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_Secp256k1RecoverReq {
+    message_pre_hashed: *mut wire_uint_8_list,
+    signature_bytes: *mut wire_uint_8_list,
+    chain_id: *mut u8,
 }
 
 #[repr(C)]
@@ -905,6 +948,16 @@ impl NewWithNullPtr for wire_Secp256k1FromSeedReq {
     fn new_with_null_ptr() -> Self {
         Self {
             seed: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl NewWithNullPtr for wire_Secp256k1RecoverReq {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            message_pre_hashed: core::ptr::null_mut(),
+            signature_bytes: core::ptr::null_mut(),
+            chain_id: core::ptr::null_mut(),
         }
     }
 }

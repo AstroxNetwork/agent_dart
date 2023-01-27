@@ -1,5 +1,6 @@
 import 'package:agent_dart/agent_dart.dart';
 import 'package:agent_dart/identity/secp256k1.dart';
+import 'package:agent_dart/principal/utils/sha256.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // import 'package:agent_dart/utils/extension.dart';
@@ -28,12 +29,14 @@ void secp256k1Test() {
   test('sign', () async {
     final res = await signSecp256k1Async(msg.plainToU8a(), prv.toU8a());
     expect(res.length, 64);
+
+    final pubKey = Secp256k1PublicKey.from(
+      (await Secp256k1KeyIdentity.fromSecretKey(prv.toU8a())).getPublicKey(),
+    );
     final isValid = verifySecp256k1(
       msg,
       res,
-      Secp256k1PublicKey.from(
-        (await Secp256k1KeyIdentity.fromSecretKey(prv.toU8a())).getPublicKey(),
-      ),
+      pubKey,
     );
     expect(isValid, true);
   });
@@ -110,5 +113,17 @@ void secp256k1Test() {
     );
 
     expect(ss2.toHex(), ss.toHex());
+  });
+
+  test('recover pubkey', () async {
+    const message =
+        '879a053d4800c6354e76c7985a865d2922c82fb5b3f4577b2fe08b998954f2e0';
+
+    const signatures =
+        '8ea8ec3af6234ce47a431e0bbb525a41c725b40a2d59921d98580b914fc438934a47284e5e90fcff763db5442cae37787683c85a9b3fe59af897b797e06374dd1c';
+
+    final pub =
+        await recoverSecp256k1PubKey(message.toU8a(), signatures.toU8a());
+    print(pub.toHex());
   });
 }

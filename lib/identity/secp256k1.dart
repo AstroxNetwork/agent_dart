@@ -220,6 +220,19 @@ bool verifySecp256k1Blob(
   return signer.verifySignature(blob, sig);
 }
 
+Future<Uint8List> recoverSecp256k1PubKey(
+  Uint8List preHashedMessage,
+  Uint8List signature,
+) async {
+  final result = await AgentDartFFI.impl.secp256K1Recover(
+    req: Secp256k1RecoverReq(
+      messagePreHashed: preHashedMessage,
+      signatureBytes: signature,
+    ),
+  );
+  return result;
+}
+
 Future<Uint8List> getECShareSecret(
   Uint8List privateKey,
   Uint8List rawPublicKey,

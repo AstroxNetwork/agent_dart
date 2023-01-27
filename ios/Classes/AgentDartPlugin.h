@@ -271,6 +271,12 @@ typedef struct wire_Secp256k1ShareSecretReq {
   struct wire_uint_8_list *public_key_raw_bytes;
 } wire_Secp256k1ShareSecretReq;
 
+typedef struct wire_Secp256k1RecoverReq {
+  struct wire_uint_8_list *message_pre_hashed;
+  struct wire_uint_8_list *signature_bytes;
+  uint8_t *chain_id;
+} wire_Secp256k1RecoverReq;
+
 typedef struct wire_P256FromSeedReq {
   struct wire_uint_8_list *seed;
 } wire_P256FromSeedReq;
@@ -381,6 +387,8 @@ void wire_secp256k1_verify(int64_t port_, struct wire_Secp256k1VerifyReq *req);
 
 void wire_secp256k1_get_shared_secret(int64_t port_, struct wire_Secp256k1ShareSecretReq *req);
 
+void wire_secp256k1_recover(int64_t port_, struct wire_Secp256k1RecoverReq *req);
+
 void wire_p256_from_seed(int64_t port_, struct wire_P256FromSeedReq *req);
 
 void wire_p256_sign(int64_t port_, struct wire_P256SignWithSeedReq *req);
@@ -441,6 +449,8 @@ struct wire_ScriptDeriveReq *new_box_autoadd_script_derive_req_0(void);
 
 struct wire_Secp256k1FromSeedReq *new_box_autoadd_secp_256_k_1_from_seed_req_0(void);
 
+struct wire_Secp256k1RecoverReq *new_box_autoadd_secp_256_k_1_recover_req_0(void);
+
 struct wire_Secp256k1ShareSecretReq *new_box_autoadd_secp_256_k_1_share_secret_req_0(void);
 
 struct wire_Secp256k1SignWithSeedReq *new_box_autoadd_secp_256_k_1_sign_with_seed_req_0(void);
@@ -448,6 +458,8 @@ struct wire_Secp256k1SignWithSeedReq *new_box_autoadd_secp_256_k_1_sign_with_see
 struct wire_Secp256k1VerifyReq *new_box_autoadd_secp_256_k_1_verify_req_0(void);
 
 struct wire_SeedToKeyReq *new_box_autoadd_seed_to_key_req_0(void);
+
+uint8_t *new_box_autoadd_u8_0(uint8_t value);
 
 struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
 
@@ -467,6 +479,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_sign_recoverable);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_verify);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_get_shared_secret);
+    dummy_var ^= ((int64_t) (void*) wire_secp256k1_recover);
     dummy_var ^= ((int64_t) (void*) wire_p256_from_seed);
     dummy_var ^= ((int64_t) (void*) wire_p256_sign);
     dummy_var ^= ((int64_t) (void*) wire_p256_verify);
@@ -497,10 +510,12 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_schnorr_verify_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_script_derive_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_from_seed_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_recover_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_share_secret_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_sign_with_seed_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_verify_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_seed_to_key_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_u8_0);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturn);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);

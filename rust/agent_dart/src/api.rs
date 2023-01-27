@@ -10,8 +10,8 @@ use crate::types::{
     ED25519VerifyReq, KeyDerivedRes, P256FromSeedReq, P256ShareSecretReq, P256SignReq,
     P256SignWithSeedReq, P256VerifyReq, PBKDFDeriveReq, PhraseToSeedReq, SchnorrFromSeedReq,
     SchnorrSignReq, SchnorrSignWithSeedReq, SchnorrVerifyReq, ScriptDeriveReq,
-    Secp256k1FromSeedReq, Secp256k1ShareSecretReq, Secp256k1SignReq, Secp256k1SignWithSeedReq,
-    Secp256k1VerifyReq, SeedToKeyReq, SignatureFFI,
+    Secp256k1FromSeedReq, Secp256k1RecoverReq, Secp256k1ShareSecretReq, Secp256k1SignReq,
+    Secp256k1SignWithSeedReq, Secp256k1VerifyReq, SeedToKeyReq, SignatureFFI,
 };
 
 /// --------------------
@@ -88,6 +88,10 @@ pub fn secp256k1_verify(req: Secp256k1VerifyReq) -> bool {
 
 pub fn secp256k1_get_shared_secret(req: Secp256k1ShareSecretReq) -> Vec<u8> {
     Secp256k1FFI::get_share_secret(req).unwrap()
+}
+
+pub fn secp256k1_recover(req: Secp256k1RecoverReq) -> Vec<u8> {
+    Secp256k1FFI::recover_pub_key(req).unwrap()
 }
 
 /// ---------------------
