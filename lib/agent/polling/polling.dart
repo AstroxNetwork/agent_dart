@@ -40,11 +40,9 @@ Future<BinaryBlob> pollForResponse(
       await strategy(canisterId, requestId, status);
       return pollForResponse(agent, canisterId, requestId, strategy);
     case RequestStatusResponseStatus.rejected:
-      final rejectCode = BigInt.from(
-        cert.lookup(
-          [...path, blobFromText('reject_code')],
-        )!.first,
-      );
+      final rejectCode = cert.lookup(
+        [...path, blobFromText('reject_code')],
+      )!.toBn();
       final rejectMessage = cert.lookup(
         [...path, blobFromText('reject_message')],
       )!.u8aToString();
