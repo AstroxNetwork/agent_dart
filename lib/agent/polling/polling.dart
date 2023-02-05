@@ -40,9 +40,11 @@ Future<BinaryBlob> pollForResponse(
       await strategy(canisterId, requestId, status);
       return pollForResponse(agent, canisterId, requestId, strategy);
     case RequestStatusResponseStatus.rejected:
-      final rejectCode = cert.lookup(
-        [...path, blobFromText('reject_code')],
-      )!.first;
+      final rejectCode = BigInt.from(
+        cert.lookup(
+          [...path, blobFromText('reject_code')],
+        )!.first,
+      );
       final rejectMessage = cert.lookup(
         [...path, blobFromText('reject_message')],
       )!.u8aToString();
@@ -99,7 +101,7 @@ class PollingResponseRejectedException extends PollingResponseException {
     required this.rejectMessage,
   });
 
-  final int rejectCode;
+  final BigInt rejectCode;
   final String rejectMessage;
 
   @override
