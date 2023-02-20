@@ -41,20 +41,34 @@ class Phrase {
 
   Future<Uint8List> toSeed({String passphrase = ''}) {
     return AgentDartFFI.impl.mnemonicPhraseToSeed(
-      req: PhraseToSeedReq(phrase: mnemonic, password: passphrase),
+      req: PhraseToSeedReq(
+        phrase: mnemonic,
+        password: passphrase,
+      ),
     );
   }
 
-  Future<Uint8List> toHdKey({String passphrase = '', int index = 0}) async {
+  Future<Uint8List> toHdKey({
+    String passphrase = '',
+    int index = 0,
+    int coinType = CoinType.icp,
+  }) async {
+    final basePath = getPathWithCoinType(coinType: coinType);
     final seed = await toSeed(passphrase: passphrase);
     return AgentDartFFI.impl.mnemonicSeedToKey(
-      req: SeedToKeyReq(seed: seed, path: '$icpPath/0/$index'),
+      req: SeedToKeyReq(
+        seed: seed,
+        path: '$basePath/0/$index',
+      ),
     );
   }
 }
 
 class PhaseException implements Exception {
-  const PhaseException({required this.message, this.wordList});
+  const PhaseException({
+    required this.message,
+    this.wordList,
+  });
 
   final String message;
   final List<String>? wordList;
