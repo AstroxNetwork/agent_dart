@@ -42,7 +42,7 @@ Future<BinaryBlob> pollForResponse(
     case RequestStatusResponseStatus.rejected:
       final rejectCode = cert.lookup(
         [...path, blobFromText('reject_code')],
-      )!.u8aToString();
+      )!.toBn();
       final rejectMessage = cert.lookup(
         [...path, blobFromText('reject_message')],
       )!.u8aToString();
@@ -99,7 +99,7 @@ class PollingResponseRejectedException extends PollingResponseException {
     required this.rejectMessage,
   });
 
-  final String rejectCode;
+  final BigInt rejectCode;
   final String rejectMessage;
 
   @override

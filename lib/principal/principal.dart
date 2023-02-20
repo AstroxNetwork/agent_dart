@@ -52,6 +52,9 @@ class Principal {
   }
 
   factory Principal.fromHex(String hex) {
+    if (hex.isEmpty) {
+      return Principal(Uint8List(0));
+    }
     return Principal(hex.toU8a());
   }
 

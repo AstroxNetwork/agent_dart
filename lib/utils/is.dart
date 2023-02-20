@@ -12,28 +12,24 @@ bool isAscii(dynamic value) {
   );
 }
 
-bool isHex(dynamic value, [int bitLength = -1, bool ignoreLength = false]) {
+bool isHex(dynamic value, {int bits = -1, bool ignoreLength = false}) {
   if (value is! String) {
     return false;
   }
-  if (RegExp(r'^0x[a-fA-F\d]*$').hasMatch(value)) {
-    if (bitLength != -1) {
-      return value.length == (2 + (bitLength / 4).ceil());
+  if (value == '0x') {
+    // Adapt Ethereum special cases.
+    return true;
+  }
+  if (value.startsWith('0x')) {
+    value = value.substring(2);
+  }
+  if (validators.isHexadecimal(value)) {
+    if (bits != -1) {
+      return value.length == (bits / 4).ceil();
     }
-    return value.length % 2 == 0;
+    return ignoreLength || value.length % 2 == 0;
   }
   return false;
-}
-
-bool isHexString(String str) {
-  final result = str.startsWith(RegExp(r'0x', caseSensitive: false))
-      ? str.substring(2)
-      : str;
-  return validators.matches(result, '^[0-9a-fA-F]{${result.length}}');
-}
-
-bool isHexadecimal(String str) {
-  return validators.isHexadecimal(str);
 }
 
 bool isIP(String value, String type) {
@@ -292,7 +288,7 @@ bool isBech32(String str) {
 }
 
 bool isAccountId(String str) {
-  if (!isHexString(str) || str.length != 64) {
+  if (!isHex(str) || str.length != 64) {
     return false;
   }
   final fullBytes = str.toU8a();
