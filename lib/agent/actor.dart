@@ -298,16 +298,23 @@ class Actor {
   static const String metadataSymbol = 'ic-agent-metadata';
 }
 
+typedef CreateActorMethod = ActorMethod Function(
+  Actor actor,
+  String methodName,
+  Func func,
+);
+
 class CanisterActor extends Actor {
   CanisterActor(
     ActorConfig config,
-    Service service,
-  ) : super(ActorMetadata(service: service, config: config)) {
+    Service service, {
+    CreateActorMethod? createActorMethod,
+  }) : super(ActorMetadata(service: service, config: config)) {
     final fields = service.fields;
     for (final e in fields) {
       methodMap.putIfAbsent(
         e.key,
-        () => _createActorMethod(this, e.key, e.value),
+        () => (createActorMethod ?? _createActorMethod)(this, e.key, e.value),
       );
     }
   }
@@ -339,7 +346,7 @@ dynamic decodeReturnValue(List<CType> types, BinaryBlob msg) {
 
 typedef MethodCaller = Future Function(CallConfig options, List args);
 
-dynamic _createActorMethod(Actor actor, String methodName, Func func) {
+ActorMethod _createActorMethod(Actor actor, String methodName, Func func) {
   MethodCaller caller;
   if (func.annotations.contains('query')) {
     caller = (CallConfig options, List args) async {
@@ -397,19 +404,19 @@ dynamic _createActorMethod(Actor actor, String methodName, Func func) {
         ...?presetOption?.toJson(),
       });
       final agent = newOptions.agent ?? actor.metadata.config!.agent;
-      final canisterId =
-          actor.metadata.config!.canisterId ?? newOptions.canisterId;
-      final effectiveCanisterId = actor.metadata.config!.effectiveCanisterId ??
-          newOptions.effectiveCanisterId;
+      final cid = Principal.from(
+        newOptions.canisterId ?? actor.metadata.config!.canisterId,
+      );
+      final arg = IDL.encode(func.argTypes, args);
       final pollingStrategyFactory =
           actor.metadata.config!.pollingStrategyFactory ??
               newOptions.pollingStrategyFactory ??
               defaultStrategy;
-      final cid = Principal.from(canisterId);
+      final effectiveCanisterId = actor.metadata.config!.effectiveCanisterId ??
+          newOptions.effectiveCanisterId;
       final ecid = effectiveCanisterId != null
           ? Principal.from(effectiveCanisterId)
           : cid;
-      final arg = IDL.encode(func.argTypes, args);
       // final { requestId, response } =
       final result = await agent!.call(
         cid,
@@ -446,15 +453,13 @@ dynamic _createActorMethod(Actor actor, String methodName, Func func) {
       );
     };
   }
-
-  final handler = ActorMethod(caller);
-  return handler;
+  return ActorMethod(caller);
 }
 
 class ActorMethod {
   const ActorMethod(this.caller);
 
-  final MethodCaller? caller;
+  final MethodCaller caller;
 
   static Future<dynamic> handlerCall(
     MethodCaller caller,
@@ -464,14 +469,14 @@ class ActorMethod {
       caller(withOptions ?? const CallConfig(), args);
 
   Future<dynamic> call(List<dynamic>? args) async {
-    return caller!(const CallConfig(), args ?? []);
+    return caller(const CallConfig(), args ?? []);
   }
 
   Future<dynamic> withOptions(
     CallConfig withOptions,
     List<dynamic>? args,
   ) async =>
-      caller!(withOptions, args ?? []);
+      caller(withOptions, args ?? []);
 }
 
 typedef ActorConstructor = CanisterActor Function(ActorConfig config);
