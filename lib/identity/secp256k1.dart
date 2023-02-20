@@ -138,63 +138,12 @@ class Secp256k1PublicKey implements PublicKey {
   final BinaryBlob rawKey;
   late final derKey = Secp256k1PublicKey.derEncode(rawKey);
 
-  static const rawKeyLength = 65;
-
-  static final derPrefix = Uint8List.fromList([
-    0x30,
-    0x56,
-    0x30,
-    0x10,
-    0x06,
-    0x07,
-    0x2a,
-    0x86,
-    0x48,
-    0xce,
-    0x3d,
-    0x02,
-    0x01,
-    0x06,
-    0x05,
-    0x2b,
-    0x81,
-    0x04,
-    0x00,
-    0x0a,
-    0x03,
-    0x42,
-    0x00, // no padding
-  ]);
-
   static Uint8List derEncode(BinaryBlob publicKey) {
-    if (publicKey.byteLength != Secp256k1PublicKey.rawKeyLength) {
-      throw RangeError.value(
-        publicKey.byteLength,
-        'Expected ${Secp256k1PublicKey.rawKeyLength}-bytes long '
-        'but got ${publicKey.byteLength}',
-      );
-    }
-    return Uint8List.fromList([
-      ...Secp256k1PublicKey.derPrefix,
-      ...Uint8List.fromList(publicKey),
-    ]);
+    return bytesWrapDer(publicKey, oidSecp256k1);
   }
 
   static Uint8List derDecode(BinaryBlob publicKey) {
-    final expectedLength =
-        Secp256k1PublicKey.derPrefix.length + Secp256k1PublicKey.rawKeyLength;
-    if (publicKey.byteLength != expectedLength) {
-      throw RangeError.value(
-        publicKey.byteLength,
-        'Expected ${Secp256k1PublicKey.rawKeyLength}-bytes long '
-        'but got ${publicKey.byteLength}',
-      );
-    }
-    final rawKey = publicKey.sublist(Secp256k1PublicKey.derPrefix.length);
-    if (!u8aEq(derEncode(rawKey), publicKey)) {
-      throw StateError('Expected prefix ${Secp256k1PublicKey.derPrefix}.');
-    }
-    return rawKey;
+    return bytesUnwrapDer(publicKey, oidSecp256k1);
   }
 
   @override
@@ -269,4 +218,43 @@ bool verifySecp256k1Blob(
   final pub = ECPublicKey(kpub, secp256k1Params);
   signer.init(false, p_api.PublicKeyParameter(pub));
   return signer.verifySignature(blob, sig);
+}
+
+Future<Uint8List> recoverSecp256k1PubKey(
+  Uint8List preHashedMessage,
+  Uint8List signature,
+) async {
+  final result = await AgentDartFFI.impl.secp256K1Recover(
+    req: Secp256k1RecoverReq(
+      messagePreHashed: preHashedMessage,
+      signatureBytes: signature,
+    ),
+  );
+  return result;
+}
+
+Future<Uint8List> getECShareSecret(
+  Uint8List privateKey,
+  Uint8List rawPublicKey,
+) async {
+  final result = await AgentDartFFI.impl.secp256K1GetSharedSecret(
+    req: Secp256k1ShareSecretReq(
+      seed: privateKey,
+      publicKeyRawBytes: rawPublicKey,
+    ),
+  );
+  return result;
+}
+
+Future<Uint8List> getP256ShareSecret(
+  Uint8List privateKey,
+  Uint8List rawPublicKey,
+) async {
+  final result = await AgentDartFFI.impl.p256GetSharedSecret(
+    req: P256ShareSecretReq(
+      seed: privateKey,
+      publicKeyRawBytes: rawPublicKey,
+    ),
+  );
+  return result;
 }
