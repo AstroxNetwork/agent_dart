@@ -1,4 +1,7 @@
 import 'package:agent_dart/agent/agent/factory.dart';
+import 'package:agent_dart/agent_dart.dart';
+import 'package:agent_dart/identity/p256.dart';
+import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/wallet/ledger.dart';
 import 'package:agent_dart/wallet/signer.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,16 +14,21 @@ void main() {
 /// first go checkout: https://github.com/AstroxNetwork/local-ledger-wasm
 /// then run the test
 /// this test is not complete yet
+const dfx12 = './test/fixture/dfx12.pem';
 void ledgerTest() {
   group('ledger test', () {
-    Future<ICPSigner> getSigner() async {
-      const phrase =
-          'steel obey anxiety vast clever relax million girl cost pond elbow bridge hill health toilet desk sleep grid boost flavor shy cry armed mass';
+    Future<Secp256k1KeyIdentity> getSigner() async {
+      // const phrase =
+      //     'steel obey anxiety vast clever relax million girl cost pond elbow bridge hill health toilet desk sleep grid boost flavor shy cry armed mass';
+      // final signer =
+      //     await ICPSigner.importPhrase(phrase, curveType: CurveType.secp256k1);
+      // /// we use secp256k1 curve here
+      // return signer;
 
-      final signer =
-          await ICPSigner.importPhrase(phrase, curveType: CurveType.secp256k1);
-
-      /// we use secp256k1 curve here
+      // use dfx 0.12.1
+      final pem = await getPemFile(dfx12);
+      expect(pem.keyType, KeyType.secp265k1);
+      final signer = await secp256k1KeyIdentityFromPem(pem.rawString);
       return signer;
     }
 
@@ -28,20 +36,21 @@ void ledgerTest() {
       return AgentFactory.createAgent(
         canisterId: 'ryjl3-tyaaa-aaaaa-aaaba-cai',
         // local ledger canister id, should change accourdingly
-        url: 'http://localhost:8000/',
+        url: 'http://localhost:8080/',
         // For Android emulator, please use 10.0.2.2 as endpoint
         idl: ledgerIdl,
-        identity: (await getSigner()).account.ecIdentity,
+        identity: await getSigner(),
       );
     }
 
     test('test fetch balance and send', () async {
       final signer = await getSigner();
       final agent = await getAgent();
+      final signerAddress = signer.getAccountId().toHex();
       final someReceiver =
           await ICPSigner.create(curveType: CurveType.secp256k1);
       final senderBalance =
-          await Ledger.getBalance(agent: agent, accountId: signer.ecAddress!);
+          await Ledger.getBalance(agent: agent, accountId: signerAddress);
       expect(senderBalance.e8s > BigInt.zero, true);
       print('\n----- test fetch balance and send -----');
       print('\n---👩 sender Balance before send:');
@@ -57,7 +66,7 @@ void ledgerTest() {
       print('\n---📖 payload:');
       print('amount:  ${BigInt.from(100000000)}');
       print('fee:     ${BigInt.from(10000)}');
-      print('from:    ${signer.ecAddress}');
+      print('from:    ${signerAddress}');
       print('to:      ${someReceiver.ecAddress}');
 
       print('\n---🤔 sending start=====>');
@@ -79,7 +88,7 @@ void ledgerTest() {
       print(receiverAfterSend.e8s);
       final senderBalanceAfter = await Ledger.accountBalance(
         agent: agent,
-        accountIdOrPrincipal: signer.ecAddress!,
+        accountIdOrPrincipal: signerAddress!,
       );
       expect(
         senderBalanceAfter.e8s < senderBalance.e8s - BigInt.from(100000000),
@@ -93,13 +102,14 @@ void ledgerTest() {
 
     test('latest account balance and transfer', () async {
       final signer = await getSigner();
-      print('\n ${signer.ecAddress}');
+      final signerAddress = signer.getAccountId().toHex();
+      print('\n ${signerAddress}');
       final agent = await getAgent();
       final someReceiver =
           await ICPSigner.create(curveType: CurveType.secp256k1);
       final senderBalance = await Ledger.accountBalance(
         agent: agent,
-        accountIdOrPrincipal: signer.ecAddress!,
+        accountIdOrPrincipal: signerAddress!,
       );
       expect(senderBalance.e8s > BigInt.zero, true);
       print('\n----- test fetch balance and send -----');
@@ -116,7 +126,7 @@ void ledgerTest() {
       print('\n---📖 payload:');
       print('amount:  ${BigInt.from(100000000)}');
       print('fee:     ${BigInt.from(10000)}');
-      print('from:    ${signer.ecAddress}');
+      print('from:    ${signerAddress}');
       print('to:      ${someReceiver.ecAddress}');
 
       print('\n---🤔 sending start=====>');
@@ -138,7 +148,7 @@ void ledgerTest() {
       print(receiverAfterSend.e8s);
       final senderBalanceAfter = await Ledger.accountBalance(
         agent: agent,
-        accountIdOrPrincipal: signer.ecAddress!,
+        accountIdOrPrincipal: signerAddress!,
       );
       expect(
         senderBalanceAfter.e8s < senderBalance.e8s - BigInt.from(100000000),
@@ -153,11 +163,12 @@ void ledgerTest() {
     test('transfer to Canister', () async {
       final signer = await getSigner();
       final agent = await getAgent();
+      final signerAddress = signer.getAccountId().toHex();
       // final someReceiver = ICPSigner.create();
       const receiverCanister = 'qhbym-qaaaa-aaaaa-aaafq-cai';
       final senderBalance = await Ledger.accountBalance(
         agent: agent,
-        accountIdOrPrincipal: signer.ecAddress!,
+        accountIdOrPrincipal: signerAddress!,
       );
       expect(senderBalance.e8s > BigInt.zero, true);
       print('\n----- test fetch balance and send -----');
@@ -173,7 +184,7 @@ void ledgerTest() {
       print('\n---📖 payload:');
       print('amount:  ${BigInt.from(100000000)}');
       print('fee:     ${BigInt.from(10000)}');
-      print('from:    ${signer.ecAddress}');
+      print('from:    ${signerAddress}');
       print('to:      $receiverCanister');
 
       print('\n---🤔 sending start=====>');
@@ -199,7 +210,7 @@ void ledgerTest() {
       print(receiverAfterSend.e8s);
       final senderBalanceAfter = await Ledger.accountBalance(
         agent: agent,
-        accountIdOrPrincipal: signer.ecAddress!,
+        accountIdOrPrincipal: signerAddress!,
       );
       expect(
         senderBalanceAfter.e8s < senderBalance.e8s - BigInt.from(100000000),

@@ -1,5 +1,5 @@
 use crate::errors::ErrorInfo;
-use crate::types::{CreatePhraseReq, PhraseToSeedReq, SeedToKeyReq};
+use crate::types::{PhraseToSeedReq, SeedToKeyReq};
 use bip32::XPrv;
 use bip39::{Language, Mnemonic};
 
@@ -26,7 +26,7 @@ impl KeyRingFFI {
     pub fn phrase_to_seed(req: PhraseToSeedReq) -> Vec<u8> {
         match Mnemonic::parse_in_normalized(Language::English, req.phrase.as_str()) {
             Ok(r) => r.to_seed(&req.password).to_vec(),
-            Err(e) => {
+            Err(_) => {
                 panic!(
                     "{}",
                     ErrorInfo {

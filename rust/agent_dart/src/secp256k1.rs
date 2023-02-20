@@ -1,23 +1,20 @@
-use crate::types::{Secp256k1FromSeedReq, Secp256k1SignReq, Secp256k1VerifyReq};
-use bip32::{PublicKey, PublicKeyBytes};
+use crate::types::{
+    Secp256k1FromSeedReq, Secp256k1RecoverReq, Secp256k1ShareSecretReq, Secp256k1SignReq,
+    Secp256k1VerifyReq, SignatureFFI,
+};
+use std::convert::TryFrom;
+
 use k256::ecdsa::signature::hazmat::PrehashSigner;
 use k256::ecdsa::signature::{Signer, Verifier};
 use k256::ecdsa::{recoverable, signature, Signature, SigningKey, VerifyingKey};
-use k256::pkcs8::der::Decode;
+
+use k256::elliptic_curve::sec1::ToEncodedPoint;
 use k256::pkcs8::DecodePublicKey;
 use k256::{
     ecdsa,
     pkcs8::{Document, EncodePublicKey},
-    SecretKey,
+    FieldBytes, PublicKey, Secp256k1, SecretKey,
 };
-
-#[derive(Clone, Debug)]
-pub struct SignatureFFI {
-    /// This is the DER-encoded public key.
-    pub public_key: Option<Vec<u8>>,
-    /// The signature bytes.
-    pub signature: Option<Vec<u8>>,
-}
 
 #[derive(Clone, Debug)]
 pub struct Secp256k1FFI {
@@ -114,4 +111,73 @@ impl Secp256k1FFI {
             signature,
         })
     }
+
+    pub fn recover_pub_key(req: Secp256k1RecoverReq) -> Result<Vec<u8>, String> {
+        let r: Vec<u8> = req.signature_bytes[0..32].to_vec();
+        let mut s: Vec<u8> = req.signature_bytes[32..64].to_vec();
+        let mut v: u8;
+        if req.signature_bytes.len() >= 65 {
+            v = req.signature_bytes[64];
+        } else {
+            v = req.signature_bytes[32] >> 7;
+            s[0] &= 0x7f;
+        };
+        if v < 27 {
+            v = v + 27;
+        }
+
+        let mut bytes = [0u8; 65];
+        if r.len() > 32 || s.len() > 32 {
+            return Err("Cannot create secp256k1 signature: malformed signature.".to_string());
+        }
+        bytes[0..32].clone_from_slice(&r);
+        bytes[32..64].clone_from_slice(&s);
+        bytes[64] = calculate_sig_recovery(v, req.chain_id);
+
+        let ecdsa_sig = match recoverable::Signature::try_from(bytes.as_slice()) {
+            Ok(r) => r,
+            Err(err) => {
+                panic!("Cannot recover signature because: {}", err)
+            }
+        };
+
+        let pubkey = ecdsa_sig
+            .recover_verifying_key_from_digest_bytes(FieldBytes::from_slice(
+                req.message_pre_hashed.as_slice(),
+            ))
+            .map_err(|err| format!("Cannot recover public key because: {}", err))?;
+
+        Ok(pubkey.to_encoded_point(false).as_bytes().to_vec())
+    }
+
+    pub fn get_share_secret(req: Secp256k1ShareSecretReq) -> Result<Vec<u8>, String> {
+        // assert_eq!(req.public_key_bytes.len(), 65);
+        match SecretKey::from_be_bytes(req.seed.as_slice()) {
+            Ok(sk) => {
+                let dh = k256::ecdh::diffie_hellman::<Secp256k1>(
+                    sk.to_nonzero_scalar(),
+                    PublicKey::from_sec1_bytes(req.public_key_raw_bytes.clone().as_slice())
+                        .map_err(|e| panic!("{}", format!("der pub key error: {}", e.to_string())))
+                        .unwrap()
+                        .as_affine(),
+                );
+                Ok(dh.raw_secret_bytes().to_vec())
+            }
+            Err(err) => {
+                panic!("{}", err.to_string())
+            }
+        }
+    }
+}
+
+pub fn calculate_sig_recovery(v: u8, chain_id: Option<u8>) -> u8 {
+    if v == 0 || v == 1 {
+        return v;
+    }
+
+    return if chain_id.is_none() {
+        v - 27
+    } else {
+        v - (chain_id.unwrap() * 2 + 35)
+    };
 }

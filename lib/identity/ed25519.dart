@@ -53,11 +53,11 @@ class Ed25519PublicKey implements auth.PublicKey {
   ]);
 
   static DerEncodedBlob derEncode(BinaryBlob publicKey) {
-    return wrapDER(publicKey.buffer, oidEd25519);
+    return bytesWrapDer(publicKey, oidEd25519);
   }
 
   static BinaryBlob derDecode(BinaryBlob key) {
-    final unwrapped = unwrapDER(key.buffer, oidEd25519);
+    final unwrapped = bytesUnwrapDer(key, oidEd25519);
     if (unwrapped.length != rawKeyLength) {
       throw RangeError.value(
         unwrapped.length,
