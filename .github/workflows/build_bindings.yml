@@ -12,16 +12,16 @@ on:
 
 jobs:
   for_android_ios_macos:
-    uses: AstroxNetwork/agent_dart/.github/workflows/reusable_build_binding.yml@1.0.0-dev
+    uses: AstroxNetwork/agent_dart/.github/workflows/reusable_build_binding.yml@main
     with:
       runs-on: macos-latest
 
   for_linux:
-    uses: AstroxNetwork/agent_dart/.github/workflows/reusable_build_binding.yml@1.0.0-dev
+    uses: AstroxNetwork/agent_dart/.github/workflows/reusable_build_binding.yml@main
     with:
       runs-on: linux-latest
 
   for_windows:
-    uses: AstroxNetwork/agent_dart/.github/workflows/reusable_build_binding.yml@1.0.0-dev
+    uses: AstroxNetwork/agent_dart/.github/workflows/reusable_build_binding.yml@main
     with:
       runs-on: windows-latest
