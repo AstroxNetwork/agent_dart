@@ -28,12 +28,32 @@ Future<Uint8List> _encryptPhraseAsync({
   );
 }
 
+Future<Uint8List> _encryptPhraseAsync256({
+  required Uint8List key,
+  required Uint8List iv,
+  required String message,
+}) {
+  return AgentDartFFI.impl.aes256CbcEncrypt(
+    req: AesEncryptReq(key: key, iv: iv, message: message.plainToU8a()),
+  );
+}
+
 Future<Uint8List> _decryptPhraseAsync({
   required Uint8List key,
   required Uint8List iv,
   required Uint8List cipherText,
 }) {
   return AgentDartFFI.impl.aes128CtrDecrypt(
+    req: AesDecryptReq(key: key, iv: iv, cipherText: cipherText),
+  );
+}
+
+Future<Uint8List> _decryptPhraseAsync256({
+  required Uint8List key,
+  required Uint8List iv,
+  required Uint8List cipherText,
+}) {
+  return AgentDartFFI.impl.aes256CbcDecrypt(
     req: AesDecryptReq(key: key, iv: iv, cipherText: cipherText),
   );
 }
