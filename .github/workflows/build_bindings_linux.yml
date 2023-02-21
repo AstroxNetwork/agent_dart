@@ -1,12 +1,7 @@
 name: Rust Bindings (Linux)
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   ci:
@@ -61,7 +56,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: (Linux) Bindings
-          commit_options: '--signoff'
 
       - name: Run if changes have been detected
         if: steps.auto-commit-action.outputs.changes_detected == 'true'

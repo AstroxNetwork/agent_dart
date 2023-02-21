@@ -1,12 +1,7 @@
 name: Rust Bindings (Android & iOS & macOS)
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   ci:
@@ -121,7 +116,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: (Android & iOS & macOS) Bindings
-          commit_options: '--signoff'
 
       - name: Run if changes have been detected
         if: steps.auto-commit-action.outputs.changes_detected == 'true'
