@@ -1,48 +1,53 @@
 name: Rust Bindings (Android & iOS & macOS)
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   ci:
     name: Compile, Build and Release
     runs-on: macos-latest
     steps:
-      - name: Cache LLVM and Clang
-        id: cache-llvm
-        uses: actions/cache@v2
-        with:
-          path: ${{ runner.temp }}/llvm/11.0
-          key: ${{ runner.os }}-cached-llvm-11.0
-
-      - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1
-        with:
-          version: '11.0'
-          directory: ${{ runner.temp }}/llvm/11.0
-          cached: ${{ steps.cache-llvm.outputs.cache-hit }}
-
       - name: Checkout sources
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Install Rust Toolchain
-        uses: actions-rs/toolchain@v1
+        id: rust-toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-          components: rustfmt
+          toolchain: 1.64.0
+      - run: rustup component add rustfmt
+      - uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: cargo-lipo
 
-      - name: Install WASM Target
-        run: rustup target add wasm32-unknown-unknown
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '8'
 
-      - name: Cache Cargo
-        uses: actions/cache@v2
+      - name: Setup NDK
+        id: setup-ndk
+        run: |
+          ANDROID_HOME=$HOME/Library/Android/sdk
+          SDKMANAGER=$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
+          echo y | $SDKMANAGER "ndk;21.4.7075529"
+          ln -sfn $ANDROID_HOME/ndk/21.4.7075529 $ANDROID_HOME/ndk-bundle
+
+      - name: Setup Android NDK list
+        run: |
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/aarch64-linux-android/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/arm-linux-androideabi/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/i686-linux-android/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/x86_64-linux-android/bin:$PATH" >> $GITHUB_PATH
+
+      - name: Cache deps
+        uses: actions/cache@v3
+        id: cache-deps
         with:
           path: |
             ~/.cargo/registry
@@ -56,50 +61,28 @@ jobs:
             target/x86_64-apple-ios
             target/aarch64-apple-darwin
             target/x86_64-apple-darwin
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${{ steps.rust-toolchain.outputs.rustc_hash }}
 
-      - name: Install Cargo Tools (cbindgen)
-        uses: actions-rs/cargo@v1
-        continue-on-error: true
+      - name: Cache LLVM and Clang
+        id: cache-llvm
+        uses: actions/cache@v3
         with:
-          command: install
-          args: --force cbindgen
+          path: ${{ runner.temp }}/llvm/11.0
+          key: ${{ runner.os }}-cached-llvm-11.0
 
-      - name: Install Cargo Tools (lipo)
-        uses: actions-rs/cargo@v1
-        continue-on-error: true
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
         with:
-          command: install
-          args: cargo-lipo
+          version: '11.0'
+          directory: ${{ runner.temp }}/llvm/11.0
+          cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 
-      - name: Set up JDK 8
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'adopt'
-          java-version: '8'
+      - name: Install WASM Target
+        run: rustup target add wasm32-unknown-unknown
 
-      - name: Setup NDK
-        id: setup-ndk
-        run: sudo echo "y" | sudo $ANDROID_HOME/tools/bin/sdkmanager "ndk;21.4.7075529"
-
-      - name: Set Android NDK Env
-        uses: allenevans/set-env@v2.0.0
-        with:
-          ANDROID_NDK_HOME: '/Users/runner/Library/Android/sdk/ndk-bundle'
-          NDK_HOME: '/Users/runner/Library/Android/sdk/ndk-bundle'
-
-      - name: Setup Android NDK list
-        run: |
-          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/aarch64-linux-android/bin:$PATH" >> $GITHUB_PATH
-          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/arm-linux-androideabi/bin:$PATH" >> $GITHUB_PATH
-          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/i686-linux-android/bin:$PATH" >> $GITHUB_PATH
-          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/x86_64-linux-android/bin:$PATH" >> $GITHUB_PATH
-
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'adopt'
-          java-version: '11'
+      - name: Install `cargo-ndk`
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: cargo install cargo-ndk --force
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -119,21 +102,22 @@ jobs:
 
       - name: Execute build scripts
         run: |
-          ./scripts/bootstrap.sh
+          bash ./scripts/clean.sh
+          bash ./scripts/clean_rust.sh
+          bash ./scripts/bootstrap.sh
 
       - name: Run binding/crypto tests
-        run: |
-          flutter test
+        run: flutter test
 
-      - name: Run git pull
-        uses: actions/checkout@v3
+      - name: Run uncleaned git update
+        run: git fetch origin && git merge --ff-only --strategy-option ours
 
       - name: Commit files
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: build bindings for ios android and macos
+          commit_message: (Android & iOS & macOS) Bindings
 
-      - name: 'Run if changes have been detected'
+      - name: Run if changes have been detected
         if: steps.auto-commit-action.outputs.changes_detected == 'true'
         uses: ad-m/github-push-action@master
         with:
@@ -153,6 +137,6 @@ jobs:
           branch: main
           labels: automerge, automated pr
 
-      - name: 'Run if no changes have been detected'
+      - name: Run if no changes have been detected
         if: steps.auto-commit-action.outputs.changes_detected == 'false'
         run: echo "No Changes!"
