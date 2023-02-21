@@ -1,51 +1,34 @@
 name: Rust Bindings (Linux)
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   ci:
     name: Compile, Build and Release
     runs-on: ubuntu-latest
     steps:
-      - name: Cache LLVM and Clang
-        id: cache-llvm
-        uses: actions/cache@v2
-        with:
-          path: ${{ runner.temp }}/llvm/11.0
-          key: ${{ runner.os }}-cached-llvm-11.0
-
-      - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1
-        with:
-          version: '11.0'
-          directory: ${{ runner.temp }}/llvm/11.0
-          cached: ${{ steps.cache-llvm.outputs.cache-hit }}
-
       - name: Checkout sources
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Install Rust Toolchain
-        uses: actions-rs/toolchain@v1
+        id: rust-toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-          components: rustfmt
+          toolchain: 1.64.0
+      - run: rustup component add rustfmt
 
-      - name: Cache Cargo
-        uses: actions/cache@v2
+      - name: Cache deps
+        uses: actions/cache@v3
+        id: cache-deps
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
             ~/.cargo/bin
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${{ steps.rust-toolchain.outputs.rustc_hash }}
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v1
@@ -61,22 +44,20 @@ jobs:
           cargo test
 
       - name: Execute build scripts
-        run: |
-          bash ./scripts/clean.sh
-          bash ./scripts/build_linux.sh
+        run: bash ./scripts/build_linux.sh
 
       - name: Run binding/crypto tests
         run: flutter test
 
-      - name: Run git pull
-        uses: actions/checkout@v3
+      - name: Run uncleaned git update
+        run: git fetch origin && git merge --ff-only --strategy-option ours
 
       - name: Commit files
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: build bindings for ios android and macos
+          commit_message: (Linux) Bindings
 
-      - name: 'Run if changes have been detected'
+      - name: Run if changes have been detected
         if: steps.auto-commit-action.outputs.changes_detected == 'true'
         uses: ad-m/github-push-action@master
         with:
@@ -96,6 +77,6 @@ jobs:
           branch: main
           labels: automerge, automated pr
 
-      - name: 'Run if no changes have been detected'
+      - name: Run if no changes have been detected
         if: steps.auto-commit-action.outputs.changes_detected == 'false'
         run: echo "No Changes!"
