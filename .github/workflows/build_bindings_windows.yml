@@ -13,9 +13,31 @@ jobs:
     name: Compile, Build and Release
     runs-on: windows-latest
     steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Install Rust Toolchain
+        id: rust-toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.64.0
+      - run: rustup component add rustfmt
+
+      - name: Cache deps
+        uses: actions/cache@v3
+        id: cache-deps
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${{ steps.rust-toolchain.outputs.rustc_hash }}
+
       - name: Cache LLVM and Clang
         id: cache-llvm
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ runner.temp }}/llvm/11.0
           key: ${{ runner.os }}-cached-llvm-11.0
@@ -27,28 +49,8 @@ jobs:
           directory: ${{ runner.temp }}/llvm/11.0
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 
-      - name: Checkout sources
-        uses: actions/checkout@v3
-
-      - name: Install Rust Toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-          components: rustfmt
-
-      - name: Cache Cargo
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            ~/.cargo/bin
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-
       - name: Setup Flutter
-        uses: subosito/flutter-action@v1
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
@@ -61,22 +63,21 @@ jobs:
           cargo test
 
       - name: Execute build scripts
-        run: |
-          bash ./scripts/clean.sh
-          bash ./scripts/build_windows.sh
+        run: bash ./scripts/build_windows.sh
 
       - name: Run binding/crypto tests
         run: flutter test
 
-      - name: Run git pull
-        uses: actions/checkout@v3
+      - name: Run uncleaned git update
+        run: git fetch origin && git merge --ff-only --strategy-option ours
 
       - name: Commit files
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: build bindings for windows
+          commit_message: (Windows) Bindings
+          commit_options: '--signoff'
 
-      - name: 'Run if changes have been detected'
+      - name: Run if changes have been detected
         if: steps.auto-commit-action.outputs.changes_detected == 'true'
         uses: ad-m/github-push-action@master
         with:
@@ -96,6 +97,6 @@ jobs:
           branch: main
           labels: automerge, automated pr
 
-      - name: 'Run if no changes have been detected'
+      - name: Run if no changes have been detected
         if: steps.auto-commit-action.outputs.changes_detected == 'false'
         run: echo "No Changes!"
