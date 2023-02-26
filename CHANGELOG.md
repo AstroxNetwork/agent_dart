@@ -4,6 +4,13 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.8
+
+- `BigInt` for polling exceptions' reject code. (#49)
+- Add `Actor.createActorMethod`.
+- Support secp256k1 from FFI.
+- Add `CoinType`.
+
 ## 1.0.0-dev.7
 
 - Fix RecordClass `covariant`.
