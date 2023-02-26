@@ -1,9 +1,5 @@
 import 'package:agent_dart/agent_dart.dart';
-import 'package:agent_dart/identity/secp256k1.dart';
-import 'package:agent_dart/principal/utils/sha256.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-// import 'package:agent_dart/utils/extension.dart';
 
 void main() {
   secp256k1Test();
@@ -92,9 +88,10 @@ void secp256k1Test() {
     final derExpect = Secp256k1PublicKey.fromRaw(keys.ecPublicKey!).toDer();
     final rawExpect = Secp256k1PublicKey.derDecode(derExpect);
     expect(
-        rawExpect.toHex(),
-        Secp256k1PublicKey.derDecode(await getDerFromFFI(keys.ecPrivateKey!))
-            .toHex());
+      rawExpect.toHex(),
+      Secp256k1PublicKey.derDecode(await getDerFromFFI(keys.ecPrivateKey!))
+          .toHex(),
+    );
     expect(
       derExpect.toHex(),
       (await getDerFromFFI(keys.ecPrivateKey!)).toHex(),

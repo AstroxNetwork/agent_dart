@@ -12,7 +12,6 @@ import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/principal/utils/sha256.dart';
 import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/utils/u8a.dart';
-import 'package:basic_utils/basic_utils.dart';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:pointycastle/export.dart';

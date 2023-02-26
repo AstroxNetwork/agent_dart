@@ -1,10 +1,6 @@
 import 'package:agent_dart/agent_dart.dart';
-import 'package:agent_dart/identity/schnorr.dart';
-import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-// import 'package:agent_dart/utils/extension.dart';
 
 void main() {
   schnorrTest();

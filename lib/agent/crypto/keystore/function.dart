@@ -413,20 +413,21 @@ class EncryptMessageResponse {
     required this.content,
   });
 
+  factory EncryptMessageResponse.fromJson(Map<String, dynamic> map) {
+    return EncryptMessageResponse(
+      content: map['content'],
+      tags: map['tags'],
+      kind: map['kind'],
+      createdAt: map['create_at'],
+      pubKey: map['pubkey'],
+    );
+  }
+
   final String pubKey;
   final int createdAt;
   final int kind;
   final List tags;
   final String content;
-
-  factory EncryptMessageResponse.fromJson(Map<String, dynamic> map) {
-    return EncryptMessageResponse(
-        content: map['content'],
-        tags: map['tags'],
-        kind: map['kind'],
-        createdAt: map['create_at'],
-        pubKey: map['pubkey']);
-  }
 
   Map<String, dynamic> toJson() => {
         'content': content,
@@ -444,16 +445,17 @@ class E2EResponse {
     required this.content,
   });
 
+  factory E2EResponse.fromJson(Map<String, dynamic> map) {
+    return E2EResponse(
+      content: map['content'],
+      createdAt: map['create_at'],
+      pubKey: map['pubkey'],
+    );
+  }
+
   final String pubKey;
   final int createdAt;
   final String content;
-
-  factory E2EResponse.fromJson(Map<String, dynamic> map) {
-    return E2EResponse(
-        content: map['content'],
-        createdAt: map['create_at'],
-        pubKey: map['pubkey']);
-  }
 
   Map<String, dynamic> toJson() =>
       {'content': content, 'created_at': createdAt, 'pubkey': pubKey};

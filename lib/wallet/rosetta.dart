@@ -4,7 +4,6 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent/agent/http/fetch.dart';
 import 'package:agent_dart/agent_dart.dart';
-import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/protobuf/ic_ledger/pb/v1/types.pb.dart';
 
 import 'types.dart' as rosetta;

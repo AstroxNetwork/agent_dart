@@ -283,7 +283,7 @@ Uint8List bytesUnwrapDerSignature(Uint8List derEncoded) {
   final sRemaining = rRemaining.sublist(b2 + 2);
 
   final sBytes = getBytes(sRemaining);
-  final b3 = sBytes.item1;
+  // final b3 = sBytes.item1;
   final s = Uint8List.fromList(sBytes.item2);
   return Uint8List.fromList([...r, ...s]);
 }

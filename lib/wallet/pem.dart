@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:agent_dart/agent_dart.dart';
-import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:basic_utils/basic_utils.dart';
 
 enum KeyType { ed25519, secp265k1 }

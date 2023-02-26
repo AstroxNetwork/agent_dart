@@ -2,9 +2,6 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/bridge/ffi/ffi.dart';
 import 'package:agent_dart/identity/identity.dart';
-import 'package:agent_dart/identity/p256.dart';
-import 'package:agent_dart/identity/schnorr.dart';
-import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/utils/extension.dart';
 import 'package:bip32/bip32.dart' as bip32;
