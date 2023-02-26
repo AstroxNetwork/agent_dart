@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:agent_dart/agent/crypto/keystore/key_store.dart';
 import 'package:agent_dart/identity/identity.dart';
-import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/utils/extension.dart';
 
 import 'keysmith.dart';

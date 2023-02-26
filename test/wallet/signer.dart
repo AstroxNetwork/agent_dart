@@ -1,9 +1,6 @@
 import 'dart:convert';
 
 import 'package:agent_dart/agent/crypto/index.dart';
-import 'package:agent_dart/agent_dart.dart';
-import 'package:agent_dart/bridge/ffi/ffi.dart';
-import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/wallet/phrase.dart';
 import 'package:agent_dart/wallet/signer.dart';

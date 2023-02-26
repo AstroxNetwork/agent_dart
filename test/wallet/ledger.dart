@@ -1,9 +1,5 @@
-import 'package:agent_dart/agent/agent/factory.dart';
 import 'package:agent_dart/agent_dart.dart';
-import 'package:agent_dart/identity/p256.dart';
-import 'package:agent_dart/identity/secp256k1.dart';
 import 'package:agent_dart/wallet/ledger.dart';
-import 'package:agent_dart/wallet/signer.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -66,7 +62,7 @@ void ledgerTest() {
       print('\n---📖 payload:');
       print('amount:  ${BigInt.from(100000000)}');
       print('fee:     ${BigInt.from(10000)}');
-      print('from:    ${signerAddress}');
+      print('from:    $signerAddress');
       print('to:      ${someReceiver.ecAddress}');
 
       print('\n---🤔 sending start=====>');
@@ -88,7 +84,7 @@ void ledgerTest() {
       print(receiverAfterSend.e8s);
       final senderBalanceAfter = await Ledger.accountBalance(
         agent: agent,
-        accountIdOrPrincipal: signerAddress!,
+        accountIdOrPrincipal: signerAddress,
       );
       expect(
         senderBalanceAfter.e8s < senderBalance.e8s - BigInt.from(100000000),
@@ -103,13 +99,13 @@ void ledgerTest() {
     test('latest account balance and transfer', () async {
       final signer = await getSigner();
       final signerAddress = signer.getAccountId().toHex();
-      print('\n ${signerAddress}');
+      print('\n $signerAddress');
       final agent = await getAgent();
       final someReceiver =
           await ICPSigner.create(curveType: CurveType.secp256k1);
       final senderBalance = await Ledger.accountBalance(
         agent: agent,
-        accountIdOrPrincipal: signerAddress!,
+        accountIdOrPrincipal: signerAddress,
       );
       expect(senderBalance.e8s > BigInt.zero, true);
       print('\n----- test fetch balance and send -----');
@@ -126,7 +122,7 @@ void ledgerTest() {
       print('\n---📖 payload:');
       print('amount:  ${BigInt.from(100000000)}');
       print('fee:     ${BigInt.from(10000)}');
-      print('from:    ${signerAddress}');
+      print('from:    $signerAddress');
       print('to:      ${someReceiver.ecAddress}');
 
       print('\n---🤔 sending start=====>');
@@ -148,7 +144,7 @@ void ledgerTest() {
       print(receiverAfterSend.e8s);
       final senderBalanceAfter = await Ledger.accountBalance(
         agent: agent,
-        accountIdOrPrincipal: signerAddress!,
+        accountIdOrPrincipal: signerAddress,
       );
       expect(
         senderBalanceAfter.e8s < senderBalance.e8s - BigInt.from(100000000),
@@ -168,7 +164,7 @@ void ledgerTest() {
       const receiverCanister = 'qhbym-qaaaa-aaaaa-aaafq-cai';
       final senderBalance = await Ledger.accountBalance(
         agent: agent,
-        accountIdOrPrincipal: signerAddress!,
+        accountIdOrPrincipal: signerAddress,
       );
       expect(senderBalance.e8s > BigInt.zero, true);
       print('\n----- test fetch balance and send -----');
@@ -184,7 +180,7 @@ void ledgerTest() {
       print('\n---📖 payload:');
       print('amount:  ${BigInt.from(100000000)}');
       print('fee:     ${BigInt.from(10000)}');
-      print('from:    ${signerAddress}');
+      print('from:    $signerAddress');
       print('to:      $receiverCanister');
 
       print('\n---🤔 sending start=====>');
@@ -210,7 +206,7 @@ void ledgerTest() {
       print(receiverAfterSend.e8s);
       final senderBalanceAfter = await Ledger.accountBalance(
         agent: agent,
-        accountIdOrPrincipal: signerAddress!,
+        accountIdOrPrincipal: signerAddress,
       );
       expect(
         senderBalanceAfter.e8s < senderBalance.e8s - BigInt.from(100000000),
