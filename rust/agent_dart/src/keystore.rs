@@ -12,6 +12,9 @@ use hmac::Hmac;
 use pbkdf2::pbkdf2;
 use sha2::Sha256;
 
+use aes_gcm::aead::Aead;
+use aes_gcm::{Aes256Gcm, KeyInit, Nonce};
+
 pub const KEY_LENGTH: usize = 32;
 pub const KEY_LENGTH_AES: usize = KEY_LENGTH / 2;
 
@@ -72,6 +75,29 @@ impl KeystoreFFI {
             .to_vec()
     }
 
+    pub fn encrypt_256_gcm(req: AesEncryptReq) -> Vec<u8> {
+        let plain_len = req.message.len();
+
+        let mut text = vec![0u8; plain_len];
+
+        if req.key.len() != 32 {
+            panic!("SymmError::InvalidKey")
+        }
+        if req.iv.len() != 12 {
+            panic!("SymmError::InvalidNonce")
+        }
+
+        text[0..plain_len].copy_from_slice(req.message.as_slice());
+
+        let cipher = Aes256Gcm::new_from_slice(req.key.as_slice()).expect("cannot create cipher");
+        let nonce = Nonce::from_slice(req.iv.as_slice());
+
+        cipher
+            .encrypt(nonce, text.as_slice())
+            .expect("Cannot encrypt")
+            .to_vec()
+    }
+
     /// Decrypt a message (CTR mode).
     ///
     /// Key (`k`) length and initialisation vector (`iv`) length have to be 16 bytes each.
@@ -98,6 +124,24 @@ impl KeystoreFFI {
             .expect("aes 256 cbc failed");
 
         cipher.decrypt(&mut buf).expect("Cannot decrypt").to_vec()
+    }
+
+    pub fn decrypt_256_gcm(req: AesDecryptReq) -> Vec<u8> {
+        if req.key.len() != 32 {
+            panic!("SymmError::InvalidKey")
+        }
+        if req.iv.len() != 12 {
+            panic!("SymmError::InvalidNonce")
+        }
+        let buf = req.cipher_text;
+
+        let cipher = Aes256Gcm::new_from_slice(req.key.as_slice()).expect("cannot create cipher");
+        let nonce = Nonce::from_slice(req.iv.as_slice());
+
+        cipher
+            .decrypt(nonce, buf.as_slice())
+            .expect("Cannot decrypt")
+            .to_vec()
     }
 
     pub fn scrypt_derive_key(req: ScriptDeriveReq) -> KeyDerivedRes {
