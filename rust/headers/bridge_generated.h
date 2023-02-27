@@ -407,6 +407,10 @@ void wire_aes_256_cbc_encrypt(int64_t port_, struct wire_AesEncryptReq *req);
 
 void wire_aes_256_cbc_decrypt(int64_t port_, struct wire_AesDecryptReq *req);
 
+void wire_aes_256_gcm_encrypt(int64_t port_, struct wire_AesEncryptReq *req);
+
+void wire_aes_256_gcm_decrypt(int64_t port_, struct wire_AesDecryptReq *req);
+
 void wire_pbkdf2_derive_key(int64_t port_, struct wire_PBKDFDeriveReq *req);
 
 void wire_scrypt_derive_key(int64_t port_, struct wire_ScriptDeriveReq *req);
@@ -487,6 +491,8 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_aes_128_ctr_decrypt);
     dummy_var ^= ((int64_t) (void*) wire_aes_256_cbc_encrypt);
     dummy_var ^= ((int64_t) (void*) wire_aes_256_cbc_decrypt);
+    dummy_var ^= ((int64_t) (void*) wire_aes_256_gcm_encrypt);
+    dummy_var ^= ((int64_t) (void*) wire_aes_256_gcm_decrypt);
     dummy_var ^= ((int64_t) (void*) wire_pbkdf2_derive_key);
     dummy_var ^= ((int64_t) (void*) wire_scrypt_derive_key);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_aes_decrypt_req_0);

@@ -302,7 +302,7 @@ Future<EncryptMessageResponse> encryptMessage({
 
   final sharedX = sharedPoint.sublist(0, 32);
 
-  final List<int> iv = randomAsU8a(16);
+  final List<int> iv = randomAsU8a(12);
   // randomAsU8a(16);
 
   final encryptedMessage256 = await _encryptPhraseAsync256(
@@ -336,7 +336,7 @@ Future<E2EResponse> encryptP256Message({
 
   final sharedX = sharedPoint.sublist(0, 32);
 
-  final List<int> iv = randomAsU8a(16);
+  final List<int> iv = randomAsU8a(12);
   // randomAsU8a(16);
 
   final encryptedMessage256 = await _encryptPhraseAsync256(

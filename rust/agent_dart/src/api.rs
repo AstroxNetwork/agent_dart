@@ -156,6 +156,14 @@ pub fn aes_256_cbc_decrypt(req: AesDecryptReq) -> Vec<u8> {
     KeystoreFFI::decrypt_256_cbc(req)
 }
 
+pub fn aes_256_gcm_encrypt(req: AesEncryptReq) -> Vec<u8> {
+    KeystoreFFI::encrypt_256_gcm(req)
+}
+
+pub fn aes_256_gcm_decrypt(req: AesDecryptReq) -> Vec<u8> {
+    KeystoreFFI::decrypt_256_gcm(req)
+}
+
 pub fn pbkdf2_derive_key(req: PBKDFDeriveReq) -> KeyDerivedRes {
     KeystoreFFI::pbkdf2_derive_key(req)
 }
