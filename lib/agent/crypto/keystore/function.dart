@@ -328,13 +328,14 @@ Future<E2EResponse> encryptP256Message({
   required P256Identity identity,
   required P256PublicKey theirPublicKey,
   required String text,
+  Uint8List? sharedSecret,
 }) async {
-  final sharedPoint = await getP256ShareSecret(
+  sharedSecret ??= await getP256ShareSecret(
     identity.getKeyPair().secretKey,
     theirPublicKey.toRaw(),
   );
 
-  final sharedX = sharedPoint.sublist(0, 32);
+  final sharedX = sharedSecret.sublist(0, 32);
 
   final List<int> iv = randomAsU8a(12);
   // randomAsU8a(16);
