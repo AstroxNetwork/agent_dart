@@ -33,7 +33,7 @@ Future<Uint8List> _encryptPhraseAsync256({
   required Uint8List iv,
   required String message,
 }) {
-  return AgentDartFFI.impl.aes256CbcEncrypt(
+  return AgentDartFFI.impl.aes256GcmEncrypt(
     req: AesEncryptReq(key: key, iv: iv, message: message.plainToU8a()),
   );
 }
@@ -53,7 +53,7 @@ Future<Uint8List> _decryptPhraseAsync256({
   required Uint8List iv,
   required Uint8List cipherText,
 }) {
-  return AgentDartFFI.impl.aes256CbcDecrypt(
+  return AgentDartFFI.impl.aes256GcmDecrypt(
     req: AesDecryptReq(key: key, iv: iv, cipherText: cipherText),
   );
 }
