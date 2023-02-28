@@ -24,7 +24,7 @@ typedef VerifyFunc = Future<bool> Function(
 );
 
 class P256PublicKey implements PublicKey {
-  P256PublicKey(this.rawKey);
+  P256PublicKey(this.rawKey) : assert(rawKey.isNotEmpty);
 
   factory P256PublicKey.fromRaw(BinaryBlob rawKey) {
     return P256PublicKey(rawKey);

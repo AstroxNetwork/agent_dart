@@ -128,6 +128,16 @@ pub extern "C" fn wire_aes_256_cbc_decrypt(port_: i64, req: *mut wire_AesDecrypt
 }
 
 #[no_mangle]
+pub extern "C" fn wire_aes_256_gcm_encrypt(port_: i64, req: *mut wire_AesEncryptReq) {
+    wire_aes_256_gcm_encrypt_impl(port_, req)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_aes_256_gcm_decrypt(port_: i64, req: *mut wire_AesDecryptReq) {
+    wire_aes_256_gcm_decrypt_impl(port_, req)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_pbkdf2_derive_key(port_: i64, req: *mut wire_PBKDFDeriveReq) {
     wire_pbkdf2_derive_key_impl(port_, req)
 }
@@ -802,6 +812,12 @@ impl NewWithNullPtr for wire_AesDecryptReq {
     }
 }
 
+impl Default for wire_AesDecryptReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
 impl NewWithNullPtr for wire_AesEncryptReq {
     fn new_with_null_ptr() -> Self {
         Self {
@@ -809,6 +825,12 @@ impl NewWithNullPtr for wire_AesEncryptReq {
             iv: core::ptr::null_mut(),
             message: core::ptr::null_mut(),
         }
+    }
+}
+
+impl Default for wire_AesEncryptReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
     }
 }
 
@@ -822,11 +844,23 @@ impl NewWithNullPtr for wire_BLSVerifyReq {
     }
 }
 
+impl Default for wire_BLSVerifyReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
 impl NewWithNullPtr for wire_ED25519FromSeedReq {
     fn new_with_null_ptr() -> Self {
         Self {
             seed: core::ptr::null_mut(),
         }
+    }
+}
+
+impl Default for wire_ED25519FromSeedReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
     }
 }
 
@@ -836,6 +870,12 @@ impl NewWithNullPtr for wire_ED25519SignReq {
             seed: core::ptr::null_mut(),
             message: core::ptr::null_mut(),
         }
+    }
+}
+
+impl Default for wire_ED25519SignReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
     }
 }
 
@@ -849,11 +889,23 @@ impl NewWithNullPtr for wire_ED25519VerifyReq {
     }
 }
 
+impl Default for wire_ED25519VerifyReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
 impl NewWithNullPtr for wire_P256FromSeedReq {
     fn new_with_null_ptr() -> Self {
         Self {
             seed: core::ptr::null_mut(),
         }
+    }
+}
+
+impl Default for wire_P256FromSeedReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
     }
 }
 
@@ -866,12 +918,24 @@ impl NewWithNullPtr for wire_P256ShareSecretReq {
     }
 }
 
+impl Default for wire_P256ShareSecretReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
 impl NewWithNullPtr for wire_P256SignWithSeedReq {
     fn new_with_null_ptr() -> Self {
         Self {
             msg: core::ptr::null_mut(),
             seed: core::ptr::null_mut(),
         }
+    }
+}
+
+impl Default for wire_P256SignWithSeedReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
     }
 }
 
@@ -885,6 +949,12 @@ impl NewWithNullPtr for wire_P256VerifyReq {
     }
 }
 
+impl Default for wire_P256VerifyReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
 impl NewWithNullPtr for wire_PBKDFDeriveReq {
     fn new_with_null_ptr() -> Self {
         Self {
@@ -892,6 +962,12 @@ impl NewWithNullPtr for wire_PBKDFDeriveReq {
             salt: core::ptr::null_mut(),
             c: Default::default(),
         }
+    }
+}
+
+impl Default for wire_PBKDFDeriveReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
     }
 }
 
@@ -904,11 +980,23 @@ impl NewWithNullPtr for wire_PhraseToSeedReq {
     }
 }
 
+impl Default for wire_PhraseToSeedReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
 impl NewWithNullPtr for wire_SchnorrFromSeedReq {
     fn new_with_null_ptr() -> Self {
         Self {
             seed: core::ptr::null_mut(),
         }
+    }
+}
+
+impl Default for wire_SchnorrFromSeedReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
     }
 }
 
@@ -922,6 +1010,12 @@ impl NewWithNullPtr for wire_SchnorrSignWithSeedReq {
     }
 }
 
+impl Default for wire_SchnorrSignWithSeedReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
 impl NewWithNullPtr for wire_SchnorrVerifyReq {
     fn new_with_null_ptr() -> Self {
         Self {
@@ -929,6 +1023,12 @@ impl NewWithNullPtr for wire_SchnorrVerifyReq {
             signature_bytes: core::ptr::null_mut(),
             public_key_bytes: core::ptr::null_mut(),
         }
+    }
+}
+
+impl Default for wire_SchnorrVerifyReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
     }
 }
 
@@ -944,11 +1044,23 @@ impl NewWithNullPtr for wire_ScriptDeriveReq {
     }
 }
 
+impl Default for wire_ScriptDeriveReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
 impl NewWithNullPtr for wire_Secp256k1FromSeedReq {
     fn new_with_null_ptr() -> Self {
         Self {
             seed: core::ptr::null_mut(),
         }
+    }
+}
+
+impl Default for wire_Secp256k1FromSeedReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
     }
 }
 
@@ -962,6 +1074,12 @@ impl NewWithNullPtr for wire_Secp256k1RecoverReq {
     }
 }
 
+impl Default for wire_Secp256k1RecoverReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
 impl NewWithNullPtr for wire_Secp256k1ShareSecretReq {
     fn new_with_null_ptr() -> Self {
         Self {
@@ -971,12 +1089,24 @@ impl NewWithNullPtr for wire_Secp256k1ShareSecretReq {
     }
 }
 
+impl Default for wire_Secp256k1ShareSecretReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
 impl NewWithNullPtr for wire_Secp256k1SignWithSeedReq {
     fn new_with_null_ptr() -> Self {
         Self {
             msg: core::ptr::null_mut(),
             seed: core::ptr::null_mut(),
         }
+    }
+}
+
+impl Default for wire_Secp256k1SignWithSeedReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
     }
 }
 
@@ -990,12 +1120,24 @@ impl NewWithNullPtr for wire_Secp256k1VerifyReq {
     }
 }
 
+impl Default for wire_Secp256k1VerifyReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
 impl NewWithNullPtr for wire_SeedToKeyReq {
     fn new_with_null_ptr() -> Self {
         Self {
             seed: core::ptr::null_mut(),
             path: core::ptr::null_mut(),
         }
+    }
+}
+
+impl Default for wire_SeedToKeyReq {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
     }
 }
 

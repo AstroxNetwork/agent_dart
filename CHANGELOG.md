@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.9
+
+- Provide AES-256-GCM encryption/decryption instead of `AES-256-CBC`. (#54)
+
 ## 1.0.0-dev.8
 
 - `BigInt` for polling exceptions' reject code. (#49)

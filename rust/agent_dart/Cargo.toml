@@ -19,6 +19,7 @@ sha2 = "0.10.2"
 hmac = "0.12.1"
 block-modes= "0.8.1"
 aes = { version = "0.7.5", features = [ "ctr" ], default-features = false }
+aes-gcm = "0.10.1"
 k256 = { version = "0.11.4", default-features = false, features = [ "ecdsa", "sha256", "pem", "keccak256", "ecdh", "schnorr", ] }
 p256 = {version="0.11.1", default-features = false, features = ["ecdsa","ecdh","pem"]}
 rand = "0.8.5"
