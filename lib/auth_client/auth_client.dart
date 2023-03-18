@@ -11,7 +11,7 @@ import 'package:meta/meta.dart';
 
 const keyLocalStorageKey = 'identity';
 const keyLocalStorageDelegation = 'delegation';
-const identityProviderDefault = 'https://identity.ic0.app';
+const identityProviderDefault = 'https://identity.icp0.io';
 const identityProviderEndpoint = '#authorize';
 
 class AuthClientCreateOptions {
