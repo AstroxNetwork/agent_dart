@@ -64,8 +64,8 @@ Future<NativeDeriveKeyResult> nativeDeriveKey({
   required String? message,
   required Uint8List? useCipherText,
   required Map<String, dynamic> kdfParams,
-  required String passphrase,
   required String salt,
+  String passphrase = '',
 }) async {
   final Uint8List derivedKey;
   final Uint8List leftBits;
@@ -77,8 +77,8 @@ Future<NativeDeriveKeyResult> nativeDeriveKey({
         n: kdfParams['n'],
         p: kdfParams['p'],
         r: kdfParams['r'],
-        password: passphrase.plainToU8a(),
         salt: salt.toU8a(),
+        password: passphrase.plainToU8a(),
       ),
     );
 
