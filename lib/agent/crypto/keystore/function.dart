@@ -210,7 +210,10 @@ Future<String> decodePhrase(
   return decryptPhrase(keyStore, psw);
 }
 
-Future<String> decryptCborPhrase(List<int> bytes, String password) async {
+Future<String> decryptCborPhrase(
+  List<int> bytes, {
+  String password = '',
+}) async {
   final recover = Map<String, dynamic>.from(cborDecode(bytes));
   final Uint8List ciphertext = Uint8List.fromList(recover['ciphertext']);
 
@@ -251,10 +254,10 @@ Future<String> decryptCborPhrase(List<int> bytes, String password) async {
 }
 
 Future<Uint8List> encryptCborPhrase(
-  String phrase,
-  String password, [
+  String phrase, {
+  String password = '',
   Map<String, dynamic>? options,
-]) async {
+}) async {
   final String salt = randomAsHex(64);
   final List<int> iv = randomAsU8a(16);
   final String kdf = options?['kdf'] is String ? options!['kdf'] : 'scrypt';

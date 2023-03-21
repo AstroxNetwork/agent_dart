@@ -65,13 +65,17 @@ void main() {
       '123',
     );
     expect(decryptedPhrase, mne2);
-    final encryptedCborPhrase = await encryptCborPhrase(mne2, '123');
 
-    final decryptedCborPhrase = await decryptCborPhrase(
-      encryptedCborPhrase,
-      '123',
+    final encryptedCborPhrase1 = await encryptCborPhrase(mne2);
+    final decryptedCborPhrase1 = await decryptCborPhrase(encryptedCborPhrase1);
+    expect(decryptedCborPhrase1, mne2);
+
+    final encryptedCborPhrase2 = await encryptCborPhrase(mne2, password: '123');
+    final decryptedCborPhrase2 = await decryptCborPhrase(
+      encryptedCborPhrase2,
+      password: '123',
     );
-    expect(decryptedCborPhrase, mne2);
+    expect(decryptedCborPhrase2, mne2);
 
     final p = Phrase.fromString(mne2);
     expect(p.mnemonic, mne2);
