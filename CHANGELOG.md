@@ -7,6 +7,7 @@ that can be found in the LICENSE file. -->
 ## 1.0.0-dev.10
 
 - Migrate `ic0.app` to `icp0.io`.
+- Default to empty password for encrypt/decrypt Cbor messages.
 
 ## 1.0.0-dev.9
 
