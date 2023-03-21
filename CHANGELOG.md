@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.10
+
+- Migrate `ic0.app` to `icp0.io`.
+
 ## 1.0.0-dev.9
 
 - Provide AES-256-GCM encryption/decryption instead of `AES-256-CBC`. (#54)

@@ -1,10 +1,10 @@
 import 'package:agent_dart/agent/auth.dart';
+import 'package:agent_dart/auth_client/auth_client.dart'
+    show identityProviderDefault;
 import 'package:agent_dart/identity/delegation.dart';
 import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart/utils/extension.dart';
 import 'package:agent_dart/utils/is.dart';
-
-const _defaultIdentityProviderUrl = 'https://auth.ic0.app/authorize';
 
 /// Options for {@link createAuthenticationRequestUrl}.
 /// All these options may be limited further by the identity provider,
@@ -52,7 +52,8 @@ class DelegationValidChecks {
 /// options are invalid.
 Uri createAuthenticationRequestUrl(CreateUrlOptions options) {
   final url = Uri.parse(
-    options.identityProvider?.toString() ?? _defaultIdentityProviderUrl,
+    options.identityProvider?.toString() ??
+        '$identityProviderDefault/authorize',
   );
   url.queryParameters.addEntries([
     const MapEntry('response_type', 'token'),
