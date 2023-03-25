@@ -59,7 +59,7 @@ void main() {
       '02f2326544f2040d3985e31db5e7021402c541d3cde911cd20e951852ee4da47',
     );
 
-    final encryptedPhrase = await encodePhrase(mne2, '123');
+    final encryptedPhrase = await encodePhrase(mne2, password: '123');
     final decryptedPhrase = await decodePhrase(
       jsonDecode(encryptedPhrase),
       '123',
