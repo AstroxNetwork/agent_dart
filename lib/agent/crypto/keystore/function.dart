@@ -3,10 +3,10 @@ part of 'key_store.dart';
 const String _algoIdentifier = 'aes-128-ctr';
 
 Future<String> encrypt(
-  String privateKey,
-  String passphrase, [
+  String privateKey, {
+  String? password,
   Map<String, dynamic>? options,
-]) async {
+}) async {
   final Uint8List uuid = Uint8List(16);
   final Uuid uuidParser = const Uuid()..v4buffer(uuid);
 
@@ -30,7 +30,7 @@ Future<String> encrypt(
     message: privateKey,
     useCipherText: null,
     kdfParams: kdfParams,
-    passphrase: passphrase,
+    passphrase: password,
     salt: salt,
   );
 
@@ -50,7 +50,10 @@ Future<String> encrypt(
   return result;
 }
 
-Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
+Future<String> decrypt(
+  Map<String, dynamic> keyStore, {
+  String? password,
+}) async {
   final Uint8List ciphertext =
       (keyStore['crypto']['ciphertext'] as String).toU8a();
   final String kdf = keyStore['crypto']['kdf'];
@@ -66,7 +69,7 @@ Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
     message: null,
     useCipherText: ciphertext,
     kdfParams: kdfParams,
-    passphrase: passphrase,
+    passphrase: password,
     salt: (kdfParams['salt'] as String).replaceAll('0x', ''),
   );
   final String macString = keyStore['crypto']['mac'];
@@ -88,10 +91,10 @@ Future<String> decrypt(Map<String, dynamic> keyStore, String passphrase) async {
 }
 
 Future<String> encryptPhrase(
-  String phrase,
-  String password, [
+  String phrase, {
+  String? password,
   Map<String, dynamic>? options,
-]) async {
+}) async {
   final Uint8List uuid = Uint8List(16);
   final Uuid uuidParser = const Uuid()..v4buffer(uuid);
   final String salt = randomAsHex(64);
@@ -181,26 +184,26 @@ Future<String> decryptPhrase(
 }
 
 Future<String> encodePrivateKey(
-  String prvKey,
-  String psw, [
+  String prvKey, {
+  String? password,
   Map<String, dynamic>? options,
-]) {
-  return encrypt(prvKey, psw, options);
+}) {
+  return encrypt(prvKey, password: password, options: options);
 }
 
 Future<String> decodePrivateKey(
-  Map<String, dynamic> keyStore,
-  String psw,
-) {
-  return decrypt(keyStore, psw);
+  Map<String, dynamic> keyStore, {
+  String? password,
+}) {
+  return decrypt(keyStore, password: password);
 }
 
 Future<String> encodePhrase(
-  String prvKey,
-  String psw, [
+  String prvKey, {
+  String? password,
   Map<String, dynamic>? options,
-]) {
-  return encryptPhrase(prvKey, psw, options);
+}) {
+  return encryptPhrase(prvKey, password: password, options: options);
 }
 
 Future<String> decodePhrase(
@@ -212,7 +215,7 @@ Future<String> decodePhrase(
 
 Future<String> decryptCborPhrase(
   List<int> bytes, {
-  String password = '',
+  String? password,
 }) async {
   final recover = Map<String, dynamic>.from(cborDecode(bytes));
   final Uint8List ciphertext = Uint8List.fromList(recover['ciphertext']);
@@ -255,7 +258,7 @@ Future<String> decryptCborPhrase(
 
 Future<Uint8List> encryptCborPhrase(
   String phrase, {
-  String password = '',
+  String? password,
   Map<String, dynamic>? options,
 }) async {
   final String salt = randomAsHex(64);
