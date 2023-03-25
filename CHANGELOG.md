@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.11
+
+- Unify optional `password` for encrypt/decrypt methods.
+
 ## 1.0.0-dev.10
 
 - Migrate `ic0.app` to `icp0.io`.
