@@ -145,7 +145,7 @@ class ICPAccount extends BaseAccount {
   ECKeys? getEcKeys() => _ecKeys;
 
   Future<void> lock(String? passphrase) async {
-    _keystore = await encodePhrase(_phrase!, passphrase ?? '');
+    _keystore = await encodePhrase(_phrase!, password: passphrase);
     _phrase = null;
     _ecKeys = null;
     _identity = null;
