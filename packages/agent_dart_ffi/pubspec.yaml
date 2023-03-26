@@ -1,0 +1,44 @@
+name: agent_dart_ffi
+description: |
+  An agent library built for Internet Computer,
+  a plugin package for dart and flutter apps.
+  Developers can build ones to interact with Dfinity's blockchain directly.
+repository: https://github.com/AstroxNetwork/agent_dart
+version: 1.0.0
+
+environment:
+  sdk: '>=2.17.0 <3.0.0'
+  flutter: '>=3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_rust_bridge: ^1.72.0
+  ffi: ^2.0.1
+
+dev_dependencies:
+  build_runner: ^2.1.11
+  flutter_lints: ^2.0.1
+  flutter_test:
+    sdk: flutter
+  freezed: ^2.0.3+1
+  ffigen: ^7.2.9
+
+# flutter:
+#   plugin:
+#     platforms:
+#       android:
+#         package: com.astrox.agent_dart
+#         pluginClass: AgentDartPlugin
+#       ios:
+#         pluginClass: AgentDartPlugin
+#       linux:
+#         pluginClass: AgentDartPlugin
+#       macos:
+#         pluginClass: AgentDartPlugin
+#       windows:
+#         pluginClass: AgentDartPlugin
+
+false_secrets:
+  - /rust/ed_compact/src/pem.rs
+  - /test/fixture/*.pem
