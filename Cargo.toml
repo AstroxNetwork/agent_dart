@@ -1,0 +1,9 @@
+[workspace]
+members = [
+    "packages/agent_dart_ffi/native/agent_dart",
+    "packages/agent_dart_ffi/native/ed_compact",
+]
+
+[profile.release]
+lto = true
+opt-level = 'z'
