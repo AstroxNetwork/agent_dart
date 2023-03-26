@@ -22,7 +22,9 @@ class AgentDartFFI {
   AgentDartFFI._();
 
   static final AgentDartFFI _instance = AgentDartFFI._();
+  static String? dylib;
 
   static AgentDartImpl get impl => _instance._impl;
-  late final AgentDartImpl _impl = AgentDartImpl(createLibraryImpl());
+  late final AgentDartImpl _impl = AgentDartImpl(
+      dylib == null ? createLibraryImpl() : DynamicLibrary.open(dylib!));
 }
