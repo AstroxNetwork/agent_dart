@@ -18,21 +18,6 @@ dev_dependencies:
   freezed: ^2.0.3+1
   ffigen: ^7.2.9
 
-# flutter:
-#   plugin:
-#     platforms:
-#       android:
-#         package: com.astrox.agent_dart
-#         pluginClass: AgentDartPlugin
-#       ios:
-#         pluginClass: AgentDartPlugin
-#       linux:
-#         pluginClass: AgentDartPlugin
-#       macos:
-#         pluginClass: AgentDartPlugin
-#       windows:
-#         pluginClass: AgentDartPlugin
-
 false_secrets:
   - /rust/ed_compact/src/pem.rs
   - /test/fixture/*.pem
