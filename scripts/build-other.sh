@@ -17,6 +17,8 @@ zig_build () {
     cargo zigbuild --target "$TARGET" -r
     mkdir "$PLATFORM_NAME"
     cp "../target/$TARGET/release/$LIBNAME" "$PLATFORM_NAME/"
+    mkdir -p ./dylib/$TARGET 
+    cp "../target/$TARGET/release/$LIBNAME" "./dylib/$TARGET/"
 }
 
 win_build () {
@@ -27,6 +29,8 @@ win_build () {
     cargo xwin build --target "$TARGET" -r
     mkdir "$PLATFORM_NAME"
     cp "../target/$TARGET/release/$LIBNAME" "$PLATFORM_NAME/"
+    mkdir -p ./dylib/$TARGET 
+    cp "../target/$TARGET/release/$LIBNAME" "./dylib/$TARGET/"
 }
 
 # Build all the dynamic libraries

@@ -2,6 +2,9 @@
 
 # Setup
 BUILD_DIR=platform-build
+LIB_NAME=agent_dart
+
+
 mkdir $BUILD_DIR
 cd $BUILD_DIR
 
@@ -12,7 +15,12 @@ for TARGET in \
 do
     rustup target add $TARGET
     cargo build -r --target=$TARGET
+    mkdir -p ./dylib/$TARGET
+    cp ../target/$TARGET/release/lib${LIB_NAME}.dylib ./dylib/$TARGET/lib${LIB_NAME}.dylib
 done
+
+
+
 
 # Create XCFramework zip
 FRAMEWORK="AgentDart.xcframework"
