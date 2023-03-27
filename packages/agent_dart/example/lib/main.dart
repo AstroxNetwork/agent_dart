@@ -1,7 +1,7 @@
 // import 'package:flutter/material.dart';
 // import 'dart:async';
 
-// import 'package:flutter_agent_dart/flutter_agent_dart.dart' as flutter_agent_dart;
+// import 'package:agent_dart/agent_dart.dart' as agent_dart;
 
 // void main() {
 //   runApp(const MyApp());
@@ -21,8 +21,8 @@
 //   @override
 //   void initState() {
 //     super.initState();
-//     sumResult = flutter_agent_dart.sum(1, 2);
-//     sumAsyncResult = flutter_agent_dart.sumAsync(3, 4);
+//     sumResult = agent_dart.sum(1, 2);
+//     sumAsyncResult = agent_dart.sumAsync(3, 4);
 //   }
 
 //   @override
