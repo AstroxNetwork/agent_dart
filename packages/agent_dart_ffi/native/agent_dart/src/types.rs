@@ -1,3 +1,4 @@
+use crate::api::ScriptAmount;
 use serde::Serialize;
 
 #[derive(Clone, Debug)]
@@ -198,4 +199,69 @@ pub struct PBKDFDeriveReq {
 pub struct MACDeriveReq {
     pub derived_left_bits: Vec<u8>,
     pub cipher_text: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct PsbtToTxidReq {
+    pub psbt_str: String,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct PsbtToTxReq {
+    pub psbt_str: String,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct PsbtFreeRateReq {
+    pub psbt_str: String,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct PsbtFreeAmountReq {
+    pub psbt_str: String,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct PsbtCombineReq {
+    pub psbt_str: String,
+    pub other: String,
+}
+
+type Txid = String;
+
+pub struct OutPoint {
+    /// The referenced transaction's txid.
+    pub txid: Txid,
+    /// The index of the referenced output in its transaction's vout.
+    pub vout: u32,
+}
+
+pub struct TxBulderReq {
+    pub wallet_req: PsbtWalletReq,
+    pub recipients: Vec<ScriptAmount>,
+    pub utxos: Vec<OutPoint>,
+    pub unspendable: Vec<OutPoint>,
+    pub manually_selected_only: bool,
+    pub only_spend_change: bool,
+    pub do_not_spend_change: bool,
+    pub fee_rate: Option<f32>,
+    pub fee_absolute: Option<u64>,
+    pub drain_wallet: bool,
+    pub drain_to: Option<String>,
+    pub enable_rbf: bool,
+    pub n_sequence: Option<u32>,
+    pub data: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct GetAddressReq {
+    pub public_key: String,
+    pub network: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct PsbtWalletReq {
+    pub prv: String,
+    pub address_type: String,
+    pub network: Option<String>,
 }

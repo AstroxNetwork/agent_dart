@@ -1,18 +1,23 @@
+use crate::bdk::psbt::Transaction;
+pub use crate::bdk::types::*;
 use crate::bls_ffi::BlsFFI;
 use crate::ed25519::ED25519FFI;
 use crate::keyring::KeyRingFFI;
 use crate::keystore::KeystoreFFI;
 use crate::p256::{P256IdentityExport, P256FFI};
+use crate::psbt::{asm_to_scriptpubkey, PsbtFFI};
 use crate::schnorr::{SchnorrFFI, SchnorrIdentityExport};
 use crate::secp256k1::{Secp256k1FFI, Secp256k1IdentityExport};
 use crate::types::{
     AesDecryptReq, AesEncryptReq, BLSVerifyReq, ED25519FromSeedReq, ED25519Res, ED25519SignReq,
-    ED25519VerifyReq, KeyDerivedRes, P256FromSeedReq, P256ShareSecretReq, P256SignReq,
-    P256SignWithSeedReq, P256VerifyReq, PBKDFDeriveReq, PhraseToSeedReq, SchnorrFromSeedReq,
-    SchnorrSignReq, SchnorrSignWithSeedReq, SchnorrVerifyReq, ScriptDeriveReq,
+    ED25519VerifyReq, GetAddressReq, KeyDerivedRes, P256FromSeedReq, P256ShareSecretReq,
+    P256SignReq, P256SignWithSeedReq, P256VerifyReq, PBKDFDeriveReq, PhraseToSeedReq,
+    PsbtCombineReq, PsbtFreeAmountReq, PsbtFreeRateReq, PsbtToTxReq, PsbtToTxidReq, PsbtWalletReq,
+    SchnorrFromSeedReq, SchnorrSignReq, SchnorrSignWithSeedReq, SchnorrVerifyReq, ScriptDeriveReq,
     Secp256k1FromSeedReq, Secp256k1RecoverReq, Secp256k1ShareSecretReq, Secp256k1SignReq,
-    Secp256k1SignWithSeedReq, Secp256k1VerifyReq, SeedToKeyReq, SignatureFFI,
+    Secp256k1SignWithSeedReq, Secp256k1VerifyReq, SeedToKeyReq, SignatureFFI, TxBulderReq,
 };
+use std::str::FromStr;
 
 /// --------------------
 /// mnemonic
@@ -170,4 +175,118 @@ pub fn pbkdf2_derive_key(req: PBKDFDeriveReq) -> KeyDerivedRes {
 
 pub fn scrypt_derive_key(req: ScriptDeriveReq) -> KeyDerivedRes {
     KeystoreFFI::scrypt_derive_key(req)
+}
+
+//=========Transaction===========
+pub fn new_transaction(tx: Vec<u8>) -> Vec<u8> {
+    let res = Transaction::new(tx).expect("Cannot create transaction");
+    res.serialize()
+}
+
+/// ---------------------
+/// psbt
+/// ---------------------
+///
+pub fn psbt_to_txid(req: PsbtToTxidReq) -> anyhow::Result<String> {
+    PsbtFFI::psbt_to_txid(req.psbt_str)
+}
+
+pub fn psbt_extract_tx(req: PsbtToTxReq) -> anyhow::Result<Vec<u8>> {
+    PsbtFFI::extract_tx(req.psbt_str)
+}
+
+pub fn psbt_get_fee_rate(req: PsbtFreeRateReq) -> Option<f32> {
+    PsbtFFI::get_psbt_fee_rate(req.psbt_str)
+}
+
+pub fn psbt_get_fee_amount(req: PsbtFreeAmountReq) -> Option<u64> {
+    PsbtFFI::get_fee_amount(req.psbt_str)
+}
+
+pub fn psbt_combine_psbt(req: PsbtCombineReq) -> anyhow::Result<String> {
+    PsbtFFI::combine_psbt(req.psbt_str, req.other)
+}
+
+pub fn psbt_get_address(req: GetAddressReq) -> anyhow::Result<BitcoinAddress> {
+    PsbtFFI::get_address_from_pubkey(
+        req.public_key,
+        req.network
+            .map_or_else(|| None, |e| Some(bitcoin::Network::from_str(&e).unwrap())),
+    )
+}
+
+pub fn psbt_tx_builder_finish(req: TxBulderReq) -> BdkTxBuilderResult {
+    PsbtFFI::tx_builder_finish(
+        req.wallet_req,
+        req.recipients,
+        req.utxos,
+        req.unspendable,
+        req.manually_selected_only,
+        req.only_spend_change,
+        req.do_not_spend_change,
+        req.fee_rate,
+        req.fee_absolute,
+        req.drain_wallet,
+        req.drain_to,
+        req.enable_rbf,
+        req.n_sequence,
+        req.data,
+    )
+    .unwrap()
+}
+
+//========Wallet==========
+pub fn psbt_wallet_get_address(wallet: PsbtWalletReq, address_index: AddressIndex) -> AddressInfo {
+    PsbtFFI::get_address(
+        wallet.prv,
+        wallet.address_type,
+        wallet.network,
+        address_index,
+    )
+}
+
+pub fn psbt_wallet_internalized_address(
+    wallet: PsbtWalletReq,
+    address_index: AddressIndex,
+) -> AddressInfo {
+    PsbtFFI::get_internalized_address(
+        wallet.prv,
+        wallet.address_type,
+        wallet.network,
+        address_index,
+    )
+}
+//
+// pub fn psbt_wallet_get_balance(wallet: PsbtWalletReq) -> Balance {
+//     PsbtFFI::get_balance(wallet.prv, wallet.address_type, wallet.network)
+// }
+//
+// pub fn psbt_wallet_get_txs(wallet: PsbtWalletReq) -> anyhow::Result<Vec<TransactionDetails>> {
+//     PsbtFFI::get_transactions(wallet.prv, wallet.address_type, wallet.network)
+// }
+//
+// pub fn psbt_wallet_list_unspent(
+//     wallet: PsbtWalletReq,
+// ) -> anyhow::Result<Vec<crate::bdk::wallet::LocalUtxo>> {
+//     PsbtFFI::list_unspent(wallet.prv, wallet.address_type, wallet.network)
+// }
+//
+// pub fn psbt_wallet_list_unspent_ouput(
+//     wallet: PsbtWalletReq,
+// ) -> anyhow::Result<Vec<crate::bdk::wallet::LocalUtxo>> {
+//     PsbtFFI::list_unspent_outputs(wallet.prv, wallet.address_type, wallet.network)
+// }
+
+pub fn psbt_wallet_sign(wallet: PsbtWalletReq, psbt: String, is_multi_sig: bool) -> Option<String> {
+    PsbtFFI::sign(
+        wallet.prv,
+        wallet.address_type,
+        wallet.network,
+        psbt,
+        is_multi_sig,
+    )
+}
+
+pub fn psbt_util_asm_to_hex(asm: String) -> String {
+    asm_to_scriptpubkey(&asm)
 }

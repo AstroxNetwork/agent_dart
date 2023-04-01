@@ -16,7 +16,6 @@ impl ED25519FFI {
                 }),
             )
             .pk
-            .as_ref()
             .to_vec(),
         }
     }

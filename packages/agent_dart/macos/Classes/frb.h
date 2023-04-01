@@ -335,6 +335,98 @@ typedef struct wire_ScriptDeriveReq {
   uint32_t r;
 } wire_ScriptDeriveReq;
 
+typedef struct wire_PsbtToTxidReq {
+  struct wire_uint_8_list *psbt_str;
+} wire_PsbtToTxidReq;
+
+typedef struct wire_PsbtToTxReq {
+  struct wire_uint_8_list *psbt_str;
+} wire_PsbtToTxReq;
+
+typedef struct wire_PsbtFreeRateReq {
+  struct wire_uint_8_list *psbt_str;
+} wire_PsbtFreeRateReq;
+
+typedef struct wire_PsbtFreeAmountReq {
+  struct wire_uint_8_list *psbt_str;
+} wire_PsbtFreeAmountReq;
+
+typedef struct wire_PsbtCombineReq {
+  struct wire_uint_8_list *psbt_str;
+  struct wire_uint_8_list *other;
+} wire_PsbtCombineReq;
+
+typedef struct wire_GetAddressReq {
+  struct wire_uint_8_list *public_key;
+  struct wire_uint_8_list *network;
+} wire_GetAddressReq;
+
+typedef struct wire_PsbtWalletReq {
+  struct wire_uint_8_list *prv;
+  struct wire_uint_8_list *address_type;
+  struct wire_uint_8_list *network;
+} wire_PsbtWalletReq;
+
+typedef struct wire_ScriptAmount {
+  struct wire_uint_8_list *script;
+  uint64_t amount;
+} wire_ScriptAmount;
+
+typedef struct wire_list_script_amount {
+  struct wire_ScriptAmount *ptr;
+  int32_t len;
+} wire_list_script_amount;
+
+typedef struct wire_OutPoint {
+  struct wire_uint_8_list *txid;
+  uint32_t vout;
+} wire_OutPoint;
+
+typedef struct wire_list_out_point {
+  struct wire_OutPoint *ptr;
+  int32_t len;
+} wire_list_out_point;
+
+typedef struct wire_TxBulderReq {
+  struct wire_PsbtWalletReq wallet_req;
+  struct wire_list_script_amount *recipients;
+  struct wire_list_out_point *utxos;
+  struct wire_list_out_point *unspendable;
+  bool manually_selected_only;
+  bool only_spend_change;
+  bool do_not_spend_change;
+  float *fee_rate;
+  uint64_t *fee_absolute;
+  bool drain_wallet;
+  struct wire_uint_8_list *drain_to;
+  bool enable_rbf;
+  uint32_t *n_sequence;
+  struct wire_uint_8_list *data;
+} wire_TxBulderReq;
+
+typedef struct wire_AddressIndex_New {
+
+} wire_AddressIndex_New;
+
+typedef struct wire_AddressIndex_LastUnused {
+
+} wire_AddressIndex_LastUnused;
+
+typedef struct wire_AddressIndex_Peek {
+  uint32_t index;
+} wire_AddressIndex_Peek;
+
+typedef union AddressIndexKind {
+  struct wire_AddressIndex_New *New;
+  struct wire_AddressIndex_LastUnused *LastUnused;
+  struct wire_AddressIndex_Peek *Peek;
+} AddressIndexKind;
+
+typedef struct wire_AddressIndex {
+  int32_t tag;
+  union AddressIndexKind *kind;
+} wire_AddressIndex;
+
 typedef struct DartCObject *WireSyncReturn;
 
 typedef int64_t Chunk;
@@ -415,6 +507,39 @@ void wire_pbkdf2_derive_key(int64_t port_, struct wire_PBKDFDeriveReq *req);
 
 void wire_scrypt_derive_key(int64_t port_, struct wire_ScriptDeriveReq *req);
 
+void wire_new_transaction(int64_t port_, struct wire_uint_8_list *tx);
+
+void wire_psbt_to_txid(int64_t port_, struct wire_PsbtToTxidReq *req);
+
+void wire_psbt_extract_tx(int64_t port_, struct wire_PsbtToTxReq *req);
+
+void wire_psbt_get_fee_rate(int64_t port_, struct wire_PsbtFreeRateReq *req);
+
+void wire_psbt_get_fee_amount(int64_t port_, struct wire_PsbtFreeAmountReq *req);
+
+void wire_psbt_combine_psbt(int64_t port_, struct wire_PsbtCombineReq *req);
+
+void wire_psbt_get_address(int64_t port_, struct wire_GetAddressReq *req);
+
+void wire_psbt_tx_builder_finish(int64_t port_, struct wire_TxBulderReq *req);
+
+void wire_psbt_wallet_get_address(int64_t port_,
+                                  struct wire_PsbtWalletReq *wallet,
+                                  struct wire_AddressIndex *address_index);
+
+void wire_psbt_wallet_internalized_address(int64_t port_,
+                                           struct wire_PsbtWalletReq *wallet,
+                                           struct wire_AddressIndex *address_index);
+
+void wire_psbt_wallet_sign(int64_t port_,
+                           struct wire_PsbtWalletReq *wallet,
+                           struct wire_uint_8_list *psbt,
+                           bool is_multi_sig);
+
+void wire_psbt_util_asm_to_hex(int64_t port_, struct wire_uint_8_list *asm);
+
+struct wire_AddressIndex *new_box_autoadd_address_index_0(void);
+
 struct wire_AesDecryptReq *new_box_autoadd_aes_decrypt_req_0(void);
 
 struct wire_AesEncryptReq *new_box_autoadd_aes_encrypt_req_0(void);
@@ -427,6 +552,10 @@ struct wire_ED25519SignReq *new_box_autoadd_ed_25519_sign_req_0(void);
 
 struct wire_ED25519VerifyReq *new_box_autoadd_ed_25519_verify_req_0(void);
 
+float *new_box_autoadd_f32_0(float value);
+
+struct wire_GetAddressReq *new_box_autoadd_get_address_req_0(void);
+
 struct wire_P256FromSeedReq *new_box_autoadd_p_256_from_seed_req_0(void);
 
 struct wire_P256ShareSecretReq *new_box_autoadd_p_256_share_secret_req_0(void);
@@ -438,6 +567,18 @@ struct wire_P256VerifyReq *new_box_autoadd_p_256_verify_req_0(void);
 struct wire_PBKDFDeriveReq *new_box_autoadd_pbkdf_derive_req_0(void);
 
 struct wire_PhraseToSeedReq *new_box_autoadd_phrase_to_seed_req_0(void);
+
+struct wire_PsbtCombineReq *new_box_autoadd_psbt_combine_req_0(void);
+
+struct wire_PsbtFreeAmountReq *new_box_autoadd_psbt_free_amount_req_0(void);
+
+struct wire_PsbtFreeRateReq *new_box_autoadd_psbt_free_rate_req_0(void);
+
+struct wire_PsbtToTxReq *new_box_autoadd_psbt_to_tx_req_0(void);
+
+struct wire_PsbtToTxidReq *new_box_autoadd_psbt_to_txid_req_0(void);
+
+struct wire_PsbtWalletReq *new_box_autoadd_psbt_wallet_req_0(void);
 
 struct wire_SchnorrFromSeedReq *new_box_autoadd_schnorr_from_seed_req_0(void);
 
@@ -459,9 +600,21 @@ struct wire_Secp256k1VerifyReq *new_box_autoadd_secp_256_k_1_verify_req_0(void);
 
 struct wire_SeedToKeyReq *new_box_autoadd_seed_to_key_req_0(void);
 
+struct wire_TxBulderReq *new_box_autoadd_tx_bulder_req_0(void);
+
+uint32_t *new_box_autoadd_u32_0(uint32_t value);
+
+uint64_t *new_box_autoadd_u64_0(uint64_t value);
+
 uint8_t *new_box_autoadd_u8_0(uint8_t value);
 
+struct wire_list_out_point *new_list_out_point_0(int32_t len);
+
+struct wire_list_script_amount *new_list_script_amount_0(int32_t len);
+
 struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
+
+union AddressIndexKind *inflate_AddressIndex_Peek(void);
 
 void free_WireSyncReturn(WireSyncReturn ptr);
 
@@ -495,18 +648,39 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_aes_256_gcm_decrypt);
     dummy_var ^= ((int64_t) (void*) wire_pbkdf2_derive_key);
     dummy_var ^= ((int64_t) (void*) wire_scrypt_derive_key);
+    dummy_var ^= ((int64_t) (void*) wire_new_transaction);
+    dummy_var ^= ((int64_t) (void*) wire_psbt_to_txid);
+    dummy_var ^= ((int64_t) (void*) wire_psbt_extract_tx);
+    dummy_var ^= ((int64_t) (void*) wire_psbt_get_fee_rate);
+    dummy_var ^= ((int64_t) (void*) wire_psbt_get_fee_amount);
+    dummy_var ^= ((int64_t) (void*) wire_psbt_combine_psbt);
+    dummy_var ^= ((int64_t) (void*) wire_psbt_get_address);
+    dummy_var ^= ((int64_t) (void*) wire_psbt_tx_builder_finish);
+    dummy_var ^= ((int64_t) (void*) wire_psbt_wallet_get_address);
+    dummy_var ^= ((int64_t) (void*) wire_psbt_wallet_internalized_address);
+    dummy_var ^= ((int64_t) (void*) wire_psbt_wallet_sign);
+    dummy_var ^= ((int64_t) (void*) wire_psbt_util_asm_to_hex);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_address_index_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_aes_decrypt_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_aes_encrypt_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_bls_verify_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_ed_25519_from_seed_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_ed_25519_sign_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_ed_25519_verify_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_f32_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_get_address_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_p_256_from_seed_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_p_256_share_secret_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_p_256_sign_with_seed_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_p_256_verify_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_pbkdf_derive_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_phrase_to_seed_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_psbt_combine_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_psbt_free_amount_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_psbt_free_rate_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_psbt_to_tx_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_psbt_to_txid_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_psbt_wallet_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_schnorr_from_seed_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_schnorr_sign_with_seed_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_schnorr_verify_req_0);
@@ -517,8 +691,14 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_sign_with_seed_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_verify_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_seed_to_key_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_tx_bulder_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_u32_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_u64_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_u8_0);
+    dummy_var ^= ((int64_t) (void*) new_list_out_point_0);
+    dummy_var ^= ((int64_t) (void*) new_list_script_amount_0);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
+    dummy_var ^= ((int64_t) (void*) inflate_AddressIndex_Peek);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturn);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);
     dummy_var ^= ((int64_t) (void*) get_dart_object);
