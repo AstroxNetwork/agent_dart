@@ -16,18 +16,28 @@ abstract class CoinType {
   static const icp = 223;
   static const eth = 60;
   static const btc = 0;
+  static const nostr = 1237;
+}
+
+abstract class Bip {
+  static const bip44 = 44;
+  static const bip49 = 49;
+  static const bip84 = 84;
+  static const bip86 = 86;
 }
 
 class ECKeys {
-  const ECKeys({
-    this.ecChainCode,
-    this.ecPrivateKey,
-    this.ecPublicKey,
-    this.ecSchnorrPublicKey,
-    this.ecP256PublicKey,
-    this.ecCompressedPublicKey,
-    this.extendedECPublicKey,
-  });
+  const ECKeys(
+      {this.ecChainCode,
+      this.ecPrivateKey,
+      this.ecPublicKey,
+      this.ecSchnorrPublicKey,
+      this.ecP256PublicKey,
+      this.ecCompressedPublicKey,
+      this.extendedECPublicKey,
+      this.prvBase58,
+      this.masterBase58,
+      this.descriptor});
 
   final Uint8List? ecChainCode;
   final Uint8List? ecPrivateKey;
@@ -36,6 +46,9 @@ class ECKeys {
   final Uint8List? ecSchnorrPublicKey;
   final Uint8List? ecCompressedPublicKey;
   final String? extendedECPublicKey;
+  final String? masterBase58;
+  final String? prvBase58;
+  final String? descriptor;
 
   Uint8List? get accountId =>
       ecPublicKey != null ? getAccountIdFromRawPublicKey(ecPublicKey!) : null;
@@ -44,8 +57,11 @@ class ECKeys {
       ecPublicKey != null ? getPrincipalFromECPublicKey(ecPublicKey!) : null;
 }
 
-String getPathWithCoinType({int coinType = CoinType.icp}) {
-  return "m/44'/$coinType'/0'";
+String getPathWithCoinType({
+  int root = Bip.bip44,
+  int coinType = CoinType.icp,
+}) {
+  return "m/$root'/$coinType'/0'";
 }
 
 String generateMnemonic({int bitLength = 128}) {
@@ -96,16 +112,20 @@ ECKeys getECKeys(
   return ecKeysfromSeed(seed, index: index, coinType: coinType);
 }
 
-Future<ECKeys> getECKeysAsync(
-  String phrase, {
-  String passphrase = '',
-  int index = 0,
-  int coinType = CoinType.icp,
-}) async {
-  final basePath = getPathWithCoinType(coinType: coinType);
+Future<ECKeys> getECKeysAsync(String phrase,
+    {String passphrase = '',
+    int index = 0,
+    int coinType = CoinType.icp,
+    int root = Bip.bip44}) async {
+  final basePath = getPathWithCoinType(root: root, coinType: coinType);
   final seed = await AgentDartFFI.impl.mnemonicPhraseToSeed(
     req: PhraseToSeedReq(phrase: phrase, password: passphrase),
   );
+
+  final node = bip32.BIP32.fromSeed(seed);
+
+  final masterPrv = node.derivePath('$basePath/0/$index');
+  final masterPrvRaw = node.derivePath(basePath);
 
   final prv = await AgentDartFFI.impl.mnemonicSeedToKey(
     req: SeedToKeyReq(seed: seed, path: '$basePath/0/$index'),
@@ -120,6 +140,9 @@ Future<ECKeys> getECKeysAsync(
     req: P256FromSeedReq(seed: prv),
   );
   return ECKeys(
+    descriptor: "wpkh(${node.toBase58()}/${basePath.replaceAll("m/", "")}/0/*)",
+    masterBase58: masterPrvRaw.toBase58(),
+    prvBase58: masterPrv.toBase58(),
     ecPrivateKey: prv,
     ecPublicKey: Secp256k1PublicKey.fromDer(kp.derEncodedPublicKey).toRaw(),
     ecSchnorrPublicKey:
@@ -148,12 +171,9 @@ Future<ECKeys> getECkeyFromPrivateKey(Uint8List prv) async {
   );
 }
 
-ECKeys ecKeysfromSeed(
-  Uint8List seed, {
-  int index = 0,
-  int coinType = CoinType.icp,
-}) {
-  final basePath = getPathWithCoinType(coinType: coinType);
+ECKeys ecKeysfromSeed(Uint8List seed,
+    {int index = 0, int coinType = CoinType.icp, int root = Bip.bip44}) {
+  final basePath = getPathWithCoinType(root: root, coinType: coinType);
   final node = bip32.BIP32.fromSeed(seed);
 
   final masterPrv = node.derivePath('$basePath/0/$index');
@@ -161,10 +181,14 @@ ECKeys ecKeysfromSeed(
   final xpub = masterPrvRaw.toBase58();
 
   final prv = masterPrv.privateKey;
+
   final pub = prv != null ? getPublicFromPrivateKey(prv) : null;
   final pubCompressed = prv != null ? getPublicFromPrivateKey(prv, true) : null;
 
   return ECKeys(
+    descriptor: "wpkh(${node.toBase58()}/${basePath.replaceAll("m/", "")}/0/*)",
+    masterBase58: masterPrvRaw.toBase58(),
+    prvBase58: masterPrv.toBase58(),
     ecPrivateKey: prv,
     ecPublicKey: pub,
     ecCompressedPublicKey: pubCompressed,

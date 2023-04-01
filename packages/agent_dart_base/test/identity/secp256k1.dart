@@ -1,7 +1,11 @@
 import 'package:agent_dart_base/agent_dart_base.dart';
+import 'package:agent_dart_base/identity/psbt.dart';
 import 'package:test/test.dart';
 
+import '../test_utils.dart';
+
 void main() {
+  matchFFI();
   secp256k1Test();
 }
 

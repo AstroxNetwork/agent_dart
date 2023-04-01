@@ -36,6 +36,14 @@ class Secp256k1KeyIdentity extends SignIdentity {
     this._privateKey,
   ) : _publicKey = Secp256k1PublicKey.from(publicKey);
 
+  Secp256k1KeyIdentity.from(
+      Secp256k1KeyIdentity other, this._publicKey, this._privateKey) {
+    Secp256k1KeyIdentity(
+      other.getPublicKey(),
+      other.getKeyPair().secretKey,
+    );
+  }
+
   factory Secp256k1KeyIdentity.fromParsedJson(List<String> obj) {
     return Secp256k1KeyIdentity(
       Secp256k1PublicKey.fromRaw(blobFromHex(obj[0])),

@@ -32,9 +32,11 @@ Future<Map<String, dynamic>> defaultFetch({
     final uri = Uri.parse(host ?? '$defaultHost$endpoint');
     Future<http.Response> fr;
     final compactHeaders = {...?baseHeaders, ...?headers};
+
     if (cbor) {
       compactHeaders['Content-Type'] = 'application/cbor';
     }
+
     switch (method) {
       case FetchMethod.post:
         fr = client.post(uri, headers: compactHeaders, body: body);
