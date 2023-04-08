@@ -53,6 +53,7 @@ Future<BinaryBlob> pollForResponse(
         [...path, blobFromText('reject_message')],
       )!.u8aToString();
       throw PollingResponseRejectedException(
+        canisterId: canisterId,
         requestId: requestIdToHex(requestId),
         status: status,
         rejectCode: rejectCode,
@@ -63,6 +64,7 @@ Future<BinaryBlob> pollForResponse(
       // This is _technically_ not an error, but we still didn't see the
       // `Replied` status so we don't know the result and cannot decode it.
       throw PollingResponseDoneException(
+        canisterId: canisterId,
         requestId: requestIdToHex(requestId),
         status: status,
         caller: caller,
@@ -72,24 +74,29 @@ Future<BinaryBlob> pollForResponse(
 
 class PollingResponseException implements Exception {
   const PollingResponseException({
+    required this.canisterId,
     required this.requestId,
     required this.status,
     this.caller,
   });
 
+  final Principal canisterId;
   final String requestId;
   final RequestStatusResponseStatus status;
   final Principal? caller;
 
   @override
   String toString() {
-    return 'Call from [$caller] was ${status.name}:\n'
-        '  Request ID: $requestId\n';
+    return 'Call was ${status.name}:\n'
+        '  Canister ID: $requestId\n'
+        '   Request ID: $requestId\n'
+        '       Caller: $caller';
   }
 }
 
 class PollingResponseDoneException extends PollingResponseException {
   const PollingResponseDoneException({
+    required super.canisterId,
     required super.requestId,
     required super.status,
     super.caller,
@@ -97,14 +104,16 @@ class PollingResponseDoneException extends PollingResponseException {
 
   @override
   String toString() {
-    return 'Call from [$caller] was marked as ${status.name}'
-        'but we never saw the reply:\n'
-        '  Request ID: $requestId\n';
+    return 'Call was marked as ${status.name} but we never saw the reply:\n'
+        '  Canister ID: $requestId\n'
+        '   Request ID: $requestId\n'
+        '       Caller: $caller';
   }
 }
 
 class PollingResponseRejectedException extends PollingResponseException {
   const PollingResponseRejectedException({
+    required super.canisterId,
     required super.requestId,
     required super.status,
     required this.rejectCode,
@@ -118,8 +127,10 @@ class PollingResponseRejectedException extends PollingResponseException {
   @override
   String toString() {
     return 'Call from [$caller] was ${status.name}:\n'
-        '  Request ID: $requestId\n'
-        '        Code: $rejectCode\n'
-        '     Message: $rejectMessage\n';
+        '  Canister ID: $requestId\n'
+        '   Request ID: $requestId\n'
+        '       Caller: $caller\n'
+        '         Code: $rejectCode\n'
+        '      Message: $rejectMessage';
   }
 }
