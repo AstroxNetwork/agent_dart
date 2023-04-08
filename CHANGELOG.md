@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.12
+
+- Add the potential `PollingResponseException.caller` field.
+
 ## 1.0.0-dev.11
 
 - Unify optional `password` for encrypt/decrypt methods.
