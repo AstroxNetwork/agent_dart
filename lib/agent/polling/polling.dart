@@ -88,9 +88,9 @@ class PollingResponseException implements Exception {
   @override
   String toString() {
     return 'Call was ${status.name}:\n'
-        '  Canister ID: $requestId\n'
-        '   Request ID: $requestId\n'
-        '       Caller: $caller';
+        '|- Canister ID: $requestId\n'
+        '|-- Request ID: $requestId\n'
+        '|------ Caller: $caller';
   }
 }
 
@@ -105,9 +105,9 @@ class PollingResponseDoneException extends PollingResponseException {
   @override
   String toString() {
     return 'Call was marked as ${status.name} but we never saw the reply:\n'
-        '  Canister ID: $requestId\n'
-        '   Request ID: $requestId\n'
-        '       Caller: $caller';
+        '|- Canister ID: $requestId\n'
+        '|-- Request ID: $requestId\n'
+        '|------ Caller: $caller';
   }
 }
 
@@ -127,10 +127,10 @@ class PollingResponseRejectedException extends PollingResponseException {
   @override
   String toString() {
     return 'Call from [$caller] was ${status.name}:\n'
-        '  Canister ID: $requestId\n'
-        '   Request ID: $requestId\n'
-        '       Caller: $caller\n'
-        '         Code: $rejectCode\n'
-        '      Message: $rejectMessage';
+        '|- Canister ID: $requestId\n'
+        '|-- Request ID: $requestId\n'
+        '|------ Caller: $caller'
+        '|-------- Code: $rejectCode\n'
+        '|----- Message: $rejectMessage';
   }
 }
