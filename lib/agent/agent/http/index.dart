@@ -164,6 +164,8 @@ class HttpAgent implements Agent {
   @override
   BinaryBlob? rootKey = blobFromHex(_icRootKey);
 
+  Identity? get identity => _identity;
+
   void setPipeline(List<HttpAgentRequestTransformFn> pl) {
     _pipeline = pl;
   }
