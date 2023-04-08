@@ -21,7 +21,7 @@ class Counter extends ActorHook {
     return Counter()..setActor(_actor);
   }
 
-  setActor(CanisterActor _actor) {
+  void setActor(CanisterActor _actor) {
     actor = _actor;
   }
 

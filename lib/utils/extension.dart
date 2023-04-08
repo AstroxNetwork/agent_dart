@@ -122,6 +122,4 @@ extension AgentIntExtension on int {
 
   BigInt bitNot({int? bitLength}) =>
       bn_util.bitnot(toBn(), bitLength: bitLength);
-
-  static get max => 4294967296;
 }
