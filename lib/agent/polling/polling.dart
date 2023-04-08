@@ -126,10 +126,10 @@ class PollingResponseRejectedException extends PollingResponseException {
 
   @override
   String toString() {
-    return 'Call from [$caller] was ${status.name}:\n'
+    return 'Call was ${status.name}:\n'
         '|- Canister ID: $requestId\n'
         '|-- Request ID: $requestId\n'
-        '|------ Caller: $caller'
+        '|------ Caller: $caller\n'
         '|-------- Code: $rejectCode\n'
         '|----- Message: $rejectMessage';
   }
