@@ -6,7 +6,7 @@ that can be found in the LICENSE file. -->
 
 ## 1.0.0-dev.12
 
-- Add the potential `PollingResponseException.caller` field.
+- Add `canisterId` and `caller` for `PollingResponseException`.
 
 ## 1.0.0-dev.11
 
