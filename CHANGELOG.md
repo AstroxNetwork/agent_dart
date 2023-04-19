@@ -4,13 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
-## 1.0.0-dev.13
-
-- Add HttpAgent.`fromUri` factory.
-
 ## 1.0.0-dev.12
 
 - Add `canisterId` and `caller` for `PollingResponseException`.
+- Add HttpAgent.`fromUri` factory.
 - Declare return types for fields and methods.
 
 ## 1.0.0-dev.11
