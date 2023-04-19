@@ -182,7 +182,7 @@ Uint8List bytesUnwrapDer(Uint8List derEncoded, Uint8List oid) {
   int offset = 0;
   final buf = Uint8List.fromList(derEncoded);
 
-  check(int expected, String name) {
+  void check(int expected, String name) {
     if (buf[offset] != expected) {
       throw ArgumentError.value(
         buf[offset],

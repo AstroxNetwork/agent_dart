@@ -11,7 +11,9 @@ import 'package:pointycastle/ecc/curves/secp256k1.dart';
 
 final ECCurve_secp256k1 secp256k1Params = ECCurve_secp256k1();
 
-abstract class CoinType {
+class CoinType {
+  const CoinType._();
+
   static const icp = 223;
   static const eth = 60;
   static const btc = 0;
