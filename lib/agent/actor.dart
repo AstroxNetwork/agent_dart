@@ -223,10 +223,7 @@ class Actor {
     return Principal.from(actor.metadata.config!.canisterId);
   }
 
-  static void install(
-    FieldOptions fields,
-    ActorConfig config,
-  ) async {
+  static Future<void> install(FieldOptions fields, ActorConfig config) async {
     final String mode = fields.mode ?? CanisterInstallMode.install.name;
     // Need to transform the arg into a number array.
     final arg = fields.arg != null
@@ -234,11 +231,8 @@ class Actor {
         : Uint8List.fromList([]);
     // Same for module.
     final wasmModule = Uint8List.fromList([...fields.module]);
-
     final canisterId = config.canisterId ?? Principal.fromText('');
-
     final canister = getManagementCanister(config);
-
     await canister.getFunc('install_code')!.call([
       {
         'mode': {mode: null},
@@ -264,7 +258,7 @@ class Actor {
     return canisterId;
   }
 
-  static createAndInstallCanister(
+  static Future<CanisterActor> createAndInstallCanister(
     Service interfaceFactory,
     FieldOptions fields,
     CallConfig? config,
@@ -290,9 +284,7 @@ class Actor {
     Service interfaceFactory,
     ActorConfig configuration,
   ) {
-    return createActorClass(interfaceFactory)(
-      configuration,
-    );
+    return createActorClass(interfaceFactory)(configuration);
   }
 
   static const String metadataSymbol = 'ic-agent-metadata';
@@ -465,18 +457,20 @@ class ActorMethod {
     MethodCaller caller,
     List<dynamic> args,
     CallConfig? withOptions,
-  ) =>
-      caller(withOptions ?? const CallConfig(), args);
+  ) {
+    return caller(withOptions ?? const CallConfig(), args);
+  }
 
-  Future<dynamic> call(List<dynamic>? args) async {
+  Future<dynamic> call(List<dynamic>? args) {
     return caller(const CallConfig(), args ?? []);
   }
 
   Future<dynamic> withOptions(
     CallConfig withOptions,
     List<dynamic>? args,
-  ) async =>
-      caller(withOptions, args ?? []);
+  ) {
+    return caller(withOptions, args ?? []);
+  }
 }
 
 typedef ActorConstructor = CanisterActor Function(ActorConfig config);

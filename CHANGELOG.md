@@ -11,6 +11,7 @@ that can be found in the LICENSE file. -->
 ## 1.0.0-dev.12
 
 - Add `canisterId` and `caller` for `PollingResponseException`.
+- Declare return types for fields and methods.
 
 ## 1.0.0-dev.11
 
