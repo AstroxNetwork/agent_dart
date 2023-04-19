@@ -147,6 +147,15 @@ class HttpAgent implements Agent {
     }
   }
 
+  factory HttpAgent.fromUri(Uri uri, {HttpAgentOptions? options}) {
+    return HttpAgent(
+      defaultHost: uri.host,
+      defaultPort: uri.port,
+      defaultProtocol: uri.scheme,
+      options: options,
+    );
+  }
+
   List<HttpAgentRequestTransformFn> _pipeline = [];
 
   final String defaultProtocol;
