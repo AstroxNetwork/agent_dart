@@ -4,6 +4,13 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.14
+
+- Send `methodName` into `pollForResponse`.
+- Rename `Predicate` to `PollPredicate`.
+- Rename `PollingResponseDoneException` to `PollingResponseNoReplyException`.
+- Retry failed `call`, `query`, `read_state`, `status` requests.
+
 ## 1.0.0-dev.13
 
 - Add HttpAgent.`fromUri` factory.
