@@ -432,6 +432,7 @@ ActorMethod _createActorMethod(Actor actor, String methodName, Func func) {
         ecid,
         requestId,
         pollStrategy,
+        methodName,
       );
 
       if (responseBytes.isNotEmpty) {
