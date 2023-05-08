@@ -93,7 +93,7 @@ class PollingResponseException implements Exception {
   @override
   String toString() {
     return 'Call was ${status.name}:\n'
-        '|- Canister ID: $requestId\n'
+        '|- Canister ID: $canisterId\n'
         '|-- Request ID: $requestId\n'
         '|------ Caller: $caller\n'
         '|------ Method: $method';
@@ -112,7 +112,7 @@ class PollingResponseNoReplyException extends PollingResponseException {
   @override
   String toString() {
     return 'Call was marked as ${status.name} never replied:\n'
-        '|- Canister ID: $requestId\n'
+        '|- Canister ID: $canisterId\n'
         '|-- Request ID: $requestId\n'
         '|------ Caller: $caller\n'
         '|------ Method: $method';
