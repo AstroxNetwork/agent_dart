@@ -9,6 +9,7 @@ Future<BinaryBlob> pollForResponse(
   Principal canisterId,
   RequestId requestId,
   PollStrategy strategy,
+  String method,
 ) async {
   final Principal? caller;
   if (agent is HttpAgent) {
@@ -44,7 +45,7 @@ Future<BinaryBlob> pollForResponse(
     case RequestStatusResponseStatus.processing:
       // Execute the polling strategy, then retry.
       await strategy(canisterId, requestId, status);
-      return pollForResponse(agent, canisterId, requestId, strategy);
+      return pollForResponse(agent, canisterId, requestId, strategy, method);
     case RequestStatusResponseStatus.rejected:
       final rejectCode = cert.lookup(
         [...path, blobFromText('reject_code')],
@@ -56,6 +57,7 @@ Future<BinaryBlob> pollForResponse(
         canisterId: canisterId,
         requestId: requestIdToHex(requestId),
         status: status,
+        method: method,
         rejectCode: rejectCode,
         rejectMessage: rejectMessage,
         caller: caller,
@@ -63,10 +65,11 @@ Future<BinaryBlob> pollForResponse(
     case RequestStatusResponseStatus.done:
       // This is _technically_ not an error, but we still didn't see the
       // `Replied` status so we don't know the result and cannot decode it.
-      throw PollingResponseDoneException(
+      throw PollingResponseNoReplyException(
         canisterId: canisterId,
         requestId: requestIdToHex(requestId),
         status: status,
+        method: method,
         caller: caller,
       );
   }
@@ -77,12 +80,14 @@ class PollingResponseException implements Exception {
     required this.canisterId,
     required this.requestId,
     required this.status,
+    required this.method,
     this.caller,
   });
 
   final Principal canisterId;
   final String requestId;
   final RequestStatusResponseStatus status;
+  final String method;
   final Principal? caller;
 
   @override
@@ -90,24 +95,27 @@ class PollingResponseException implements Exception {
     return 'Call was ${status.name}:\n'
         '|- Canister ID: $requestId\n'
         '|-- Request ID: $requestId\n'
-        '|------ Caller: $caller';
+        '|------ Caller: $caller\n'
+        '|------ Method: $method';
   }
 }
 
-class PollingResponseDoneException extends PollingResponseException {
-  const PollingResponseDoneException({
+class PollingResponseNoReplyException extends PollingResponseException {
+  const PollingResponseNoReplyException({
     required super.canisterId,
     required super.requestId,
     required super.status,
+    required super.method,
     super.caller,
   });
 
   @override
   String toString() {
-    return 'Call was marked as ${status.name} but we never saw the reply:\n'
+    return 'Call was marked as ${status.name} never replied:\n'
         '|- Canister ID: $requestId\n'
         '|-- Request ID: $requestId\n'
-        '|------ Caller: $caller';
+        '|------ Caller: $caller\n'
+        '|------ Method: $method';
   }
 }
 
@@ -116,6 +124,7 @@ class PollingResponseRejectedException extends PollingResponseException {
     required super.canisterId,
     required super.requestId,
     required super.status,
+    required super.method,
     required this.rejectCode,
     required this.rejectMessage,
     super.caller,
@@ -126,10 +135,7 @@ class PollingResponseRejectedException extends PollingResponseException {
 
   @override
   String toString() {
-    return 'Call was ${status.name}:\n'
-        '|- Canister ID: $requestId\n'
-        '|-- Request ID: $requestId\n'
-        '|------ Caller: $caller\n'
+    return '${super.toString()}\n'
         '|-------- Code: $rejectCode\n'
         '|----- Message: $rejectMessage';
   }
