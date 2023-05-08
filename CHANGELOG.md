@@ -7,6 +7,8 @@ that can be found in the LICENSE file. -->
 ## 1.0.0-dev.14
 
 - Send `methodName` into `pollForResponse`.
+- Rename `Predicate` to `PollPredicate`.
+- Rename `PollingResponseDoneException` to `PollingResponseNoReplyException`.
 
 ## 1.0.0-dev.13
 
