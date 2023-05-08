@@ -111,7 +111,7 @@ class PollingResponseNoReplyException extends PollingResponseException {
 
   @override
   String toString() {
-    return 'Call was marked as ${status.name} never replied:\n'
+    return 'Call was marked as ${status.name} but never replied:\n'
         '|- Canister ID: $canisterId\n'
         '|-- Request ID: $requestId\n'
         '|------ Caller: $caller\n'
