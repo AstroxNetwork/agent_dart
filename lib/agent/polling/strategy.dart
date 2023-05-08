@@ -9,7 +9,7 @@ typedef PollStrategy = Future<void> Function(
   RequestId requestId,
   RequestStatusResponseStatus status,
 );
-typedef Predicate<T> = Future<T> Function(
+typedef PollPredicate<T> = Future<T> Function(
   Principal canisterId,
   RequestId requestId,
   RequestStatusResponseStatus status,
@@ -23,7 +23,7 @@ PollStrategy defaultStrategy() {
   ]);
 }
 
-Predicate<bool> once() {
+PollPredicate<bool> once() {
   bool first = true;
   return (
     Principal canisterId,
@@ -38,7 +38,7 @@ Predicate<bool> once() {
   };
 }
 
-PollStrategy conditionalDelay(Predicate<bool> condition, int timeInMsec) {
+PollStrategy conditionalDelay(PollPredicate<bool> condition, int timeInMsec) {
   return (
     Principal canisterId,
     RequestId requestId,
