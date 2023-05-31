@@ -13,7 +13,7 @@ environment:
 dependencies:
   archive: ^3.3.0
   args: ^2.3.1
-  basic_utils: ^5.5.4
+  basic_utils: ^4.2.2
   bip32: ^2.0.0
   bip39: ^1.0.6
   cbor: ^4.1.0
@@ -29,7 +29,7 @@ dependencies:
   js: ^0.6.4
   meta: ^1.7.0
   path: ^1.8.1
-  pinenacl: ^0.5.1
+  pinenacl: ^0.3.4
   pointycastle: ^3.6.0
   protobuf: ^2.0.1
   recase: ^4.0.0
@@ -43,7 +43,7 @@ dev_dependencies:
   flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
-  ffigen: ^8.0.2
+  ffigen: ^7.2.4
 
 flutter:
   plugin:
