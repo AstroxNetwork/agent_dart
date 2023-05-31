@@ -830,21 +830,18 @@ class WebBls implements BaseBLS {
 
   @override
   Future<bool> blsVerify(Uint8List pk, Uint8List sig, Uint8List msg) async {
-    BLSVerifyFunc? blsVerifyFunc;
-    if (blsVerifyFunc == null) {
-      await initInstance();
-      if (!await blsInit()) {
-        throw StateError('cannot initialize BLS on Web.');
-      }
-      blsVerifyFunc = instance!.functions['bls_verify']! as int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      );
+    await initInstance();
+    if (!await blsInit()) {
+      throw StateError('cannot initialize BLS on Web.');
     }
+    final blsVerifyFunc = instance!.functions['bls_verify']! as int Function(
+      int,
+      int,
+      int,
+      int,
+      int,
+      int,
+    );
 
     final set0 = passArray8ToWasm0(sig, _malloc);
     final set1 = passArray8ToWasm0(msg, _malloc);

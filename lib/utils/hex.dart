@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
 
+import '../agent/errors.dart';
 import 'is.dart';
 import 'number.dart';
 import 'string.dart';
@@ -24,7 +25,7 @@ String hexStripPrefix(String value) {
   if (reg.hasMatch(value)) {
     return value;
   }
-  throw FallThroughError();
+  throw UnreachableError();
 }
 
 BigInt hexToBn(

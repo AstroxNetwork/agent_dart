@@ -23,7 +23,7 @@ Map<String, dynamic> makeReadStateFromUpdate(Map update) {
   return {
     'sender': update['sender'],
     'paths': [
-      [('request_status'.plainToU8a()), httpCanisterUpdateId(update)],
+      ['request_status'.plainToU8a(), httpCanisterUpdateId(update)],
     ],
     'ingress_expiry': update['ingress_expiry'],
   };

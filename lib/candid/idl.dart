@@ -1695,7 +1695,7 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
           typeTable.add([ty, null]);
           break;
         default:
-          throw FallThroughError();
+          throw UnreachableError();
       }
     }
 
