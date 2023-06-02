@@ -35,7 +35,7 @@ class Principal {
     } else if (other is Principal) {
       return Principal(other._arr);
     }
-    throw FallThroughError();
+    throw RangeError('Invalid Principal');
   }
 
   factory Principal.create(int uSize, Uint8List data) {

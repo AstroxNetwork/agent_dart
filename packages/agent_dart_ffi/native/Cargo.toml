@@ -1,0 +1,10 @@
+[workspace]
+members = [
+    "agent_dart",
+    "bdk",
+    "ed_compact"
+]
+
+[profile.release]
+lto = true
+opt-level = 'z'

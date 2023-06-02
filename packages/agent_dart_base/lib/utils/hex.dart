@@ -24,7 +24,7 @@ String hexStripPrefix(String value) {
   if (reg.hasMatch(value)) {
     return value;
   }
-  throw FallThroughError();
+  throw Error();
 }
 
 BigInt hexToBn(
