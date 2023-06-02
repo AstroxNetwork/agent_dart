@@ -7,6 +7,7 @@ mod errors;
 mod keyring;
 mod types;
 
+mod bdk;
 #[allow(clippy::all)]
 #[allow(dead_code)]
 mod bls;

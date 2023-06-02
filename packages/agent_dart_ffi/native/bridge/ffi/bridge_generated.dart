@@ -2407,28 +2407,28 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
       _free_WireSyncReturnPtr.asFunction<void Function(WireSyncReturn)>();
 }
 
-class _Dart_Handle extends ffi.Opaque {}
+final class _Dart_Handle extends ffi.Opaque {}
 
-class wire_uint_8_list extends ffi.Struct {
+final class wire_uint_8_list extends ffi.Struct {
   external ffi.Pointer<ffi.Uint8> ptr;
 
   @ffi.Int32()
   external int len;
 }
 
-class wire_PhraseToSeedReq extends ffi.Struct {
+final class wire_PhraseToSeedReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> phrase;
 
   external ffi.Pointer<wire_uint_8_list> password;
 }
 
-class wire_SeedToKeyReq extends ffi.Struct {
+final class wire_SeedToKeyReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> seed;
 
   external ffi.Pointer<wire_uint_8_list> path;
 }
 
-class wire_BLSVerifyReq extends ffi.Struct {
+final class wire_BLSVerifyReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> signature;
 
   external ffi.Pointer<wire_uint_8_list> message;
@@ -2436,17 +2436,17 @@ class wire_BLSVerifyReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> public_key;
 }
 
-class wire_ED25519FromSeedReq extends ffi.Struct {
+final class wire_ED25519FromSeedReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> seed;
 }
 
-class wire_ED25519SignReq extends ffi.Struct {
+final class wire_ED25519SignReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> seed;
 
   external ffi.Pointer<wire_uint_8_list> message;
 }
 
-class wire_ED25519VerifyReq extends ffi.Struct {
+final class wire_ED25519VerifyReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> sig;
 
   external ffi.Pointer<wire_uint_8_list> message;
@@ -2454,17 +2454,17 @@ class wire_ED25519VerifyReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> pub_key;
 }
 
-class wire_Secp256k1FromSeedReq extends ffi.Struct {
+final class wire_Secp256k1FromSeedReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> seed;
 }
 
-class wire_Secp256k1SignWithSeedReq extends ffi.Struct {
+final class wire_Secp256k1SignWithSeedReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> msg;
 
   external ffi.Pointer<wire_uint_8_list> seed;
 }
 
-class wire_Secp256k1VerifyReq extends ffi.Struct {
+final class wire_Secp256k1VerifyReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> message_hash;
 
   external ffi.Pointer<wire_uint_8_list> signature_bytes;
@@ -2472,13 +2472,13 @@ class wire_Secp256k1VerifyReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> public_key_bytes;
 }
 
-class wire_Secp256k1ShareSecretReq extends ffi.Struct {
+final class wire_Secp256k1ShareSecretReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> seed;
 
   external ffi.Pointer<wire_uint_8_list> public_key_raw_bytes;
 }
 
-class wire_Secp256k1RecoverReq extends ffi.Struct {
+final class wire_Secp256k1RecoverReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> message_pre_hashed;
 
   external ffi.Pointer<wire_uint_8_list> signature_bytes;
@@ -2486,17 +2486,17 @@ class wire_Secp256k1RecoverReq extends ffi.Struct {
   external ffi.Pointer<ffi.Uint8> chain_id;
 }
 
-class wire_P256FromSeedReq extends ffi.Struct {
+final class wire_P256FromSeedReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> seed;
 }
 
-class wire_P256SignWithSeedReq extends ffi.Struct {
+final class wire_P256SignWithSeedReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> msg;
 
   external ffi.Pointer<wire_uint_8_list> seed;
 }
 
-class wire_P256VerifyReq extends ffi.Struct {
+final class wire_P256VerifyReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> message_hash;
 
   external ffi.Pointer<wire_uint_8_list> signature_bytes;
@@ -2504,17 +2504,17 @@ class wire_P256VerifyReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> public_key_bytes;
 }
 
-class wire_P256ShareSecretReq extends ffi.Struct {
+final class wire_P256ShareSecretReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> seed;
 
   external ffi.Pointer<wire_uint_8_list> public_key_raw_bytes;
 }
 
-class wire_SchnorrFromSeedReq extends ffi.Struct {
+final class wire_SchnorrFromSeedReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> seed;
 }
 
-class wire_SchnorrSignWithSeedReq extends ffi.Struct {
+final class wire_SchnorrSignWithSeedReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> msg;
 
   external ffi.Pointer<wire_uint_8_list> seed;
@@ -2522,7 +2522,7 @@ class wire_SchnorrSignWithSeedReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> aux_rand;
 }
 
-class wire_SchnorrVerifyReq extends ffi.Struct {
+final class wire_SchnorrVerifyReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> message_hash;
 
   external ffi.Pointer<wire_uint_8_list> signature_bytes;
@@ -2530,7 +2530,7 @@ class wire_SchnorrVerifyReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> public_key_bytes;
 }
 
-class wire_AesEncryptReq extends ffi.Struct {
+final class wire_AesEncryptReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> key;
 
   external ffi.Pointer<wire_uint_8_list> iv;
@@ -2538,7 +2538,7 @@ class wire_AesEncryptReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> message;
 }
 
-class wire_AesDecryptReq extends ffi.Struct {
+final class wire_AesDecryptReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> key;
 
   external ffi.Pointer<wire_uint_8_list> iv;
@@ -2546,7 +2546,7 @@ class wire_AesDecryptReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> cipher_text;
 }
 
-class wire_PBKDFDeriveReq extends ffi.Struct {
+final class wire_PBKDFDeriveReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> password;
 
   external ffi.Pointer<wire_uint_8_list> salt;
@@ -2555,7 +2555,7 @@ class wire_PBKDFDeriveReq extends ffi.Struct {
   external int c;
 }
 
-class wire_ScriptDeriveReq extends ffi.Struct {
+final class wire_ScriptDeriveReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> password;
 
   external ffi.Pointer<wire_uint_8_list> salt;

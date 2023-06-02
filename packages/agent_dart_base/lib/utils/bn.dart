@@ -25,7 +25,7 @@ BigInt bnToBn(dynamic value) {
   if (result != null) {
     return result;
   }
-  throw FallThroughError();
+  throw Error();
 }
 
 BigInt compactToBn(Map<String, dynamic> value) {
@@ -38,7 +38,7 @@ BigInt compactToBn(Map<String, dynamic> value) {
   if (!toBnTrue && toBigIntTrue) {
     return (value['toBigInt'] as Function).call();
   }
-  throw FallThroughError();
+  throw Error();
 }
 
 BigInt bitnot(BigInt bn, {int? bitLength}) {
