@@ -293,6 +293,6 @@ bool isAccountId(String str) {
   }
   final fullBytes = str.toU8a();
   final view = ByteData(4);
-  view.setUint32(0, getCrc32((fullBytes.sublist(4)).buffer));
+  view.setUint32(0, getCrc32(fullBytes.sublist(4).buffer));
   return fullBytes.sublist(0, 4).eq(view.buffer.asUint8List());
 }
