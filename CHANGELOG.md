@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.15
+
+- Support for Dart 3.0.
+
 ## 1.0.0-dev.14
 
 - Send `methodName` into `pollForResponse`.

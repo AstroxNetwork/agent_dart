@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:agent_dart/agent_dart.dart';
 import 'package:basic_utils/basic_utils.dart';
+import 'package:pointycastle/asn1.dart';
 
 enum KeyType { ed25519, secp265k1 }
 
