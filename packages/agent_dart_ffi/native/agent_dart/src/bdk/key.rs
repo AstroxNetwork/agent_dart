@@ -8,6 +8,9 @@ use bdk::keys::{
 };
 use bdk::miniscript::BareCtx;
 use bdk::Error as BdkError;
+use bip32::{PrivateKey, PublicKey};
+use bitcoin::hashes::hex::ToHex;
+use bitcoin::util::bip32::Fingerprint;
 use std::ops::Deref;
 use std::str::FromStr;
 use std::sync::{Arc, Mutex};
@@ -166,6 +169,13 @@ impl DescriptorSecretKey {
     pub fn as_string(&self) -> String {
         self.descriptor_secret_key_mutex.lock().unwrap().to_string()
     }
+
+    pub fn get_pub_from_secret_bytes(bytes: Vec<u8>) -> String {
+        let mut bytes_mut = [0u8; 32];
+        bytes_mut.clone_from_slice(&bytes);
+        let prv = k256::SecretKey::from_bytes(&bytes_mut).unwrap();
+        prv.public_key().to_bytes().to_vec().to_hex()
+    }
 }
 
 pub struct DescriptorPublicKey {
@@ -178,6 +188,13 @@ impl DescriptorPublicKey {
         Ok(Arc::new(Self {
             descriptor_public_key_mutex: Mutex::new(key),
         }))
+    }
+
+    pub fn master_fingerprint(&self) -> Fingerprint {
+        self.descriptor_public_key_mutex
+            .lock()
+            .unwrap()
+            .master_fingerprint()
     }
     pub fn derive(&self, path: Arc<DerivationPath>) -> Result<Arc<Self>, BdkError> {
         let secp = Secp256k1::new();

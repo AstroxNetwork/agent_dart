@@ -758,15 +758,22 @@ void wire_as_secret_bytes__static_method__Api(int64_t port_, struct wire_uint_8_
 
 void wire_as_public__static_method__Api(int64_t port_, struct wire_uint_8_list *secret);
 
+void wire_get_pub_from_secret_bytes__static_method__Api(int64_t port_,
+                                                        struct wire_uint_8_list *bytes);
+
 void wire_create_derivation_path__static_method__Api(int64_t port_, struct wire_uint_8_list *path);
 
 void wire_descriptor_public_from_string__static_method__Api(int64_t port_,
                                                             struct wire_uint_8_list *public_key);
 
+void wire_master_finterprint__static_method__Api(int64_t port_, struct wire_uint_8_list *xpub);
+
 void wire_create_descriptor_public__static_method__Api(int64_t port_,
                                                        struct wire_uint_8_list *xpub,
                                                        struct wire_uint_8_list *path,
                                                        bool derive);
+
+void wire_to_public_string__static_method__Api(int64_t port_, struct wire_uint_8_list *xpub);
 
 void wire_create_script__static_method__Api(int64_t port_,
                                             struct wire_uint_8_list *raw_output_script);
@@ -1031,9 +1038,12 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_derive_descriptor_secret__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_as_secret_bytes__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_as_public__static_method__Api);
+    dummy_var ^= ((int64_t) (void*) wire_get_pub_from_secret_bytes__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_create_derivation_path__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_descriptor_public_from_string__static_method__Api);
+    dummy_var ^= ((int64_t) (void*) wire_master_finterprint__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_create_descriptor_public__static_method__Api);
+    dummy_var ^= ((int64_t) (void*) wire_to_public_string__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_create_script__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_create_address__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_address_from_script__static_method__Api);

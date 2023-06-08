@@ -1385,6 +1385,22 @@ fn wire_as_public__static_method__Api_impl(
         },
     )
 }
+fn wire_get_pub_from_secret_bytes__static_method__Api_impl(
+    port_: MessagePort,
+    bytes: impl Wire2Api<Vec<u8>> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_pub_from_secret_bytes__static_method__Api",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_bytes = bytes.wire2api();
+            move |task_callback| Ok(Api::get_pub_from_secret_bytes(api_bytes))
+        },
+    )
+}
 fn wire_create_derivation_path__static_method__Api_impl(
     port_: MessagePort,
     path: impl Wire2Api<String> + UnwindSafe,
@@ -1417,6 +1433,22 @@ fn wire_descriptor_public_from_string__static_method__Api_impl(
         },
     )
 }
+fn wire_master_finterprint__static_method__Api_impl(
+    port_: MessagePort,
+    xpub: impl Wire2Api<String> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "master_finterprint__static_method__Api",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_xpub = xpub.wire2api();
+            move |task_callback| Api::master_finterprint(api_xpub)
+        },
+    )
+}
 fn wire_create_descriptor_public__static_method__Api_impl(
     port_: MessagePort,
     xpub: impl Wire2Api<Option<String>> + UnwindSafe,
@@ -1434,6 +1466,22 @@ fn wire_create_descriptor_public__static_method__Api_impl(
             let api_path = path.wire2api();
             let api_derive = derive.wire2api();
             move |task_callback| Api::create_descriptor_public(api_xpub, api_path, api_derive)
+        },
+    )
+}
+fn wire_to_public_string__static_method__Api_impl(
+    port_: MessagePort,
+    xpub: impl Wire2Api<String> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "to_public_string__static_method__Api",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_xpub = xpub.wire2api();
+            move |task_callback| Api::to_public_string(api_xpub)
         },
     )
 }
@@ -2646,6 +2694,14 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire_get_pub_from_secret_bytes__static_method__Api(
+        port_: MessagePort,
+        bytes: Box<[u8]>,
+    ) {
+        wire_get_pub_from_secret_bytes__static_method__Api_impl(port_, bytes)
+    }
+
+    #[wasm_bindgen]
     pub fn wire_create_derivation_path__static_method__Api(port_: MessagePort, path: String) {
         wire_create_derivation_path__static_method__Api_impl(port_, path)
     }
@@ -2659,6 +2715,11 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire_master_finterprint__static_method__Api(port_: MessagePort, xpub: String) {
+        wire_master_finterprint__static_method__Api_impl(port_, xpub)
+    }
+
+    #[wasm_bindgen]
     pub fn wire_create_descriptor_public__static_method__Api(
         port_: MessagePort,
         xpub: Option<String>,
@@ -2666,6 +2727,11 @@ mod web {
         derive: bool,
     ) {
         wire_create_descriptor_public__static_method__Api_impl(port_, xpub, path, derive)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire_to_public_string__static_method__Api(port_: MessagePort, xpub: String) {
+        wire_to_public_string__static_method__Api_impl(port_, xpub)
     }
 
     #[wasm_bindgen]
@@ -4254,6 +4320,14 @@ mod io {
     }
 
     #[no_mangle]
+    pub extern "C" fn wire_get_pub_from_secret_bytes__static_method__Api(
+        port_: i64,
+        bytes: *mut wire_uint_8_list,
+    ) {
+        wire_get_pub_from_secret_bytes__static_method__Api_impl(port_, bytes)
+    }
+
+    #[no_mangle]
     pub extern "C" fn wire_create_derivation_path__static_method__Api(
         port_: i64,
         path: *mut wire_uint_8_list,
@@ -4270,6 +4344,14 @@ mod io {
     }
 
     #[no_mangle]
+    pub extern "C" fn wire_master_finterprint__static_method__Api(
+        port_: i64,
+        xpub: *mut wire_uint_8_list,
+    ) {
+        wire_master_finterprint__static_method__Api_impl(port_, xpub)
+    }
+
+    #[no_mangle]
     pub extern "C" fn wire_create_descriptor_public__static_method__Api(
         port_: i64,
         xpub: *mut wire_uint_8_list,
@@ -4277,6 +4359,14 @@ mod io {
         derive: bool,
     ) {
         wire_create_descriptor_public__static_method__Api_impl(port_, xpub, path, derive)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn wire_to_public_string__static_method__Api(
+        port_: i64,
+        xpub: *mut wire_uint_8_list,
+    ) {
+        wire_to_public_string__static_method__Api_impl(port_, xpub)
     }
 
     #[no_mangle]

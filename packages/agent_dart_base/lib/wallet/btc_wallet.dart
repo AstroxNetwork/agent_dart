@@ -66,9 +66,12 @@ Future<List<BTCDescriptor>> getDescriptors(String mnemonic,
         network: Network.Bitcoin,
         mnemonic: mnemonicObj,
       );
+
       Descriptor descriptor;
       switch (addressType) {
         case AddressType.P2TR:
+          descriptorSecretKey.derivationPath =
+              await DerivationPath.create(path: "m/86'/0'/0'/0/0");
           descriptor = await Descriptor.newBip86(
               secretKey: descriptorSecretKey, network: network, keychain: e);
           break;
@@ -101,15 +104,22 @@ Future<List<BTCDescriptor>> getDescriptors(String mnemonic,
 class BitcoinWallet {
   final Wallet wallet;
   final AddressType addressType;
+  final BTCDescriptor descriptor;
   late AddressInfo _selectedSigner;
   late Blockchain blockchain;
+
   Network network = Network.Bitcoin;
 
   OrdService? ordService;
 
+  String? _publicKey;
+
+  String? getPublicKey() => _publicKey;
+
   BitcoinWallet({
     required this.wallet,
     required this.addressType,
+    required this.descriptor,
     this.ordService,
   });
 
@@ -152,8 +162,11 @@ class BitcoinWallet {
         changeDescriptor: descriptors[0].descriptor,
         network: network ?? Network.Bitcoin,
         databaseConfig: const DatabaseConfig.memory());
-    final wallet =
-        BitcoinWallet(wallet: res, addressType: descriptors[0].addressType);
+
+    final wallet = BitcoinWallet(
+        wallet: res,
+        addressType: descriptors[0].addressType,
+        descriptor: descriptors[0]);
     wallet.setNetwork(network ?? Network.Bitcoin);
     await wallet.blockchainInit(net: network ?? Network.Bitcoin);
     return wallet;
@@ -161,6 +174,11 @@ class BitcoinWallet {
 
   // ====== Signer ======
   Future<AddressInfo> getSigner(int index) async {
+    final k =
+        await descriptor.descriptor.descriptorSecretKey!.deriveindex(index);
+
+    final kBytes = Uint8List.fromList(await k.secretBytes());
+    _publicKey = await k.getPubFromBytes(kBytes);
     return await wallet.getAddress(
         addressIndex: AddressIndex.reset(index: index));
   }

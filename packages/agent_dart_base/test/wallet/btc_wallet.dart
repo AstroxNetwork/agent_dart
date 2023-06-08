@@ -40,13 +40,13 @@ void btc_wallet() {
     final ins = await ord.getInscriptions(
         'bc1pmahh869alq9t6efy7wmtxtktkllpvvz4p6ea7n9r35mmnwukj2vsfn9ucy');
     ins.map((e) => e.toJson()).forEach(print);
-    await wallet.getSafeBalance();
+    final safeBlance = await wallet.getSafeBalance();
 
     // send a btcTx
     final btcTx = await wallet.createSendBTC(
         toAddress: 'bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76',
         amount: 8000,
-        feeRate: 16);
+        feeRate: 20);
 
     await btcTx.dumpTx();
 
@@ -59,7 +59,7 @@ void btc_wallet() {
       insId:
           '43547439b4f4d90b26a33484764db53636c48142df98db3dbe335e53ee307a8ei0',
       feeRate: 5,
-      outputValue: 6500,
+      // outputValue: 6500,
     );
 
     await ordTx.dumpTx();
@@ -67,8 +67,8 @@ void btc_wallet() {
     final signedOrdTx = await wallet.sign(ordTx);
     final ordTxId = await wallet.broadCast(signedOrdTx);
 
-    final bumpFeeTx = await wallet.bumpFee(txid: ordTxId, feeRate: 20);
-    final signedBumpFeeTx = await wallet.sign(bumpFeeTx);
-    // final bumpFeeTxId = await wallet.broadCast(signedBumpFeeTx);
-  });
+    // final bumpFeeTx = await wallet.bumpFee(txid: ordTxId, feeRate: 20);
+    // final signedBumpFeeTx = await wallet.sign(bumpFeeTx);
+    // // final bumpFeeTxId = await wallet.broadCast(signedBumpFeeTx);
+  }, skip: true);
 }

@@ -340,6 +340,10 @@ abstract class AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kAsPublicStaticMethodApiConstMeta;
 
+  Future<String> getPubFromSecretBytesStaticMethodApi({required Uint8List bytes, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetPubFromSecretBytesStaticMethodApiConstMeta;
+
   Future<String> createDerivationPathStaticMethodApi({required String path, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kCreateDerivationPathStaticMethodApiConstMeta;
@@ -348,9 +352,17 @@ abstract class AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kDescriptorPublicFromStringStaticMethodApiConstMeta;
 
+  Future<String> masterFinterprintStaticMethodApi({required String xpub, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kMasterFinterprintStaticMethodApiConstMeta;
+
   Future<String> createDescriptorPublicStaticMethodApi({String? xpub, required String path, required bool derive, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kCreateDescriptorPublicStaticMethodApiConstMeta;
+
+  Future<String> toPublicStringStaticMethodApi({required String xpub, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kToPublicStringStaticMethodApiConstMeta;
 
   Future<Script> createScriptStaticMethodApi({required Uint8List rawOutputScript, dynamic hint});
 
@@ -2982,6 +2994,26 @@ class AgentDartImpl implements AgentDart {
         ],
       );
 
+  Future<String> getPubFromSecretBytesStaticMethodApi({required Uint8List bytes, dynamic hint}) {
+    var arg0 = _platform.api2wire_uint_8_list(bytes);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_get_pub_from_secret_bytes__static_method__Api(port_, arg0),
+      parseSuccessData: _wire2api_String,
+      constMeta: kGetPubFromSecretBytesStaticMethodApiConstMeta,
+      argValues: [
+        bytes
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kGetPubFromSecretBytesStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "get_pub_from_secret_bytes__static_method__Api",
+        argNames: [
+          "bytes"
+        ],
+      );
+
   Future<String> createDerivationPathStaticMethodApi({required String path, dynamic hint}) {
     var arg0 = _platform.api2wire_String(path);
     return _platform.executeNormal(FlutterRustBridgeTask(
@@ -3022,6 +3054,26 @@ class AgentDartImpl implements AgentDart {
         ],
       );
 
+  Future<String> masterFinterprintStaticMethodApi({required String xpub, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(xpub);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_master_finterprint__static_method__Api(port_, arg0),
+      parseSuccessData: _wire2api_String,
+      constMeta: kMasterFinterprintStaticMethodApiConstMeta,
+      argValues: [
+        xpub
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kMasterFinterprintStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "master_finterprint__static_method__Api",
+        argNames: [
+          "xpub"
+        ],
+      );
+
   Future<String> createDescriptorPublicStaticMethodApi({String? xpub, required String path, required bool derive, dynamic hint}) {
     var arg0 = _platform.api2wire_opt_String(xpub);
     var arg1 = _platform.api2wire_String(path);
@@ -3045,6 +3097,26 @@ class AgentDartImpl implements AgentDart {
           "xpub",
           "path",
           "derive"
+        ],
+      );
+
+  Future<String> toPublicStringStaticMethodApi({required String xpub, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(xpub);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_to_public_string__static_method__Api(port_, arg0),
+      parseSuccessData: _wire2api_String,
+      constMeta: kToPublicStringStaticMethodApiConstMeta,
+      argValues: [
+        xpub
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kToPublicStringStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "to_public_string__static_method__Api",
+        argNames: [
+          "xpub"
         ],
       );
 

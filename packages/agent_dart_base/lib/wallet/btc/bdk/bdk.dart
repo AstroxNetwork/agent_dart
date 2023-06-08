@@ -234,6 +234,7 @@ class DerivationPath {
 ///Script descriptor
 class Descriptor {
   final BdkDescriptor? _descriptorInstance;
+  DescriptorSecretKey? descriptorSecretKey;
   Descriptor._(this._descriptorInstance);
 
   ///  [Descriptor] constructor
@@ -256,11 +257,15 @@ class Descriptor {
       required Network network,
       required KeychainKind keychain}) async {
     try {
+      secretKey.derivedPathPrefix = "m/44'/0'/0'/0";
+      secretKey.derivedIndex = 0;
       final res = await AgentDartFFI.impl.newBip44DescriptorStaticMethodApi(
           secretKey: secretKey.asString(),
           network: network,
           keyChainKind: keychain);
-      return Descriptor._(res);
+      final r = Descriptor._(res);
+      r.descriptorSecretKey = secretKey;
+      return r;
     } on FfiException catch (e) {
       throw configException(e.message);
     }
@@ -296,11 +301,15 @@ class Descriptor {
       required Network network,
       required KeychainKind keychain}) async {
     try {
+      secretKey.derivedPathPrefix = "m/49'/0'/0'/0";
+      secretKey.derivedIndex = 0;
       final res = await AgentDartFFI.impl.newBip49DescriptorStaticMethodApi(
           secretKey: secretKey.asString(),
           network: network,
           keyChainKind: keychain);
-      return Descriptor._(res);
+      final r = Descriptor._(res);
+      r.descriptorSecretKey = secretKey;
+      return r;
     } on FfiException catch (e) {
       throw configException(e.message);
     }
@@ -328,7 +337,7 @@ class Descriptor {
     }
   }
 
-  ///BIP86 template. Expands to wpkh(key/84'/{0,1}'/0'/{0,1}/*)
+  ///BIP84 template. Expands to wpkh(key/84'/{0,1}'/0'/{0,1}/*)
   ///
   ///Since there are hardened derivation steps, this template requires a private derivable key (generally a xprv/tprv).
   static Future<Descriptor> newBip84(
@@ -336,17 +345,21 @@ class Descriptor {
       required Network network,
       required KeychainKind keychain}) async {
     try {
+      secretKey.derivedPathPrefix = "m/84'/0'/0'/0";
+      secretKey.derivedIndex = 0;
       final res = await AgentDartFFI.impl.newBip84DescriptorStaticMethodApi(
           secretKey: secretKey.asString(),
           network: network,
           keyChainKind: keychain);
-      return Descriptor._(res);
+      final r = Descriptor._(res);
+      r.descriptorSecretKey = secretKey;
+      return r;
     } on FfiException catch (e) {
       throw configException(e.message);
     }
   }
 
-  ///BIP86 public template. Expands to wpkh(key/{0,1}/*)
+  ///BIP84 public template. Expands to wpkh(key/{0,1}/*)
   ///
   /// This assumes that the key used has already been derived with m/84'/0'/0'.
   ///
@@ -376,11 +389,15 @@ class Descriptor {
       required Network network,
       required KeychainKind keychain}) async {
     try {
+      secretKey.derivedPathPrefix = "m/86'/0'/0'/0";
+      secretKey.derivedIndex = 0;
       final res = await AgentDartFFI.impl.newBip86DescriptorStaticMethodApi(
           secretKey: secretKey.asString(),
           network: network,
           keyChainKind: keychain);
-      return Descriptor._(res);
+      final r = Descriptor._(res);
+      r.descriptorSecretKey = secretKey;
+      return r;
     } on FfiException catch (e) {
       throw configException(e.message);
     }
@@ -443,6 +460,18 @@ class DescriptorPublicKey {
   }
 
   ///Derive a public descriptor at a given path.
+  Future<String> masterFingerprint() async {
+    try {
+      final res = await AgentDartFFI.impl.masterFinterprintStaticMethodApi(
+        xpub: _descriptorPublicKey!,
+      );
+      return res;
+    } on FfiException catch (e) {
+      throw configException(e.message);
+    }
+  }
+
+  ///Derive a public descriptor at a given path.
   Future<DescriptorPublicKey> derive(DerivationPath derivationPath) async {
     try {
       final res = await AgentDartFFI.impl.createDescriptorPublicStaticMethodApi(
@@ -487,6 +516,9 @@ class DescriptorPublicKey {
 
 class DescriptorSecretKey {
   final String _descriptorSecretKey;
+  DerivationPath? derivationPath;
+  String? derivedPathPrefix;
+  int? derivedIndex;
   DescriptorSecretKey._(this._descriptorSecretKey);
 
   ///Returns the public version of this key.
@@ -522,11 +554,28 @@ class DescriptorSecretKey {
   }
 
   /// Derived the `XPrv` using the derivation path
+  Future<DescriptorSecretKey> deriveindex(int index) async {
+    try {
+      derivationPath =
+          await DerivationPath.create(path: '${derivedPathPrefix!}/$index');
+      final res = await AgentDartFFI.impl.deriveDescriptorSecretStaticMethodApi(
+          secret: _descriptorSecretKey, path: derivationPath!._path.toString());
+      final r = DescriptorSecretKey._(res);
+      r.derivationPath = derivationPath;
+      return r;
+    } on FfiException catch (e) {
+      throw configException(e.message);
+    }
+  }
+
+  /// Derived the `XPrv` using the derivation path
   Future<DescriptorSecretKey> derive(DerivationPath derivationPath) async {
     try {
       final res = await AgentDartFFI.impl.deriveDescriptorSecretStaticMethodApi(
           secret: _descriptorSecretKey, path: derivationPath._path.toString());
-      return DescriptorSecretKey._(res);
+      final r = DescriptorSecretKey._(res);
+      r.derivationPath = derivationPath;
+      return r;
     } on FfiException catch (e) {
       throw configException(e.message);
     }
@@ -537,7 +586,9 @@ class DescriptorSecretKey {
     try {
       final res = await AgentDartFFI.impl.extendDescriptorSecretStaticMethodApi(
           secret: _descriptorSecretKey, path: derivationPath._path.toString());
-      return DescriptorSecretKey._(res);
+      final r = DescriptorSecretKey._(res);
+      r.derivationPath = derivationPath;
+      return r;
     } on FfiException catch (e) {
       throw configException(e.message);
     }
@@ -559,6 +610,17 @@ class DescriptorSecretKey {
     try {
       final res = await AgentDartFFI.impl
           .asSecretBytesStaticMethodApi(secret: _descriptorSecretKey);
+      return res;
+    } on FfiException catch (e) {
+      throw configException(e.message);
+    }
+  }
+
+  /// Get the private key as bytes.
+  Future<String> getPubFromBytes(Uint8List bytes) async {
+    try {
+      final res = await AgentDartFFI.impl
+          .getPubFromSecretBytesStaticMethodApi(bytes: bytes);
       return res;
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -1277,6 +1339,7 @@ total: ${totalOutput - feePaid!} Sats
 ///
 class Wallet {
   final WalletInstance _wallet;
+  String? publicKey;
   Wallet._(this._wallet);
 
   ///  [Wallet] constructor
