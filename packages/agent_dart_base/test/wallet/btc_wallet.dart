@@ -25,6 +25,7 @@ void btc_wallet() {
   Future<BitcoinWallet> getWallet() async {
     final wallet = await BitcoinWallet.fromPhrase(
         (await Mnemonic.create(WordCount.Words12)).asString());
+
     await wallet.selectSigner(0);
     await wallet.sync();
     return wallet;
