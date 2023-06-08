@@ -1996,6 +1996,19 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _wire_as_public__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_as_public__static_method__Api');
   late final _wire_as_public__static_method__Api = _wire_as_public__static_method__ApiPtr.asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
+  void wire_get_pub_from_secret_bytes__static_method__Api(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> bytes,
+  ) {
+    return _wire_get_pub_from_secret_bytes__static_method__Api(
+      port_,
+      bytes,
+    );
+  }
+
+  late final _wire_get_pub_from_secret_bytes__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_get_pub_from_secret_bytes__static_method__Api');
+  late final _wire_get_pub_from_secret_bytes__static_method__Api = _wire_get_pub_from_secret_bytes__static_method__ApiPtr.asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
   void wire_create_derivation_path__static_method__Api(
     int port_,
     ffi.Pointer<wire_uint_8_list> path,
@@ -2022,6 +2035,19 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _wire_descriptor_public_from_string__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_descriptor_public_from_string__static_method__Api');
   late final _wire_descriptor_public_from_string__static_method__Api = _wire_descriptor_public_from_string__static_method__ApiPtr.asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
+  void wire_master_finterprint__static_method__Api(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> xpub,
+  ) {
+    return _wire_master_finterprint__static_method__Api(
+      port_,
+      xpub,
+    );
+  }
+
+  late final _wire_master_finterprint__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_master_finterprint__static_method__Api');
+  late final _wire_master_finterprint__static_method__Api = _wire_master_finterprint__static_method__ApiPtr.asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
   void wire_create_descriptor_public__static_method__Api(
     int port_,
     ffi.Pointer<wire_uint_8_list> xpub,
@@ -2038,6 +2064,19 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _wire_create_descriptor_public__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>, ffi.Bool)>>('wire_create_descriptor_public__static_method__Api');
   late final _wire_create_descriptor_public__static_method__Api = _wire_create_descriptor_public__static_method__ApiPtr.asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>, bool)>();
+
+  void wire_to_public_string__static_method__Api(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> xpub,
+  ) {
+    return _wire_to_public_string__static_method__Api(
+      port_,
+      xpub,
+    );
+  }
+
+  late final _wire_to_public_string__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_to_public_string__static_method__Api');
+  late final _wire_to_public_string__static_method__Api = _wire_to_public_string__static_method__ApiPtr.asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   void wire_create_script__static_method__Api(
     int port_,

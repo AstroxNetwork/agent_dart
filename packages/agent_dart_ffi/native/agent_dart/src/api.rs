@@ -34,6 +34,7 @@ use bdk::Error;
 use flutter_rust_bridge::RustOpaque;
 
 use bdk::wallet::tx_builder::TxOrdering;
+use bitcoin::hashes::hex::ToHex;
 use std::ops::Deref;
 use std::str::FromStr;
 use std::sync::{Arc, Mutex, RwLock};
@@ -516,11 +517,17 @@ impl Api {
         let descriptor_secret = DescriptorSecretKey {
             descriptor_secret_key_mutex: Mutex::new(secret),
         };
+
         match descriptor_secret.as_public() {
             Ok(e) => Ok(e.as_string()),
             Err(e) => anyhow::bail!("{:?}", e),
         }
     }
+
+    pub fn get_pub_from_secret_bytes(bytes: Vec<u8>) -> String {
+        DescriptorSecretKey::get_pub_from_secret_bytes(bytes)
+    }
+
     fn descriptor_secret_config(
         secret: String,
         path: Option<String>,
@@ -568,6 +575,12 @@ impl Api {
             Err(e) => anyhow::bail!("{:?}", e),
         };
     }
+
+    pub fn master_finterprint(xpub: String) -> anyhow::Result<String> {
+        let descriptor_public = DescriptorPublicKey::from_string(xpub).expect("Cannot parse xpub");
+        Ok(descriptor_public.master_fingerprint().to_hex())
+    }
+
     pub fn create_descriptor_public(
         xpub: Option<String>,
         path: String,
@@ -586,6 +599,12 @@ impl Api {
                 Err(e) => anyhow::bail!("{:?}", e),
             }
         };
+    }
+    pub fn to_public_string(xpub: String) -> anyhow::Result<String> {
+        match bip32::XPub::from_str(xpub.as_str()) {
+            Ok(r) => Ok(r.to_bytes().to_hex()),
+            Err(e) => anyhow::bail!("{:?}", e),
+        }
     }
 
     //============ Script Class===========
@@ -645,6 +664,7 @@ impl Api {
             Err(e) => anyhow::bail!("{:?}", e),
         }
     }
+
     pub fn get_address(
         wallet: RustOpaque<WalletInstance>,
         address_index: AddressIndex,
@@ -654,6 +674,7 @@ impl Api {
             Err(e) => anyhow::bail!("{:?}", e),
         }
     }
+
     pub fn get_internal_address(
         wallet: RustOpaque<WalletInstance>,
         address_index: AddressIndex,
@@ -687,6 +708,7 @@ impl Api {
             Err(e) => anyhow::bail!("{:?}", e),
         }
     }
+
     pub fn list_unspent_outputs(
         wallet: RustOpaque<WalletInstance>,
     ) -> anyhow::Result<Vec<crate::bdk::wallet::LocalUtxo>> {

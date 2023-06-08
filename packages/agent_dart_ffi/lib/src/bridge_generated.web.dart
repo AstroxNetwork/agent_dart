@@ -875,11 +875,17 @@ class AgentDartWasmModule implements WasmModule {
 
   external dynamic /* void */ wire_as_public__static_method__Api(NativePortType port_, String secret);
 
+  external dynamic /* void */ wire_get_pub_from_secret_bytes__static_method__Api(NativePortType port_, Uint8List bytes);
+
   external dynamic /* void */ wire_create_derivation_path__static_method__Api(NativePortType port_, String path);
 
   external dynamic /* void */ wire_descriptor_public_from_string__static_method__Api(NativePortType port_, String public_key);
 
+  external dynamic /* void */ wire_master_finterprint__static_method__Api(NativePortType port_, String xpub);
+
   external dynamic /* void */ wire_create_descriptor_public__static_method__Api(NativePortType port_, String? xpub, String path, bool derive);
+
+  external dynamic /* void */ wire_to_public_string__static_method__Api(NativePortType port_, String xpub);
 
   external dynamic /* void */ wire_create_script__static_method__Api(NativePortType port_, Uint8List raw_output_script);
 
@@ -1085,11 +1091,17 @@ class AgentDartWire extends FlutterRustBridgeWasmWireBase<AgentDartWasmModule> {
 
   void wire_as_public__static_method__Api(NativePortType port_, String secret) => wasmModule.wire_as_public__static_method__Api(port_, secret);
 
+  void wire_get_pub_from_secret_bytes__static_method__Api(NativePortType port_, Uint8List bytes) => wasmModule.wire_get_pub_from_secret_bytes__static_method__Api(port_, bytes);
+
   void wire_create_derivation_path__static_method__Api(NativePortType port_, String path) => wasmModule.wire_create_derivation_path__static_method__Api(port_, path);
 
   void wire_descriptor_public_from_string__static_method__Api(NativePortType port_, String public_key) => wasmModule.wire_descriptor_public_from_string__static_method__Api(port_, public_key);
 
+  void wire_master_finterprint__static_method__Api(NativePortType port_, String xpub) => wasmModule.wire_master_finterprint__static_method__Api(port_, xpub);
+
   void wire_create_descriptor_public__static_method__Api(NativePortType port_, String? xpub, String path, bool derive) => wasmModule.wire_create_descriptor_public__static_method__Api(port_, xpub, path, derive);
+
+  void wire_to_public_string__static_method__Api(NativePortType port_, String xpub) => wasmModule.wire_to_public_string__static_method__Api(port_, xpub);
 
   void wire_create_script__static_method__Api(NativePortType port_, Uint8List raw_output_script) => wasmModule.wire_create_script__static_method__Api(port_, raw_output_script);
 
