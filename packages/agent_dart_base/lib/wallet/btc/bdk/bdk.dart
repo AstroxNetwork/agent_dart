@@ -553,6 +553,25 @@ class DescriptorSecretKey {
     }
   }
 
+  static Future<DescriptorSecretKey> createDerivedKey(
+      {required Network network,
+      required String path,
+      required Mnemonic mnemonic,
+      String? password}) async {
+    try {
+      final res = await AgentDartFFI.impl
+          .createDerivedDescriptorSecretStaticMethodApi(
+              network: network,
+              mnemonic: mnemonic.asString(),
+              path: path,
+              password: password);
+      print(res);
+      return DescriptorSecretKey._(res);
+    } on FfiException catch (e) {
+      throw configException(e.message);
+    }
+  }
+
   /// Derived the `XPrv` using the derivation path
   Future<DescriptorSecretKey> deriveindex(int index) async {
     try {

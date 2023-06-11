@@ -66,7 +66,6 @@ Future<List<BTCDescriptor>> getDescriptors(String mnemonic,
         network: Network.Bitcoin,
         mnemonic: mnemonicObj,
       );
-
       Descriptor descriptor;
       switch (addressType) {
         case AddressType.P2TR:
@@ -76,18 +75,26 @@ Future<List<BTCDescriptor>> getDescriptors(String mnemonic,
               secretKey: descriptorSecretKey, network: network, keychain: e);
           break;
         case AddressType.P2WPKH:
+          descriptorSecretKey.derivationPath =
+              await DerivationPath.create(path: "m/84'/0'/0'/0/0");
           descriptor = await Descriptor.newBip84(
               secretKey: descriptorSecretKey, network: network, keychain: e);
           break;
         case AddressType.P2SH_P2WPKH:
+          descriptorSecretKey.derivationPath =
+              await DerivationPath.create(path: "m/49'/0'/0'/0/0");
           descriptor = await Descriptor.newBip49(
               secretKey: descriptorSecretKey, network: network, keychain: e);
           break;
         case AddressType.P2PKH:
+          descriptorSecretKey.derivationPath =
+              await DerivationPath.create(path: "m/44'/0'/0'/0/0");
           descriptor = await Descriptor.newBip44(
               secretKey: descriptorSecretKey, network: network, keychain: e);
           break;
         default:
+          descriptorSecretKey.derivationPath =
+              await DerivationPath.create(path: "m/86'/0'/0'/0/0");
           descriptor = await Descriptor.newBip86(
               secretKey: descriptorSecretKey, network: network, keychain: e);
       }
@@ -157,6 +164,7 @@ class BitcoinWallet {
     // final wallet = await BitcoinWallet.fromPhrase();
     final descriptors =
         await getDescriptors(phrase, network: network ?? Network.Bitcoin);
+
     final res = await Wallet.create(
         descriptor: descriptors[0].descriptor,
         changeDescriptor: descriptors[0].descriptor,
@@ -203,6 +211,7 @@ class BitcoinWallet {
   Future<BitcoinBalance> getBalance() async {
     try {
       var res = await wallet.getBalance();
+
       return BitcoinBalance._(res);
     } on FfiException catch (e) {
       throw (e.message);
