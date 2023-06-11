@@ -33,7 +33,7 @@ void btc_wallet() {
 
   test('get psbt address', () async {
     final wallet = await getWallet();
-    (await wallet.getBalance()).toJson();
+    print((await wallet.getBalance()).toJson());
   });
   test('ord connect', () async {
     final wallet = await getWallet();
