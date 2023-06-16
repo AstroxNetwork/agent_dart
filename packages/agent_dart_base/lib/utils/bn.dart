@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import '../agent/errors.dart';
 import 'hex.dart';
 import 'is.dart';
 import 'number.dart';
@@ -25,7 +26,7 @@ BigInt bnToBn(dynamic value) {
   if (result != null) {
     return result;
   }
-  throw Error();
+  throw UnreachableError();
 }
 
 BigInt compactToBn(Map<String, dynamic> value) {
@@ -38,7 +39,7 @@ BigInt compactToBn(Map<String, dynamic> value) {
   if (!toBnTrue && toBigIntTrue) {
     return (value['toBigInt'] as Function).call();
   }
-  throw Error();
+  throw UnreachableError();
 }
 
 BigInt bitnot(BigInt bn, {int? bitLength}) {

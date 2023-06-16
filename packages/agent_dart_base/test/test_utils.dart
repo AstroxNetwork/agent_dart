@@ -2,7 +2,6 @@ import 'dart:ffi';
 
 import 'package:agent_dart_base/src/ffi/io.dart';
 import 'package:test/test.dart';
-import 'dart:io' as io;
 
 // import 'package:p4d_rust_binding/utils/utils.dart';
 const isAssertionError = TypeMatcher<AssertionError>();

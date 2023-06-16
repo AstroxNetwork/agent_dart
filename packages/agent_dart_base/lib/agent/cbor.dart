@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
-import 'package:agent_dart_base/principal/principal.dart';
-import 'package:meta/meta.dart' show immutable;
-import 'package:cbor/cbor.dart' as cbor;
 
+import 'package:agent_dart_base/principal/principal.dart';
+import 'package:cbor/cbor.dart' as cbor;
+import 'package:meta/meta.dart' show immutable;
 import 'package:typed_data/typed_data.dart';
 
 import 'types.dart';

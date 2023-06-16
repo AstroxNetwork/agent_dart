@@ -4,13 +4,12 @@ import 'package:agent_dart_base/agent/agent.dart';
 import 'package:agent_dart_base/agent/agent/http/fetch.dart';
 
 class OverrideOptions {
-  final Map<String, dynamic>? headers;
-  final String? host;
-
   const OverrideOptions({
     this.host,
     this.headers,
   });
+  final Map<String, dynamic>? headers;
+  final String? host;
 }
 
 class OrdClient {
@@ -97,7 +96,6 @@ class OrdClient {
     Map<String, dynamic> body,
     OverrideOptions? override,
   ) async {
-    final list = await Future.wait([]);
     final response = await _fetch!(
       host: override?.host ?? _host,
       endpoint: endpoint,
@@ -123,7 +121,6 @@ class OrdClient {
     Map<String, dynamic> body,
     OverrideOptions? override,
   ) async {
-    final list = await Future.wait([]);
     final response = await _fetch!(
       host: override?.host ?? _host,
       endpoint: endpoint,

@@ -22,3 +22,5 @@ class AgentFetchError extends Error {
         '  Body: ${b is Uint8List ? b.u8aToString() : b}\n';
   }
 }
+
+class UnreachableError extends Error {}

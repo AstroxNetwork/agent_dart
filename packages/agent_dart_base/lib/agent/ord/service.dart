@@ -7,21 +7,26 @@ import 'package:agent_dart_base/agent/ord/utxo.dart';
 import 'client.dart';
 
 class DataResponse {
+  DataResponse(this.data, this.isList);
   final dynamic data;
   final bool isList;
-  DataResponse(this.data, this.isList);
 }
 
 class OrdService {
-  late OrdClient _client;
-  late OverrideOptions _override;
-  OrdService({String host = 'ordapi.astrox.app', OverrideOptions? override}) {
+  OrdService({
+    String host = 'ordapi.astrox.app',
+    OverrideOptions? override,
+  }) {
     _client = OrdClient(options: HttpAgentOptions(host: host));
     _override = override ??
-        const OverrideOptions(headers: {
-          'Content-Type': 'application/json;charset=utf-8',
-        });
+        const OverrideOptions(
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+          },
+        );
   }
+  late OrdClient _client;
+  late OverrideOptions _override;
 
   void setHost(String host) {
     _client.setHost(host);
@@ -68,16 +73,19 @@ class OrdService {
 
   Future<List<Utxo>> getUtxoGet(String address) async {
     final response = await _client.httpGet(
-        '/v2/address/utxo?address=$address', {}, _override);
+      '/v2/address/utxo?address=$address',
+      {},
+      _override,
+    );
 
     final res = _decodeGetReponse(response);
     if (!res.isList) {
       throw 'Can not get utxo';
     } else {
-      final list = (res.data as List);
+      final list = res.data as List;
       final utxos = <Utxo>[];
       for (final a in list) {
-        var u = Utxo.fromJson(a);
+        final u = Utxo.fromJson(a);
         utxos.add(u);
       }
       return utxos;
@@ -86,16 +94,19 @@ class OrdService {
 
   Future<List<InscriptionItem>> getInscriptions(String address) async {
     final response = await _client.httpGet(
-        '/v2/address/inscriptions?address=$address', {}, _override);
+      '/v2/address/inscriptions?address=$address',
+      {},
+      _override,
+    );
 
     final res = _decodeGetReponse(response);
     if (!res.isList) {
       throw 'Can not get utxo';
     } else {
-      final list = (res.data as List);
+      final list = res.data as List;
       final ins = <InscriptionItem>[];
       for (final a in list) {
-        var u = InscriptionItem.fromJson(a);
+        final u = InscriptionItem.fromJson(a);
         ins.add(u);
       }
       return ins;

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:agent_dart_base/agent/agent/http/fetch.dart';
@@ -7,6 +8,27 @@ import 'package:meta/meta.dart';
 import 'package:typed_data/typed_data.dart';
 
 const btoa = base64Encode;
+
+Future<T> withRetry<T>(
+  FutureOr<T> Function() action, {
+  int retryTimes = 3,
+  int retryIntervalMills = 500,
+}) async {
+  assert(retryTimes >= 0);
+  assert(retryIntervalMills >= 0);
+  int times = 0;
+  while (true) {
+    try {
+      return await action();
+    } catch (e) {
+      times++;
+      if (times >= retryTimes) {
+        rethrow;
+      }
+      await Future.delayed(Duration(milliseconds: times * retryIntervalMills));
+    }
+  }
+}
 
 enum FetchMethod {
   get,
@@ -147,6 +169,15 @@ class HttpAgent implements Agent {
     }
   }
 
+  factory HttpAgent.fromUri(Uri uri, {HttpAgentOptions? options}) {
+    return HttpAgent(
+      defaultHost: uri.host,
+      defaultPort: uri.port,
+      defaultProtocol: uri.scheme,
+      options: options,
+    );
+  }
+
   List<HttpAgentRequestTransformFn> _pipeline = [];
 
   final String defaultProtocol;
@@ -163,6 +194,8 @@ class HttpAgent implements Agent {
 
   @override
   BinaryBlob? rootKey = blobFromHex(_icRootKey);
+
+  Identity? get identity => _identity;
 
   void setPipeline(List<HttpAgentRequestTransformFn> pl) {
     _pipeline = pl;
@@ -227,18 +260,16 @@ class HttpAgent implements Agent {
 
     final newTransformed = await id!.transformRequest(transformedRequest);
     final body = cbor.cborEncode(newTransformed['body']);
-    final list = await Future.wait([
-      _fetch!(
+    final response = await withRetry(
+      () => _fetch!(
         endpoint: '/api/v2/canister/${ecid.toText()}/call',
         method: FetchMethod.post,
         headers: newTransformed['request']['headers'],
         body: body,
       ),
-      Future.value(requestIdOf(submit.toJson()))
-    ]);
+    );
+    final requestId = requestIdOf(submit.toJson());
 
-    final response = list[0] as Map<String, dynamic>;
-    final requestId = list[1] as Uint8List;
     if (!(response['ok'] as bool)) {
       throw AgentFetchError(
         statusCode: response['statusCode'],
@@ -301,11 +332,13 @@ class HttpAgent implements Agent {
 
     final body = cbor.cborEncode(newTransformed['body']);
 
-    final response = await _fetch!(
-      endpoint: '/api/v2/canister/${canister.toText()}/query',
-      method: FetchMethod.post,
-      headers: newTransformed['request']['headers'],
-      body: body,
+    final response = await withRetry(
+      () => _fetch!(
+        endpoint: '/api/v2/canister/${canister.toText()}/query',
+        method: FetchMethod.post,
+        headers: newTransformed['request']['headers'],
+        body: body,
+      ),
     );
 
     if (!(response['ok'] as bool)) {
@@ -353,11 +386,13 @@ class HttpAgent implements Agent {
     );
 
     final body = cbor.cborEncode(newTransformed['body']);
-    final response = await _fetch!(
-      endpoint: '/api/v2/canister/$canister/read_state',
-      method: FetchMethod.post,
-      headers: newTransformed['request']['headers'],
-      body: body,
+    final response = await withRetry(
+      () => _fetch!(
+        endpoint: '/api/v2/canister/$canister/read_state',
+        method: FetchMethod.post,
+        headers: newTransformed['request']['headers'],
+        body: body,
+      ),
     );
 
     if (!(response['ok'] as bool)) {
@@ -379,10 +414,12 @@ class HttpAgent implements Agent {
 
   @override
   Future<Map> status() async {
-    final response = await _fetch!(
-      endpoint: '/api/v2/status',
-      headers: {},
-      method: FetchMethod.get,
+    final response = await withRetry(
+      () => _fetch!(
+        endpoint: '/api/v2/status',
+        headers: {},
+        method: FetchMethod.get,
+      ),
     );
     if (!(response['ok'] as bool)) {
       throw AgentFetchError(

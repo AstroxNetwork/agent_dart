@@ -3,7 +3,6 @@ import 'package:agent_dart_base/agent/ord/inscriptionItem.dart';
 import 'package:agent_dart_base/agent/ord/service.dart';
 import 'package:agent_dart_base/agent/ord/utxo.dart';
 import 'package:agent_dart_base/agent_dart_base.dart';
-import 'package:agent_dart_base/utils/extension.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:tuple/tuple.dart';
 
@@ -17,13 +16,14 @@ enum BitcoinNetwork {
 }
 
 class BTCDescriptor {
+  BTCDescriptor({
+    required this.addressType,
+    required this.descriptor,
+    required this.network,
+  });
   final AddressType addressType;
   final Descriptor descriptor;
   final Network network;
-  BTCDescriptor(
-      {required this.addressType,
-      required this.descriptor,
-      required this.network});
 }
 
 abstract class AddressTypeString {
@@ -43,8 +43,8 @@ enum AddressType {
 const UTXO_DUST = 546;
 
 class BitcoinBalance {
-  final Balance balance;
   BitcoinBalance._(this.balance);
+  final Balance balance;
   Map<String, dynamic> toJson() => {
         'immature': balance.immature,
         'trustedPending': balance.trustedPending,
@@ -55,12 +55,14 @@ class BitcoinBalance {
       };
 }
 
-Future<List<BTCDescriptor>> getDescriptors(String mnemonic,
-    {AddressType addressType = AddressType.P2TR,
-    Network network = Network.Bitcoin}) async {
+Future<List<BTCDescriptor>> getDescriptors(
+  String mnemonic, {
+  AddressType addressType = AddressType.P2TR,
+  Network network = Network.Bitcoin,
+}) async {
   final descriptors = <BTCDescriptor>[];
   try {
-    for (var e in [KeychainKind.External, KeychainKind.Internal]) {
+    for (final e in KeychainKind.values) {
       final mnemonicObj = await Mnemonic.fromString(mnemonic);
       final descriptorSecretKey = await DescriptorSecretKey.create(
         network: Network.Bitcoin,
@@ -72,35 +74,55 @@ Future<List<BTCDescriptor>> getDescriptors(String mnemonic,
           descriptorSecretKey.derivationPath =
               await DerivationPath.create(path: "m/86'/0'/0'/0/0");
           descriptor = await Descriptor.newBip86(
-              secretKey: descriptorSecretKey, network: network, keychain: e);
+            secretKey: descriptorSecretKey,
+            network: network,
+            keychain: e,
+          );
           break;
         case AddressType.P2WPKH:
           descriptorSecretKey.derivationPath =
               await DerivationPath.create(path: "m/84'/0'/0'/0/0");
           descriptor = await Descriptor.newBip84(
-              secretKey: descriptorSecretKey, network: network, keychain: e);
+            secretKey: descriptorSecretKey,
+            network: network,
+            keychain: e,
+          );
           break;
         case AddressType.P2SH_P2WPKH:
           descriptorSecretKey.derivationPath =
               await DerivationPath.create(path: "m/49'/0'/0'/0/0");
           descriptor = await Descriptor.newBip49(
-              secretKey: descriptorSecretKey, network: network, keychain: e);
+            secretKey: descriptorSecretKey,
+            network: network,
+            keychain: e,
+          );
           break;
         case AddressType.P2PKH:
           descriptorSecretKey.derivationPath =
               await DerivationPath.create(path: "m/44'/0'/0'/0/0");
           descriptor = await Descriptor.newBip44(
-              secretKey: descriptorSecretKey, network: network, keychain: e);
+            secretKey: descriptorSecretKey,
+            network: network,
+            keychain: e,
+          );
           break;
         default:
           descriptorSecretKey.derivationPath =
               await DerivationPath.create(path: "m/86'/0'/0'/0/0");
           descriptor = await Descriptor.newBip86(
-              secretKey: descriptorSecretKey, network: network, keychain: e);
+            secretKey: descriptorSecretKey,
+            network: network,
+            keychain: e,
+          );
       }
 
-      descriptors.add(BTCDescriptor(
-          addressType: addressType, descriptor: descriptor, network: network));
+      descriptors.add(
+        BTCDescriptor(
+          addressType: addressType,
+          descriptor: descriptor,
+          network: network,
+        ),
+      );
     }
     return descriptors;
   } on Exception {
@@ -109,6 +131,12 @@ Future<List<BTCDescriptor>> getDescriptors(String mnemonic,
 }
 
 class BitcoinWallet {
+  BitcoinWallet({
+    required this.wallet,
+    required this.addressType,
+    required this.descriptor,
+    this.ordService,
+  });
   final Wallet wallet;
   final AddressType addressType;
   final BTCDescriptor descriptor;
@@ -123,13 +151,6 @@ class BitcoinWallet {
 
   String? getPublicKey() => _publicKey;
 
-  BitcoinWallet({
-    required this.wallet,
-    required this.addressType,
-    required this.descriptor,
-    this.ordService,
-  });
-
   void connect(OrdService service) {
     ordService = service;
   }
@@ -140,15 +161,17 @@ class BitcoinWallet {
 
   Future<void> blockchainInit({Network? net = Network.Bitcoin}) async {
     blockchain = await Blockchain.create(
-        config: BlockchainConfig.electrum(
-            config: ElectrumConfig(
-      stopGap: 10,
-      timeout: 5,
-      retry: 5,
-      url:
-          'ssl://electrum.blockstream.info:${(net ?? network) == Network.Bitcoin ? 50002 : 60002}',
-      validateDomain: false,
-    )));
+      config: BlockchainConfig.electrum(
+        config: ElectrumConfig(
+          stopGap: 10,
+          timeout: 5,
+          retry: 5,
+          url:
+              'ssl://electrum.blockstream.info:${(net ?? network) == Network.Bitcoin ? 50002 : 60002}',
+          validateDomain: false,
+        ),
+      ),
+    );
     // blockchain = await Blockchain.create(
     //     config: BlockchainConfig.esplora(
     //         config: EsploraConfig(
@@ -159,22 +182,26 @@ class BitcoinWallet {
     //)));
   }
 
-  static Future<BitcoinWallet> fromPhrase(String phrase,
-      {Network? network = Network.Bitcoin}) async {
+  static Future<BitcoinWallet> fromPhrase(
+    String phrase, {
+    Network? network = Network.Bitcoin,
+  }) async {
     // final wallet = await BitcoinWallet.fromPhrase();
     final descriptors =
         await getDescriptors(phrase, network: network ?? Network.Bitcoin);
 
     final res = await Wallet.create(
-        descriptor: descriptors[0].descriptor,
-        changeDescriptor: descriptors[0].descriptor,
-        network: network ?? Network.Bitcoin,
-        databaseConfig: const DatabaseConfig.memory());
+      descriptor: descriptors[0].descriptor,
+      changeDescriptor: descriptors[0].descriptor,
+      network: network ?? Network.Bitcoin,
+      databaseConfig: const DatabaseConfig.memory(),
+    );
 
     final wallet = BitcoinWallet(
-        wallet: res,
-        addressType: descriptors[0].addressType,
-        descriptor: descriptors[0]);
+      wallet: res,
+      addressType: descriptors[0].addressType,
+      descriptor: descriptors[0],
+    );
     wallet.setNetwork(network ?? Network.Bitcoin);
     await wallet.blockchainInit(net: network ?? Network.Bitcoin);
     return wallet;
@@ -187,8 +214,9 @@ class BitcoinWallet {
 
     final kBytes = Uint8List.fromList(await k.secretBytes());
     _publicKey = await k.getPubFromBytes(kBytes);
-    return await wallet.getAddress(
-        addressIndex: AddressIndex.reset(index: index));
+    return wallet.getAddress(
+      addressIndex: AddressIndex.reset(index: index),
+    );
   }
 
   Future<void> selectSigner(int index) async {
@@ -210,11 +238,10 @@ class BitcoinWallet {
   ///Note that this method only operates on the internal database, which first needs to be Wallet().sync manually.
   Future<BitcoinBalance> getBalance() async {
     try {
-      var res = await wallet.getBalance();
-
+      final res = await wallet.getBalance();
       return BitcoinBalance._(res);
     } on FfiException catch (e) {
-      throw (e.message);
+      throw e.message;
     }
   }
 
@@ -227,7 +254,7 @@ class BitcoinWallet {
       final utxos = await ordService!.getUtxoGet(_selectedSigner.address);
       return utxos;
     } on FfiException catch (e) {
-      throw (e.message);
+      throw e.message;
     }
   }
 
@@ -237,7 +264,7 @@ class BitcoinWallet {
       final ins = await ordService!.getInscriptions(_selectedSigner.address);
       return ins;
     } on FfiException catch (e) {
-      throw (e.message);
+      throw e.message;
     }
   }
 
@@ -256,7 +283,7 @@ class BitcoinWallet {
     try {
       return await blockchain.broadcast(await tx.psbt.extractTx());
     } on FfiException catch (e) {
-      throw (e.message);
+      throw e.message;
     }
   }
 
@@ -269,22 +296,30 @@ class BitcoinWallet {
 
     utxos.forEach((e) async {
       if (e.inscriptions.isNotEmpty) {
-        var idList = e.inscriptions.map((e) => e.id).toList();
-        var insList =
+        final idList = e.inscriptions.map((e) => e.id).toList();
+        final insList =
             allIns.where((element) => idList.contains(element.id)).toList();
-        ins.add(OutPointExt(insList,
+        ins.add(
+          OutPointExt(
+            insList,
             txid: e.txId,
             vout: e.outputIndex,
             satoshis: e.satoshis,
             scriptPk: e.scriptPk,
-            outputIndex: e.outputIndex));
+            outputIndex: e.outputIndex,
+          ),
+        );
       } else {
-        nonIns.add(OutPointExt(null,
+        nonIns.add(
+          OutPointExt(
+            null,
             txid: e.txId,
             vout: e.outputIndex,
             satoshis: e.satoshis,
             scriptPk: e.scriptPk,
-            outputIndex: e.outputIndex));
+            outputIndex: e.outputIndex,
+          ),
+        );
       }
     });
     return Tuple2<List<OutPointExt>, List<OutPointExt>>(ins, nonIns);
@@ -295,7 +330,9 @@ class BitcoinWallet {
 
     final nonIns = xos.item2;
     final res = nonIns.fold(
-        0, (previousValue, element) => previousValue + element.satoshis);
+      0,
+      (previousValue, element) => previousValue + element.satoshis,
+    );
     return res;
   }
 
@@ -319,20 +356,22 @@ class BitcoinWallet {
     final ins = xos.item1;
     final nonIns = xos.item2;
     // builder.addInscriptions(ins);
-    for (var e in ins) {
+    for (final e in ins) {
       builder.addUnSpendable(e);
     }
 
     // recepient setting
     // calculate output amount
-    builder.addOutput(OutPointExt(
-      null,
-      outputIndex: 0,
-      txid: '',
-      vout: 0,
-      satoshis: amount,
-      scriptPk: (await formatedAddress.scriptPubKey()).internal.toHex(),
-    ));
+    builder.addOutput(
+      OutPointExt(
+        null,
+        outputIndex: 0,
+        txid: '',
+        vout: 0,
+        satoshis: amount,
+        scriptPk: (await formatedAddress.scriptPubKey()).internal.toHex(),
+      ),
+    );
     builder.addRecipient(await formatedAddress.scriptPubKey(), amount);
 
     final outputAmount =
@@ -369,7 +408,8 @@ class BitcoinWallet {
     final networkFee = await builder.calNetworkFee(wallet);
     if (unspent < networkFee!) {
       throw Exception(
-          'Balance not enough. Need $networkFee Sats as network fee, but only $unspent BTC.');
+        'Balance not enough. Need $networkFee Sats as network fee, but only $unspent BTC.',
+      );
     }
 
     final leftAmount = unspent - networkFee;
@@ -413,13 +453,13 @@ class BitcoinWallet {
     final ins = xos.item1;
 
     // 3.1 select inscription and proctect those unspendables
-    var tempInputs = <OutPointExt>[];
+    final tempInputs = <OutPointExt>[];
     var satoshis = 0;
     var found = false;
     var ordLeft = 0;
-    for (var e in ins) {
+    for (final e in ins) {
       // try and find the inscription matches the inscription id
-      var index =
+      final index =
           e.inscriptions!.indexWhere((element) => element.detail.id == insId);
       if (index > -1) {
         // add to input map
@@ -432,14 +472,16 @@ class BitcoinWallet {
         satoshis = outputValue ?? e.inscriptions![index].detail.output_value;
 
         // add output to output map
-        builder.addOutput(OutPointExt(
-          e.inscriptions,
-          outputIndex: e.outputIndex,
-          txid: e.txid,
-          vout: e.vout,
-          satoshis: satoshis,
-          scriptPk: (await formatedAddress.scriptPubKey()).internal.toHex(),
-        ));
+        builder.addOutput(
+          OutPointExt(
+            e.inscriptions,
+            outputIndex: e.outputIndex,
+            txid: e.txid,
+            vout: e.vout,
+            satoshis: satoshis,
+            scriptPk: (await formatedAddress.scriptPubKey()).internal.toHex(),
+          ),
+        );
         // add to bdk recipient
         builder.addRecipient(await formatedAddress.scriptPubKey(), satoshis);
 
@@ -448,14 +490,17 @@ class BitcoinWallet {
             outputValue < e.inscriptions![index].detail.output_value) {
           ordLeft = e.inscriptions![index].detail.output_value - outputValue;
           // add to output map as part of change output value
-          builder.addOutput(OutPointExt(
-            e.inscriptions,
-            outputIndex: e.outputIndex,
-            txid: e.txid,
-            vout: e.vout,
-            satoshis: e.inscriptions![index].detail.output_value - outputValue,
-            scriptPk: changeAddress.internal.toHex(),
-          ));
+          builder.addOutput(
+            OutPointExt(
+              e.inscriptions,
+              outputIndex: e.outputIndex,
+              txid: e.txid,
+              vout: e.vout,
+              satoshis:
+                  e.inscriptions![index].detail.output_value - outputValue,
+              scriptPk: changeAddress.internal.toHex(),
+            ),
+          );
         }
         found = true;
       } else {
@@ -505,7 +550,8 @@ class BitcoinWallet {
     final networkFee = await builder.calNetworkFee(wallet);
     if (unspent < networkFee!) {
       throw Exception(
-          'Balance not enough. Need $networkFee Sats as network fee, but only $unspent BTC.');
+        'Balance not enough. Need $networkFee Sats as network fee, but only $unspent BTC.',
+      );
     }
 
     final leftAmount = unspent - networkFee;
@@ -523,8 +569,10 @@ class BitcoinWallet {
     return res;
   }
 
-  Future<TxBuilderResult> bumpFee(
-      {required String txid, required double feeRate}) async {
+  Future<TxBuilderResult> bumpFee({
+    required String txid,
+    required double feeRate,
+  }) async {
     final builder = BumpFeeTxBuilder(txid: txid, feeRate: feeRate);
     builder.enableRbf();
     builder.keepChange(true); // don't know whether it works;
@@ -542,9 +590,12 @@ class BitcoinWallet {
       final res = await wallet.sign(psbt: buildResult.psbt);
       final sbt = PartiallySignedTransaction(psbtBase64: res.psbtBase64);
       return TxBuilderResult(
-          psbt: sbt, txDetails: buildResult.txDetails, signed: true);
+        psbt: sbt,
+        txDetails: buildResult.txDetails,
+        signed: true,
+      );
     } on FfiException catch (e) {
-      throw (e.message);
+      throw e.message;
     }
   }
 }

@@ -60,5 +60,6 @@ class AgentDartFFI {
 
   static AgentDartImpl get impl => _instance._impl;
   late final AgentDartImpl _impl = AgentDartImpl(
-      dylib == null ? createLibraryImpl() : DynamicLibrary.open(dylib!));
+    dylib == null ? createLibraryImpl() : DynamicLibrary.open(dylib!),
+  );
 }

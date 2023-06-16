@@ -7,14 +7,14 @@ import 'package:agent_dart_ffi/agent_dart_ffi.dart' as bridge;
 import 'package:collection/collection.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
-import '../../../src/ffi/io.dart';
-import './config.dart';
 import './bdk_exception.dart';
+import './config.dart';
+import '../../../src/ffi/io.dart';
 
 ///A Bitcoin address.
 class Address {
-  final String? _address;
   Address._(this._address);
+  final String? _address;
 
   /// Creates an instance of [Address] from address given.
   ///
@@ -32,7 +32,9 @@ class Address {
   /// Creates an instance of [Address] from address given [Script].
   ///
   static Future<Address> fromScript(
-      bridge.Script script, Network network) async {
+    bridge.Script script,
+    Network network,
+  ) async {
     try {
       final res = await AgentDartFFI.impl
           .addressFromScriptStaticMethodApi(script: script, network: network);
@@ -83,8 +85,8 @@ class Address {
 
 /// Blockchain backends  module provides the implementation of a few commonly-used backends like Electrum, and Esplora.
 class Blockchain {
-  final BlockchainInstance? _blockchain;
   Blockchain._(this._blockchain);
+  final BlockchainInstance? _blockchain;
 
   ///  [Blockchain] constructor
   static Future<Blockchain> create({required BlockchainConfig config}) async {
@@ -100,8 +102,10 @@ class Blockchain {
   /// The function for getting block hash by block height
   Future<String> getBlockHash(int height) async {
     try {
-      var res = await AgentDartFFI.impl.getBlockchainHashStaticMethodApi(
-          blockchainHeight: height, blockchain: _blockchain!);
+      final res = await AgentDartFFI.impl.getBlockchainHashStaticMethodApi(
+        blockchainHeight: height,
+        blockchain: _blockchain!,
+      );
       return res;
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -111,7 +115,7 @@ class Blockchain {
   /// The function for getting the current height of the blockchain.
   Future<int> getHeight() async {
     try {
-      var res = await AgentDartFFI.impl
+      final res = await AgentDartFFI.impl
           .getHeightStaticMethodApi(blockchain: _blockchain!);
       return res;
     } on FfiException catch (e) {
@@ -122,7 +126,7 @@ class Blockchain {
   /// Estimate the fee rate required to confirm a transaction in a given target of blocks
   Future<FeeRate> estimateFee(int target) async {
     try {
-      var res = await AgentDartFFI.impl
+      final res = await AgentDartFFI.impl
           .estimateFeeStaticMethodApi(blockchain: _blockchain!, target: target);
       return FeeRate._(res);
     } on FfiException catch (e) {
@@ -144,14 +148,13 @@ class Blockchain {
 
 /// The BumpFeeTxBuilder is used to bump the fee on a transaction that has been broadcast and has its RBF flag set to true.
 class BumpFeeTxBuilder {
+  BumpFeeTxBuilder({required this.txid, required this.feeRate});
   int? _nSequence;
   String? _allowShrinking;
   bool _enableRbf = false;
   bool _keepChange = true;
   final String txid;
   final double feeRate;
-
-  BumpFeeTxBuilder({required this.txid, required this.feeRate});
 
   ///Explicitly tells the wallet that it is allowed to reduce the amount of the output matching this `address` in order to bump the transaction fee. Without specifying this the wallet will attempt to find a change output to shrink instead.
   ///
@@ -191,13 +194,14 @@ class BumpFeeTxBuilder {
   Future<TxBuilderResult> finish(Wallet wallet) async {
     try {
       final res = await AgentDartFFI.impl.bumpFeeTxBuilderFinishStaticMethodApi(
-          txid: txid.toString(),
-          enableRbf: _enableRbf,
-          feeRate: feeRate,
-          wallet: wallet._wallet,
-          nSequence: _nSequence,
-          keepChange: _keepChange,
-          allowShrinking: _allowShrinking);
+        txid: txid.toString(),
+        enableRbf: _enableRbf,
+        feeRate: feeRate,
+        wallet: wallet._wallet,
+        nSequence: _nSequence,
+        keepChange: _keepChange,
+        allowShrinking: _allowShrinking,
+      );
       return TxBuilderResult(
         psbt: PartiallySignedTransaction(psbtBase64: res.field0),
         txDetails: res.field1,
@@ -211,8 +215,8 @@ class BumpFeeTxBuilder {
 
 ///A `BIP-32` derivation path
 class DerivationPath {
-  final String? _path;
   DerivationPath._(this._path);
+  final String? _path;
 
   ///  [DerivationPath] constructor
   static Future<DerivationPath> create({required String path}) async {
@@ -233,16 +237,20 @@ class DerivationPath {
 
 ///Script descriptor
 class Descriptor {
+  Descriptor._(this._descriptorInstance);
   final BdkDescriptor? _descriptorInstance;
   DescriptorSecretKey? descriptorSecretKey;
-  Descriptor._(this._descriptorInstance);
 
   ///  [Descriptor] constructor
-  static Future<Descriptor> create(
-      {required String descriptor, required Network network}) async {
+  static Future<Descriptor> create({
+    required String descriptor,
+    required Network network,
+  }) async {
     try {
       final res = await AgentDartFFI.impl.createDescriptorStaticMethodApi(
-          descriptor: descriptor, network: network);
+        descriptor: descriptor,
+        network: network,
+      );
       return Descriptor._(res);
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -252,17 +260,19 @@ class Descriptor {
   ///BIP44 template. Expands to pkh(key/44'/{0,1}'/0'/{0,1}/*)
   ///
   /// Since there are hardened derivation steps, this template requires a private derivable key (generally a xprv/tprv).
-  static Future<Descriptor> newBip44(
-      {required DescriptorSecretKey secretKey,
-      required Network network,
-      required KeychainKind keychain}) async {
+  static Future<Descriptor> newBip44({
+    required DescriptorSecretKey secretKey,
+    required Network network,
+    required KeychainKind keychain,
+  }) async {
     try {
       secretKey.derivedPathPrefix = "m/44'/0'/0'/0";
       secretKey.derivedIndex = 0;
       final res = await AgentDartFFI.impl.newBip44DescriptorStaticMethodApi(
-          secretKey: secretKey.asString(),
-          network: network,
-          keyChainKind: keychain);
+        secretKey: secretKey.asString(),
+        network: network,
+        keyChainKind: keychain,
+      );
       final r = Descriptor._(res);
       r.descriptorSecretKey = secretKey;
       return r;
@@ -276,17 +286,19 @@ class Descriptor {
   /// This assumes that the key used has already been derived with m/44'/0'/0' for Mainnet or m/44'/1'/0' for Testnet.
   ///
   /// This template requires the parent fingerprint to populate correctly the metadata of PSBTs.
-  static Future<Descriptor> newBip44Public(
-      {required DescriptorPublicKey publicKey,
-      required String fingerPrint,
-      required Network network,
-      required KeychainKind keychain}) async {
+  static Future<Descriptor> newBip44Public({
+    required DescriptorPublicKey publicKey,
+    required String fingerPrint,
+    required Network network,
+    required KeychainKind keychain,
+  }) async {
     try {
       final res = await AgentDartFFI.impl.newBip44PublicStaticMethodApi(
-          keyChainKind: keychain,
-          publicKey: publicKey.asString(),
-          network: network,
-          fingerprint: fingerPrint);
+        keyChainKind: keychain,
+        publicKey: publicKey.asString(),
+        network: network,
+        fingerprint: fingerPrint,
+      );
       return Descriptor._(res);
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -296,17 +308,19 @@ class Descriptor {
   ///BIP49 template. Expands to sh(wpkh(key/49'/{0,1}'/0'/{0,1}/*))
   ///
   ///Since there are hardened derivation steps, this template requires a private derivable key (generally a xprv/tprv).
-  static Future<Descriptor> newBip49(
-      {required DescriptorSecretKey secretKey,
-      required Network network,
-      required KeychainKind keychain}) async {
+  static Future<Descriptor> newBip49({
+    required DescriptorSecretKey secretKey,
+    required Network network,
+    required KeychainKind keychain,
+  }) async {
     try {
       secretKey.derivedPathPrefix = "m/49'/0'/0'/0";
       secretKey.derivedIndex = 0;
       final res = await AgentDartFFI.impl.newBip49DescriptorStaticMethodApi(
-          secretKey: secretKey.asString(),
-          network: network,
-          keyChainKind: keychain);
+        secretKey: secretKey.asString(),
+        network: network,
+        keyChainKind: keychain,
+      );
       final r = Descriptor._(res);
       r.descriptorSecretKey = secretKey;
       return r;
@@ -320,17 +334,19 @@ class Descriptor {
   /// This assumes that the key used has already been derived with m/49'/0'/0'.
   ///
   /// This template requires the parent fingerprint to populate correctly the metadata of PSBTs.
-  static Future<Descriptor> newBip49Public(
-      {required DescriptorPublicKey publicKey,
-      required String fingerPrint,
-      required Network network,
-      required KeychainKind keychain}) async {
+  static Future<Descriptor> newBip49Public({
+    required DescriptorPublicKey publicKey,
+    required String fingerPrint,
+    required Network network,
+    required KeychainKind keychain,
+  }) async {
     try {
       final res = await AgentDartFFI.impl.newBip49PublicStaticMethodApi(
-          keyChainKind: keychain,
-          publicKey: publicKey.asString(),
-          network: network,
-          fingerprint: fingerPrint);
+        keyChainKind: keychain,
+        publicKey: publicKey.asString(),
+        network: network,
+        fingerprint: fingerPrint,
+      );
       return Descriptor._(res);
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -340,17 +356,19 @@ class Descriptor {
   ///BIP84 template. Expands to wpkh(key/84'/{0,1}'/0'/{0,1}/*)
   ///
   ///Since there are hardened derivation steps, this template requires a private derivable key (generally a xprv/tprv).
-  static Future<Descriptor> newBip84(
-      {required DescriptorSecretKey secretKey,
-      required Network network,
-      required KeychainKind keychain}) async {
+  static Future<Descriptor> newBip84({
+    required DescriptorSecretKey secretKey,
+    required Network network,
+    required KeychainKind keychain,
+  }) async {
     try {
       secretKey.derivedPathPrefix = "m/84'/0'/0'/0";
       secretKey.derivedIndex = 0;
       final res = await AgentDartFFI.impl.newBip84DescriptorStaticMethodApi(
-          secretKey: secretKey.asString(),
-          network: network,
-          keyChainKind: keychain);
+        secretKey: secretKey.asString(),
+        network: network,
+        keyChainKind: keychain,
+      );
       final r = Descriptor._(res);
       r.descriptorSecretKey = secretKey;
       return r;
@@ -364,17 +382,19 @@ class Descriptor {
   /// This assumes that the key used has already been derived with m/84'/0'/0'.
   ///
   /// This template requires the parent fingerprint to populate correctly the metadata of PSBTs.
-  static Future<Descriptor> newBip84Public(
-      {required DescriptorPublicKey publicKey,
-      required String fingerPrint,
-      required Network network,
-      required KeychainKind keychain}) async {
+  static Future<Descriptor> newBip84Public({
+    required DescriptorPublicKey publicKey,
+    required String fingerPrint,
+    required Network network,
+    required KeychainKind keychain,
+  }) async {
     try {
       final res = await AgentDartFFI.impl.newBip84PublicStaticMethodApi(
-          keyChainKind: keychain,
-          publicKey: publicKey.asString(),
-          network: network,
-          fingerprint: fingerPrint);
+        keyChainKind: keychain,
+        publicKey: publicKey.asString(),
+        network: network,
+        fingerprint: fingerPrint,
+      );
       return Descriptor._(res);
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -384,17 +404,19 @@ class Descriptor {
   ///BIP86 template. Expands to wpkh(key/86'/{0,1}'/0'/{0,1}/*)
   ///
   ///Since there are hardened derivation steps, this template requires a private derivable key (generally a xprv/tprv).
-  static Future<Descriptor> newBip86(
-      {required DescriptorSecretKey secretKey,
-      required Network network,
-      required KeychainKind keychain}) async {
+  static Future<Descriptor> newBip86({
+    required DescriptorSecretKey secretKey,
+    required Network network,
+    required KeychainKind keychain,
+  }) async {
     try {
       secretKey.derivedPathPrefix = "m/86'/0'/0'/0";
       secretKey.derivedIndex = 0;
       final res = await AgentDartFFI.impl.newBip86DescriptorStaticMethodApi(
-          secretKey: secretKey.asString(),
-          network: network,
-          keyChainKind: keychain);
+        secretKey: secretKey.asString(),
+        network: network,
+        keyChainKind: keychain,
+      );
       final r = Descriptor._(res);
       r.descriptorSecretKey = secretKey;
       return r;
@@ -408,17 +430,19 @@ class Descriptor {
   /// This assumes that the key used has already been derived with m/86'/0'/0'.
   ///
   /// This template requires the parent fingerprint to populate correctly the metadata of PSBTs.
-  static Future<Descriptor> newBip86Public(
-      {required DescriptorPublicKey publicKey,
-      required String fingerPrint,
-      required Network network,
-      required KeychainKind keychain}) async {
+  static Future<Descriptor> newBip86Public({
+    required DescriptorPublicKey publicKey,
+    required String fingerPrint,
+    required Network network,
+    required KeychainKind keychain,
+  }) async {
     try {
       final res = await AgentDartFFI.impl.newBip86PublicStaticMethodApi(
-          keyChainKind: keychain,
-          publicKey: publicKey.asString(),
-          network: network,
-          fingerprint: fingerPrint);
+        keyChainKind: keychain,
+        publicKey: publicKey.asString(),
+        network: network,
+        fingerprint: fingerPrint,
+      );
       return Descriptor._(res);
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -450,9 +474,8 @@ class Descriptor {
 
 ///An extended public key.
 class DescriptorPublicKey {
-  final String? _descriptorPublicKey;
-
   DescriptorPublicKey._(this._descriptorPublicKey);
+  final String? _descriptorPublicKey;
 
   /// Get the public key as string.
   String asString() {
@@ -475,9 +498,10 @@ class DescriptorPublicKey {
   Future<DescriptorPublicKey> derive(DerivationPath derivationPath) async {
     try {
       final res = await AgentDartFFI.impl.createDescriptorPublicStaticMethodApi(
-          xpub: _descriptorPublicKey,
-          path: derivationPath._path.toString(),
-          derive: true);
+        xpub: _descriptorPublicKey,
+        path: derivationPath._path.toString(),
+        derive: true,
+      );
       return DescriptorPublicKey._(res);
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -488,9 +512,10 @@ class DescriptorPublicKey {
   Future<DescriptorPublicKey> extend(DerivationPath derivationPath) async {
     try {
       final res = await AgentDartFFI.impl.createDescriptorPublicStaticMethodApi(
-          xpub: _descriptorPublicKey,
-          path: derivationPath._path.toString(),
-          derive: false);
+        xpub: _descriptorPublicKey,
+        path: derivationPath._path.toString(),
+        derive: false,
+      );
       return DescriptorPublicKey._(res);
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -515,11 +540,11 @@ class DescriptorPublicKey {
 }
 
 class DescriptorSecretKey {
+  DescriptorSecretKey._(this._descriptorSecretKey);
   final String _descriptorSecretKey;
   DerivationPath? derivationPath;
   String? derivedPathPrefix;
   int? derivedIndex;
-  DescriptorSecretKey._(this._descriptorSecretKey);
 
   ///Returns the public version of this key.
   ///
@@ -540,37 +565,41 @@ class DescriptorSecretKey {
   }
 
   /// [DescriptorSecretKey] constructor
-  static Future<DescriptorSecretKey> create(
-      {required Network network,
-      required Mnemonic mnemonic,
-      String? password}) async {
+  static Future<DescriptorSecretKey> create({
+    required Network network,
+    required Mnemonic mnemonic,
+    String? password,
+  }) async {
     try {
       final res = await AgentDartFFI.impl.createDescriptorSecretStaticMethodApi(
-          network: network, mnemonic: mnemonic.asString(), password: password);
+        network: network,
+        mnemonic: mnemonic.asString(),
+        password: password,
+      );
       return DescriptorSecretKey._(res);
     } on FfiException catch (e) {
       throw configException(e.message);
     }
   }
 
-  static Future<DescriptorSecretKey> createDerivedKey(
-      {required Network network,
-      required String path,
-      required Mnemonic mnemonic,
-      String? password}) async {
-    try {
-      final res = await AgentDartFFI.impl
-          .createDerivedDescriptorSecretStaticMethodApi(
-              network: network,
-              mnemonic: mnemonic.asString(),
-              path: path,
-              password: password);
-      print(res);
-      return DescriptorSecretKey._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
-    }
-  }
+  // static Future<DescriptorSecretKey> createDerivedKey(
+  //     {required Network network,
+  //     required String path,
+  //     required Mnemonic mnemonic,
+  //     String? password}) async {
+  //   try {
+  //     final res = await AgentDartFFI.impl
+  //         .createDerivedDescriptorSecretStaticMethodApi(
+  //             network: network,
+  //             mnemonic: mnemonic.asString(),
+  //             path: path,
+  //             password: password);
+  //     print(res);
+  //     return DescriptorSecretKey._(res);
+  //   } on FfiException catch (e) {
+  //     throw configException(e.message);
+  //   }
+  // }
 
   /// Derived the `XPrv` using the derivation path
   Future<DescriptorSecretKey> deriveindex(int index) async {
@@ -578,7 +607,9 @@ class DescriptorSecretKey {
       derivationPath =
           await DerivationPath.create(path: '${derivedPathPrefix!}/$index');
       final res = await AgentDartFFI.impl.deriveDescriptorSecretStaticMethodApi(
-          secret: _descriptorSecretKey, path: derivationPath!._path.toString());
+        secret: _descriptorSecretKey,
+        path: derivationPath!._path.toString(),
+      );
       final r = DescriptorSecretKey._(res);
       r.derivationPath = derivationPath;
       return r;
@@ -591,7 +622,9 @@ class DescriptorSecretKey {
   Future<DescriptorSecretKey> derive(DerivationPath derivationPath) async {
     try {
       final res = await AgentDartFFI.impl.deriveDescriptorSecretStaticMethodApi(
-          secret: _descriptorSecretKey, path: derivationPath._path.toString());
+        secret: _descriptorSecretKey,
+        path: derivationPath._path.toString(),
+      );
       final r = DescriptorSecretKey._(res);
       r.derivationPath = derivationPath;
       return r;
@@ -604,7 +637,9 @@ class DescriptorSecretKey {
   Future<DescriptorSecretKey> extend(DerivationPath derivationPath) async {
     try {
       final res = await AgentDartFFI.impl.extendDescriptorSecretStaticMethodApi(
-          secret: _descriptorSecretKey, path: derivationPath._path.toString());
+        secret: _descriptorSecretKey,
+        path: derivationPath._path.toString(),
+      );
       final r = DescriptorSecretKey._(res);
       r.derivationPath = derivationPath;
       return r;
@@ -653,8 +688,8 @@ class DescriptorSecretKey {
 }
 
 class FeeRate {
-  final double _feeRate;
   FeeRate._(this._feeRate);
+  final double _feeRate;
 
   double asSatPerVb() {
     return _feeRate;
@@ -664,8 +699,8 @@ class FeeRate {
 /// Mnemonic phrases are a human-readable version of the private keys.
 /// Supported number of words are 12, 18, and 24.
 class Mnemonic {
-  final String? _mnemonic;
   Mnemonic._(this._mnemonic);
+  final String? _mnemonic;
 
   /// Generates [Mnemonic] with given [WordCount]
   ///
@@ -720,18 +755,20 @@ class Mnemonic {
 
 ///A Partially Signed Transaction
 class PartiallySignedTransaction {
-  final String psbtBase64;
-
   PartiallySignedTransaction({required this.psbtBase64});
+  final String psbtBase64;
 
   /// Combines this [PartiallySignedTransaction] with other PSBT as described by BIP 174.
   ///
   /// In accordance with BIP 174 this function is commutative i.e., `A.combine(B) == B.combine(A)`
   Future<PartiallySignedTransaction> combine(
-      PartiallySignedTransaction other) async {
+    PartiallySignedTransaction other,
+  ) async {
     try {
       final res = await AgentDartFFI.impl.combinePsbtStaticMethodApi(
-          psbtStr: psbtBase64, other: other.psbtBase64);
+        psbtStr: psbtBase64,
+        other: other.psbtBase64,
+      );
       return PartiallySignedTransaction(psbtBase64: res);
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -830,7 +867,8 @@ class Script extends bridge.Script {
 
   /// [Script] constructor
   static Future<bridge.Script> create(
-      typed_data.Uint8List rawOutputScript) async {
+    typed_data.Uint8List rawOutputScript,
+  ) async {
     try {
       final res = await AgentDartFFI.impl
           .createScriptStaticMethodApi(rawOutputScript: rawOutputScript);
@@ -843,8 +881,8 @@ class Script extends bridge.Script {
 
 ///A bitcoin transaction.
 class Transaction {
-  final String? _tx;
   Transaction._(this._tx);
+  final String? _tx;
 
   ///  [Transaction] constructor
   static Future<Transaction> create({
@@ -1017,7 +1055,7 @@ class TxBuilder {
   /// It’s important to note that the “must-be-spent” utxos added with TxBuilder().addUtxo have priority over this.
   /// See the docs of the two linked methods for more details.
   TxBuilder unSpendable(List<OutPoint> outpoints) {
-    for (var e in outpoints) {
+    for (final e in outpoints) {
       _unSpendable.add(e);
     }
     return this;
@@ -1037,7 +1075,7 @@ class TxBuilder {
   ///
   /// These have priority over the “unspendable” utxos, meaning that if a utxo is present both in the “utxos” and the “unspendable” list, it will be spent.
   TxBuilder addUtxos(List<OutPoint> outpoints) {
-    for (var e in outpoints) {
+    for (final e in outpoints) {
       _utxos.add(e);
     }
     return this;
@@ -1119,7 +1157,7 @@ class TxBuilder {
 
   ///Replace the recipients already added with a new list
   TxBuilder setRecipients(List<ScriptAmount> recipients) {
-    for (var e in _recipients) {
+    for (final e in _recipients) {
       _recipients.add(e);
     }
     return this;
@@ -1152,12 +1190,12 @@ class TxBuilder {
 
   Future<int?> calNetworkFee(Wallet wallet) async {
     final res = await _finish(wallet);
-    return await res.psbt.feeAmount();
+    return res.psbt.feeAmount();
   }
 
   int getTotalOutput() {
     var total = 0;
-    for (var e in _txOutputs) {
+    for (final e in _txOutputs) {
       total += e.satoshis;
     }
     return total;
@@ -1165,7 +1203,7 @@ class TxBuilder {
 
   int getTotalInput() {
     var total = 0;
-    for (var e in _txInputs) {
+    for (final e in _txInputs) {
       total += e.satoshis;
     }
     return total;
@@ -1177,12 +1215,11 @@ class TxBuilder {
 
   Future<Transaction> _getTx(Wallet wallet) async {
     final res = await _finish(wallet);
-    final tx = await res.psbt.extractTx();
-    return tx;
+    return res.psbt.extractTx();
   }
 
   Future<TxBuilderResult> _finish(Wallet wallet) async {
-    return await finish(wallet);
+    return finish(wallet);
   }
 
   ///Finish building the transaction.
@@ -1222,11 +1259,6 @@ class TxBuilder {
 }
 
 class OutPointExt extends OutPoint {
-  /// The referenced transaction's txid.
-  List<InscriptionItem>? inscriptions;
-  final int outputIndex;
-  final int satoshis;
-  final String scriptPk;
   OutPointExt(
     this.inscriptions, {
     required super.txid,
@@ -1235,6 +1267,12 @@ class OutPointExt extends OutPoint {
     required this.satoshis,
     required this.scriptPk,
   });
+
+  /// The referenced transaction's txid.
+  List<InscriptionItem>? inscriptions;
+  final int outputIndex;
+  final int satoshis;
+  final String scriptPk;
   Map<String, dynamic> toJson() => {
         'txid': txid,
         'vout': vout,
@@ -1244,6 +1282,13 @@ class OutPointExt extends OutPoint {
 
 ///The value returned from calling the .finish() method on the [TxBuilder] or [BumpFeeTxBuilder].
 class TxBuilderResult {
+  TxBuilderResult({
+    required this.psbt,
+    required this.txDetails,
+    this.builder,
+    this.bumpFeeBuilder,
+    this.signed,
+  });
   final PartiallySignedTransaction psbt;
 
   ///The transaction details.
@@ -1257,15 +1302,8 @@ class TxBuilderResult {
   List<OutPointExt> txInputs = <OutPointExt>[];
   List<OutPointExt> txOutputs = <OutPointExt>[];
 
-  TxBuilderResult(
-      {required this.psbt,
-      required this.txDetails,
-      this.builder,
-      this.bumpFeeBuilder,
-      this.signed});
-
   void addInputs(List<OutPointExt> ins) {
-    for (var i in ins) {
+    for (final i in ins) {
       if (!txInputs.contains(i)) {
         txInputs.add(i);
       }
@@ -1273,7 +1311,7 @@ class TxBuilderResult {
   }
 
   void addOutputs(List<OutPointExt> outs) {
-    for (var i in outs) {
+    for (final i in outs) {
       if (!txOutputs.contains(i)) {
         txOutputs.add(i);
       }
@@ -1295,7 +1333,7 @@ class TxBuilderResult {
     final inputs = await tx.input();
     final outputs = await tx.output();
 
-    var inputStrings = <String>[];
+    final inputStrings = <String>[];
     for (var i = 0; i < txInputs.length; i += 1) {
       final input = txInputs[i];
       final found = inputs.firstWhereOrNull((e) {
@@ -1311,7 +1349,7 @@ class TxBuilderResult {
       }
     }
 
-    var outputString = <String>[];
+    final outputString = <String>[];
     for (var i = 0; i < outputs.length; i += 1) {
       final output = outputs[i];
       outputString.add('''
@@ -1319,8 +1357,10 @@ class TxBuilderResult {
 ''');
     }
 
-    var totalOutput = outputs.fold(
-        0, (previousValue, element) => previousValue + element.value);
+    final totalOutput = outputs.fold(
+      0,
+      (previousValue, element) => previousValue + element.value,
+    );
 
     print('''
 =============================================================================================
@@ -1357,9 +1397,9 @@ total: ${totalOutput - feePaid!} Sats
 ///     3. Signers that can contribute signatures to addresses instantiated from the descriptors.
 ///
 class Wallet {
+  Wallet._(this._wallet);
   final WalletInstance _wallet;
   String? publicKey;
-  Wallet._(this._wallet);
 
   ///  [Wallet] constructor
   static Future<Wallet> create({
@@ -1385,8 +1425,10 @@ class Wallet {
   /// If none of the keys in the descriptor are derivable (i.e. does not end with /*) then the same address will always be returned for any AddressIndex.
   Future<AddressInfo> getAddress({required AddressIndex addressIndex}) async {
     try {
-      var res = await AgentDartFFI.impl.getAddressStaticMethodApi(
-          wallet: _wallet, addressIndex: addressIndex);
+      final res = await AgentDartFFI.impl.getAddressStaticMethodApi(
+        wallet: _wallet,
+        addressIndex: addressIndex,
+      );
       return res;
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -1400,11 +1442,14 @@ class Wallet {
   /// see [AddressIndex] for available address index selection strategies. If none of the keys
   /// in the descriptor are derivable (i.e. does not end with /*) then the same address will always
   /// be returned for any [AddressIndex].
-  Future<AddressInfo> getInternalAddress(
-      {required AddressIndex addressIndex}) async {
+  Future<AddressInfo> getInternalAddress({
+    required AddressIndex addressIndex,
+  }) async {
     try {
-      var res = await AgentDartFFI.impl.getInternalAddressStaticMethodApi(
-          wallet: _wallet, addressIndex: addressIndex);
+      final res = await AgentDartFFI.impl.getInternalAddressStaticMethodApi(
+        wallet: _wallet,
+        addressIndex: addressIndex,
+      );
       return res;
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -1416,7 +1461,7 @@ class Wallet {
   ///Note that this method only operates on the internal database, which first needs to be Wallet().sync manually.
   Future<Balance> getBalance() async {
     try {
-      var res =
+      final res =
           await AgentDartFFI.impl.getBalanceStaticMethodApi(wallet: _wallet);
       return res;
     } on FfiException catch (e) {
@@ -1427,7 +1472,7 @@ class Wallet {
   ///Get the Bitcoin network the wallet is using.
   Future<Network> network() async {
     try {
-      var res =
+      final res =
           await AgentDartFFI.impl.walletNetworkStaticMethodApi(wallet: _wallet);
       return res;
     } on FfiException catch (e) {
@@ -1440,7 +1485,7 @@ class Wallet {
   /// Note that this method only operates on the internal database, which first needs to be Wallet().sync manually.
   Future<List<LocalUtxo>> listUnspent() async {
     try {
-      var res = await AgentDartFFI.impl
+      final res = await AgentDartFFI.impl
           .listUnspentOutputsStaticMethodApi(wallet: _wallet);
       return res;
     } on FfiException catch (e) {
@@ -1452,7 +1497,9 @@ class Wallet {
   Future<void> sync(Blockchain blockchain) async {
     try {
       await AgentDartFFI.impl.syncWalletStaticMethodApi(
-          wallet: _wallet, blockchain: blockchain._blockchain!);
+        wallet: _wallet,
+        blockchain: blockchain._blockchain!,
+      );
     } on FfiException catch (e) {
       throw configException(e.message);
     }
@@ -1462,7 +1509,9 @@ class Wallet {
   Future<List<TransactionDetails>> listTransactions(bool includeRaw) async {
     try {
       final res = await AgentDartFFI.impl.getTransactionsStaticMethodApi(
-          wallet: _wallet, includeRaw: includeRaw);
+        wallet: _wallet,
+        includeRaw: includeRaw,
+      );
       return res;
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -1472,12 +1521,16 @@ class Wallet {
   ///Sign a transaction with all the wallet’s signers, in the order specified by every signer’s SignerOrdering
   ///
   /// Note that it can’t be guaranteed that every signers will follow the options, but the “software signers” (WIF keys and xprv) defined in this library will.
-  Future<PartiallySignedTransaction> sign(
-      {required PartiallySignedTransaction psbt,
-      SignOptions? signOptions}) async {
+  Future<PartiallySignedTransaction> sign({
+    required PartiallySignedTransaction psbt,
+    SignOptions? signOptions,
+  }) async {
     try {
       final sbt = await AgentDartFFI.impl.signStaticMethodApi(
-          signOptions: signOptions, psbtStr: psbt.psbtBase64, wallet: _wallet);
+        signOptions: signOptions,
+        psbtStr: psbt.psbtBase64,
+        wallet: _wallet,
+      );
       if (sbt == null) {
         throw const BdkException.unExpected('Unable to sign transaction');
       }
