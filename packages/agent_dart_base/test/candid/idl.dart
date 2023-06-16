@@ -10,20 +10,20 @@ void main() {
   idlTest();
 }
 
-testEncode(CType type, dynamic val, String hex, String str) {
+void testEncode(CType type, dynamic val, String hex, String str) {
   expect(IDL.encode([type], [val]).toHex(), hex);
 }
 
-testDecode(CType type, dynamic val, String hex, String str) {
+void testDecode(CType type, dynamic val, String hex, String str) {
   expect(IDL.decode([type], hex.toU8a())[0], val);
 }
 
-testArg(CType type, dynamic val, String hex, String str) {
+void testArg(CType type, dynamic val, String hex, String str) {
   testEncode(type, val, hex, str);
   testDecode(type, val, hex, str);
 }
 
-testArgs(List<CType> types, List vals, String hex, String str) {
+void testArgs(List<CType> types, List vals, String hex, String str) {
   expect(IDL.encode(types, vals), hex.toU8a());
   expect(IDL.decode(types, hex.toU8a()), vals);
 }
@@ -404,9 +404,12 @@ void idlTest() {
     ], [
       [foobar]
     ]);
-    final decode = IDL.decode([
-      IDL.Opt(IDL.Record({'foo': IDL.Text, 'bar': IDL.Int}))
-    ], encode);
+    final decode = IDL.decode(
+      [
+        IDL.Opt(IDL.Record({'foo': IDL.Text, 'bar': IDL.Int}))
+      ],
+      encode,
+    );
     final newFoobar = FooBar.fromJson((decode.first as List).first);
     expect(foobar, newFoobar);
   });

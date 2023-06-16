@@ -13,43 +13,6 @@ import 'package:protobuf/protobuf.dart' as $pb;
 import '../../../ic_base_types/pb/v1/types.pb.dart' as $0;
 
 class LedgerInit extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'LedgerInit',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'ic_ledger.pb.v1'),
-      createEmptyInstance: create)
-    ..aOM<AccountIdentifier>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'mintingAccount',
-        subBuilder: AccountIdentifier.create)
-    ..pc<Account>(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'initialValues',
-        $pb.PbFieldType.PM,
-        subBuilder: Account.create)
-    ..aOM<$0.PrincipalId>(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'archiveCanister',
-        subBuilder: $0.PrincipalId.create)
-    ..a<$core.int>(
-        4,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'maxMessageSizeBytes',
-        $pb.PbFieldType.OU3)
-    ..hasRequiredFields = false;
-
-  LedgerInit._();
   factory LedgerInit({
     AccountIdentifier? mintingAccount,
     $core.Iterable<Account>? initialValues,
@@ -71,12 +34,58 @@ class LedgerInit extends $pb.GeneratedMessage {
     }
     return _result;
   }
-  factory LedgerInit.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+  LedgerInit._();
+  factory LedgerInit.fromBuffer(
+    $core.List<$core.int> i, [
+    $pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY,
+  ]) =>
       create()..mergeFromBuffer(i, r);
-  factory LedgerInit.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+  factory LedgerInit.fromJson(
+    $core.String i, [
+    $pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY,
+  ]) =>
       create()..mergeFromJson(i, r);
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+    const $core.bool.fromEnvironment('protobuf.omit_message_names')
+        ? ''
+        : 'LedgerInit',
+    package: const $pb.PackageName(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'ic_ledger.pb.v1',
+    ),
+    createEmptyInstance: create,
+  )
+    ..aOM<AccountIdentifier>(
+      1,
+      const $core.bool.fromEnvironment('protobuf.omit_field_names')
+          ? ''
+          : 'mintingAccount',
+      subBuilder: AccountIdentifier.create,
+    )
+    ..pc<Account>(
+      2,
+      const $core.bool.fromEnvironment('protobuf.omit_field_names')
+          ? ''
+          : 'initialValues',
+      $pb.PbFieldType.PM,
+      subBuilder: Account.create,
+    )
+    ..aOM<$0.PrincipalId>(
+      3,
+      const $core.bool.fromEnvironment('protobuf.omit_field_names')
+          ? ''
+          : 'archiveCanister',
+      subBuilder: $0.PrincipalId.create,
+    )
+    ..a<$core.int>(
+      4,
+      const $core.bool.fromEnvironment('protobuf.omit_field_names')
+          ? ''
+          : 'maxMessageSizeBytes',
+      $pb.PbFieldType.OU3,
+    )
+    ..hasRequiredFields = false;
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -142,25 +151,29 @@ class LedgerInit extends $pb.GeneratedMessage {
 }
 
 class LedgerUpgrade extends $pb.GeneratedMessage {
+  factory LedgerUpgrade() => create();
+  LedgerUpgrade._();
+  factory LedgerUpgrade.fromBuffer(
+    $core.List<$core.int> i, [
+    $pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY,
+  ]) =>
+      create()..mergeFromBuffer(i, r);
+  factory LedgerUpgrade.fromJson(
+    $core.String i, [
+    $pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY,
+  ]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+    const $core.bool.fromEnvironment('protobuf.omit_message_names')
+        ? ''
+        : 'LedgerUpgrade',
+    package: const $pb.PackageName(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
-          : 'LedgerUpgrade',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'ic_ledger.pb.v1'),
-      createEmptyInstance: create)
-    ..hasRequiredFields = false;
-
-  LedgerUpgrade._();
-  factory LedgerUpgrade() => create();
-  factory LedgerUpgrade.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory LedgerUpgrade.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+          : 'ic_ledger.pb.v1',
+    ),
+    createEmptyInstance: create,
+  )..hasRequiredFields = false;
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -184,60 +197,6 @@ class LedgerUpgrade extends $pb.GeneratedMessage {
 }
 
 class SendRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'SendRequest',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'ic_ledger.pb.v1'),
-      createEmptyInstance: create)
-    ..aOM<Memo>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'memo',
-        subBuilder: Memo.create)
-    ..aOM<Payment>(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'payment',
-        subBuilder: Payment.create)
-    ..aOM<ICPTs>(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'maxFee',
-        subBuilder: ICPTs.create)
-    ..aOM<Subaccount>(
-        4,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'fromSubaccount',
-        subBuilder: Subaccount.create)
-    ..aOM<AccountIdentifier>(
-        5,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'to',
-        subBuilder: AccountIdentifier.create)
-    ..aOM<BlockHeight>(
-        6,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'createdAt',
-        subBuilder: BlockHeight.create)
-    ..aOM<TimeStamp>(
-        7,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'createdAtTime',
-        subBuilder: TimeStamp.create)
-    ..hasRequiredFields = false;
-
-  SendRequest._();
   factory SendRequest({
     Memo? memo,
     Payment? payment,
@@ -271,12 +230,76 @@ class SendRequest extends $pb.GeneratedMessage {
     }
     return _result;
   }
-  factory SendRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+  SendRequest._();
+  factory SendRequest.fromBuffer(
+    $core.List<$core.int> i, [
+    $pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY,
+  ]) =>
       create()..mergeFromBuffer(i, r);
-  factory SendRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+  factory SendRequest.fromJson(
+    $core.String i, [
+    $pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY,
+  ]) =>
       create()..mergeFromJson(i, r);
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+    const $core.bool.fromEnvironment('protobuf.omit_message_names')
+        ? ''
+        : 'SendRequest',
+    package: const $pb.PackageName(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'ic_ledger.pb.v1',
+    ),
+    createEmptyInstance: create,
+  )
+    ..aOM<Memo>(
+      1,
+      const $core.bool.fromEnvironment('protobuf.omit_field_names')
+          ? ''
+          : 'memo',
+      subBuilder: Memo.create,
+    )
+    ..aOM<Payment>(
+      2,
+      const $core.bool.fromEnvironment('protobuf.omit_field_names')
+          ? ''
+          : 'payment',
+      subBuilder: Payment.create,
+    )
+    ..aOM<ICPTs>(
+      3,
+      const $core.bool.fromEnvironment('protobuf.omit_field_names')
+          ? ''
+          : 'maxFee',
+      subBuilder: ICPTs.create,
+    )
+    ..aOM<Subaccount>(
+      4,
+      const $core.bool.fromEnvironment('protobuf.omit_field_names')
+          ? ''
+          : 'fromSubaccount',
+      subBuilder: Subaccount.create,
+    )
+    ..aOM<AccountIdentifier>(
+      5,
+      const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'to',
+      subBuilder: AccountIdentifier.create,
+    )
+    ..aOM<BlockHeight>(
+      6,
+      const $core.bool.fromEnvironment('protobuf.omit_field_names')
+          ? ''
+          : 'createdAt',
+      subBuilder: BlockHeight.create,
+    )
+    ..aOM<TimeStamp>(
+      7,
+      const $core.bool.fromEnvironment('protobuf.omit_field_names')
+          ? ''
+          : 'createdAtTime',
+      subBuilder: TimeStamp.create,
+    )
+    ..hasRequiredFields = false;
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -397,6 +420,22 @@ class SendRequest extends $pb.GeneratedMessage {
 }
 
 class SendResponse extends $pb.GeneratedMessage {
+  factory SendResponse({
+    BlockHeight? resultingHeight,
+  }) {
+    final _result = create();
+    if (resultingHeight != null) {
+      _result.resultingHeight = resultingHeight;
+    }
+    return _result;
+  }
+  SendResponse._();
+  factory SendResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory SendResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -413,23 +452,6 @@ class SendResponse extends $pb.GeneratedMessage {
             : 'resultingHeight',
         subBuilder: BlockHeight.create)
     ..hasRequiredFields = false;
-
-  SendResponse._();
-  factory SendResponse({
-    BlockHeight? resultingHeight,
-  }) {
-    final _result = create();
-    if (resultingHeight != null) {
-      _result.resultingHeight = resultingHeight;
-    }
-    return _result;
-  }
-  factory SendResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory SendResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -467,6 +489,38 @@ class SendResponse extends $pb.GeneratedMessage {
 }
 
 class NotifyRequest extends $pb.GeneratedMessage {
+  factory NotifyRequest({
+    BlockHeight? blockHeight,
+    ICPTs? maxFee,
+    Subaccount? fromSubaccount,
+    $0.PrincipalId? toCanister,
+    Subaccount? toSubaccount,
+  }) {
+    final _result = create();
+    if (blockHeight != null) {
+      _result.blockHeight = blockHeight;
+    }
+    if (maxFee != null) {
+      _result.maxFee = maxFee;
+    }
+    if (fromSubaccount != null) {
+      _result.fromSubaccount = fromSubaccount;
+    }
+    if (toCanister != null) {
+      _result.toCanister = toCanister;
+    }
+    if (toSubaccount != null) {
+      _result.toSubaccount = toSubaccount;
+    }
+    return _result;
+  }
+  NotifyRequest._();
+  factory NotifyRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory NotifyRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -507,39 +561,6 @@ class NotifyRequest extends $pb.GeneratedMessage {
             : 'toSubaccount',
         subBuilder: Subaccount.create)
     ..hasRequiredFields = false;
-
-  NotifyRequest._();
-  factory NotifyRequest({
-    BlockHeight? blockHeight,
-    ICPTs? maxFee,
-    Subaccount? fromSubaccount,
-    $0.PrincipalId? toCanister,
-    Subaccount? toSubaccount,
-  }) {
-    final _result = create();
-    if (blockHeight != null) {
-      _result.blockHeight = blockHeight;
-    }
-    if (maxFee != null) {
-      _result.maxFee = maxFee;
-    }
-    if (fromSubaccount != null) {
-      _result.fromSubaccount = fromSubaccount;
-    }
-    if (toCanister != null) {
-      _result.toCanister = toCanister;
-    }
-    if (toSubaccount != null) {
-      _result.toSubaccount = toSubaccount;
-    }
-    return _result;
-  }
-  factory NotifyRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory NotifyRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -633,6 +654,14 @@ class NotifyRequest extends $pb.GeneratedMessage {
 }
 
 class NotifyResponse extends $pb.GeneratedMessage {
+  factory NotifyResponse() => create();
+  NotifyResponse._();
+  factory NotifyResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory NotifyResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -643,15 +672,6 @@ class NotifyResponse extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..hasRequiredFields = false;
-
-  NotifyResponse._();
-  factory NotifyResponse() => create();
-  factory NotifyResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory NotifyResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -675,6 +695,46 @@ class NotifyResponse extends $pb.GeneratedMessage {
 }
 
 class TransactionNotificationRequest extends $pb.GeneratedMessage {
+  factory TransactionNotificationRequest({
+    $0.PrincipalId? from,
+    Subaccount? fromSubaccount,
+    $0.PrincipalId? to,
+    Subaccount? toSubaccount,
+    BlockHeight? blockHeight,
+    ICPTs? amount,
+    Memo? memo,
+  }) {
+    final _result = create();
+    if (from != null) {
+      _result.from = from;
+    }
+    if (fromSubaccount != null) {
+      _result.fromSubaccount = fromSubaccount;
+    }
+    if (to != null) {
+      _result.to = to;
+    }
+    if (toSubaccount != null) {
+      _result.toSubaccount = toSubaccount;
+    }
+    if (blockHeight != null) {
+      _result.blockHeight = blockHeight;
+    }
+    if (amount != null) {
+      _result.amount = amount;
+    }
+    if (memo != null) {
+      _result.memo = memo;
+    }
+    return _result;
+  }
+  TransactionNotificationRequest._();
+  factory TransactionNotificationRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory TransactionNotificationRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -727,47 +787,6 @@ class TransactionNotificationRequest extends $pb.GeneratedMessage {
             : 'memo',
         subBuilder: Memo.create)
     ..hasRequiredFields = false;
-
-  TransactionNotificationRequest._();
-  factory TransactionNotificationRequest({
-    $0.PrincipalId? from,
-    Subaccount? fromSubaccount,
-    $0.PrincipalId? to,
-    Subaccount? toSubaccount,
-    BlockHeight? blockHeight,
-    ICPTs? amount,
-    Memo? memo,
-  }) {
-    final _result = create();
-    if (from != null) {
-      _result.from = from;
-    }
-    if (fromSubaccount != null) {
-      _result.fromSubaccount = fromSubaccount;
-    }
-    if (to != null) {
-      _result.to = to;
-    }
-    if (toSubaccount != null) {
-      _result.toSubaccount = toSubaccount;
-    }
-    if (blockHeight != null) {
-      _result.blockHeight = blockHeight;
-    }
-    if (amount != null) {
-      _result.amount = amount;
-    }
-    if (memo != null) {
-      _result.memo = memo;
-    }
-    return _result;
-  }
-  factory TransactionNotificationRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory TransactionNotificationRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -893,6 +912,22 @@ class TransactionNotificationRequest extends $pb.GeneratedMessage {
 }
 
 class TransactionNotificationResponse extends $pb.GeneratedMessage {
+  factory TransactionNotificationResponse({
+    $core.List<$core.int>? response,
+  }) {
+    final _result = create();
+    if (response != null) {
+      _result.response = response;
+    }
+    return _result;
+  }
+  TransactionNotificationResponse._();
+  factory TransactionNotificationResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory TransactionNotificationResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -909,23 +944,6 @@ class TransactionNotificationResponse extends $pb.GeneratedMessage {
             : 'response',
         $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
-
-  TransactionNotificationResponse._();
-  factory TransactionNotificationResponse({
-    $core.List<$core.int>? response,
-  }) {
-    final _result = create();
-    if (response != null) {
-      _result.response = response;
-    }
-    return _result;
-  }
-  factory TransactionNotificationResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory TransactionNotificationResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -973,6 +991,30 @@ enum CyclesNotificationResponse_Response {
 }
 
 class CyclesNotificationResponse extends $pb.GeneratedMessage {
+  factory CyclesNotificationResponse({
+    $0.PrincipalId? createdCanisterId,
+    Refund? refund,
+    ToppedUp? toppedUp,
+  }) {
+    final _result = create();
+    if (createdCanisterId != null) {
+      _result.createdCanisterId = createdCanisterId;
+    }
+    if (refund != null) {
+      _result.refund = refund;
+    }
+    if (toppedUp != null) {
+      _result.toppedUp = toppedUp;
+    }
+    return _result;
+  }
+  CyclesNotificationResponse._();
+  factory CyclesNotificationResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory CyclesNotificationResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static const $core.Map<$core.int, CyclesNotificationResponse_Response>
       _CyclesNotificationResponse_ResponseByTag = {
     1: CyclesNotificationResponse_Response.createdCanisterId,
@@ -1009,31 +1051,6 @@ class CyclesNotificationResponse extends $pb.GeneratedMessage {
             : 'toppedUp',
         subBuilder: ToppedUp.create)
     ..hasRequiredFields = false;
-
-  CyclesNotificationResponse._();
-  factory CyclesNotificationResponse({
-    $0.PrincipalId? createdCanisterId,
-    Refund? refund,
-    ToppedUp? toppedUp,
-  }) {
-    final _result = create();
-    if (createdCanisterId != null) {
-      _result.createdCanisterId = createdCanisterId;
-    }
-    if (refund != null) {
-      _result.refund = refund;
-    }
-    if (toppedUp != null) {
-      _result.toppedUp = toppedUp;
-    }
-    return _result;
-  }
-  factory CyclesNotificationResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory CyclesNotificationResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1106,6 +1123,22 @@ class CyclesNotificationResponse extends $pb.GeneratedMessage {
 }
 
 class AccountBalanceRequest extends $pb.GeneratedMessage {
+  factory AccountBalanceRequest({
+    AccountIdentifier? account,
+  }) {
+    final _result = create();
+    if (account != null) {
+      _result.account = account;
+    }
+    return _result;
+  }
+  AccountBalanceRequest._();
+  factory AccountBalanceRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory AccountBalanceRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -1122,23 +1155,6 @@ class AccountBalanceRequest extends $pb.GeneratedMessage {
             : 'account',
         subBuilder: AccountIdentifier.create)
     ..hasRequiredFields = false;
-
-  AccountBalanceRequest._();
-  factory AccountBalanceRequest({
-    AccountIdentifier? account,
-  }) {
-    final _result = create();
-    if (account != null) {
-      _result.account = account;
-    }
-    return _result;
-  }
-  factory AccountBalanceRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory AccountBalanceRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1178,6 +1194,22 @@ class AccountBalanceRequest extends $pb.GeneratedMessage {
 }
 
 class AccountBalanceResponse extends $pb.GeneratedMessage {
+  factory AccountBalanceResponse({
+    ICPTs? balance,
+  }) {
+    final _result = create();
+    if (balance != null) {
+      _result.balance = balance;
+    }
+    return _result;
+  }
+  AccountBalanceResponse._();
+  factory AccountBalanceResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory AccountBalanceResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -1194,23 +1226,6 @@ class AccountBalanceResponse extends $pb.GeneratedMessage {
             : 'balance',
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
-
-  AccountBalanceResponse._();
-  factory AccountBalanceResponse({
-    ICPTs? balance,
-  }) {
-    final _result = create();
-    if (balance != null) {
-      _result.balance = balance;
-    }
-    return _result;
-  }
-  factory AccountBalanceResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory AccountBalanceResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1250,6 +1265,14 @@ class AccountBalanceResponse extends $pb.GeneratedMessage {
 }
 
 class TipOfChainRequest extends $pb.GeneratedMessage {
+  factory TipOfChainRequest() => create();
+  TipOfChainRequest._();
+  factory TipOfChainRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory TipOfChainRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -1260,15 +1283,6 @@ class TipOfChainRequest extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..hasRequiredFields = false;
-
-  TipOfChainRequest._();
-  factory TipOfChainRequest() => create();
-  factory TipOfChainRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory TipOfChainRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1292,6 +1306,26 @@ class TipOfChainRequest extends $pb.GeneratedMessage {
 }
 
 class TipOfChainResponse extends $pb.GeneratedMessage {
+  factory TipOfChainResponse({
+    Certification? certification,
+    BlockHeight? chainLength,
+  }) {
+    final _result = create();
+    if (certification != null) {
+      _result.certification = certification;
+    }
+    if (chainLength != null) {
+      _result.chainLength = chainLength;
+    }
+    return _result;
+  }
+  TipOfChainResponse._();
+  factory TipOfChainResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory TipOfChainResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -1314,27 +1348,6 @@ class TipOfChainResponse extends $pb.GeneratedMessage {
             : 'chainLength',
         subBuilder: BlockHeight.create)
     ..hasRequiredFields = false;
-
-  TipOfChainResponse._();
-  factory TipOfChainResponse({
-    Certification? certification,
-    BlockHeight? chainLength,
-  }) {
-    final _result = create();
-    if (certification != null) {
-      _result.certification = certification;
-    }
-    if (chainLength != null) {
-      _result.chainLength = chainLength;
-    }
-    return _result;
-  }
-  factory TipOfChainResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory TipOfChainResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1386,6 +1399,14 @@ class TipOfChainResponse extends $pb.GeneratedMessage {
 }
 
 class TotalSupplyRequest extends $pb.GeneratedMessage {
+  factory TotalSupplyRequest() => create();
+  TotalSupplyRequest._();
+  factory TotalSupplyRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory TotalSupplyRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -1396,15 +1417,6 @@ class TotalSupplyRequest extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..hasRequiredFields = false;
-
-  TotalSupplyRequest._();
-  factory TotalSupplyRequest() => create();
-  factory TotalSupplyRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory TotalSupplyRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1428,6 +1440,22 @@ class TotalSupplyRequest extends $pb.GeneratedMessage {
 }
 
 class TotalSupplyResponse extends $pb.GeneratedMessage {
+  factory TotalSupplyResponse({
+    ICPTs? totalSupply,
+  }) {
+    final _result = create();
+    if (totalSupply != null) {
+      _result.totalSupply = totalSupply;
+    }
+    return _result;
+  }
+  TotalSupplyResponse._();
+  factory TotalSupplyResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory TotalSupplyResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -1444,23 +1472,6 @@ class TotalSupplyResponse extends $pb.GeneratedMessage {
             : 'totalSupply',
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
-
-  TotalSupplyResponse._();
-  factory TotalSupplyResponse({
-    ICPTs? totalSupply,
-  }) {
-    final _result = create();
-    if (totalSupply != null) {
-      _result.totalSupply = totalSupply;
-    }
-    return _result;
-  }
-  factory TotalSupplyResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory TotalSupplyResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1498,6 +1509,22 @@ class TotalSupplyResponse extends $pb.GeneratedMessage {
 }
 
 class LedgerArchiveRequest extends $pb.GeneratedMessage {
+  factory LedgerArchiveRequest({
+    TimeStamp? timestamp,
+  }) {
+    final _result = create();
+    if (timestamp != null) {
+      _result.timestamp = timestamp;
+    }
+    return _result;
+  }
+  LedgerArchiveRequest._();
+  factory LedgerArchiveRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory LedgerArchiveRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -1514,23 +1541,6 @@ class LedgerArchiveRequest extends $pb.GeneratedMessage {
             : 'timestamp',
         subBuilder: TimeStamp.create)
     ..hasRequiredFields = false;
-
-  LedgerArchiveRequest._();
-  factory LedgerArchiveRequest({
-    TimeStamp? timestamp,
-  }) {
-    final _result = create();
-    if (timestamp != null) {
-      _result.timestamp = timestamp;
-    }
-    return _result;
-  }
-  factory LedgerArchiveRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory LedgerArchiveRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1569,6 +1579,22 @@ class LedgerArchiveRequest extends $pb.GeneratedMessage {
 }
 
 class BlockRequest extends $pb.GeneratedMessage {
+  factory BlockRequest({
+    $fixnum.Int64? blockHeight,
+  }) {
+    final _result = create();
+    if (blockHeight != null) {
+      _result.blockHeight = blockHeight;
+    }
+    return _result;
+  }
+  BlockRequest._();
+  factory BlockRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory BlockRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -1586,23 +1612,6 @@ class BlockRequest extends $pb.GeneratedMessage {
         $pb.PbFieldType.OU6,
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
-
-  BlockRequest._();
-  factory BlockRequest({
-    $fixnum.Int64? blockHeight,
-  }) {
-    final _result = create();
-    if (blockHeight != null) {
-      _result.blockHeight = blockHeight;
-    }
-    return _result;
-  }
-  factory BlockRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory BlockRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1638,6 +1647,22 @@ class BlockRequest extends $pb.GeneratedMessage {
 }
 
 class EncodedBlock extends $pb.GeneratedMessage {
+  factory EncodedBlock({
+    $core.List<$core.int>? block,
+  }) {
+    final _result = create();
+    if (block != null) {
+      _result.block = block;
+    }
+    return _result;
+  }
+  EncodedBlock._();
+  factory EncodedBlock.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory EncodedBlock.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -1654,23 +1679,6 @@ class EncodedBlock extends $pb.GeneratedMessage {
             : 'block',
         $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
-
-  EncodedBlock._();
-  factory EncodedBlock({
-    $core.List<$core.int>? block,
-  }) {
-    final _result = create();
-    if (block != null) {
-      _result.block = block;
-    }
-    return _result;
-  }
-  factory EncodedBlock.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory EncodedBlock.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1708,6 +1716,26 @@ class EncodedBlock extends $pb.GeneratedMessage {
 enum BlockResponse_BlockContent { block, canisterId, notSet }
 
 class BlockResponse extends $pb.GeneratedMessage {
+  factory BlockResponse({
+    EncodedBlock? block,
+    $0.PrincipalId? canisterId,
+  }) {
+    final _result = create();
+    if (block != null) {
+      _result.block = block;
+    }
+    if (canisterId != null) {
+      _result.canisterId = canisterId;
+    }
+    return _result;
+  }
+  BlockResponse._();
+  factory BlockResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory BlockResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static const $core.Map<$core.int, BlockResponse_BlockContent>
       _BlockResponse_BlockContentByTag = {
     1: BlockResponse_BlockContent.block,
@@ -1737,27 +1765,6 @@ class BlockResponse extends $pb.GeneratedMessage {
             : 'canisterId',
         subBuilder: $0.PrincipalId.create)
     ..hasRequiredFields = false;
-
-  BlockResponse._();
-  factory BlockResponse({
-    EncodedBlock? block,
-    $0.PrincipalId? canisterId,
-  }) {
-    final _result = create();
-    if (block != null) {
-      _result.block = block;
-    }
-    if (canisterId != null) {
-      _result.canisterId = canisterId;
-    }
-    return _result;
-  }
-  factory BlockResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory BlockResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1813,6 +1820,26 @@ class BlockResponse extends $pb.GeneratedMessage {
 }
 
 class GetBlocksRequest extends $pb.GeneratedMessage {
+  factory GetBlocksRequest({
+    $fixnum.Int64? start,
+    $fixnum.Int64? length,
+  }) {
+    final _result = create();
+    if (start != null) {
+      _result.start = start;
+    }
+    if (length != null) {
+      _result.length = length;
+    }
+    return _result;
+  }
+  GetBlocksRequest._();
+  factory GetBlocksRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory GetBlocksRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -1837,27 +1864,6 @@ class GetBlocksRequest extends $pb.GeneratedMessage {
         $pb.PbFieldType.OU6,
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
-
-  GetBlocksRequest._();
-  factory GetBlocksRequest({
-    $fixnum.Int64? start,
-    $fixnum.Int64? length,
-  }) {
-    final _result = create();
-    if (start != null) {
-      _result.start = start;
-    }
-    if (length != null) {
-      _result.length = length;
-    }
-    return _result;
-  }
-  factory GetBlocksRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory GetBlocksRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1905,6 +1911,26 @@ class GetBlocksRequest extends $pb.GeneratedMessage {
 }
 
 class Refund extends $pb.GeneratedMessage {
+  factory Refund({
+    BlockHeight? refund,
+    $core.String? error,
+  }) {
+    final _result = create();
+    if (refund != null) {
+      _result.refund = refund;
+    }
+    if (error != null) {
+      _result.error = error;
+    }
+    return _result;
+  }
+  Refund._();
+  factory Refund.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Refund.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -1926,27 +1952,6 @@ class Refund extends $pb.GeneratedMessage {
             ? ''
             : 'error')
     ..hasRequiredFields = false;
-
-  Refund._();
-  factory Refund({
-    BlockHeight? refund,
-    $core.String? error,
-  }) {
-    final _result = create();
-    if (refund != null) {
-      _result.refund = refund;
-    }
-    if (error != null) {
-      _result.error = error;
-    }
-    return _result;
-  }
-  factory Refund.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Refund.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1995,6 +2000,14 @@ class Refund extends $pb.GeneratedMessage {
 }
 
 class ToppedUp extends $pb.GeneratedMessage {
+  factory ToppedUp() => create();
+  ToppedUp._();
+  factory ToppedUp.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory ToppedUp.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -2005,15 +2018,6 @@ class ToppedUp extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..hasRequiredFields = false;
-
-  ToppedUp._();
-  factory ToppedUp() => create();
-  factory ToppedUp.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory ToppedUp.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -2036,6 +2040,22 @@ class ToppedUp extends $pb.GeneratedMessage {
 }
 
 class EncodedBlocks extends $pb.GeneratedMessage {
+  factory EncodedBlocks({
+    $core.Iterable<EncodedBlock>? blocks,
+  }) {
+    final _result = create();
+    if (blocks != null) {
+      _result.blocks.addAll(blocks);
+    }
+    return _result;
+  }
+  EncodedBlocks._();
+  factory EncodedBlocks.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory EncodedBlocks.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -2053,23 +2073,6 @@ class EncodedBlocks extends $pb.GeneratedMessage {
         $pb.PbFieldType.PM,
         subBuilder: EncodedBlock.create)
     ..hasRequiredFields = false;
-
-  EncodedBlocks._();
-  factory EncodedBlocks({
-    $core.Iterable<EncodedBlock>? blocks,
-  }) {
-    final _result = create();
-    if (blocks != null) {
-      _result.blocks.addAll(blocks);
-    }
-    return _result;
-  }
-  factory EncodedBlocks.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory EncodedBlocks.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -2098,6 +2101,26 @@ class EncodedBlocks extends $pb.GeneratedMessage {
 enum GetBlocksResponse_GetBlocksContent { blocks, error, notSet }
 
 class GetBlocksResponse extends $pb.GeneratedMessage {
+  factory GetBlocksResponse({
+    EncodedBlocks? blocks,
+    $core.String? error,
+  }) {
+    final _result = create();
+    if (blocks != null) {
+      _result.blocks = blocks;
+    }
+    if (error != null) {
+      _result.error = error;
+    }
+    return _result;
+  }
+  GetBlocksResponse._();
+  factory GetBlocksResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory GetBlocksResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static const $core.Map<$core.int, GetBlocksResponse_GetBlocksContent>
       _GetBlocksResponse_GetBlocksContentByTag = {
     1: GetBlocksResponse_GetBlocksContent.blocks,
@@ -2126,27 +2149,6 @@ class GetBlocksResponse extends $pb.GeneratedMessage {
             ? ''
             : 'error')
     ..hasRequiredFields = false;
-
-  GetBlocksResponse._();
-  factory GetBlocksResponse({
-    EncodedBlocks? blocks,
-    $core.String? error,
-  }) {
-    final _result = create();
-    if (blocks != null) {
-      _result.blocks = blocks;
-    }
-    if (error != null) {
-      _result.error = error;
-    }
-    return _result;
-  }
-  factory GetBlocksResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory GetBlocksResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -2200,6 +2202,26 @@ class GetBlocksResponse extends $pb.GeneratedMessage {
 }
 
 class IterBlocksRequest extends $pb.GeneratedMessage {
+  factory IterBlocksRequest({
+    $fixnum.Int64? start,
+    $fixnum.Int64? length,
+  }) {
+    final _result = create();
+    if (start != null) {
+      _result.start = start;
+    }
+    if (length != null) {
+      _result.length = length;
+    }
+    return _result;
+  }
+  IterBlocksRequest._();
+  factory IterBlocksRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory IterBlocksRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -2224,27 +2246,6 @@ class IterBlocksRequest extends $pb.GeneratedMessage {
         $pb.PbFieldType.OU6,
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
-
-  IterBlocksRequest._();
-  factory IterBlocksRequest({
-    $fixnum.Int64? start,
-    $fixnum.Int64? length,
-  }) {
-    final _result = create();
-    if (start != null) {
-      _result.start = start;
-    }
-    if (length != null) {
-      _result.length = length;
-    }
-    return _result;
-  }
-  factory IterBlocksRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory IterBlocksRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -2292,6 +2293,22 @@ class IterBlocksRequest extends $pb.GeneratedMessage {
 }
 
 class IterBlocksResponse extends $pb.GeneratedMessage {
+  factory IterBlocksResponse({
+    $core.Iterable<EncodedBlock>? blocks,
+  }) {
+    final _result = create();
+    if (blocks != null) {
+      _result.blocks.addAll(blocks);
+    }
+    return _result;
+  }
+  IterBlocksResponse._();
+  factory IterBlocksResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory IterBlocksResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -2309,23 +2326,6 @@ class IterBlocksResponse extends $pb.GeneratedMessage {
         $pb.PbFieldType.PM,
         subBuilder: EncodedBlock.create)
     ..hasRequiredFields = false;
-
-  IterBlocksResponse._();
-  factory IterBlocksResponse({
-    $core.Iterable<EncodedBlock>? blocks,
-  }) {
-    final _result = create();
-    if (blocks != null) {
-      _result.blocks.addAll(blocks);
-    }
-    return _result;
-  }
-  factory IterBlocksResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory IterBlocksResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -2352,6 +2352,30 @@ class IterBlocksResponse extends $pb.GeneratedMessage {
 }
 
 class ArchiveIndexEntry extends $pb.GeneratedMessage {
+  factory ArchiveIndexEntry({
+    $fixnum.Int64? heightFrom,
+    $fixnum.Int64? heightTo,
+    $0.PrincipalId? canisterId,
+  }) {
+    final _result = create();
+    if (heightFrom != null) {
+      _result.heightFrom = heightFrom;
+    }
+    if (heightTo != null) {
+      _result.heightTo = heightTo;
+    }
+    if (canisterId != null) {
+      _result.canisterId = canisterId;
+    }
+    return _result;
+  }
+  ArchiveIndexEntry._();
+  factory ArchiveIndexEntry.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory ArchiveIndexEntry.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -2382,31 +2406,6 @@ class ArchiveIndexEntry extends $pb.GeneratedMessage {
             : 'canisterId',
         subBuilder: $0.PrincipalId.create)
     ..hasRequiredFields = false;
-
-  ArchiveIndexEntry._();
-  factory ArchiveIndexEntry({
-    $fixnum.Int64? heightFrom,
-    $fixnum.Int64? heightTo,
-    $0.PrincipalId? canisterId,
-  }) {
-    final _result = create();
-    if (heightFrom != null) {
-      _result.heightFrom = heightFrom;
-    }
-    if (heightTo != null) {
-      _result.heightTo = heightTo;
-    }
-    if (canisterId != null) {
-      _result.canisterId = canisterId;
-    }
-    return _result;
-  }
-  factory ArchiveIndexEntry.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory ArchiveIndexEntry.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -2468,6 +2467,22 @@ class ArchiveIndexEntry extends $pb.GeneratedMessage {
 }
 
 class ArchiveIndexResponse extends $pb.GeneratedMessage {
+  factory ArchiveIndexResponse({
+    $core.Iterable<ArchiveIndexEntry>? entries,
+  }) {
+    final _result = create();
+    if (entries != null) {
+      _result.entries.addAll(entries);
+    }
+    return _result;
+  }
+  ArchiveIndexResponse._();
+  factory ArchiveIndexResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory ArchiveIndexResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -2485,23 +2500,6 @@ class ArchiveIndexResponse extends $pb.GeneratedMessage {
         $pb.PbFieldType.PM,
         subBuilder: ArchiveIndexEntry.create)
     ..hasRequiredFields = false;
-
-  ArchiveIndexResponse._();
-  factory ArchiveIndexResponse({
-    $core.Iterable<ArchiveIndexEntry>? entries,
-  }) {
-    final _result = create();
-    if (entries != null) {
-      _result.entries.addAll(entries);
-    }
-    return _result;
-  }
-  factory ArchiveIndexResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory ArchiveIndexResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -2529,6 +2527,26 @@ class ArchiveIndexResponse extends $pb.GeneratedMessage {
 }
 
 class ArchiveInit extends $pb.GeneratedMessage {
+  factory ArchiveInit({
+    $core.int? nodeMaxMemorySizeBytes,
+    $core.int? maxMessageSizeBytes,
+  }) {
+    final _result = create();
+    if (nodeMaxMemorySizeBytes != null) {
+      _result.nodeMaxMemorySizeBytes = nodeMaxMemorySizeBytes;
+    }
+    if (maxMessageSizeBytes != null) {
+      _result.maxMessageSizeBytes = maxMessageSizeBytes;
+    }
+    return _result;
+  }
+  ArchiveInit._();
+  factory ArchiveInit.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory ArchiveInit.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -2551,27 +2569,6 @@ class ArchiveInit extends $pb.GeneratedMessage {
             : 'maxMessageSizeBytes',
         $pb.PbFieldType.OU3)
     ..hasRequiredFields = false;
-
-  ArchiveInit._();
-  factory ArchiveInit({
-    $core.int? nodeMaxMemorySizeBytes,
-    $core.int? maxMessageSizeBytes,
-  }) {
-    final _result = create();
-    if (nodeMaxMemorySizeBytes != null) {
-      _result.nodeMaxMemorySizeBytes = nodeMaxMemorySizeBytes;
-    }
-    if (maxMessageSizeBytes != null) {
-      _result.maxMessageSizeBytes = maxMessageSizeBytes;
-    }
-    return _result;
-  }
-  factory ArchiveInit.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory ArchiveInit.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -2618,6 +2615,22 @@ class ArchiveInit extends $pb.GeneratedMessage {
 }
 
 class ArchiveAddRequest extends $pb.GeneratedMessage {
+  factory ArchiveAddRequest({
+    $core.Iterable<Block>? blocks,
+  }) {
+    final _result = create();
+    if (blocks != null) {
+      _result.blocks.addAll(blocks);
+    }
+    return _result;
+  }
+  ArchiveAddRequest._();
+  factory ArchiveAddRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory ArchiveAddRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -2635,23 +2648,6 @@ class ArchiveAddRequest extends $pb.GeneratedMessage {
         $pb.PbFieldType.PM,
         subBuilder: Block.create)
     ..hasRequiredFields = false;
-
-  ArchiveAddRequest._();
-  factory ArchiveAddRequest({
-    $core.Iterable<Block>? blocks,
-  }) {
-    final _result = create();
-    if (blocks != null) {
-      _result.blocks.addAll(blocks);
-    }
-    return _result;
-  }
-  factory ArchiveAddRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory ArchiveAddRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -2678,6 +2674,14 @@ class ArchiveAddRequest extends $pb.GeneratedMessage {
 }
 
 class ArchiveAddResponse extends $pb.GeneratedMessage {
+  factory ArchiveAddResponse() => create();
+  ArchiveAddResponse._();
+  factory ArchiveAddResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory ArchiveAddResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -2688,15 +2692,6 @@ class ArchiveAddResponse extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..hasRequiredFields = false;
-
-  ArchiveAddResponse._();
-  factory ArchiveAddResponse() => create();
-  factory ArchiveAddResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory ArchiveAddResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -2720,6 +2715,14 @@ class ArchiveAddResponse extends $pb.GeneratedMessage {
 }
 
 class GetNodesRequest extends $pb.GeneratedMessage {
+  factory GetNodesRequest() => create();
+  GetNodesRequest._();
+  factory GetNodesRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory GetNodesRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -2730,15 +2733,6 @@ class GetNodesRequest extends $pb.GeneratedMessage {
               : 'ic_ledger.pb.v1'),
       createEmptyInstance: create)
     ..hasRequiredFields = false;
-
-  GetNodesRequest._();
-  factory GetNodesRequest() => create();
-  factory GetNodesRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory GetNodesRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -2762,6 +2756,22 @@ class GetNodesRequest extends $pb.GeneratedMessage {
 }
 
 class GetNodesResponse extends $pb.GeneratedMessage {
+  factory GetNodesResponse({
+    $core.Iterable<$0.PrincipalId>? nodes,
+  }) {
+    final _result = create();
+    if (nodes != null) {
+      _result.nodes.addAll(nodes);
+    }
+    return _result;
+  }
+  GetNodesResponse._();
+  factory GetNodesResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory GetNodesResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -2779,23 +2789,6 @@ class GetNodesResponse extends $pb.GeneratedMessage {
         $pb.PbFieldType.PM,
         subBuilder: $0.PrincipalId.create)
     ..hasRequiredFields = false;
-
-  GetNodesResponse._();
-  factory GetNodesResponse({
-    $core.Iterable<$0.PrincipalId>? nodes,
-  }) {
-    final _result = create();
-    if (nodes != null) {
-      _result.nodes.addAll(nodes);
-    }
-    return _result;
-  }
-  factory GetNodesResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory GetNodesResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -2822,6 +2815,22 @@ class GetNodesResponse extends $pb.GeneratedMessage {
 }
 
 class ICPTs extends $pb.GeneratedMessage {
+  factory ICPTs({
+    $fixnum.Int64? e8s,
+  }) {
+    final _result = create();
+    if (e8s != null) {
+      _result.e8s = e8s;
+    }
+    return _result;
+  }
+  ICPTs._();
+  factory ICPTs.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory ICPTs.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -2839,23 +2848,6 @@ class ICPTs extends $pb.GeneratedMessage {
         $pb.PbFieldType.OU6,
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
-
-  ICPTs._();
-  factory ICPTs({
-    $fixnum.Int64? e8s,
-  }) {
-    final _result = create();
-    if (e8s != null) {
-      _result.e8s = e8s;
-    }
-    return _result;
-  }
-  factory ICPTs.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory ICPTs.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -2890,6 +2882,22 @@ class ICPTs extends $pb.GeneratedMessage {
 }
 
 class Payment extends $pb.GeneratedMessage {
+  factory Payment({
+    ICPTs? receiverGets,
+  }) {
+    final _result = create();
+    if (receiverGets != null) {
+      _result.receiverGets = receiverGets;
+    }
+    return _result;
+  }
+  Payment._();
+  factory Payment.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Payment.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -2906,23 +2914,6 @@ class Payment extends $pb.GeneratedMessage {
             : 'receiverGets',
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
-
-  Payment._();
-  factory Payment({
-    ICPTs? receiverGets,
-  }) {
-    final _result = create();
-    if (receiverGets != null) {
-      _result.receiverGets = receiverGets;
-    }
-    return _result;
-  }
-  factory Payment.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Payment.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -2959,6 +2950,22 @@ class Payment extends $pb.GeneratedMessage {
 }
 
 class BlockHeight extends $pb.GeneratedMessage {
+  factory BlockHeight({
+    $fixnum.Int64? height,
+  }) {
+    final _result = create();
+    if (height != null) {
+      _result.height = height;
+    }
+    return _result;
+  }
+  BlockHeight._();
+  factory BlockHeight.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory BlockHeight.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -2976,23 +2983,6 @@ class BlockHeight extends $pb.GeneratedMessage {
         $pb.PbFieldType.OU6,
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
-
-  BlockHeight._();
-  factory BlockHeight({
-    $fixnum.Int64? height,
-  }) {
-    final _result = create();
-    if (height != null) {
-      _result.height = height;
-    }
-    return _result;
-  }
-  factory BlockHeight.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory BlockHeight.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -3027,6 +3017,30 @@ class BlockHeight extends $pb.GeneratedMessage {
 }
 
 class Block extends $pb.GeneratedMessage {
+  factory Block({
+    Hash? parentHash,
+    TimeStamp? timestamp,
+    Transaction? transaction,
+  }) {
+    final _result = create();
+    if (parentHash != null) {
+      _result.parentHash = parentHash;
+    }
+    if (timestamp != null) {
+      _result.timestamp = timestamp;
+    }
+    if (transaction != null) {
+      _result.transaction = transaction;
+    }
+    return _result;
+  }
+  Block._();
+  factory Block.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Block.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -3055,31 +3069,6 @@ class Block extends $pb.GeneratedMessage {
             : 'transaction',
         subBuilder: Transaction.create)
     ..hasRequiredFields = false;
-
-  Block._();
-  factory Block({
-    Hash? parentHash,
-    TimeStamp? timestamp,
-    Transaction? transaction,
-  }) {
-    final _result = create();
-    if (parentHash != null) {
-      _result.parentHash = parentHash;
-    }
-    if (timestamp != null) {
-      _result.timestamp = timestamp;
-    }
-    if (transaction != null) {
-      _result.transaction = transaction;
-    }
-    return _result;
-  }
-  factory Block.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Block.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -3144,6 +3133,22 @@ class Block extends $pb.GeneratedMessage {
 }
 
 class Hash extends $pb.GeneratedMessage {
+  factory Hash({
+    $core.List<$core.int>? hash,
+  }) {
+    final _result = create();
+    if (hash != null) {
+      _result.hash = hash;
+    }
+    return _result;
+  }
+  Hash._();
+  factory Hash.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Hash.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -3160,23 +3165,6 @@ class Hash extends $pb.GeneratedMessage {
             : 'hash',
         $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
-
-  Hash._();
-  factory Hash({
-    $core.List<$core.int>? hash,
-  }) {
-    final _result = create();
-    if (hash != null) {
-      _result.hash = hash;
-    }
-    return _result;
-  }
-  factory Hash.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Hash.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -3211,6 +3199,26 @@ class Hash extends $pb.GeneratedMessage {
 }
 
 class Account extends $pb.GeneratedMessage {
+  factory Account({
+    AccountIdentifier? identifier,
+    ICPTs? balance,
+  }) {
+    final _result = create();
+    if (identifier != null) {
+      _result.identifier = identifier;
+    }
+    if (balance != null) {
+      _result.balance = balance;
+    }
+    return _result;
+  }
+  Account._();
+  factory Account.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Account.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -3233,27 +3241,6 @@ class Account extends $pb.GeneratedMessage {
             : 'balance',
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
-
-  Account._();
-  factory Account({
-    AccountIdentifier? identifier,
-    ICPTs? balance,
-  }) {
-    final _result = create();
-    if (identifier != null) {
-      _result.identifier = identifier;
-    }
-    if (balance != null) {
-      _result.balance = balance;
-    }
-    return _result;
-  }
-  factory Account.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Account.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -3306,6 +3293,42 @@ class Account extends $pb.GeneratedMessage {
 enum Transaction_Transfer { burn, mint, send, notSet }
 
 class Transaction extends $pb.GeneratedMessage {
+  factory Transaction({
+    Burn? burn,
+    Mint? mint,
+    Send? send,
+    Memo? memo,
+    BlockHeight? createdAt,
+    TimeStamp? createdAtTime,
+  }) {
+    final _result = create();
+    if (burn != null) {
+      _result.burn = burn;
+    }
+    if (mint != null) {
+      _result.mint = mint;
+    }
+    if (send != null) {
+      _result.send = send;
+    }
+    if (memo != null) {
+      _result.memo = memo;
+    }
+    if (createdAt != null) {
+      _result.createdAt = createdAt;
+    }
+    if (createdAtTime != null) {
+      _result.createdAtTime = createdAtTime;
+    }
+    return _result;
+  }
+  Transaction._();
+  factory Transaction.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Transaction.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static const $core.Map<$core.int, Transaction_Transfer>
       _Transaction_TransferByTag = {
     1: Transaction_Transfer.burn,
@@ -3360,43 +3383,6 @@ class Transaction extends $pb.GeneratedMessage {
             : 'createdAtTime',
         subBuilder: TimeStamp.create)
     ..hasRequiredFields = false;
-
-  Transaction._();
-  factory Transaction({
-    Burn? burn,
-    Mint? mint,
-    Send? send,
-    Memo? memo,
-    BlockHeight? createdAt,
-    TimeStamp? createdAtTime,
-  }) {
-    final _result = create();
-    if (burn != null) {
-      _result.burn = burn;
-    }
-    if (mint != null) {
-      _result.mint = mint;
-    }
-    if (send != null) {
-      _result.send = send;
-    }
-    if (memo != null) {
-      _result.memo = memo;
-    }
-    if (createdAt != null) {
-      _result.createdAt = createdAt;
-    }
-    if (createdAtTime != null) {
-      _result.createdAtTime = createdAtTime;
-    }
-    return _result;
-  }
-  factory Transaction.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Transaction.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -3507,6 +3493,34 @@ class Transaction extends $pb.GeneratedMessage {
 }
 
 class Send extends $pb.GeneratedMessage {
+  factory Send({
+    AccountIdentifier? from,
+    AccountIdentifier? to,
+    ICPTs? amount,
+    ICPTs? maxFee,
+  }) {
+    final _result = create();
+    if (from != null) {
+      _result.from = from;
+    }
+    if (to != null) {
+      _result.to = to;
+    }
+    if (amount != null) {
+      _result.amount = amount;
+    }
+    if (maxFee != null) {
+      _result.maxFee = maxFee;
+    }
+    return _result;
+  }
+  Send._();
+  factory Send.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Send.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -3541,35 +3555,6 @@ class Send extends $pb.GeneratedMessage {
             : 'maxFee',
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
-
-  Send._();
-  factory Send({
-    AccountIdentifier? from,
-    AccountIdentifier? to,
-    ICPTs? amount,
-    ICPTs? maxFee,
-  }) {
-    final _result = create();
-    if (from != null) {
-      _result.from = from;
-    }
-    if (to != null) {
-      _result.to = to;
-    }
-    if (amount != null) {
-      _result.amount = amount;
-    }
-    if (maxFee != null) {
-      _result.maxFee = maxFee;
-    }
-    return _result;
-  }
-  factory Send.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Send.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -3648,6 +3633,26 @@ class Send extends $pb.GeneratedMessage {
 }
 
 class Mint extends $pb.GeneratedMessage {
+  factory Mint({
+    AccountIdentifier? to,
+    ICPTs? amount,
+  }) {
+    final _result = create();
+    if (to != null) {
+      _result.to = to;
+    }
+    if (amount != null) {
+      _result.amount = amount;
+    }
+    return _result;
+  }
+  Mint._();
+  factory Mint.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Mint.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -3670,27 +3675,6 @@ class Mint extends $pb.GeneratedMessage {
             : 'amount',
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
-
-  Mint._();
-  factory Mint({
-    AccountIdentifier? to,
-    ICPTs? amount,
-  }) {
-    final _result = create();
-    if (to != null) {
-      _result.to = to;
-    }
-    if (amount != null) {
-      _result.amount = amount;
-    }
-    return _result;
-  }
-  factory Mint.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Mint.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -3741,6 +3725,26 @@ class Mint extends $pb.GeneratedMessage {
 }
 
 class Burn extends $pb.GeneratedMessage {
+  factory Burn({
+    AccountIdentifier? from,
+    ICPTs? amount,
+  }) {
+    final _result = create();
+    if (from != null) {
+      _result.from = from;
+    }
+    if (amount != null) {
+      _result.amount = amount;
+    }
+    return _result;
+  }
+  Burn._();
+  factory Burn.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Burn.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -3763,27 +3767,6 @@ class Burn extends $pb.GeneratedMessage {
             : 'amount',
         subBuilder: ICPTs.create)
     ..hasRequiredFields = false;
-
-  Burn._();
-  factory Burn({
-    AccountIdentifier? from,
-    ICPTs? amount,
-  }) {
-    final _result = create();
-    if (from != null) {
-      _result.from = from;
-    }
-    if (amount != null) {
-      _result.amount = amount;
-    }
-    return _result;
-  }
-  factory Burn.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Burn.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -3834,6 +3817,22 @@ class Burn extends $pb.GeneratedMessage {
 }
 
 class AccountIdentifier extends $pb.GeneratedMessage {
+  factory AccountIdentifier({
+    $core.List<$core.int>? hash,
+  }) {
+    final _result = create();
+    if (hash != null) {
+      _result.hash = hash;
+    }
+    return _result;
+  }
+  AccountIdentifier._();
+  factory AccountIdentifier.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory AccountIdentifier.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -3850,23 +3849,6 @@ class AccountIdentifier extends $pb.GeneratedMessage {
             : 'hash',
         $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
-
-  AccountIdentifier._();
-  factory AccountIdentifier({
-    $core.List<$core.int>? hash,
-  }) {
-    final _result = create();
-    if (hash != null) {
-      _result.hash = hash;
-    }
-    return _result;
-  }
-  factory AccountIdentifier.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory AccountIdentifier.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -3902,6 +3884,22 @@ class AccountIdentifier extends $pb.GeneratedMessage {
 }
 
 class Subaccount extends $pb.GeneratedMessage {
+  factory Subaccount({
+    $core.List<$core.int>? subAccount,
+  }) {
+    final _result = create();
+    if (subAccount != null) {
+      _result.subAccount = subAccount;
+    }
+    return _result;
+  }
+  Subaccount._();
+  factory Subaccount.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Subaccount.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -3918,23 +3916,6 @@ class Subaccount extends $pb.GeneratedMessage {
             : 'subAccount',
         $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
-
-  Subaccount._();
-  factory Subaccount({
-    $core.List<$core.int>? subAccount,
-  }) {
-    final _result = create();
-    if (subAccount != null) {
-      _result.subAccount = subAccount;
-    }
-    return _result;
-  }
-  factory Subaccount.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Subaccount.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -3969,6 +3950,22 @@ class Subaccount extends $pb.GeneratedMessage {
 }
 
 class Memo extends $pb.GeneratedMessage {
+  factory Memo({
+    $fixnum.Int64? memo,
+  }) {
+    final _result = create();
+    if (memo != null) {
+      _result.memo = memo;
+    }
+    return _result;
+  }
+  Memo._();
+  factory Memo.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Memo.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -3986,23 +3983,6 @@ class Memo extends $pb.GeneratedMessage {
         $pb.PbFieldType.OU6,
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
-
-  Memo._();
-  factory Memo({
-    $fixnum.Int64? memo,
-  }) {
-    final _result = create();
-    if (memo != null) {
-      _result.memo = memo;
-    }
-    return _result;
-  }
-  factory Memo.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Memo.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -4037,6 +4017,22 @@ class Memo extends $pb.GeneratedMessage {
 }
 
 class TimeStamp extends $pb.GeneratedMessage {
+  factory TimeStamp({
+    $fixnum.Int64? timestampNanos,
+  }) {
+    final _result = create();
+    if (timestampNanos != null) {
+      _result.timestampNanos = timestampNanos;
+    }
+    return _result;
+  }
+  TimeStamp._();
+  factory TimeStamp.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory TimeStamp.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -4054,23 +4050,6 @@ class TimeStamp extends $pb.GeneratedMessage {
         $pb.PbFieldType.OU6,
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
-
-  TimeStamp._();
-  factory TimeStamp({
-    $fixnum.Int64? timestampNanos,
-  }) {
-    final _result = create();
-    if (timestampNanos != null) {
-      _result.timestampNanos = timestampNanos;
-    }
-    return _result;
-  }
-  factory TimeStamp.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory TimeStamp.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -4105,6 +4084,22 @@ class TimeStamp extends $pb.GeneratedMessage {
 }
 
 class Certification extends $pb.GeneratedMessage {
+  factory Certification({
+    $core.List<$core.int>? certification,
+  }) {
+    final _result = create();
+    if (certification != null) {
+      _result.certification = certification;
+    }
+    return _result;
+  }
+  Certification._();
+  factory Certification.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Certification.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -4121,23 +4116,6 @@ class Certification extends $pb.GeneratedMessage {
             : 'certification',
         $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
-
-  Certification._();
-  factory Certification({
-    $core.List<$core.int>? certification,
-  }) {
-    final _result = create();
-    if (certification != null) {
-      _result.certification = certification;
-    }
-    return _result;
-  }
-  factory Certification.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Certification.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')

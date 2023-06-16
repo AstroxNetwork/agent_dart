@@ -1,7 +1,7 @@
 import './bdk_exception.dart';
 
 BdkException configException(String e) {
-  if (e.contains("Generic")) {
+  if (e.contains('Generic')) {
     final message = e.split('Generic');
     return BdkException.generic(message.last);
   } else if (e.contains('NoRecipients')) {
@@ -29,7 +29,7 @@ BdkException configException(String e) {
   } else if (e.contains('MissingCachedScripts')) {
     return const BdkException.missingCachedScripts();
   } else if (e.contains('InsufficientFunds')) {
-    final msg = e.split("InsufficientFunds");
+    final msg = e.split('InsufficientFunds');
     return BdkException.insufficientFunds(msg.last);
   } else if (e.contains('FeeRateTooLow')) {
     final msg = e.split('FeeRateTooLow');

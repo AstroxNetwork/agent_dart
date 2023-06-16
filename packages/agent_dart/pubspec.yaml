@@ -1,7 +1,9 @@
 name: agent_dart
 description: A new Flutter FFI plugin project.
-version: 1.0.0-dev.11
-homepage:
+version: 1.0.0
+homepage: https://github.com/AstroxNetwork
+repository: https://github.com/AstroxNetwork/agent_dart
+issue_tracker: https://github.com/AstroxNetwork/agent_dart/issues
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

@@ -1,3 +1,5 @@
+export 'package:agent_dart_ffi/agent_dart_ffi.dart';
+
 export 'agent/agent.dart';
 // archiver
 export 'archiver/archiver.dart';
@@ -11,6 +13,7 @@ export 'candid/idl.dart';
 export 'identity/identity.dart';
 // principal;
 export 'principal/principal.dart';
+export 'src/ffi.dart';
 // utils
 export 'utils/base64.dart';
 export 'utils/bech32.dart';
@@ -24,5 +27,3 @@ export 'utils/string.dart';
 export 'utils/u8a.dart';
 // wallet
 export 'wallet/wallet.dart';
-export 'src/ffi.dart';
-export 'package:agent_dart_ffi/agent_dart_ffi.dart';

@@ -4,6 +4,26 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.15
+
+- Support for Dart 3.0.
+
+## 1.0.0-dev.14
+
+- Send `methodName` into `pollForResponse`.
+- Rename `Predicate` to `PollPredicate`.
+- Rename `PollingResponseDoneException` to `PollingResponseNoReplyException`.
+- Retry failed `call`, `query`, `read_state`, `status` requests.
+
+## 1.0.0-dev.13
+
+- Add HttpAgent.`fromUri` factory.
+
+## 1.0.0-dev.12
+
+- Add `canisterId` and `caller` for `PollingResponseException`.
+- Declare return types for fields and methods.
+
 ## 1.0.0-dev.11
 
 - Unify optional `password` for encrypt/decrypt methods.

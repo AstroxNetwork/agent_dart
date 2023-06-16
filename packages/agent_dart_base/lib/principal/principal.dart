@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:agent_dart_base/agent/types.dart';
 import 'package:agent_dart_base/utils/extension.dart';
 
+import '../agent/errors.dart';
 import 'utils/base32.dart';
 import 'utils/get_crc.dart';
 import 'utils/sha224.dart';
@@ -35,7 +36,7 @@ class Principal {
     } else if (other is Principal) {
       return Principal(other._arr);
     }
-    throw RangeError('Invalid Principal');
+    throw UnreachableError();
   }
 
   factory Principal.create(int uSize, Uint8List data) {

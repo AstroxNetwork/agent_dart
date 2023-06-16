@@ -1,4 +1,5 @@
 ///
+import 'dart:convert' as $convert;
 //  Generated code. Do not modify.
 //  source: ic_base_types/pb/v1/types.proto
 //
@@ -6,7 +7,6 @@
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields,deprecated_member_use_from_same_package
 
 import 'dart:core' as $core;
-import 'dart:convert' as $convert;
 import 'dart:typed_data' as $typed_data;
 
 @$core.Deprecated('Use principalIdDescriptor instead')
@@ -27,4 +27,5 @@ const PrincipalId$json = const {
 
 /// Descriptor for `PrincipalId`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List principalIdDescriptor = $convert.base64Decode(
-    'CgtQcmluY2lwYWxJZBIpCg1zZXJpYWxpemVkX2lkGAEgASgMQgSI4gkBUgxzZXJpYWxpemVkSWQ6BIDiCQE=');
+  'CgtQcmluY2lwYWxJZBIpCg1zZXJpYWxpemVkX2lkGAEgASgMQgSI4gkBUgxzZXJpYWxpemVkSWQ6BIDiCQE=',
+);

@@ -392,7 +392,7 @@ class NullClass extends PrimitiveType<Null> {
   }
 
   @override
-  get name => 'null';
+  String get name => 'null';
 }
 
 /// A reserved class with no usages.
@@ -570,7 +570,7 @@ class FloatClass extends PrimitiveType<num> {
   }
 
   @override
-  decodeValue(Pipe x, CType t) {
+  double decodeValue(Pipe x, CType t) {
     checkType(t);
     final k = safeRead(x as Pipe<int>, (_bits / 8).ceil());
     if (_bits == 32) {
@@ -605,7 +605,7 @@ class FloatClass extends PrimitiveType<num> {
   }
 
   @override
-  get name => 'float$_bits';
+  String get name => 'float$_bits';
 
   @override
   String valueToString(num x) => x.toString();
@@ -755,7 +755,7 @@ class VecClass<T> extends ConstructType<List<T>> {
   }
 
   @override
-  _buildTypeTableImpl(TypeTable typeTable) {
+  void _buildTypeTableImpl(TypeTable typeTable) {
     _type.buildTypeTable(typeTable);
 
     final opCode = slebEncode(IDLTypeIds.Vector);
@@ -1276,7 +1276,7 @@ class RecClass<T> extends ConstructType<T> {
   }
 
   @override
-  _buildTypeTableImpl(TypeTable typeTable) {
+  void _buildTypeTableImpl(TypeTable typeTable) {
     _checkType();
     typeTable.add(this, Uint8List.fromList([]));
     _type!.buildTypeTable(typeTable);
@@ -1468,7 +1468,7 @@ class FuncClass extends ConstructType<List> {
   }
 
   @override
-  get name {
+  String get name {
     final args = argTypes.map((arg) => arg.name).join(', ');
     final rets = retTypes.map((arg) => arg.name).join(', ');
     return '($args) -> ($rets) ${annotations.join(' ')}';
@@ -1695,7 +1695,7 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
           typeTable.add([ty, null]);
           break;
         default:
-          throw Error();
+          throw UnreachableError();
       }
     }
 
