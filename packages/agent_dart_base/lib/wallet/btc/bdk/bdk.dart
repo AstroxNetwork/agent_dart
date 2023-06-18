@@ -602,7 +602,7 @@ class DescriptorSecretKey {
   // }
 
   /// Derived the `XPrv` using the derivation path
-  Future<DescriptorSecretKey> deriveindex(int index) async {
+  Future<DescriptorSecretKey> deriveIndex(int index) async {
     try {
       derivationPath =
           await DerivationPath.create(path: '${derivedPathPrefix!}/$index');
