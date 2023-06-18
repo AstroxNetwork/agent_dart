@@ -1713,6 +1713,7 @@ where
 
         // We need to ensure descriptor is derivable to fullfil "missing cache", otherwise we will
         // end up with an infinite loop
+
         let has_wildcard = self.descriptor.has_wildcard()
             && (self.change_descriptor.is_none()
                 || self.change_descriptor.as_ref().unwrap().has_wildcard());

@@ -341,6 +341,7 @@ impl Api {
             Err(e) => anyhow::bail!("{:?}", e),
         };
     }
+
     pub fn new_bip44_descriptor(
         key_chain_kind: KeychainKind,
         secret_key: String,
@@ -478,6 +479,25 @@ impl Api {
     ) -> anyhow::Result<String> {
         let mnemonic = Mnemonic::from_str(mnemonic).unwrap();
         return match DescriptorSecretKey::new(network.into(), mnemonic, password) {
+            Ok(e) => Ok(e.as_string()),
+            Err(e) => anyhow::bail!("{:?}", e),
+        };
+    }
+
+    pub fn create_derived_descriptor_secret(
+        network: Network,
+        mnemonic: String,
+        path: String,
+        password: Option<String>,
+    ) -> anyhow::Result<String> {
+        let mnemonic = Mnemonic::from_str(mnemonic).unwrap();
+        let derivation_path = Arc::new(DerivationPath::new(path).unwrap());
+        return match DescriptorSecretKey::new_derived(
+            network.into(),
+            mnemonic,
+            derivation_path,
+            password,
+        ) {
             Ok(e) => Ok(e.as_string()),
             Err(e) => anyhow::bail!("{:?}", e),
         };

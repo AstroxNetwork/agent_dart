@@ -2,10 +2,12 @@ use crate::bdk::key::{DescriptorPublicKey, DescriptorSecretKey};
 use bdk::bitcoin::secp256k1::Secp256k1;
 use bdk::bitcoin::util::bip32::Fingerprint;
 use bdk::bitcoin::Network;
+// use bdk::descriptor::DescriptorXKey;
 use bdk::descriptor::{ExtendedDescriptor, IntoWalletDescriptor, KeyMap};
 use bdk::keys::{
     DescriptorPublicKey as BdkDescriptorPublicKey, DescriptorSecretKey as BdkDescriptorSecretKey,
 };
+// use bdk::miniscript::DefiniteDescriptorKey;
 use bdk::template::{
     Bip44, Bip44Public, Bip49, Bip49Public, Bip84, Bip84Public, Bip86, Bip86Public,
     DescriptorTemplate,
@@ -197,6 +199,7 @@ impl BdkDescriptor {
                 let derivable_key = descriptor_x_key.xkey;
                 let (extended_descriptor, key_map, _) =
                     Bip86(derivable_key, keychain_kind).build(network).unwrap();
+
                 Self {
                     extended_descriptor,
                     key_map,
