@@ -320,6 +320,10 @@ abstract class AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kCreateDescriptorSecretStaticMethodApiConstMeta;
 
+  Future<String> createDerivedDescriptorSecretStaticMethodApi({required Network network, required String mnemonic, required String path, String? password, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kCreateDerivedDescriptorSecretStaticMethodApiConstMeta;
+
   Future<String> descriptorSecretFromStringStaticMethodApi({required String secret, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kDescriptorSecretFromStringStaticMethodApiConstMeta;
@@ -2884,6 +2888,35 @@ class AgentDartImpl implements AgentDart {
         argNames: [
           "network",
           "mnemonic",
+          "password"
+        ],
+      );
+
+  Future<String> createDerivedDescriptorSecretStaticMethodApi({required Network network, required String mnemonic, required String path, String? password, dynamic hint}) {
+    var arg0 = api2wire_network(network);
+    var arg1 = _platform.api2wire_String(mnemonic);
+    var arg2 = _platform.api2wire_String(path);
+    var arg3 = _platform.api2wire_opt_String(password);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_create_derived_descriptor_secret__static_method__Api(port_, arg0, arg1, arg2, arg3),
+      parseSuccessData: _wire2api_String,
+      constMeta: kCreateDerivedDescriptorSecretStaticMethodApiConstMeta,
+      argValues: [
+        network,
+        mnemonic,
+        path,
+        password
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kCreateDerivedDescriptorSecretStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "create_derived_descriptor_secret__static_method__Api",
+        argNames: [
+          "network",
+          "mnemonic",
+          "path",
           "password"
         ],
       );

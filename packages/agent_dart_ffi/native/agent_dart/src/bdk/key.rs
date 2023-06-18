@@ -86,6 +86,33 @@ impl DescriptorSecretKey {
         })
     }
 
+    pub fn new_derived(
+        network: bdk::bitcoin::Network,
+        mnemonic: Mnemonic,
+        path: Arc<DerivationPath>,
+        password: Option<String>,
+    ) -> Result<Self, BdkError> {
+        let mnemonic = mnemonic.internal.clone();
+        let xkey: ExtendedKey = (mnemonic, password).into_extended_key().unwrap();
+
+        let descriptor_secret_key = BdkDescriptorSecretKey::XPrv(DescriptorXKey {
+            origin: None,
+            xkey: xkey.into_xprv(network).unwrap(),
+            derivation_path: BdkDerivationPath::from_str(
+                path.derivation_path_mutex
+                    .lock()
+                    .unwrap()
+                    .to_string()
+                    .as_str(),
+            )
+            .unwrap(),
+            wildcard: bdk::descriptor::Wildcard::None,
+        });
+        Ok(Self {
+            descriptor_secret_key_mutex: Mutex::new(descriptor_secret_key),
+        })
+    }
+
     pub fn derive(&self, path: Arc<DerivationPath>) -> Result<Arc<Self>, BdkError> {
         let secp = Secp256k1::new();
         let descriptor_secret_key = self.descriptor_secret_key_mutex.lock().unwrap();

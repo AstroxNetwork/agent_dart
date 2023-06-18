@@ -1927,6 +1927,25 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _wire_create_descriptor_secret__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Int32, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>>('wire_create_descriptor_secret__static_method__Api');
   late final _wire_create_descriptor_secret__static_method__Api = _wire_create_descriptor_secret__static_method__ApiPtr.asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
 
+  void wire_create_derived_descriptor_secret__static_method__Api(
+    int port_,
+    int network,
+    ffi.Pointer<wire_uint_8_list> mnemonic,
+    ffi.Pointer<wire_uint_8_list> path,
+    ffi.Pointer<wire_uint_8_list> password,
+  ) {
+    return _wire_create_derived_descriptor_secret__static_method__Api(
+      port_,
+      network,
+      mnemonic,
+      path,
+      password,
+    );
+  }
+
+  late final _wire_create_derived_descriptor_secret__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Int32, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>>('wire_create_derived_descriptor_secret__static_method__Api');
+  late final _wire_create_derived_descriptor_secret__static_method__Api = _wire_create_derived_descriptor_secret__static_method__ApiPtr.asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
   void wire_descriptor_secret_from_string__static_method__Api(
     int port_,
     ffi.Pointer<wire_uint_8_list> secret,

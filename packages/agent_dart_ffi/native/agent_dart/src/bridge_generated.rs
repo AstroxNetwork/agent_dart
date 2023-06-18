@@ -1301,6 +1301,35 @@ fn wire_create_descriptor_secret__static_method__Api_impl(
         },
     )
 }
+fn wire_create_derived_descriptor_secret__static_method__Api_impl(
+    port_: MessagePort,
+    network: impl Wire2Api<Network> + UnwindSafe,
+    mnemonic: impl Wire2Api<String> + UnwindSafe,
+    path: impl Wire2Api<String> + UnwindSafe,
+    password: impl Wire2Api<Option<String>> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "create_derived_descriptor_secret__static_method__Api",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_network = network.wire2api();
+            let api_mnemonic = mnemonic.wire2api();
+            let api_path = path.wire2api();
+            let api_password = password.wire2api();
+            move |task_callback| {
+                Api::create_derived_descriptor_secret(
+                    api_network,
+                    api_mnemonic,
+                    api_path,
+                    api_password,
+                )
+            }
+        },
+    )
+}
 fn wire_descriptor_secret_from_string__static_method__Api_impl(
     port_: MessagePort,
     secret: impl Wire2Api<String> + UnwindSafe,
@@ -2655,6 +2684,19 @@ mod web {
         password: Option<String>,
     ) {
         wire_create_descriptor_secret__static_method__Api_impl(port_, network, mnemonic, password)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire_create_derived_descriptor_secret__static_method__Api(
+        port_: MessagePort,
+        network: i32,
+        mnemonic: String,
+        path: String,
+        password: Option<String>,
+    ) {
+        wire_create_derived_descriptor_secret__static_method__Api_impl(
+            port_, network, mnemonic, path, password,
+        )
     }
 
     #[wasm_bindgen]
@@ -4275,6 +4317,19 @@ mod io {
         password: *mut wire_uint_8_list,
     ) {
         wire_create_descriptor_secret__static_method__Api_impl(port_, network, mnemonic, password)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn wire_create_derived_descriptor_secret__static_method__Api(
+        port_: i64,
+        network: i32,
+        mnemonic: *mut wire_uint_8_list,
+        path: *mut wire_uint_8_list,
+        password: *mut wire_uint_8_list,
+    ) {
+        wire_create_derived_descriptor_secret__static_method__Api_impl(
+            port_, network, mnemonic, path, password,
+        )
     }
 
     #[no_mangle]

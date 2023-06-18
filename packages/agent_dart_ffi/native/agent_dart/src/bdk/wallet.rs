@@ -11,6 +11,7 @@ use bdk::{SignOptions as BdkSignOptions, Wallet as BdkWallet};
 // use bdk::miniscript::TranslatePk;
 // use bdk::signer::SignerId;
 // use bitcoin::PublicKey;
+// use bdk::miniscript::DefiniteDescriptorKey;
 use flutter_rust_bridge::RustOpaque;
 use std::ops::Deref;
 use std::sync::{Arc, Mutex, MutexGuard};
@@ -50,6 +51,20 @@ impl WalletInstance {
         );
         Ok(WalletInstance { wallet_mutex })
     }
+
+    // pub fn new_single(
+    //     descriptor: String,
+    //     change_descriptor: Option<String>,
+    //     network: bdk::bitcoin::Network,
+    //     database_config: DatabaseConfig,
+    // ) -> Result<Self, BdkError> {
+    //     let database = AnyDatabase::from_config(&database_config.into()).unwrap();
+    //     let wallet_mutex = Mutex::new(
+    //         BdkWallet::new(&descriptor, change_descriptor.as_ref(), network, database).unwrap(),
+    //     );
+    //     Ok(WalletInstance { wallet_mutex })
+    // }
+
     pub fn get_wallet(&self) -> MutexGuard<BdkWallet<AnyDatabase>> {
         self.wallet_mutex.lock().expect("wallet")
     }
