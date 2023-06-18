@@ -210,7 +210,7 @@ class BitcoinWallet {
   // ====== Signer ======
   Future<AddressInfo> getSigner(int index) async {
     final k =
-        await descriptor.descriptor.descriptorSecretKey!.deriveindex(index);
+        await descriptor.descriptor.descriptorSecretKey!.deriveIndex(index);
 
     final kBytes = Uint8List.fromList(await k.secretBytes());
     _publicKey = await k.getPubFromBytes(kBytes);
