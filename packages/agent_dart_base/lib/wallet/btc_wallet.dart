@@ -71,13 +71,8 @@ Future<AddressInfo> getAddressInfo({
     addressType: addressType,
   );
   final descriptor = descriptors[KeychainKind.External]!;
-  final res = await Wallet.create(
-    descriptor: descriptor.descriptor,
-    changeDescriptor: descriptor.descriptor,
-    network: network,
-    databaseConfig: const DatabaseConfig.memory(),
-  );
-  return res.getAddress(addressIndex: AddressIndex.reset(index: index));
+  final res = await descriptor.descriptor.deriveAddressAt(index, network);
+  return res;
 }
 
 Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(

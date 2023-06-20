@@ -471,6 +471,17 @@ impl Api {
         descriptor.as_string()
     }
 
+    pub fn derive_address_at(
+        descriptor: RustOpaque<BdkDescriptor>,
+        index: u32,
+        network: Network,
+    ) -> anyhow::Result<AddressInfo> {
+        return match descriptor.derive_address_index(index, network.into()) {
+            Ok(e) => Ok(e),
+            Err(e) => anyhow::bail!("{:?}", e),
+        };
+    }
+
     //====================== Descriptor Secret =================
     pub fn create_descriptor_secret(
         network: Network,

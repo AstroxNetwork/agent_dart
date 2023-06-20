@@ -863,6 +863,8 @@ class AgentDartWasmModule implements WasmModule {
 
   external dynamic /* void */ wire_as_string__static_method__Api(NativePortType port_, Object descriptor);
 
+  external dynamic /* void */ wire_derive_address_at__static_method__Api(NativePortType port_, Object descriptor, int index, int network);
+
   external dynamic /* void */ wire_create_descriptor_secret__static_method__Api(NativePortType port_, int network, String mnemonic, String? password);
 
   external dynamic /* void */ wire_create_derived_descriptor_secret__static_method__Api(NativePortType port_, int network, String mnemonic, String path, String? password);
@@ -1080,6 +1082,8 @@ class AgentDartWire extends FlutterRustBridgeWasmWireBase<AgentDartWasmModule> {
   void wire_as_string_private__static_method__Api(NativePortType port_, Object descriptor) => wasmModule.wire_as_string_private__static_method__Api(port_, descriptor);
 
   void wire_as_string__static_method__Api(NativePortType port_, Object descriptor) => wasmModule.wire_as_string__static_method__Api(port_, descriptor);
+
+  void wire_derive_address_at__static_method__Api(NativePortType port_, Object descriptor, int index, int network) => wasmModule.wire_derive_address_at__static_method__Api(port_, descriptor, index, network);
 
   void wire_create_descriptor_secret__static_method__Api(NativePortType port_, int network, String mnemonic, String? password) => wasmModule.wire_create_descriptor_secret__static_method__Api(port_, network, mnemonic, password);
 

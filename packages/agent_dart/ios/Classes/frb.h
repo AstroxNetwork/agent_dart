@@ -738,6 +738,11 @@ void wire_as_string_private__static_method__Api(int64_t port_,
 
 void wire_as_string__static_method__Api(int64_t port_, struct wire_BdkDescriptor descriptor);
 
+void wire_derive_address_at__static_method__Api(int64_t port_,
+                                                struct wire_BdkDescriptor descriptor,
+                                                uint32_t index,
+                                                int32_t network);
+
 void wire_create_descriptor_secret__static_method__Api(int64_t port_,
                                                        int32_t network,
                                                        struct wire_uint_8_list *mnemonic,
@@ -1038,6 +1043,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_new_bip86_public__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_as_string_private__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_as_string__static_method__Api);
+    dummy_var ^= ((int64_t) (void*) wire_derive_address_at__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_create_descriptor_secret__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_create_derived_descriptor_secret__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_descriptor_secret_from_string__static_method__Api);

@@ -470,6 +470,19 @@ class Descriptor {
       throw configException(e.message);
     }
   }
+
+  Future<AddressInfo> deriveAddressAt(int index, Network network) async {
+    try {
+      final res = await AgentDartFFI.impl.deriveAddressAtStaticMethodApi(
+        descriptor: _descriptorInstance!,
+        index: index,
+        network: network,
+      );
+      return res;
+    } on FfiException catch (e) {
+      throw configException(e.message);
+    }
+  }
 }
 
 ///An extended public key.
