@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:agent_dart_base/agent/ord/inscriptionItem.dart';
 import 'package:agent_dart_base/agent/ord/service.dart';
 import 'package:agent_dart_base/agent/ord/utxo.dart';
@@ -21,6 +22,7 @@ class BTCDescriptor {
     required this.descriptor,
     required this.network,
   });
+
   final AddressType addressType;
   final Descriptor descriptor;
   final Network network;
@@ -44,7 +46,9 @@ const UTXO_DUST = 546;
 
 class BitcoinBalance {
   BitcoinBalance._(this.balance);
+
   final Balance balance;
+
   Map<String, dynamic> toJson() => {
         'immature': balance.immature,
         'trustedPending': balance.trustedPending,
@@ -55,19 +59,40 @@ class BitcoinBalance {
       };
 }
 
-Future<List<BTCDescriptor>> getDescriptors(
+Future<AddressInfo> getAddressInfo({
+  required String phrase,
+  required int index,
+  Network network = Network.Bitcoin,
+  AddressType addressType = AddressType.P2TR,
+}) async {
+  final descriptors = await getDescriptors(
+    phrase,
+    network: network,
+    addressType: addressType,
+  );
+  final descriptor = descriptors[KeychainKind.External]!;
+  final res = await Wallet.create(
+    descriptor: descriptor.descriptor,
+    changeDescriptor: descriptor.descriptor,
+    network: network,
+    databaseConfig: const DatabaseConfig.memory(),
+  );
+  return res.getAddress(addressIndex: AddressIndex.reset(index: index));
+}
+
+Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
   String mnemonic, {
   AddressType addressType = AddressType.P2TR,
   Network network = Network.Bitcoin,
 }) async {
-  final descriptors = <BTCDescriptor>[];
+  final mnemonicObj = await Mnemonic.fromString(mnemonic);
+  final descriptorSecretKey = await DescriptorSecretKey.create(
+    network: Network.Bitcoin,
+    mnemonic: mnemonicObj,
+  );
+  final descriptors = <KeychainKind, BTCDescriptor>{};
   try {
     for (final e in KeychainKind.values) {
-      final mnemonicObj = await Mnemonic.fromString(mnemonic);
-      final descriptorSecretKey = await DescriptorSecretKey.create(
-        network: Network.Bitcoin,
-        mnemonic: mnemonicObj,
-      );
       Descriptor descriptor;
       switch (addressType) {
         case AddressType.P2TR:
@@ -116,12 +141,10 @@ Future<List<BTCDescriptor>> getDescriptors(
           );
       }
 
-      descriptors.add(
-        BTCDescriptor(
-          addressType: addressType,
-          descriptor: descriptor,
-          network: network,
-        ),
+      descriptors[e] = BTCDescriptor(
+        addressType: addressType,
+        descriptor: descriptor,
+        network: network,
       );
     }
     return descriptors;
@@ -137,6 +160,7 @@ class BitcoinWallet {
     required this.descriptor,
     this.ordService,
   });
+
   final Wallet wallet;
   final AddressType addressType;
   final BTCDescriptor descriptor;
@@ -184,26 +208,24 @@ class BitcoinWallet {
 
   static Future<BitcoinWallet> fromPhrase(
     String phrase, {
-    Network? network = Network.Bitcoin,
+    Network network = Network.Bitcoin,
   }) async {
     // final wallet = await BitcoinWallet.fromPhrase();
-    final descriptors =
-        await getDescriptors(phrase, network: network ?? Network.Bitcoin);
-
+    final descriptors = await getDescriptors(phrase, network: network);
+    final descriptor = descriptors[KeychainKind.External]!;
     final res = await Wallet.create(
-      descriptor: descriptors[0].descriptor,
-      changeDescriptor: descriptors[0].descriptor,
-      network: network ?? Network.Bitcoin,
+      descriptor: descriptor.descriptor,
+      changeDescriptor: descriptor.descriptor,
+      network: network,
       databaseConfig: const DatabaseConfig.memory(),
     );
-
     final wallet = BitcoinWallet(
       wallet: res,
-      addressType: descriptors[0].addressType,
-      descriptor: descriptors[0],
+      addressType: descriptor.addressType,
+      descriptor: descriptor,
     );
-    wallet.setNetwork(network ?? Network.Bitcoin);
-    await wallet.blockchainInit(net: network ?? Network.Bitcoin);
+    wallet.setNetwork(network);
+    await wallet.blockchainInit(net: network);
     return wallet;
   }
 
