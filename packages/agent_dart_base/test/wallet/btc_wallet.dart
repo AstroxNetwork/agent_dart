@@ -33,10 +33,15 @@ void btc_wallet() {
     return wallet;
   }
 
+  test('get address by seedphrase and index', () async {
+    final seedphrase = (await Mnemonic.create(WordCount.Words12)).asString();
+    final address = await getAddressInfo(phrase: seedphrase, index: 0);
+    print(address.address);
+  });
   test('get psbt address', () async {
     final wallet = await getWallet();
     print((await wallet.getBalance()).toJson());
-  });
+  }, skip: true);
   test(
     'ord connect',
     () async {

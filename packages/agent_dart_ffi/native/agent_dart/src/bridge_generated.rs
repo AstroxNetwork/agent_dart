@@ -1279,6 +1279,26 @@ fn wire_as_string__static_method__Api_impl(
         },
     )
 }
+fn wire_derive_address_at__static_method__Api_impl(
+    port_: MessagePort,
+    descriptor: impl Wire2Api<RustOpaque<BdkDescriptor>> + UnwindSafe,
+    index: impl Wire2Api<u32> + UnwindSafe,
+    network: impl Wire2Api<Network> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "derive_address_at__static_method__Api",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_descriptor = descriptor.wire2api();
+            let api_index = index.wire2api();
+            let api_network = network.wire2api();
+            move |task_callback| Api::derive_address_at(api_descriptor, api_index, api_network)
+        },
+    )
+}
 fn wire_create_descriptor_secret__static_method__Api_impl(
     port_: MessagePort,
     network: impl Wire2Api<Network> + UnwindSafe,
@@ -2674,6 +2694,16 @@ mod web {
     #[wasm_bindgen]
     pub fn wire_as_string__static_method__Api(port_: MessagePort, descriptor: JsValue) {
         wire_as_string__static_method__Api_impl(port_, descriptor)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire_derive_address_at__static_method__Api(
+        port_: MessagePort,
+        descriptor: JsValue,
+        index: u32,
+        network: i32,
+    ) {
+        wire_derive_address_at__static_method__Api_impl(port_, descriptor, index, network)
     }
 
     #[wasm_bindgen]
@@ -4307,6 +4337,16 @@ mod io {
         descriptor: wire_BdkDescriptor,
     ) {
         wire_as_string__static_method__Api_impl(port_, descriptor)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn wire_derive_address_at__static_method__Api(
+        port_: i64,
+        descriptor: wire_BdkDescriptor,
+        index: u32,
+        network: i32,
+    ) {
+        wire_derive_address_at__static_method__Api_impl(port_, descriptor, index, network)
     }
 
     #[no_mangle]

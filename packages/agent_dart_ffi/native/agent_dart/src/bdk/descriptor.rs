@@ -8,6 +8,8 @@ use bdk::keys::{
     DescriptorPublicKey as BdkDescriptorPublicKey, DescriptorSecretKey as BdkDescriptorSecretKey,
 };
 // use bdk::miniscript::DefiniteDescriptorKey;
+use crate::bdk::types::AddressInfo;
+use bdk::miniscript::Error;
 use bdk::template::{
     Bip44, Bip44Public, Bip49, Bip49Public, Bip84, Bip84Public, Bip86, Bip86Public,
     DescriptorTemplate,
@@ -247,6 +249,23 @@ impl BdkDescriptor {
 
     pub(crate) fn as_string(&self) -> String {
         self.extended_descriptor.to_string()
+    }
+
+    pub(crate) fn derive_address_index(
+        &self,
+        index: u32,
+        network: Network,
+    ) -> Result<AddressInfo, Error> {
+        let descriptor = &self.extended_descriptor;
+        descriptor
+            .at_derivation_index(index)
+            .address(network)
+            .map(|address| bdk::wallet::AddressInfo {
+                index,
+                address,
+                keychain: KeychainKind::External,
+            })
+            .map(AddressInfo::from)
     }
 }
 #[cfg(test)]

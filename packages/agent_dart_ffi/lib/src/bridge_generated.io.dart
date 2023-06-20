@@ -1910,6 +1910,23 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _wire_as_string__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, wire_BdkDescriptor)>>('wire_as_string__static_method__Api');
   late final _wire_as_string__static_method__Api = _wire_as_string__static_method__ApiPtr.asFunction<void Function(int, wire_BdkDescriptor)>();
 
+  void wire_derive_address_at__static_method__Api(
+    int port_,
+    wire_BdkDescriptor descriptor,
+    int index,
+    int network,
+  ) {
+    return _wire_derive_address_at__static_method__Api(
+      port_,
+      descriptor,
+      index,
+      network,
+    );
+  }
+
+  late final _wire_derive_address_at__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, wire_BdkDescriptor, ffi.Uint32, ffi.Int32)>>('wire_derive_address_at__static_method__Api');
+  late final _wire_derive_address_at__static_method__Api = _wire_derive_address_at__static_method__ApiPtr.asFunction<void Function(int, wire_BdkDescriptor, int, int)>();
+
   void wire_create_descriptor_secret__static_method__Api(
     int port_,
     int network,

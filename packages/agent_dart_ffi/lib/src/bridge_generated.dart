@@ -316,6 +316,10 @@ abstract class AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kAsStringStaticMethodApiConstMeta;
 
+  Future<AddressInfo> deriveAddressAtStaticMethodApi({required BdkDescriptor descriptor, required int index, required Network network, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kDeriveAddressAtStaticMethodApiConstMeta;
+
   Future<String> createDescriptorSecretStaticMethodApi({required Network network, required String mnemonic, String? password, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kCreateDescriptorSecretStaticMethodApiConstMeta;
@@ -2863,6 +2867,32 @@ class AgentDartImpl implements AgentDart {
         debugName: "as_string__static_method__Api",
         argNames: [
           "descriptor"
+        ],
+      );
+
+  Future<AddressInfo> deriveAddressAtStaticMethodApi({required BdkDescriptor descriptor, required int index, required Network network, dynamic hint}) {
+    var arg0 = _platform.api2wire_BdkDescriptor(descriptor);
+    var arg1 = api2wire_u32(index);
+    var arg2 = api2wire_network(network);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_derive_address_at__static_method__Api(port_, arg0, arg1, arg2),
+      parseSuccessData: _wire2api_address_info,
+      constMeta: kDeriveAddressAtStaticMethodApiConstMeta,
+      argValues: [
+        descriptor,
+        index,
+        network
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kDeriveAddressAtStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "derive_address_at__static_method__Api",
+        argNames: [
+          "descriptor",
+          "index",
+          "network"
         ],
       );
 
