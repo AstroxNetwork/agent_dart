@@ -178,27 +178,31 @@ class BitcoinWallet {
     network = net;
   }
 
-  Future<void> blockchainInit({Network? net = Network.Bitcoin}) async {
-    blockchain = await Blockchain.create(
-      config: BlockchainConfig.electrum(
-        config: ElectrumConfig(
-          stopGap: 10,
-          timeout: 5,
-          retry: 5,
-          url:
-              'ssl://electrum.blockstream.info:${(net ?? network) == Network.Bitcoin ? 50002 : 60002}',
-          validateDomain: false,
-        ),
-      ),
-    );
-    // blockchain = await Blockchain.create(
-    //     config: BlockchainConfig.esplora(
-    //         config: EsploraConfig(
-    //   baseUrl:
-    //       'https://mempool.space/${(net ?? network) == Network.Bitcoin ? '' : 'testnet/'}api', // https://mempool.space/api',
-    //   concurrency: 4,
-    //   stopGap: 10,
-    //)));
+  Future<void> blockchainInit({
+    Network? net = Network.Bitcoin,
+    BlockchainConfig? blockChainConfig,
+  }) async {
+    net ??= network;
+    final config = blockChainConfig ??
+        BlockchainConfig.electrum(
+          config: ElectrumConfig(
+            stopGap: 10,
+            timeout: 5,
+            retry: 5,
+            url:
+                'ssl://electrum.blockstream.info:${net == Network.Bitcoin ? 50002 : 60002}',
+            validateDomain: false,
+          ),
+        );
+    // BlockchainConfig.esplora(
+    //   config: EsploraConfig(
+    //     baseUrl:
+    //         'https://mempool.space/${net == Network.Bitcoin ? '' : 'testnet/'}api',
+    //     concurrency: 4,
+    //     stopGap: 10,
+    //   ),
+    // );
+    blockchain = await Blockchain.create(config: config);
   }
 
   static Future<BitcoinWallet> fromPhrase(
