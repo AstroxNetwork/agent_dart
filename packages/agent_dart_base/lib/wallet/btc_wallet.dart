@@ -57,6 +57,18 @@ class BitcoinBalance {
         'spendable': balance.spendable,
         'total': balance.total,
       };
+
+  int get total => balance.total;
+
+  int get spendable => balance.spendable;
+
+  int get confirmed => balance.confirmed;
+
+  int get untrustedPending => balance.untrustedPending;
+
+  int get trustedPending => balance.trustedPending;
+
+  int get immature => balance.immature;
 }
 
 Future<AddressInfo> getAddressInfo({
@@ -71,8 +83,7 @@ Future<AddressInfo> getAddressInfo({
     addressType: addressType,
   );
   final descriptor = descriptors[KeychainKind.External]!;
-  final res = await descriptor.descriptor.deriveAddressAt(index, network);
-  return res;
+  return descriptor.descriptor.deriveAddressAt(index, network);
 }
 
 Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
@@ -179,7 +190,7 @@ class BitcoinWallet {
   }
 
   Future<void> blockchainInit({
-    Network? net = Network.Bitcoin,
+    Network? net,
     BlockchainConfig? blockChainConfig,
   }) async {
     net ??= network;
