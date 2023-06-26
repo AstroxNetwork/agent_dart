@@ -1,11 +1,11 @@
-use bdk::bitcoin::consensus::Decodable;
-use bdk::bitcoin::hashes::hex::ToHex;
-use bdk::bitcoin::psbt::serialize::Serialize;
-use bdk::bitcoin::util::psbt::PartiallySignedTransaction as BdkPartiallySignedTransaction;
-use bdk::bitcoin::Transaction as BdkTransaction;
+use bdk_lite::bitcoin::consensus::Decodable;
+use bdk_lite::bitcoin::hashes::hex::ToHex;
+use bdk_lite::bitcoin::psbt::serialize::Serialize;
+use bdk_lite::bitcoin::util::psbt::PartiallySignedTransaction as BdkPartiallySignedTransaction;
+use bdk_lite::bitcoin::Transaction as BdkTransaction;
 
-use bdk::psbt::PsbtUtils;
-use bdk::{Error as BdkError, FeeRate};
+use bdk_lite::psbt::PsbtUtils;
+use bdk_lite::{Error as BdkError, FeeRate};
 use std::borrow::Borrow;
 use std::io::Cursor;
 use std::ops::Deref;
@@ -112,6 +112,12 @@ impl From<Transaction> for String {
             Ok(e) => e,
             Err(e) => panic!("Unable to deserialize the Tranaction {:?}", e),
         }
+    }
+}
+
+impl From<BdkTransaction> for Transaction {
+    fn from(tx: BdkTransaction) -> Self {
+        Transaction { internal: tx }
     }
 }
 

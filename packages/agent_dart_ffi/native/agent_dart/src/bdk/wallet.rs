@@ -1,17 +1,17 @@
 use crate::bdk::blockchain::BlockchainInstance;
 use crate::bdk::descriptor::BdkDescriptor;
 use crate::bdk::psbt::PartiallySignedTransaction;
-use bdk::database::{AnyDatabase, AnyDatabaseConfig, ConfigurableDatabase};
-// use bdk::descriptor::{Descriptor, IntoWalletDescriptor};
-use bdk::{Error as BdkError, SyncOptions};
-use bdk::{SignOptions as BdkSignOptions, Wallet as BdkWallet};
+use bdk_lite::database::{AnyDatabase, AnyDatabaseConfig, ConfigurableDatabase};
+// use bdk_lite::descriptor::{Descriptor, IntoWalletDescriptor};
+use bdk_lite::{Error as BdkError, Error, SyncOptions};
+use bdk_lite::{SignOptions as BdkSignOptions, Wallet as BdkWallet};
 // use bitcoin::hashes::hex::ToHex;
-// use bdk::descriptor::Descriptor;
-// use bdk::miniscript::descriptor::ConversionError;
-// use bdk::miniscript::TranslatePk;
-// use bdk::signer::SignerId;
+// use bdk_lite::descriptor::Descriptor;
+// use bdk_lite::miniscript::descriptor::ConversionError;
+// use bdk_lite::miniscript::TranslatePk;
+// use bdk_lite::signer::SignerId;
 // use bitcoin::PublicKey;
-// use bdk::miniscript::DefiniteDescriptorKey;
+// use bdk_lite::miniscript::DefiniteDescriptorKey;
 use flutter_rust_bridge::RustOpaque;
 use std::ops::Deref;
 use std::sync::{Arc, Mutex, MutexGuard};
@@ -39,7 +39,7 @@ impl WalletInstance {
     pub fn new(
         descriptor: Arc<RustOpaque<BdkDescriptor>>,
         change_descriptor: Option<Arc<RustOpaque<BdkDescriptor>>>,
-        network: bdk::bitcoin::Network,
+        network: bdk_lite::bitcoin::Network,
         database_config: DatabaseConfig,
     ) -> Result<Self, BdkError> {
         let database = AnyDatabase::from_config(&database_config.into()).unwrap();
@@ -55,7 +55,7 @@ impl WalletInstance {
     // pub fn new_single(
     //     descriptor: String,
     //     change_descriptor: Option<String>,
-    //     network: bdk::bitcoin::Network,
+    //     network: bdk_lite::bitcoin::Network,
     //     database_config: DatabaseConfig,
     // ) -> Result<Self, BdkError> {
     //     let database = AnyDatabase::from_config(&database_config.into()).unwrap();
@@ -73,7 +73,7 @@ impl WalletInstance {
         let bdk_sync_option: SyncOptions = if let Some(p) = progress {
             SyncOptions {
                 progress: Some(Box::new(ProgressHolder { progress: p })
-                    as Box<(dyn bdk::blockchain::Progress + 'static)>),
+                    as Box<(dyn bdk_lite::blockchain::Progress + 'static)>),
             }
         } else {
             SyncOptions { progress: None }
@@ -127,6 +127,11 @@ impl WalletInstance {
         let unspents = self.get_wallet().list_unspent()?;
         Ok(unspents.into_iter().map(LocalUtxo::from).collect())
     }
+
+    pub fn cache_address(&self, cache_size: u32) -> Result<bool, Error> {
+        self.get_wallet().ensure_addresses_cached(cache_size)
+    }
+
     pub(crate) fn sign(
         &self,
         psbt: &PartiallySignedTransaction,
@@ -226,8 +231,8 @@ pub struct LocalUtxo {
     pub keychain: KeychainKind,
 }
 
-impl From<bdk::LocalUtxo> for LocalUtxo {
-    fn from(local_utxo: bdk::LocalUtxo) -> Self {
+impl From<bdk_lite::LocalUtxo> for LocalUtxo {
+    fn from(local_utxo: bdk_lite::LocalUtxo) -> Self {
         LocalUtxo {
             outpoint: OutPoint {
                 txid: local_utxo.outpoint.txid.to_string(),
@@ -274,12 +279,12 @@ impl From<DatabaseConfig> for AnyDatabaseConfig {
         match config {
             DatabaseConfig::Memory => AnyDatabaseConfig::Memory(()),
             DatabaseConfig::Sqlite { config } => {
-                AnyDatabaseConfig::Sqlite(bdk::database::any::SqliteDbConfiguration {
+                AnyDatabaseConfig::Sqlite(bdk_lite::database::any::SqliteDbConfiguration {
                     path: config.path,
                 })
             }
             DatabaseConfig::Sled { config } => {
-                AnyDatabaseConfig::Sled(bdk::database::any::SledDbConfiguration {
+                AnyDatabaseConfig::Sled(bdk_lite::database::any::SledDbConfiguration {
                     path: config.path,
                     tree_name: config.tree_name,
                 })
@@ -293,7 +298,7 @@ mod test {
 
     use crate::bdk::descriptor::BdkDescriptor;
     use crate::bdk::wallet::{AddressIndex, DatabaseConfig, WalletInstance};
-    use bdk::bitcoin::Network;
+    use bdk_lite::bitcoin::Network;
     use flutter_rust_bridge::RustOpaque;
     use std::sync::Arc;
 

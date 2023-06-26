@@ -320,6 +320,15 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
   }
 
   @protected
+  ffi.Pointer<wire_list_foreign_utxo> api2wire_list_foreign_utxo(List<ForeignUtxo> raw) {
+    final ans = inner.new_list_foreign_utxo_0(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      _api_fill_to_wire_foreign_utxo(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
   ffi.Pointer<wire_list_out_point> api2wire_list_out_point(List<OutPoint> raw) {
     final ans = inner.new_list_out_point_0(raw.length);
     for (var i = 0; i < raw.length; ++i) {
@@ -333,6 +342,15 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
     final ans = inner.new_list_script_amount_0(raw.length);
     for (var i = 0; i < raw.length; ++i) {
       _api_fill_to_wire_script_amount(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_list_tx_bytes> api2wire_list_tx_bytes(List<TxBytes> raw) {
+    final ans = inner.new_list_tx_bytes_0(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      _api_fill_to_wire_tx_bytes(raw[i], ans.ref.ptr[i]);
     }
     return ans;
   }
@@ -700,6 +718,11 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
     wireObj.timeout = api2wire_opt_box_autoadd_u64(apiObj.timeout);
   }
 
+  void _api_fill_to_wire_foreign_utxo(ForeignUtxo apiObj, wire_ForeignUtxo wireObj) {
+    _api_fill_to_wire_out_point(apiObj.outpoint, wireObj.outpoint);
+    _api_fill_to_wire_tx_out_foreign(apiObj.txout, wireObj.txout);
+  }
+
   void _api_fill_to_wire_opt_box_autoadd_BdkDescriptor(BdkDescriptor? apiObj, ffi.Pointer<wire_BdkDescriptor> wireObj) {
     if (apiObj != null) _api_fill_to_wire_box_autoadd_BdkDescriptor(apiObj, wireObj);
   }
@@ -871,6 +894,16 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
 
   void _api_fill_to_wire_sqlite_db_configuration(SqliteDbConfiguration apiObj, wire_SqliteDbConfiguration wireObj) {
     wireObj.path = api2wire_String(apiObj.path);
+  }
+
+  void _api_fill_to_wire_tx_bytes(TxBytes apiObj, wire_TxBytes wireObj) {
+    wireObj.tx_id = api2wire_String(apiObj.txId);
+    wireObj.bytes = api2wire_uint_8_list(apiObj.bytes);
+  }
+
+  void _api_fill_to_wire_tx_out_foreign(TxOutForeign apiObj, wire_TxOutForeign wireObj) {
+    wireObj.value = api2wire_u64(apiObj.value);
+    wireObj.script_pubkey = api2wire_String(apiObj.scriptPubkey);
   }
 
   void _api_fill_to_wire_user_pass(UserPass apiObj, wire_UserPass wireObj) {
@@ -1388,6 +1421,21 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _wire_broadcast__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>, wire_BlockchainInstance)>>('wire_broadcast__static_method__Api');
   late final _wire_broadcast__static_method__Api = _wire_broadcast__static_method__ApiPtr.asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, wire_BlockchainInstance)>();
 
+  void wire_get_tx__static_method__Api(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> tx,
+    wire_BlockchainInstance blockchain,
+  ) {
+    return _wire_get_tx__static_method__Api(
+      port_,
+      tx,
+      blockchain,
+    );
+  }
+
+  late final _wire_get_tx__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>, wire_BlockchainInstance)>>('wire_get_tx__static_method__Api');
+  late final _wire_get_tx__static_method__Api = _wire_get_tx__static_method__ApiPtr.asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, wire_BlockchainInstance)>();
+
   void wire_create_transaction__static_method__Api(
     int port_,
     ffi.Pointer<wire_uint_8_list> tx,
@@ -1667,8 +1715,9 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
     int port_,
     wire_WalletInstance wallet,
     ffi.Pointer<wire_list_script_amount> recipients,
-    ffi.Pointer<wire_list_out_point> utxos,
+    ffi.Pointer<wire_list_tx_bytes> txs,
     ffi.Pointer<wire_list_out_point> unspendable,
+    ffi.Pointer<wire_list_foreign_utxo> foreign_utxos,
     int change_policy,
     bool manually_selected_only,
     ffi.Pointer<ffi.Float> fee_rate,
@@ -1683,8 +1732,9 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
       port_,
       wallet,
       recipients,
-      utxos,
+      txs,
       unspendable,
+      foreign_utxos,
       change_policy,
       manually_selected_only,
       fee_rate,
@@ -1697,8 +1747,47 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
     );
   }
 
-  late final _wire_tx_builder_finish__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, wire_WalletInstance, ffi.Pointer<wire_list_script_amount>, ffi.Pointer<wire_list_out_point>, ffi.Pointer<wire_list_out_point>, ffi.Int32, ffi.Bool, ffi.Pointer<ffi.Float>, ffi.Pointer<ffi.Uint64>, ffi.Bool, ffi.Pointer<wire_Script>, ffi.Pointer<wire_RbfValue>, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<ffi.Bool>)>>('wire_tx_builder_finish__static_method__Api');
-  late final _wire_tx_builder_finish__static_method__Api = _wire_tx_builder_finish__static_method__ApiPtr.asFunction<void Function(int, wire_WalletInstance, ffi.Pointer<wire_list_script_amount>, ffi.Pointer<wire_list_out_point>, ffi.Pointer<wire_list_out_point>, int, bool, ffi.Pointer<ffi.Float>, ffi.Pointer<ffi.Uint64>, bool, ffi.Pointer<wire_Script>, ffi.Pointer<wire_RbfValue>, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<ffi.Bool>)>();
+  late final _wire_tx_builder_finish__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, wire_WalletInstance, ffi.Pointer<wire_list_script_amount>, ffi.Pointer<wire_list_tx_bytes>, ffi.Pointer<wire_list_out_point>, ffi.Pointer<wire_list_foreign_utxo>, ffi.Int32, ffi.Bool, ffi.Pointer<ffi.Float>, ffi.Pointer<ffi.Uint64>, ffi.Bool, ffi.Pointer<wire_Script>, ffi.Pointer<wire_RbfValue>, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<ffi.Bool>)>>('wire_tx_builder_finish__static_method__Api');
+  late final _wire_tx_builder_finish__static_method__Api = _wire_tx_builder_finish__static_method__ApiPtr.asFunction<void Function(int, wire_WalletInstance, ffi.Pointer<wire_list_script_amount>, ffi.Pointer<wire_list_tx_bytes>, ffi.Pointer<wire_list_out_point>, ffi.Pointer<wire_list_foreign_utxo>, int, bool, ffi.Pointer<ffi.Float>, ffi.Pointer<ffi.Uint64>, bool, ffi.Pointer<wire_Script>, ffi.Pointer<wire_RbfValue>, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<ffi.Bool>)>();
+
+  void wire_tx_cal_fee_finish__static_method__Api(
+    int port_,
+    wire_WalletInstance wallet,
+    ffi.Pointer<wire_list_script_amount> recipients,
+    ffi.Pointer<wire_list_tx_bytes> txs,
+    ffi.Pointer<wire_list_out_point> unspendable,
+    ffi.Pointer<wire_list_foreign_utxo> foreign_utxos,
+    int change_policy,
+    bool manually_selected_only,
+    ffi.Pointer<ffi.Float> fee_rate,
+    ffi.Pointer<ffi.Uint64> fee_absolute,
+    bool drain_wallet,
+    ffi.Pointer<wire_Script> drain_to,
+    ffi.Pointer<wire_RbfValue> rbf,
+    ffi.Pointer<wire_uint_8_list> data,
+    ffi.Pointer<ffi.Bool> shuffle_utxo,
+  ) {
+    return _wire_tx_cal_fee_finish__static_method__Api(
+      port_,
+      wallet,
+      recipients,
+      txs,
+      unspendable,
+      foreign_utxos,
+      change_policy,
+      manually_selected_only,
+      fee_rate,
+      fee_absolute,
+      drain_wallet,
+      drain_to,
+      rbf,
+      data,
+      shuffle_utxo,
+    );
+  }
+
+  late final _wire_tx_cal_fee_finish__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, wire_WalletInstance, ffi.Pointer<wire_list_script_amount>, ffi.Pointer<wire_list_tx_bytes>, ffi.Pointer<wire_list_out_point>, ffi.Pointer<wire_list_foreign_utxo>, ffi.Int32, ffi.Bool, ffi.Pointer<ffi.Float>, ffi.Pointer<ffi.Uint64>, ffi.Bool, ffi.Pointer<wire_Script>, ffi.Pointer<wire_RbfValue>, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<ffi.Bool>)>>('wire_tx_cal_fee_finish__static_method__Api');
+  late final _wire_tx_cal_fee_finish__static_method__Api = _wire_tx_cal_fee_finish__static_method__ApiPtr.asFunction<void Function(int, wire_WalletInstance, ffi.Pointer<wire_list_script_amount>, ffi.Pointer<wire_list_tx_bytes>, ffi.Pointer<wire_list_out_point>, ffi.Pointer<wire_list_foreign_utxo>, int, bool, ffi.Pointer<ffi.Float>, ffi.Pointer<ffi.Uint64>, bool, ffi.Pointer<wire_Script>, ffi.Pointer<wire_RbfValue>, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<ffi.Bool>)>();
 
   void wire_bump_fee_tx_builder_finish__static_method__Api(
     int port_,
@@ -2357,6 +2446,21 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _wire_list_unspent__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, wire_WalletInstance)>>('wire_list_unspent__static_method__Api');
   late final _wire_list_unspent__static_method__Api = _wire_list_unspent__static_method__ApiPtr.asFunction<void Function(int, wire_WalletInstance)>();
 
+  void wire_cache_address__static_method__Api(
+    int port_,
+    wire_WalletInstance wallet,
+    int cache_size,
+  ) {
+    return _wire_cache_address__static_method__Api(
+      port_,
+      wallet,
+      cache_size,
+    );
+  }
+
+  late final _wire_cache_address__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, wire_WalletInstance, ffi.Uint32)>>('wire_cache_address__static_method__Api');
+  late final _wire_cache_address__static_method__Api = _wire_cache_address__static_method__ApiPtr.asFunction<void Function(int, wire_WalletInstance, int)>();
+
   void wire_generate_seed_from_word_count__static_method__Api(
     int port_,
     int word_count,
@@ -2724,6 +2828,17 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _new_box_autoadd_user_pass_0Ptr = _lookup<ffi.NativeFunction<ffi.Pointer<wire_UserPass> Function()>>('new_box_autoadd_user_pass_0');
   late final _new_box_autoadd_user_pass_0 = _new_box_autoadd_user_pass_0Ptr.asFunction<ffi.Pointer<wire_UserPass> Function()>();
 
+  ffi.Pointer<wire_list_foreign_utxo> new_list_foreign_utxo_0(
+    int len,
+  ) {
+    return _new_list_foreign_utxo_0(
+      len,
+    );
+  }
+
+  late final _new_list_foreign_utxo_0Ptr = _lookup<ffi.NativeFunction<ffi.Pointer<wire_list_foreign_utxo> Function(ffi.Int32)>>('new_list_foreign_utxo_0');
+  late final _new_list_foreign_utxo_0 = _new_list_foreign_utxo_0Ptr.asFunction<ffi.Pointer<wire_list_foreign_utxo> Function(int)>();
+
   ffi.Pointer<wire_list_out_point> new_list_out_point_0(
     int len,
   ) {
@@ -2745,6 +2860,17 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _new_list_script_amount_0Ptr = _lookup<ffi.NativeFunction<ffi.Pointer<wire_list_script_amount> Function(ffi.Int32)>>('new_list_script_amount_0');
   late final _new_list_script_amount_0 = _new_list_script_amount_0Ptr.asFunction<ffi.Pointer<wire_list_script_amount> Function(int)>();
+
+  ffi.Pointer<wire_list_tx_bytes> new_list_tx_bytes_0(
+    int len,
+  ) {
+    return _new_list_tx_bytes_0(
+      len,
+    );
+  }
+
+  late final _new_list_tx_bytes_0Ptr = _lookup<ffi.NativeFunction<ffi.Pointer<wire_list_tx_bytes> Function(ffi.Int32)>>('new_list_tx_bytes_0');
+  late final _new_list_tx_bytes_0 = _new_list_tx_bytes_0Ptr.asFunction<ffi.Pointer<wire_list_tx_bytes> Function(int)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,
@@ -3172,6 +3298,19 @@ final class wire_list_script_amount extends ffi.Struct {
   external int len;
 }
 
+final class wire_TxBytes extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> tx_id;
+
+  external ffi.Pointer<wire_uint_8_list> bytes;
+}
+
+final class wire_list_tx_bytes extends ffi.Struct {
+  external ffi.Pointer<wire_TxBytes> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
 final class wire_OutPoint extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> txid;
 
@@ -3181,6 +3320,26 @@ final class wire_OutPoint extends ffi.Struct {
 
 final class wire_list_out_point extends ffi.Struct {
   external ffi.Pointer<wire_OutPoint> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+final class wire_TxOutForeign extends ffi.Struct {
+  @ffi.Uint64()
+  external int value;
+
+  external ffi.Pointer<wire_uint_8_list> script_pubkey;
+}
+
+final class wire_ForeignUtxo extends ffi.Struct {
+  external wire_OutPoint outpoint;
+
+  external wire_TxOutForeign txout;
+}
+
+final class wire_list_foreign_utxo extends ffi.Struct {
+  external ffi.Pointer<wire_ForeignUtxo> ptr;
 
   @ffi.Int32()
   external int len;

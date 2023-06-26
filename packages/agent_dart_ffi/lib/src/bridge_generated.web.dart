@@ -393,6 +393,19 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> with Flutte
   }
 
   @protected
+  List<dynamic> api2wire_foreign_utxo(ForeignUtxo raw) {
+    return [
+      api2wire_out_point(raw.outpoint),
+      api2wire_tx_out_foreign(raw.txout)
+    ];
+  }
+
+  @protected
+  List<dynamic> api2wire_list_foreign_utxo(List<ForeignUtxo> raw) {
+    return raw.map(api2wire_foreign_utxo).toList();
+  }
+
+  @protected
   List<dynamic> api2wire_list_out_point(List<OutPoint> raw) {
     return raw.map(api2wire_out_point).toList();
   }
@@ -400,6 +413,11 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> with Flutte
   @protected
   List<dynamic> api2wire_list_script_amount(List<ScriptAmount> raw) {
     return raw.map(api2wire_script_amount).toList();
+  }
+
+  @protected
+  List<dynamic> api2wire_list_tx_bytes(List<TxBytes> raw) {
+    return raw.map(api2wire_tx_bytes).toList();
   }
 
   @protected
@@ -692,6 +710,22 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> with Flutte
   }
 
   @protected
+  List<dynamic> api2wire_tx_bytes(TxBytes raw) {
+    return [
+      api2wire_String(raw.txId),
+      api2wire_uint_8_list(raw.bytes)
+    ];
+  }
+
+  @protected
+  List<dynamic> api2wire_tx_out_foreign(TxOutForeign raw) {
+    return [
+      api2wire_u64(raw.value),
+      api2wire_String(raw.scriptPubkey)
+    ];
+  }
+
+  @protected
   Object api2wire_u64(int raw) {
     return castNativeBigInt(raw);
   }
@@ -795,6 +829,8 @@ class AgentDartWasmModule implements WasmModule {
 
   external dynamic /* void */ wire_broadcast__static_method__Api(NativePortType port_, String tx, Object blockchain);
 
+  external dynamic /* void */ wire_get_tx__static_method__Api(NativePortType port_, String tx, Object blockchain);
+
   external dynamic /* void */ wire_create_transaction__static_method__Api(NativePortType port_, Uint8List tx);
 
   external dynamic /* void */ wire_tx_txid__static_method__Api(NativePortType port_, String tx);
@@ -837,7 +873,9 @@ class AgentDartWasmModule implements WasmModule {
 
   external dynamic /* void */ wire_get_inputs__static_method__Api(NativePortType port_, String psbt_str);
 
-  external dynamic /* void */ wire_tx_builder_finish__static_method__Api(NativePortType port_, Object wallet, List<dynamic> recipients, List<dynamic> utxos, List<dynamic> unspendable, int change_policy, bool manually_selected_only, double? fee_rate, Object? fee_absolute, bool drain_wallet, List<dynamic>? drain_to, List<dynamic>? rbf, Uint8List data, bool? shuffle_utxo);
+  external dynamic /* void */ wire_tx_builder_finish__static_method__Api(NativePortType port_, Object wallet, List<dynamic> recipients, List<dynamic> txs, List<dynamic> unspendable, List<dynamic> foreign_utxos, int change_policy, bool manually_selected_only, double? fee_rate, Object? fee_absolute, bool drain_wallet, List<dynamic>? drain_to, List<dynamic>? rbf, Uint8List data, bool? shuffle_utxo);
+
+  external dynamic /* void */ wire_tx_cal_fee_finish__static_method__Api(NativePortType port_, Object wallet, List<dynamic> recipients, List<dynamic> txs, List<dynamic> unspendable, List<dynamic> foreign_utxos, int change_policy, bool manually_selected_only, double? fee_rate, Object? fee_absolute, bool drain_wallet, List<dynamic>? drain_to, List<dynamic>? rbf, Uint8List data, bool? shuffle_utxo);
 
   external dynamic /* void */ wire_bump_fee_tx_builder_finish__static_method__Api(NativePortType port_, String txid, double fee_rate, String? allow_shrinking, Object wallet, bool enable_rbf, bool keep_change, int? n_sequence);
 
@@ -924,6 +962,8 @@ class AgentDartWasmModule implements WasmModule {
   external dynamic /* void */ wire_wallet_network__static_method__Api(NativePortType port_, Object wallet);
 
   external dynamic /* void */ wire_list_unspent__static_method__Api(NativePortType port_, Object wallet);
+
+  external dynamic /* void */ wire_cache_address__static_method__Api(NativePortType port_, Object wallet, int cache_size);
 
   external dynamic /* void */ wire_generate_seed_from_word_count__static_method__Api(NativePortType port_, int word_count);
 
@@ -1015,6 +1055,8 @@ class AgentDartWire extends FlutterRustBridgeWasmWireBase<AgentDartWasmModule> {
 
   void wire_broadcast__static_method__Api(NativePortType port_, String tx, Object blockchain) => wasmModule.wire_broadcast__static_method__Api(port_, tx, blockchain);
 
+  void wire_get_tx__static_method__Api(NativePortType port_, String tx, Object blockchain) => wasmModule.wire_get_tx__static_method__Api(port_, tx, blockchain);
+
   void wire_create_transaction__static_method__Api(NativePortType port_, Uint8List tx) => wasmModule.wire_create_transaction__static_method__Api(port_, tx);
 
   void wire_tx_txid__static_method__Api(NativePortType port_, String tx) => wasmModule.wire_tx_txid__static_method__Api(port_, tx);
@@ -1057,7 +1099,9 @@ class AgentDartWire extends FlutterRustBridgeWasmWireBase<AgentDartWasmModule> {
 
   void wire_get_inputs__static_method__Api(NativePortType port_, String psbt_str) => wasmModule.wire_get_inputs__static_method__Api(port_, psbt_str);
 
-  void wire_tx_builder_finish__static_method__Api(NativePortType port_, Object wallet, List<dynamic> recipients, List<dynamic> utxos, List<dynamic> unspendable, int change_policy, bool manually_selected_only, double? fee_rate, Object? fee_absolute, bool drain_wallet, List<dynamic>? drain_to, List<dynamic>? rbf, Uint8List data, bool? shuffle_utxo) => wasmModule.wire_tx_builder_finish__static_method__Api(port_, wallet, recipients, utxos, unspendable, change_policy, manually_selected_only, fee_rate, fee_absolute, drain_wallet, drain_to, rbf, data, shuffle_utxo);
+  void wire_tx_builder_finish__static_method__Api(NativePortType port_, Object wallet, List<dynamic> recipients, List<dynamic> txs, List<dynamic> unspendable, List<dynamic> foreign_utxos, int change_policy, bool manually_selected_only, double? fee_rate, Object? fee_absolute, bool drain_wallet, List<dynamic>? drain_to, List<dynamic>? rbf, Uint8List data, bool? shuffle_utxo) => wasmModule.wire_tx_builder_finish__static_method__Api(port_, wallet, recipients, txs, unspendable, foreign_utxos, change_policy, manually_selected_only, fee_rate, fee_absolute, drain_wallet, drain_to, rbf, data, shuffle_utxo);
+
+  void wire_tx_cal_fee_finish__static_method__Api(NativePortType port_, Object wallet, List<dynamic> recipients, List<dynamic> txs, List<dynamic> unspendable, List<dynamic> foreign_utxos, int change_policy, bool manually_selected_only, double? fee_rate, Object? fee_absolute, bool drain_wallet, List<dynamic>? drain_to, List<dynamic>? rbf, Uint8List data, bool? shuffle_utxo) => wasmModule.wire_tx_cal_fee_finish__static_method__Api(port_, wallet, recipients, txs, unspendable, foreign_utxos, change_policy, manually_selected_only, fee_rate, fee_absolute, drain_wallet, drain_to, rbf, data, shuffle_utxo);
 
   void wire_bump_fee_tx_builder_finish__static_method__Api(NativePortType port_, String txid, double fee_rate, String? allow_shrinking, Object wallet, bool enable_rbf, bool keep_change, int? n_sequence) => wasmModule.wire_bump_fee_tx_builder_finish__static_method__Api(port_, txid, fee_rate, allow_shrinking, wallet, enable_rbf, keep_change, n_sequence);
 
@@ -1144,6 +1188,8 @@ class AgentDartWire extends FlutterRustBridgeWasmWireBase<AgentDartWasmModule> {
   void wire_wallet_network__static_method__Api(NativePortType port_, Object wallet) => wasmModule.wire_wallet_network__static_method__Api(port_, wallet);
 
   void wire_list_unspent__static_method__Api(NativePortType port_, Object wallet) => wasmModule.wire_list_unspent__static_method__Api(port_, wallet);
+
+  void wire_cache_address__static_method__Api(NativePortType port_, Object wallet, int cache_size) => wasmModule.wire_cache_address__static_method__Api(port_, wallet, cache_size);
 
   void wire_generate_seed_from_word_count__static_method__Api(NativePortType port_, int word_count) => wasmModule.wire_generate_seed_from_word_count__static_method__Api(port_, word_count);
 

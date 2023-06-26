@@ -1,13 +1,13 @@
-use bdk::bitcoin::secp256k1::Secp256k1;
-use bdk::bitcoin::util::bip32::DerivationPath as BdkDerivationPath;
-use bdk::descriptor::DescriptorXKey;
-use bdk::keys::bip39::{Language, Mnemonic as BdkMnemonic, WordCount};
-use bdk::keys::{DerivableKey, ExtendedKey, GeneratableKey, GeneratedKey};
-use bdk::keys::{
+use bdk_lite::bitcoin::secp256k1::Secp256k1;
+use bdk_lite::bitcoin::util::bip32::DerivationPath as BdkDerivationPath;
+use bdk_lite::descriptor::DescriptorXKey;
+use bdk_lite::keys::bip39::{Language, Mnemonic as BdkMnemonic, WordCount};
+use bdk_lite::keys::{DerivableKey, ExtendedKey, GeneratableKey, GeneratedKey};
+use bdk_lite::keys::{
     DescriptorPublicKey as BdkDescriptorPublicKey, DescriptorSecretKey as BdkDescriptorSecretKey,
 };
-use bdk::miniscript::BareCtx;
-use bdk::Error as BdkError;
+use bdk_lite::miniscript::BareCtx;
+use bdk_lite::Error as BdkError;
 use bip32::{PrivateKey, PublicKey};
 use bitcoin::hashes::hex::ToHex;
 use bitcoin::util::bip32::Fingerprint;
@@ -69,7 +69,7 @@ pub(crate) struct DescriptorSecretKey {
 }
 impl DescriptorSecretKey {
     pub fn new(
-        network: bdk::bitcoin::Network,
+        network: bdk_lite::bitcoin::Network,
         mnemonic: Mnemonic,
         password: Option<String>,
     ) -> Result<Self, BdkError> {
@@ -79,7 +79,7 @@ impl DescriptorSecretKey {
             origin: None,
             xkey: xkey.into_xprv(network).unwrap(),
             derivation_path: BdkDerivationPath::master(),
-            wildcard: bdk::descriptor::Wildcard::Unhardened,
+            wildcard: bdk_lite::descriptor::Wildcard::Unhardened,
         });
         Ok(Self {
             descriptor_secret_key_mutex: Mutex::new(descriptor_secret_key),
@@ -87,7 +87,7 @@ impl DescriptorSecretKey {
     }
 
     pub fn new_derived(
-        network: bdk::bitcoin::Network,
+        network: bdk_lite::bitcoin::Network,
         mnemonic: Mnemonic,
         path: Arc<DerivationPath>,
         password: Option<String>,
@@ -106,7 +106,7 @@ impl DescriptorSecretKey {
                     .as_str(),
             )
             .unwrap(),
-            wildcard: bdk::descriptor::Wildcard::None,
+            wildcard: bdk_lite::descriptor::Wildcard::None,
         });
         Ok(Self {
             descriptor_secret_key_mutex: Mutex::new(descriptor_secret_key),
@@ -278,9 +278,9 @@ impl DescriptorPublicKey {
 #[cfg(test)]
 mod test {
     use crate::bdk::key::{DerivationPath, DescriptorPublicKey, DescriptorSecretKey, Mnemonic};
-    use bdk::bitcoin::hashes::hex::ToHex;
-    use bdk::bitcoin::Network;
-    use bdk::Error as BdkError;
+    use bdk_lite::bitcoin::hashes::hex::ToHex;
+    use bdk_lite::bitcoin::Network;
+    use bdk_lite::Error as BdkError;
     use std::sync::Arc;
 
     fn get_descriptor_secret_key() -> Result<DescriptorSecretKey, BdkError> {

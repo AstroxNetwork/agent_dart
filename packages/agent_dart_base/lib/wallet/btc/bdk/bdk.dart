@@ -144,6 +144,17 @@ class Blockchain {
       throw configException(e.message);
     }
   }
+
+  /// The function for broadcasting a transaction
+  Future<String> getTx(String txId) async {
+    try {
+      final txTring = await AgentDartFFI.impl
+          .getTxStaticMethodApi(blockchain: _blockchain!, tx: txId);
+      return txTring;
+    } on FfiException catch (e) {
+      throw configException(e.message);
+    }
+  }
 }
 
 /// The BumpFeeTxBuilder is used to bump the fee on a transaction that has been broadcast and has its RBF flag set to true.
@@ -1035,9 +1046,12 @@ class Transaction {
 class TxBuilder {
   final List<ScriptAmount> _recipients = [];
   final List<OutPoint> _utxos = [];
+  final List<ForeignUtxo> _foreign_utxos = [];
   final List<OutPoint> _unSpendable = [];
   final List<OutPointExt> _txInputs = [];
   final List<OutPointExt> _txOutputs = [];
+  final List<TxBytes> _txs = [];
+
   bool _manuallySelectedOnly = false;
   double? _feeRate;
   ChangeSpendPolicy _changeSpendPolicy = ChangeSpendPolicy.ChangeAllowed;
@@ -1077,8 +1091,46 @@ class TxBuilder {
   ///Add a utxo to the internal list of utxos that must be spent
   ///
   /// These have priority over the “unspendable” utxos, meaning that if a utxo is present both in the “utxos” and the “unspendable” list, it will be spent.
+  TxBuilder addTx(TxBytes tx) {
+    _txs.add(tx);
+    return this;
+  }
+
+  TxBuilder addTxs(
+    List<TxBytes> txs,
+  ) {
+    for (final e in txs) {
+      _txs.add(e);
+    }
+    return this;
+  }
+
+  ///Add a utxo to the internal list of utxos that must be spent
+  ///
+  /// These have priority over the “unspendable” utxos, meaning that if a utxo is present both in the “utxos” and the “unspendable” list, it will be spent.
   TxBuilder addUtxo(OutPoint outpoint) {
     _utxos.add(outpoint);
+    return this;
+  }
+
+  ///Add a utxo to the internal list of utxos that must be spent
+  ///
+  /// These have priority over the “unspendable” utxos, meaning that if a utxo is present both in the “utxos” and the “unspendable” list, it will be spent.
+  TxBuilder addForeignUtxo(OutPointExt ext) {
+    _foreign_utxos.add(
+      ForeignUtxo(
+          outpoint: OutPoint(txid: ext.txid, vout: ext.vout),
+          txout: TxOutForeign(value: ext.satoshis, scriptPubkey: ext.scriptPk)),
+    );
+    return this;
+  }
+
+  TxBuilder addForeignUtxos(
+    List<OutPointExt> outpoints,
+  ) {
+    for (final e in outpoints) {
+      addForeignUtxo(e);
+    }
     return this;
   }
 
@@ -1087,7 +1139,9 @@ class TxBuilder {
   ///If an error occurs while adding any of the UTXOs then none of them are added and the error is returned.
   ///
   /// These have priority over the “unspendable” utxos, meaning that if a utxo is present both in the “utxos” and the “unspendable” list, it will be spent.
-  TxBuilder addUtxos(List<OutPoint> outpoints) {
+  TxBuilder addUtxos(
+    List<OutPoint> outpoints,
+  ) {
     for (final e in outpoints) {
       _utxos.add(e);
     }
@@ -1206,6 +1260,30 @@ class TxBuilder {
     return res.psbt.feeAmount();
   }
 
+  Future<int> calFee(Wallet wallet) async {
+    try {
+      final res = await AgentDartFFI.impl.txCalFeeFinishStaticMethodApi(
+        wallet: wallet._wallet,
+        recipients: _recipients,
+        foreignUtxos: _foreign_utxos,
+        txs: _txs,
+        unspendable: _unSpendable,
+        manuallySelectedOnly: _manuallySelectedOnly,
+        drainWallet: _drainWallet,
+        rbf: _rbfValue,
+        drainTo: _drainTo,
+        feeAbsolute: _feeAbsolute,
+        feeRate: _feeRate,
+        data: _data,
+        changePolicy: _changeSpendPolicy,
+        shuffleUtxo: _shuffleUtxos,
+      );
+      return res;
+    } on FfiException catch (e) {
+      throw configException(e.message);
+    }
+  }
+
   int getTotalOutput() {
     var total = 0;
     for (final e in _txOutputs) {
@@ -1247,7 +1325,7 @@ class TxBuilder {
       final res = await AgentDartFFI.impl.txBuilderFinishStaticMethodApi(
         wallet: wallet._wallet,
         recipients: _recipients,
-        utxos: _utxos,
+        foreignUtxos: _foreign_utxos,
         unspendable: _unSpendable,
         manuallySelectedOnly: _manuallySelectedOnly,
         drainWallet: _drainWallet,
@@ -1258,10 +1336,13 @@ class TxBuilder {
         data: _data,
         changePolicy: _changeSpendPolicy,
         shuffleUtxo: _shuffleUtxos,
+        txs: _txs,
       );
 
+      final psbt = await PartiallySignedTransaction(psbtBase64: res.field0);
+
       return TxBuilderResult(
-        psbt: PartiallySignedTransaction(psbtBase64: res.field0),
+        psbt: psbt,
         txDetails: res.field1,
         builder: this,
       );
@@ -1347,6 +1428,7 @@ class TxBuilderResult {
     final outputs = await tx.output();
 
     final inputStrings = <String>[];
+    var totalInput = 0;
     for (var i = 0; i < txInputs.length; i += 1) {
       final input = txInputs[i];
       final found = inputs.firstWhereOrNull((e) {
@@ -1354,6 +1436,7 @@ class TxBuilderResult {
         return e.previousOutput.txid == input.txid;
       });
       if (found != null) {
+        totalInput += input.satoshis;
         inputStrings.add('''
   =>${i} ${input.satoshis} Sats
   lock-size: ${input.scriptPk.toU8a().length}
@@ -1387,7 +1470,7 @@ Summary
 Inputs
 
 ${inputStrings.join('\n')}
-total: ${getTotalInput()} Sats
+total: ${totalInput} Sats
 ----------------------------------------------------------------------------------------------
 Outputs
 
@@ -1548,6 +1631,17 @@ class Wallet {
         throw const BdkException.unExpected('Unable to sign transaction');
       }
       return PartiallySignedTransaction(psbtBase64: sbt);
+    } on FfiException catch (e) {
+      throw configException(e.message);
+    }
+  }
+
+  Future<bool> cacheAddresses({required int cacheSize}) async {
+    try {
+      // final utxos = await ordService!.getUtxo(_selectedSigner.address);
+      final ins = await AgentDartFFI.impl
+          .cacheAddressStaticMethodApi(wallet: _wallet, cacheSize: cacheSize);
+      return ins;
     } on FfiException catch (e) {
       throw configException(e.message);
     }

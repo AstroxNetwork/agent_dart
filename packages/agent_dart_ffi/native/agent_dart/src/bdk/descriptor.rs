@@ -1,21 +1,21 @@
 use crate::bdk::key::{DescriptorPublicKey, DescriptorSecretKey};
-use bdk::bitcoin::secp256k1::Secp256k1;
-use bdk::bitcoin::util::bip32::Fingerprint;
-use bdk::bitcoin::Network;
-// use bdk::descriptor::DescriptorXKey;
-use bdk::descriptor::{ExtendedDescriptor, IntoWalletDescriptor, KeyMap};
-use bdk::keys::{
+use bdk_lite::bitcoin::secp256k1::Secp256k1;
+use bdk_lite::bitcoin::util::bip32::Fingerprint;
+use bdk_lite::bitcoin::Network;
+// use bdk_lite::descriptor::DescriptorXKey;
+use bdk_lite::descriptor::{ExtendedDescriptor, IntoWalletDescriptor, KeyMap};
+use bdk_lite::keys::{
     DescriptorPublicKey as BdkDescriptorPublicKey, DescriptorSecretKey as BdkDescriptorSecretKey,
 };
 // use bdk::miniscript::DefiniteDescriptorKey;
 use crate::bdk::types::AddressInfo;
-use bdk::miniscript::Error;
-use bdk::template::{
+use bdk_lite::miniscript::Error;
+use bdk_lite::template::{
     Bip44, Bip44Public, Bip49, Bip49Public, Bip84, Bip84Public, Bip86, Bip86Public,
     DescriptorTemplate,
 };
-use bdk::Error as BdkError;
-use bdk::KeychainKind;
+use bdk_lite::Error as BdkError;
+use bdk_lite::KeychainKind;
 use std::ops::Deref;
 use std::str::FromStr;
 use std::sync::Arc;
@@ -260,7 +260,7 @@ impl BdkDescriptor {
         descriptor
             .at_derivation_index(index)
             .address(network)
-            .map(|address| bdk::wallet::AddressInfo {
+            .map(|address| bdk_lite::wallet::AddressInfo {
                 index,
                 address,
                 keychain: KeychainKind::External,
@@ -275,10 +275,10 @@ mod test {
     use crate::bdk::key::{DerivationPath, DescriptorSecretKey, Mnemonic};
     use crate::bdk::wallet::DatabaseConfig;
     use assert_matches::assert_matches;
-    use bdk::bitcoin::Network;
-    use bdk::descriptor::DescriptorError::Key;
-    use bdk::keys::KeyError::InvalidNetwork;
-    use bdk::KeychainKind;
+    use bdk_lite::bitcoin::Network;
+    use bdk_lite::descriptor::DescriptorError::Key;
+    use bdk_lite::keys::KeyError::InvalidNetwork;
+    use bdk_lite::KeychainKind;
     use flutter_rust_bridge::RustOpaque;
     use std::sync::Arc;
 
@@ -386,7 +386,7 @@ mod test {
         assert!(descriptor1.is_ok());
         assert_matches!(
             descriptor2.unwrap_err(),
-            bdk::Error::Descriptor(Key(InvalidNetwork))
+            bdk_lite::Error::Descriptor(Key(InvalidNetwork))
         )
     }
     #[test]
@@ -409,7 +409,7 @@ mod test {
         assert!(wallet1.is_ok());
         assert_matches!(
             wallet2.unwrap_err(),
-            bdk::Error::Descriptor(Key(InvalidNetwork))
+            bdk_lite::Error::Descriptor(Key(InvalidNetwork))
         );
     }
 }
