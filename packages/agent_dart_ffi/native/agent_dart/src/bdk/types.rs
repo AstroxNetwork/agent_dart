@@ -1,15 +1,19 @@
 use crate::bdk::psbt::Transaction;
-use bdk::bitcoin::blockdata::transaction::TxIn as BdkTxIn;
-use bdk::bitcoin::blockdata::transaction::TxOut as BdkTxOut;
+use bdk_lite::bitcoin::blockdata::transaction::TxIn as BdkTxIn;
+use bdk_lite::bitcoin::blockdata::transaction::TxOut as BdkTxOut;
+use bdk_lite::wallet::tx_builder::ForeignUtxo as BdkForeignUtxo;
+use bdk_lite::wallet::tx_builder::TxOutForeign as BdkTxOutForeign;
 use std::borrow::Borrow;
 
-use bdk::bitcoin::hashes::hex::ToHex;
-use bdk::bitcoin::locktime::Error;
-use bdk::bitcoin::util::address::{Payload as BdkPayload, WitnessVersion as BdkWitnessVersion};
-use bdk::bitcoin::{Address as BdkAddress, OutPoint as BdkOutPoint, Txid};
-use bdk::blockchain::Progress as BdkProgress;
+use bdk_lite::bitcoin::hashes::hex::ToHex;
+use bdk_lite::bitcoin::locktime::Error;
+use bdk_lite::bitcoin::util::address::{
+    Payload as BdkPayload, WitnessVersion as BdkWitnessVersion,
+};
+use bdk_lite::bitcoin::{Address as BdkAddress, OutPoint as BdkOutPoint, Txid};
+use bdk_lite::blockchain::Progress as BdkProgress;
 
-use bdk::{Balance as BdkBalance, Error as BdkError};
+use bdk_lite::{Balance as BdkBalance, Error as BdkError};
 use bitcoin::hashes::hex::FromHex;
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -76,6 +80,64 @@ impl From<BdkOutPoint> for OutPoint {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct ForeignUtxo {
+    /// Reference to a transaction output
+    pub outpoint: OutPoint,
+    ///Transaction output
+    pub txout: TxOutForeign,
+}
+
+impl From<&ForeignUtxo> for BdkForeignUtxo {
+    fn from(x: &ForeignUtxo) -> BdkForeignUtxo {
+        BdkForeignUtxo {
+            outpoint: BdkOutPoint {
+                txid: Txid::from_str(x.outpoint.txid.borrow()).unwrap(),
+                vout: x.outpoint.vout.clone(),
+            },
+            txout: BdkTxOutForeign {
+                value: x.txout.value.clone(),
+                script_pubkey: x.txout.script_pubkey.clone(),
+            },
+        }
+    }
+}
+
+impl From<BdkForeignUtxo> for ForeignUtxo {
+    fn from(x: BdkForeignUtxo) -> ForeignUtxo {
+        ForeignUtxo {
+            outpoint: OutPoint::from(x.outpoint),
+            txout: TxOutForeign {
+                value: x.txout.value,
+                script_pubkey: x.txout.script_pubkey,
+            },
+        }
+    }
+}
+
+/// TxBytes with tx_id and bytes
+#[derive(Debug, Clone)]
+pub struct TxBytes {
+    /// The value of the output, in satoshis.
+    pub tx_id: String,
+    /// The script which must be satisfied for the output to be spent.
+    pub bytes: Vec<u8>,
+}
+
+impl TxBytes {
+    pub fn to_transaction(&self) -> Result<Transaction, bdk_lite::Error> {
+        Transaction::new(self.bytes.clone())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct TxOutForeign {
+    /// The value of the output, in satoshis.
+    pub value: u64,
+    /// The script which must be satisfied for the output to be spent.
+    pub script_pubkey: String,
+}
+
 /// Local Wallet's Balance
 #[derive(Deserialize)]
 pub struct Balance {
@@ -127,13 +189,13 @@ pub enum AddressIndex {
     /// larger stopGap should be used to monitor for all possibly used addresses.
     Reset { index: u32 },
 }
-impl From<AddressIndex> for bdk::wallet::AddressIndex {
-    fn from(x: AddressIndex) -> bdk::wallet::AddressIndex {
+impl From<AddressIndex> for bdk_lite::wallet::AddressIndex {
+    fn from(x: AddressIndex) -> bdk_lite::wallet::AddressIndex {
         match x {
-            AddressIndex::New => bdk::wallet::AddressIndex::New,
-            AddressIndex::LastUnused => bdk::wallet::AddressIndex::LastUnused,
-            AddressIndex::Peek { index } => bdk::wallet::AddressIndex::Peek(index),
-            AddressIndex::Reset { index } => bdk::wallet::AddressIndex::Reset(index),
+            AddressIndex::New => bdk_lite::wallet::AddressIndex::New,
+            AddressIndex::LastUnused => bdk_lite::wallet::AddressIndex::LastUnused,
+            AddressIndex::Peek { index } => bdk_lite::wallet::AddressIndex::Peek(index),
+            AddressIndex::Reset { index } => bdk_lite::wallet::AddressIndex::Reset(index),
         }
     }
 }
@@ -145,8 +207,8 @@ pub struct AddressInfo {
     /// Address
     pub address: String,
 }
-impl From<bdk::wallet::AddressInfo> for AddressInfo {
-    fn from(x: bdk::wallet::AddressInfo) -> AddressInfo {
+impl From<bdk_lite::wallet::AddressInfo> for AddressInfo {
+    fn from(x: bdk_lite::wallet::AddressInfo) -> AddressInfo {
         AddressInfo {
             index: x.index,
             address: x.address.to_string(),
@@ -176,8 +238,8 @@ pub struct TransactionDetails {
     pub confirmation_time: Option<BlockTime>,
 }
 /// A wallet transaction
-impl From<&bdk::TransactionDetails> for TransactionDetails {
-    fn from(x: &bdk::TransactionDetails) -> TransactionDetails {
+impl From<&bdk_lite::TransactionDetails> for TransactionDetails {
+    fn from(x: &bdk_lite::TransactionDetails) -> TransactionDetails {
         TransactionDetails {
             serialized_tx: x
                 .clone()
@@ -192,7 +254,7 @@ impl From<&bdk::TransactionDetails> for TransactionDetails {
     }
 }
 
-fn set_block_time(time: Option<bdk::BlockTime>) -> Option<BlockTime> {
+fn set_block_time(time: Option<bdk_lite::BlockTime>) -> Option<BlockTime> {
     if let Some(time) = time {
         Some(time.into())
     } else {
@@ -209,8 +271,8 @@ pub struct BlockTime {
     pub timestamp: u64,
 }
 
-impl From<bdk::BlockTime> for BlockTime {
-    fn from(x: bdk::BlockTime) -> Self {
+impl From<bdk_lite::BlockTime> for BlockTime {
+    fn from(x: bdk_lite::BlockTime) -> Self {
         BlockTime {
             height: x.height,
             timestamp: x.timestamp,
@@ -241,19 +303,19 @@ pub enum KeychainKind {
     ///Internal, usually used for change outputs
     Internal,
 }
-impl From<bdk::KeychainKind> for KeychainKind {
-    fn from(e: bdk::KeychainKind) -> Self {
+impl From<bdk_lite::KeychainKind> for KeychainKind {
+    fn from(e: bdk_lite::KeychainKind) -> Self {
         match e {
-            bdk::KeychainKind::External => KeychainKind::External,
-            bdk::KeychainKind::Internal => KeychainKind::Internal,
+            bdk_lite::KeychainKind::External => KeychainKind::External,
+            bdk_lite::KeychainKind::Internal => KeychainKind::Internal,
         }
     }
 }
-impl From<KeychainKind> for bdk::KeychainKind {
+impl From<KeychainKind> for bdk_lite::KeychainKind {
     fn from(kind: KeychainKind) -> Self {
         match kind {
-            KeychainKind::External => bdk::KeychainKind::External,
-            KeychainKind::Internal => bdk::KeychainKind::Internal,
+            KeychainKind::External => bdk_lite::KeychainKind::External,
+            KeychainKind::Internal => bdk_lite::KeychainKind::Internal,
         }
     }
 }
@@ -275,23 +337,23 @@ impl Default for Network {
         Network::Testnet
     }
 }
-impl From<Network> for bdk::bitcoin::Network {
+impl From<Network> for bdk_lite::bitcoin::Network {
     fn from(network: Network) -> Self {
         match network {
-            Network::Signet => bdk::bitcoin::Network::Signet,
-            Network::Testnet => bdk::bitcoin::Network::Testnet,
-            Network::Regtest => bdk::bitcoin::Network::Regtest,
-            Network::Bitcoin => bdk::bitcoin::Network::Bitcoin,
+            Network::Signet => bdk_lite::bitcoin::Network::Signet,
+            Network::Testnet => bdk_lite::bitcoin::Network::Testnet,
+            Network::Regtest => bdk_lite::bitcoin::Network::Regtest,
+            Network::Bitcoin => bdk_lite::bitcoin::Network::Bitcoin,
         }
     }
 }
-impl From<bdk::bitcoin::Network> for Network {
-    fn from(network: bdk::bitcoin::Network) -> Self {
+impl From<bdk_lite::bitcoin::Network> for Network {
+    fn from(network: bdk_lite::bitcoin::Network) -> Self {
         match network {
-            bdk::bitcoin::Network::Signet => Network::Signet,
-            bdk::bitcoin::Network::Testnet => Network::Testnet,
-            bdk::bitcoin::Network::Regtest => Network::Regtest,
-            bdk::bitcoin::Network::Bitcoin => Network::Bitcoin,
+            bdk_lite::bitcoin::Network::Signet => Network::Signet,
+            bdk_lite::bitcoin::Network::Testnet => Network::Testnet,
+            bdk_lite::bitcoin::Network::Regtest => Network::Regtest,
+            bdk_lite::bitcoin::Network::Bitcoin => Network::Bitcoin,
         }
     }
 }
@@ -305,12 +367,12 @@ pub enum WordCount {
     ///24 words mnemonic (256 bits entropy)
     Words24,
 }
-impl From<WordCount> for bdk::keys::bip39::WordCount {
+impl From<WordCount> for bdk_lite::keys::bip39::WordCount {
     fn from(word_count: WordCount) -> Self {
         match word_count {
-            WordCount::Words12 => bdk::keys::bip39::WordCount::Words12,
-            WordCount::Words18 => bdk::keys::bip39::WordCount::Words18,
-            WordCount::Words24 => bdk::keys::bip39::WordCount::Words24,
+            WordCount::Words12 => bdk_lite::keys::bip39::WordCount::Words12,
+            WordCount::Words18 => bdk_lite::keys::bip39::WordCount::Words18,
+            WordCount::Words24 => bdk_lite::keys::bip39::WordCount::Words24,
         }
     }
 }
@@ -348,7 +410,7 @@ impl Address {
         self.address.network.into()
     }
 
-    pub fn script_pubkey(&self) -> bdk::bitcoin::Script {
+    pub fn script_pubkey(&self) -> bdk_lite::bitcoin::Script {
         self.address.script_pubkey()
     }
 }
@@ -359,7 +421,7 @@ pub struct Script {
 }
 impl Script {
     pub fn new(raw_output_script: Vec<u8>) -> Result<Script, Error> {
-        let script = bdk::bitcoin::Script::from_hex(&hex::encode(raw_output_script))
+        let script = bdk_lite::bitcoin::Script::from_hex(&hex::encode(raw_output_script))
             .expect("Invalid script");
         Ok(Script {
             internal: script.into_bytes(),
@@ -367,13 +429,13 @@ impl Script {
     }
 }
 
-impl From<Script> for bdk::bitcoin::Script {
+impl From<Script> for bdk_lite::bitcoin::Script {
     fn from(value: Script) -> Self {
-        bdk::bitcoin::Script::from_hex(&hex::encode(value.internal)).expect("Invalid script")
+        bdk_lite::bitcoin::Script::from_hex(&hex::encode(value.internal)).expect("Invalid script")
     }
 }
-impl From<bdk::bitcoin::Script> for Script {
-    fn from(value: bdk::bitcoin::Script) -> Self {
+impl From<bdk_lite::bitcoin::Script> for Script {
+    fn from(value: bdk_lite::bitcoin::Script) -> Self {
         Script {
             internal: value.into_bytes(),
         }
@@ -484,15 +546,17 @@ pub enum ChangeSpendPolicy {
     OnlyChange,
     ChangeForbidden,
 }
-impl From<ChangeSpendPolicy> for bdk::wallet::tx_builder::ChangeSpendPolicy {
+impl From<ChangeSpendPolicy> for bdk_lite::wallet::tx_builder::ChangeSpendPolicy {
     fn from(value: ChangeSpendPolicy) -> Self {
         match value {
             ChangeSpendPolicy::ChangeAllowed => {
-                bdk::wallet::tx_builder::ChangeSpendPolicy::ChangeAllowed
+                bdk_lite::wallet::tx_builder::ChangeSpendPolicy::ChangeAllowed
             }
-            ChangeSpendPolicy::OnlyChange => bdk::wallet::tx_builder::ChangeSpendPolicy::OnlyChange,
+            ChangeSpendPolicy::OnlyChange => {
+                bdk_lite::wallet::tx_builder::ChangeSpendPolicy::OnlyChange
+            }
             ChangeSpendPolicy::ChangeForbidden => {
-                bdk::wallet::tx_builder::ChangeSpendPolicy::ChangeForbidden
+                bdk_lite::wallet::tx_builder::ChangeSpendPolicy::ChangeForbidden
             }
         }
     }

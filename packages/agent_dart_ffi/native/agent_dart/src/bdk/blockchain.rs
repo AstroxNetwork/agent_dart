@@ -1,13 +1,15 @@
 use crate::bdk::psbt::Transaction;
 use crate::bdk::types::Network;
-use bdk::blockchain::esplora::EsploraBlockchainConfig;
-use bdk::blockchain::rpc::Auth as BdkAuth;
-use bdk::blockchain::rpc::RpcConfig as BdkRpcConfig;
-use bdk::blockchain::{
+use bdk_lite::blockchain::esplora::EsploraBlockchainConfig;
+use bdk_lite::blockchain::rpc::Auth as BdkAuth;
+use bdk_lite::blockchain::rpc::RpcConfig as BdkRpcConfig;
+use bdk_lite::blockchain::{
     AnyBlockchain, AnyBlockchainConfig, Blockchain, ConfigurableBlockchain,
-    ElectrumBlockchainConfig, GetBlockHash, GetHeight,
+    ElectrumBlockchainConfig, GetBlockHash, GetHeight, GetTx,
 };
-use bdk::{Error as BdkError, FeeRate};
+use bdk_lite::{Error as BdkError, FeeRate};
+use bitcoin::hashes::hex::FromHex;
+use bitcoin::Txid;
 use std::convert::TryFrom;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, MutexGuard};
@@ -40,16 +42,16 @@ impl BlockchainInstance {
             }
             BlockchainConfig::Rpc { config } => {
                 let rpc_auth = if let Some(file) = config.auth_cookie {
-                    bdk::blockchain::rpc::Auth::Cookie {
+                    bdk_lite::blockchain::rpc::Auth::Cookie {
                         file: PathBuf::from(file),
                     }
                 } else if let Some(user_pass) = config.auth_user_pass {
-                    bdk::blockchain::rpc::Auth::UserPass {
+                    bdk_lite::blockchain::rpc::Auth::UserPass {
                         username: user_pass.username,
                         password: user_pass.password,
                     }
                 } else {
-                    bdk::blockchain::rpc::Auth::None
+                    bdk_lite::blockchain::rpc::Auth::None
                 };
                 AnyBlockchainConfig::Rpc(BdkRpcConfig {
                     url: config.url,
@@ -82,7 +84,7 @@ impl BlockchainInstance {
         self.get_blockchain().get_height()
     }
     pub fn estimate_fee(&self, target: u64) -> Result<Arc<FeeRate>, BdkError> {
-        let result: Result<FeeRate, bdk::Error> =
+        let result: Result<FeeRate, bdk_lite::Error> =
             self.get_blockchain().estimate_fee(target as usize);
         result.map(Arc::new)
     }
@@ -90,6 +92,15 @@ impl BlockchainInstance {
         self.get_blockchain()
             .get_block_hash(u64::from(height))
             .map(|hash| hash.to_string())
+    }
+
+    pub fn get_tx(&self, tx_id: String) -> Result<Transaction, BdkError> {
+        self.get_blockchain()
+            .get_tx(&Txid::from_hex(&tx_id).unwrap())
+            .map(|tx| {
+                tx.map(|f| Transaction::from(f))
+                    .expect("Transaction Not found")
+            })
     }
 }
 pub enum Auth {
@@ -136,9 +147,9 @@ pub struct RpcSyncParams {
     /// RPC poll rate (in seconds) to get state updates.
     pub poll_rate_sec: u64,
 }
-impl From<RpcSyncParams> for bdk::blockchain::rpc::RpcSyncParams {
+impl From<RpcSyncParams> for bdk_lite::blockchain::rpc::RpcSyncParams {
     fn from(params: RpcSyncParams) -> Self {
-        bdk::blockchain::rpc::RpcSyncParams {
+        bdk_lite::blockchain::rpc::RpcSyncParams {
             start_script_count: params.start_script_count as usize,
             start_time: params.start_time,
             force_start_time: params.force_start_time,

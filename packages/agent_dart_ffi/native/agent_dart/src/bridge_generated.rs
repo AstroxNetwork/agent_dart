@@ -31,6 +31,7 @@ use crate::bdk::types::Balance;
 use crate::bdk::types::BdkTxBuilderResult;
 use crate::bdk::types::BlockTime;
 use crate::bdk::types::ChangeSpendPolicy;
+use crate::bdk::types::ForeignUtxo;
 use crate::bdk::types::KeychainKind;
 use crate::bdk::types::Network;
 use crate::bdk::types::OutPoint;
@@ -39,8 +40,10 @@ use crate::bdk::types::RbfValue;
 use crate::bdk::types::Script;
 use crate::bdk::types::ScriptAmount;
 use crate::bdk::types::TransactionDetails;
+use crate::bdk::types::TxBytes;
 use crate::bdk::types::TxIn;
 use crate::bdk::types::TxOut;
+use crate::bdk::types::TxOutForeign;
 use crate::bdk::types::WitnessVersion;
 use crate::bdk::types::WordCount;
 use crate::bdk::wallet::DatabaseConfig;
@@ -586,6 +589,24 @@ fn wire_broadcast__static_method__Api_impl(
         },
     )
 }
+fn wire_get_tx__static_method__Api_impl(
+    port_: MessagePort,
+    tx: impl Wire2Api<String> + UnwindSafe,
+    blockchain: impl Wire2Api<RustOpaque<BlockchainInstance>> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_tx__static_method__Api",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_tx = tx.wire2api();
+            let api_blockchain = blockchain.wire2api();
+            move |task_callback| Api::get_tx(api_tx, api_blockchain)
+        },
+    )
+}
 fn wire_create_transaction__static_method__Api_impl(
     port_: MessagePort,
     tx: impl Wire2Api<Vec<u8>> + UnwindSafe,
@@ -919,8 +940,9 @@ fn wire_tx_builder_finish__static_method__Api_impl(
     port_: MessagePort,
     wallet: impl Wire2Api<RustOpaque<WalletInstance>> + UnwindSafe,
     recipients: impl Wire2Api<Vec<ScriptAmount>> + UnwindSafe,
-    utxos: impl Wire2Api<Vec<OutPoint>> + UnwindSafe,
+    txs: impl Wire2Api<Vec<TxBytes>> + UnwindSafe,
     unspendable: impl Wire2Api<Vec<OutPoint>> + UnwindSafe,
+    foreign_utxos: impl Wire2Api<Vec<ForeignUtxo>> + UnwindSafe,
     change_policy: impl Wire2Api<ChangeSpendPolicy> + UnwindSafe,
     manually_selected_only: impl Wire2Api<bool> + UnwindSafe,
     fee_rate: impl Wire2Api<Option<f32>> + UnwindSafe,
@@ -940,8 +962,9 @@ fn wire_tx_builder_finish__static_method__Api_impl(
         move || {
             let api_wallet = wallet.wire2api();
             let api_recipients = recipients.wire2api();
-            let api_utxos = utxos.wire2api();
+            let api_txs = txs.wire2api();
             let api_unspendable = unspendable.wire2api();
+            let api_foreign_utxos = foreign_utxos.wire2api();
             let api_change_policy = change_policy.wire2api();
             let api_manually_selected_only = manually_selected_only.wire2api();
             let api_fee_rate = fee_rate.wire2api();
@@ -955,8 +978,68 @@ fn wire_tx_builder_finish__static_method__Api_impl(
                 Api::tx_builder_finish(
                     api_wallet,
                     api_recipients,
-                    api_utxos,
+                    api_txs,
                     api_unspendable,
+                    api_foreign_utxos,
+                    api_change_policy,
+                    api_manually_selected_only,
+                    api_fee_rate,
+                    api_fee_absolute,
+                    api_drain_wallet,
+                    api_drain_to,
+                    api_rbf,
+                    api_data,
+                    api_shuffle_utxo,
+                )
+            }
+        },
+    )
+}
+fn wire_tx_cal_fee_finish__static_method__Api_impl(
+    port_: MessagePort,
+    wallet: impl Wire2Api<RustOpaque<WalletInstance>> + UnwindSafe,
+    recipients: impl Wire2Api<Vec<ScriptAmount>> + UnwindSafe,
+    txs: impl Wire2Api<Vec<TxBytes>> + UnwindSafe,
+    unspendable: impl Wire2Api<Vec<OutPoint>> + UnwindSafe,
+    foreign_utxos: impl Wire2Api<Vec<ForeignUtxo>> + UnwindSafe,
+    change_policy: impl Wire2Api<ChangeSpendPolicy> + UnwindSafe,
+    manually_selected_only: impl Wire2Api<bool> + UnwindSafe,
+    fee_rate: impl Wire2Api<Option<f32>> + UnwindSafe,
+    fee_absolute: impl Wire2Api<Option<u64>> + UnwindSafe,
+    drain_wallet: impl Wire2Api<bool> + UnwindSafe,
+    drain_to: impl Wire2Api<Option<Script>> + UnwindSafe,
+    rbf: impl Wire2Api<Option<RbfValue>> + UnwindSafe,
+    data: impl Wire2Api<Vec<u8>> + UnwindSafe,
+    shuffle_utxo: impl Wire2Api<Option<bool>> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "tx_cal_fee_finish__static_method__Api",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_wallet = wallet.wire2api();
+            let api_recipients = recipients.wire2api();
+            let api_txs = txs.wire2api();
+            let api_unspendable = unspendable.wire2api();
+            let api_foreign_utxos = foreign_utxos.wire2api();
+            let api_change_policy = change_policy.wire2api();
+            let api_manually_selected_only = manually_selected_only.wire2api();
+            let api_fee_rate = fee_rate.wire2api();
+            let api_fee_absolute = fee_absolute.wire2api();
+            let api_drain_wallet = drain_wallet.wire2api();
+            let api_drain_to = drain_to.wire2api();
+            let api_rbf = rbf.wire2api();
+            let api_data = data.wire2api();
+            let api_shuffle_utxo = shuffle_utxo.wire2api();
+            move |task_callback| {
+                Api::tx_cal_fee_finish(
+                    api_wallet,
+                    api_recipients,
+                    api_txs,
+                    api_unspendable,
+                    api_foreign_utxos,
                     api_change_policy,
                     api_manually_selected_only,
                     api_fee_rate,
@@ -1835,6 +1918,24 @@ fn wire_list_unspent__static_method__Api_impl(
         },
     )
 }
+fn wire_cache_address__static_method__Api_impl(
+    port_: MessagePort,
+    wallet: impl Wire2Api<RustOpaque<WalletInstance>> + UnwindSafe,
+    cache_size: impl Wire2Api<u32> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "cache_address__static_method__Api",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_wallet = wallet.wire2api();
+            let api_cache_size = cache_size.wire2api();
+            move |task_callback| Api::cache_address(api_wallet, api_cache_size)
+        },
+    )
+}
 fn wire_generate_seed_from_word_count__static_method__Api_impl(
     port_: MessagePort,
     word_count: impl Wire2Api<WordCount> + UnwindSafe,
@@ -1928,6 +2029,7 @@ impl Wire2Api<f32> for f32 {
         self
     }
 }
+
 impl Wire2Api<i32> for i32 {
     fn wire2api(self) -> i32 {
         self
@@ -2383,6 +2485,11 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire_get_tx__static_method__Api(port_: MessagePort, tx: String, blockchain: JsValue) {
+        wire_get_tx__static_method__Api_impl(port_, tx, blockchain)
+    }
+
+    #[wasm_bindgen]
     pub fn wire_create_transaction__static_method__Api(port_: MessagePort, tx: Box<[u8]>) {
         wire_create_transaction__static_method__Api_impl(port_, tx)
     }
@@ -2496,8 +2603,9 @@ mod web {
         port_: MessagePort,
         wallet: JsValue,
         recipients: JsValue,
-        utxos: JsValue,
+        txs: JsValue,
         unspendable: JsValue,
+        foreign_utxos: JsValue,
         change_policy: i32,
         manually_selected_only: bool,
         fee_rate: JsValue,
@@ -2512,8 +2620,46 @@ mod web {
             port_,
             wallet,
             recipients,
-            utxos,
+            txs,
             unspendable,
+            foreign_utxos,
+            change_policy,
+            manually_selected_only,
+            fee_rate,
+            fee_absolute,
+            drain_wallet,
+            drain_to,
+            rbf,
+            data,
+            shuffle_utxo,
+        )
+    }
+
+    #[wasm_bindgen]
+    pub fn wire_tx_cal_fee_finish__static_method__Api(
+        port_: MessagePort,
+        wallet: JsValue,
+        recipients: JsValue,
+        txs: JsValue,
+        unspendable: JsValue,
+        foreign_utxos: JsValue,
+        change_policy: i32,
+        manually_selected_only: bool,
+        fee_rate: JsValue,
+        fee_absolute: JsValue,
+        drain_wallet: bool,
+        drain_to: JsValue,
+        rbf: JsValue,
+        data: Box<[u8]>,
+        shuffle_utxo: JsValue,
+    ) {
+        wire_tx_cal_fee_finish__static_method__Api_impl(
+            port_,
+            wallet,
+            recipients,
+            txs,
+            unspendable,
+            foreign_utxos,
             change_policy,
             manually_selected_only,
             fee_rate,
@@ -2936,6 +3082,15 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire_cache_address__static_method__Api(
+        port_: MessagePort,
+        wallet: JsValue,
+        cache_size: u32,
+    ) {
+        wire_cache_address__static_method__Api_impl(port_, wallet, cache_size)
+    }
+
+    #[wasm_bindgen]
     pub fn wire_generate_seed_from_word_count__static_method__Api(
         port_: MessagePort,
         word_count: i32,
@@ -3196,6 +3351,31 @@ mod web {
         }
     }
 
+    impl Wire2Api<ForeignUtxo> for JsValue {
+        fn wire2api(self) -> ForeignUtxo {
+            let self_ = self.dyn_into::<JsArray>().unwrap();
+            assert_eq!(
+                self_.length(),
+                2,
+                "Expected 2 elements, got {}",
+                self_.length()
+            );
+            ForeignUtxo {
+                outpoint: self_.get(0).wire2api(),
+                txout: self_.get(1).wire2api(),
+            }
+        }
+    }
+
+    impl Wire2Api<Vec<ForeignUtxo>> for JsValue {
+        fn wire2api(self) -> Vec<ForeignUtxo> {
+            self.dyn_into::<JsArray>()
+                .unwrap()
+                .iter()
+                .map(Wire2Api::wire2api)
+                .collect()
+        }
+    }
     impl Wire2Api<Vec<OutPoint>> for JsValue {
         fn wire2api(self) -> Vec<OutPoint> {
             self.dyn_into::<JsArray>()
@@ -3207,6 +3387,15 @@ mod web {
     }
     impl Wire2Api<Vec<ScriptAmount>> for JsValue {
         fn wire2api(self) -> Vec<ScriptAmount> {
+            self.dyn_into::<JsArray>()
+                .unwrap()
+                .iter()
+                .map(Wire2Api::wire2api)
+                .collect()
+        }
+    }
+    impl Wire2Api<Vec<TxBytes>> for JsValue {
+        fn wire2api(self) -> Vec<TxBytes> {
             self.dyn_into::<JsArray>()
                 .unwrap()
                 .iter()
@@ -3642,6 +3831,36 @@ mod web {
             }
         }
     }
+    impl Wire2Api<TxBytes> for JsValue {
+        fn wire2api(self) -> TxBytes {
+            let self_ = self.dyn_into::<JsArray>().unwrap();
+            assert_eq!(
+                self_.length(),
+                2,
+                "Expected 2 elements, got {}",
+                self_.length()
+            );
+            TxBytes {
+                tx_id: self_.get(0).wire2api(),
+                bytes: self_.get(1).wire2api(),
+            }
+        }
+    }
+    impl Wire2Api<TxOutForeign> for JsValue {
+        fn wire2api(self) -> TxOutForeign {
+            let self_ = self.dyn_into::<JsArray>().unwrap();
+            assert_eq!(
+                self_.length(),
+                2,
+                "Expected 2 elements, got {}",
+                self_.length()
+            );
+            TxOutForeign {
+                value: self_.get(0).wire2api(),
+                script_pubkey: self_.get(1).wire2api(),
+            }
+        }
+    }
 
     impl Wire2Api<Vec<u8>> for Box<[u8]> {
         fn wire2api(self) -> Vec<u8> {
@@ -3990,6 +4209,15 @@ mod io {
     }
 
     #[no_mangle]
+    pub extern "C" fn wire_get_tx__static_method__Api(
+        port_: i64,
+        tx: *mut wire_uint_8_list,
+        blockchain: wire_BlockchainInstance,
+    ) {
+        wire_get_tx__static_method__Api_impl(port_, tx, blockchain)
+    }
+
+    #[no_mangle]
     pub extern "C" fn wire_create_transaction__static_method__Api(
         port_: i64,
         tx: *mut wire_uint_8_list,
@@ -4133,8 +4361,9 @@ mod io {
         port_: i64,
         wallet: wire_WalletInstance,
         recipients: *mut wire_list_script_amount,
-        utxos: *mut wire_list_out_point,
+        txs: *mut wire_list_tx_bytes,
         unspendable: *mut wire_list_out_point,
+        foreign_utxos: *mut wire_list_foreign_utxo,
         change_policy: i32,
         manually_selected_only: bool,
         fee_rate: *mut f32,
@@ -4149,8 +4378,46 @@ mod io {
             port_,
             wallet,
             recipients,
-            utxos,
+            txs,
             unspendable,
+            foreign_utxos,
+            change_policy,
+            manually_selected_only,
+            fee_rate,
+            fee_absolute,
+            drain_wallet,
+            drain_to,
+            rbf,
+            data,
+            shuffle_utxo,
+        )
+    }
+
+    #[no_mangle]
+    pub extern "C" fn wire_tx_cal_fee_finish__static_method__Api(
+        port_: i64,
+        wallet: wire_WalletInstance,
+        recipients: *mut wire_list_script_amount,
+        txs: *mut wire_list_tx_bytes,
+        unspendable: *mut wire_list_out_point,
+        foreign_utxos: *mut wire_list_foreign_utxo,
+        change_policy: i32,
+        manually_selected_only: bool,
+        fee_rate: *mut f32,
+        fee_absolute: *mut u64,
+        drain_wallet: bool,
+        drain_to: *mut wire_Script,
+        rbf: *mut wire_RbfValue,
+        data: *mut wire_uint_8_list,
+        shuffle_utxo: *mut bool,
+    ) {
+        wire_tx_cal_fee_finish__static_method__Api_impl(
+            port_,
+            wallet,
+            recipients,
+            txs,
+            unspendable,
+            foreign_utxos,
             change_policy,
             manually_selected_only,
             fee_rate,
@@ -4615,6 +4882,15 @@ mod io {
     }
 
     #[no_mangle]
+    pub extern "C" fn wire_cache_address__static_method__Api(
+        port_: i64,
+        wallet: wire_WalletInstance,
+        cache_size: u32,
+    ) {
+        wire_cache_address__static_method__Api_impl(port_, wallet, cache_size)
+    }
+
+    #[no_mangle]
     pub extern "C" fn wire_generate_seed_from_word_count__static_method__Api(
         port_: i64,
         word_count: i32,
@@ -4868,6 +5144,15 @@ mod io {
     }
 
     #[no_mangle]
+    pub extern "C" fn new_list_foreign_utxo_0(len: i32) -> *mut wire_list_foreign_utxo {
+        let wrap = wire_list_foreign_utxo {
+            ptr: support::new_leak_vec_ptr(<wire_ForeignUtxo>::new_with_null_ptr(), len),
+            len,
+        };
+        support::new_leak_box_ptr(wrap)
+    }
+
+    #[no_mangle]
     pub extern "C" fn new_list_out_point_0(len: i32) -> *mut wire_list_out_point {
         let wrap = wire_list_out_point {
             ptr: support::new_leak_vec_ptr(<wire_OutPoint>::new_with_null_ptr(), len),
@@ -4880,6 +5165,15 @@ mod io {
     pub extern "C" fn new_list_script_amount_0(len: i32) -> *mut wire_list_script_amount {
         let wrap = wire_list_script_amount {
             ptr: support::new_leak_vec_ptr(<wire_ScriptAmount>::new_with_null_ptr(), len),
+            len,
+        };
+        support::new_leak_box_ptr(wrap)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn new_list_tx_bytes_0(len: i32) -> *mut wire_list_tx_bytes {
+        let wrap = wire_list_tx_bytes {
+            ptr: support::new_leak_vec_ptr(<wire_TxBytes>::new_with_null_ptr(), len),
             len,
         };
         support::new_leak_box_ptr(wrap)
@@ -5355,6 +5649,24 @@ mod io {
         }
     }
 
+    impl Wire2Api<ForeignUtxo> for wire_ForeignUtxo {
+        fn wire2api(self) -> ForeignUtxo {
+            ForeignUtxo {
+                outpoint: self.outpoint.wire2api(),
+                txout: self.txout.wire2api(),
+            }
+        }
+    }
+
+    impl Wire2Api<Vec<ForeignUtxo>> for *mut wire_list_foreign_utxo {
+        fn wire2api(self) -> Vec<ForeignUtxo> {
+            let vec = unsafe {
+                let wrap = support::box_from_leak_ptr(self);
+                support::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            };
+            vec.into_iter().map(Wire2Api::wire2api).collect()
+        }
+    }
     impl Wire2Api<Vec<OutPoint>> for *mut wire_list_out_point {
         fn wire2api(self) -> Vec<OutPoint> {
             let vec = unsafe {
@@ -5366,6 +5678,15 @@ mod io {
     }
     impl Wire2Api<Vec<ScriptAmount>> for *mut wire_list_script_amount {
         fn wire2api(self) -> Vec<ScriptAmount> {
+            let vec = unsafe {
+                let wrap = support::box_from_leak_ptr(self);
+                support::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            };
+            vec.into_iter().map(Wire2Api::wire2api).collect()
+        }
+    }
+    impl Wire2Api<Vec<TxBytes>> for *mut wire_list_tx_bytes {
+        fn wire2api(self) -> Vec<TxBytes> {
             let vec = unsafe {
                 let wrap = support::box_from_leak_ptr(self);
                 support::vec_from_leak_ptr(wrap.ptr, wrap.len)
@@ -5594,6 +5915,22 @@ mod io {
             }
         }
     }
+    impl Wire2Api<TxBytes> for wire_TxBytes {
+        fn wire2api(self) -> TxBytes {
+            TxBytes {
+                tx_id: self.tx_id.wire2api(),
+                bytes: self.bytes.wire2api(),
+            }
+        }
+    }
+    impl Wire2Api<TxOutForeign> for wire_TxOutForeign {
+        fn wire2api(self) -> TxOutForeign {
+            TxOutForeign {
+                value: self.value.wire2api(),
+                script_pubkey: self.script_pubkey.wire2api(),
+            }
+        }
+    }
 
     impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
         fn wire2api(self) -> Vec<u8> {
@@ -5700,6 +6037,20 @@ mod io {
 
     #[repr(C)]
     #[derive(Clone)]
+    pub struct wire_ForeignUtxo {
+        outpoint: wire_OutPoint,
+        txout: wire_TxOutForeign,
+    }
+
+    #[repr(C)]
+    #[derive(Clone)]
+    pub struct wire_list_foreign_utxo {
+        ptr: *mut wire_ForeignUtxo,
+        len: i32,
+    }
+
+    #[repr(C)]
+    #[derive(Clone)]
     pub struct wire_list_out_point {
         ptr: *mut wire_OutPoint,
         len: i32,
@@ -5709,6 +6060,13 @@ mod io {
     #[derive(Clone)]
     pub struct wire_list_script_amount {
         ptr: *mut wire_ScriptAmount,
+        len: i32,
+    }
+
+    #[repr(C)]
+    #[derive(Clone)]
+    pub struct wire_list_tx_bytes {
+        ptr: *mut wire_TxBytes,
         len: i32,
     }
 
@@ -5893,6 +6251,20 @@ mod io {
     #[derive(Clone)]
     pub struct wire_SqliteDbConfiguration {
         path: *mut wire_uint_8_list,
+    }
+
+    #[repr(C)]
+    #[derive(Clone)]
+    pub struct wire_TxBytes {
+        tx_id: *mut wire_uint_8_list,
+        bytes: *mut wire_uint_8_list,
+    }
+
+    #[repr(C)]
+    #[derive(Clone)]
+    pub struct wire_TxOutForeign {
+        value: u64,
+        script_pubkey: *mut wire_uint_8_list,
     }
 
     #[repr(C)]
@@ -6301,6 +6673,21 @@ mod io {
         }
     }
 
+    impl NewWithNullPtr for wire_ForeignUtxo {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                outpoint: Default::default(),
+                txout: Default::default(),
+            }
+        }
+    }
+
+    impl Default for wire_ForeignUtxo {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+
     impl NewWithNullPtr for wire_OutPoint {
         fn new_with_null_ptr() -> Self {
             Self {
@@ -6695,6 +7082,36 @@ mod io {
     }
 
     impl Default for wire_SqliteDbConfiguration {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+
+    impl NewWithNullPtr for wire_TxBytes {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                tx_id: core::ptr::null_mut(),
+                bytes: core::ptr::null_mut(),
+            }
+        }
+    }
+
+    impl Default for wire_TxBytes {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+
+    impl NewWithNullPtr for wire_TxOutForeign {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                value: Default::default(),
+                script_pubkey: core::ptr::null_mut(),
+            }
+        }
+    }
+
+    impl Default for wire_TxOutForeign {
         fn default() -> Self {
             Self::new_with_null_ptr()
         }

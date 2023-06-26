@@ -180,6 +180,10 @@ abstract class AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kBroadcastStaticMethodApiConstMeta;
 
+  Future<String> getTxStaticMethodApi({required String tx, required BlockchainInstance blockchain, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetTxStaticMethodApiConstMeta;
+
   Future<String> createTransactionStaticMethodApi({required Uint8List tx, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kCreateTransactionStaticMethodApiConstMeta;
@@ -264,9 +268,13 @@ abstract class AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kGetInputsStaticMethodApiConstMeta;
 
-  Future<BdkTxBuilderResult> txBuilderFinishStaticMethodApi({required WalletInstance wallet, required List<ScriptAmount> recipients, required List<OutPoint> utxos, required List<OutPoint> unspendable, required ChangeSpendPolicy changePolicy, required bool manuallySelectedOnly, double? feeRate, int? feeAbsolute, required bool drainWallet, Script? drainTo, RbfValue? rbf, required Uint8List data, bool? shuffleUtxo, dynamic hint});
+  Future<BdkTxBuilderResult> txBuilderFinishStaticMethodApi({required WalletInstance wallet, required List<ScriptAmount> recipients, required List<TxBytes> txs, required List<OutPoint> unspendable, required List<ForeignUtxo> foreignUtxos, required ChangeSpendPolicy changePolicy, required bool manuallySelectedOnly, double? feeRate, int? feeAbsolute, required bool drainWallet, Script? drainTo, RbfValue? rbf, required Uint8List data, bool? shuffleUtxo, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kTxBuilderFinishStaticMethodApiConstMeta;
+
+  Future<int> txCalFeeFinishStaticMethodApi({required WalletInstance wallet, required List<ScriptAmount> recipients, required List<TxBytes> txs, required List<OutPoint> unspendable, required List<ForeignUtxo> foreignUtxos, required ChangeSpendPolicy changePolicy, required bool manuallySelectedOnly, double? feeRate, int? feeAbsolute, required bool drainWallet, Script? drainTo, RbfValue? rbf, required Uint8List data, bool? shuffleUtxo, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kTxCalFeeFinishStaticMethodApiConstMeta;
 
   Future<BdkTxBuilderResult> bumpFeeTxBuilderFinishStaticMethodApi({required String txid, required double feeRate, String? allowShrinking, required WalletInstance wallet, required bool enableRbf, required bool keepChange, int? nSequence, dynamic hint});
 
@@ -439,6 +447,10 @@ abstract class AgentDart {
   Future<List<LocalUtxo>> listUnspentStaticMethodApi({required WalletInstance wallet, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kListUnspentStaticMethodApiConstMeta;
+
+  Future<bool> cacheAddressStaticMethodApi({required WalletInstance wallet, required int cacheSize, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kCacheAddressStaticMethodApiConstMeta;
 
   Future<String> generateSeedFromWordCountStaticMethodApi({required WordCount wordCount, dynamic hint});
 
@@ -779,6 +791,19 @@ class EsploraConfig {
     this.concurrency,
     required this.stopGap,
     this.timeout,
+  });
+}
+
+class ForeignUtxo {
+  /// Reference to a transaction output
+  final OutPoint outpoint;
+
+  ///Transaction output
+  final TxOutForeign txout;
+
+  const ForeignUtxo({
+    required this.outpoint,
+    required this.txout,
   });
 }
 
@@ -1291,6 +1316,20 @@ class TransactionDetails {
   });
 }
 
+/// TxBytes with tx_id and bytes
+class TxBytes {
+  /// The value of the output, in satoshis.
+  final String txId;
+
+  /// The script which must be satisfied for the output to be spent.
+  final Uint8List bytes;
+
+  const TxBytes({
+    required this.txId,
+    required this.bytes,
+  });
+}
+
 class TxIn {
   final OutPoint previousOutput;
   final Script scriptSig;
@@ -1314,6 +1353,19 @@ class TxOut {
   final Script scriptPubkey;
 
   const TxOut({
+    required this.value,
+    required this.scriptPubkey,
+  });
+}
+
+class TxOutForeign {
+  /// The value of the output, in satoshis.
+  final int value;
+
+  /// The script which must be satisfied for the output to be spent.
+  final String scriptPubkey;
+
+  const TxOutForeign({
     required this.value,
     required this.scriptPubkey,
   });
@@ -2070,6 +2122,29 @@ class AgentDartImpl implements AgentDart {
         ],
       );
 
+  Future<String> getTxStaticMethodApi({required String tx, required BlockchainInstance blockchain, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(tx);
+    var arg1 = _platform.api2wire_BlockchainInstance(blockchain);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_get_tx__static_method__Api(port_, arg0, arg1),
+      parseSuccessData: _wire2api_String,
+      constMeta: kGetTxStaticMethodApiConstMeta,
+      argValues: [
+        tx,
+        blockchain
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kGetTxStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "get_tx__static_method__Api",
+        argNames: [
+          "tx",
+          "blockchain"
+        ],
+      );
+
   Future<String> createTransactionStaticMethodApi({required Uint8List tx, dynamic hint}) {
     var arg0 = _platform.api2wire_uint_8_list(tx);
     return _platform.executeNormal(FlutterRustBridgeTask(
@@ -2493,29 +2568,31 @@ class AgentDartImpl implements AgentDart {
         ],
       );
 
-  Future<BdkTxBuilderResult> txBuilderFinishStaticMethodApi({required WalletInstance wallet, required List<ScriptAmount> recipients, required List<OutPoint> utxos, required List<OutPoint> unspendable, required ChangeSpendPolicy changePolicy, required bool manuallySelectedOnly, double? feeRate, int? feeAbsolute, required bool drainWallet, Script? drainTo, RbfValue? rbf, required Uint8List data, bool? shuffleUtxo, dynamic hint}) {
+  Future<BdkTxBuilderResult> txBuilderFinishStaticMethodApi({required WalletInstance wallet, required List<ScriptAmount> recipients, required List<TxBytes> txs, required List<OutPoint> unspendable, required List<ForeignUtxo> foreignUtxos, required ChangeSpendPolicy changePolicy, required bool manuallySelectedOnly, double? feeRate, int? feeAbsolute, required bool drainWallet, Script? drainTo, RbfValue? rbf, required Uint8List data, bool? shuffleUtxo, dynamic hint}) {
     var arg0 = _platform.api2wire_WalletInstance(wallet);
     var arg1 = _platform.api2wire_list_script_amount(recipients);
-    var arg2 = _platform.api2wire_list_out_point(utxos);
+    var arg2 = _platform.api2wire_list_tx_bytes(txs);
     var arg3 = _platform.api2wire_list_out_point(unspendable);
-    var arg4 = api2wire_change_spend_policy(changePolicy);
-    var arg5 = manuallySelectedOnly;
-    var arg6 = _platform.api2wire_opt_box_autoadd_f32(feeRate);
-    var arg7 = _platform.api2wire_opt_box_autoadd_u64(feeAbsolute);
-    var arg8 = drainWallet;
-    var arg9 = _platform.api2wire_opt_box_autoadd_script(drainTo);
-    var arg10 = _platform.api2wire_opt_box_autoadd_rbf_value(rbf);
-    var arg11 = _platform.api2wire_uint_8_list(data);
-    var arg12 = _platform.api2wire_opt_box_autoadd_bool(shuffleUtxo);
+    var arg4 = _platform.api2wire_list_foreign_utxo(foreignUtxos);
+    var arg5 = api2wire_change_spend_policy(changePolicy);
+    var arg6 = manuallySelectedOnly;
+    var arg7 = _platform.api2wire_opt_box_autoadd_f32(feeRate);
+    var arg8 = _platform.api2wire_opt_box_autoadd_u64(feeAbsolute);
+    var arg9 = drainWallet;
+    var arg10 = _platform.api2wire_opt_box_autoadd_script(drainTo);
+    var arg11 = _platform.api2wire_opt_box_autoadd_rbf_value(rbf);
+    var arg12 = _platform.api2wire_uint_8_list(data);
+    var arg13 = _platform.api2wire_opt_box_autoadd_bool(shuffleUtxo);
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_tx_builder_finish__static_method__Api(port_, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12),
+      callFfi: (port_) => _platform.inner.wire_tx_builder_finish__static_method__Api(port_, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13),
       parseSuccessData: _wire2api_bdk_tx_builder_result,
       constMeta: kTxBuilderFinishStaticMethodApiConstMeta,
       argValues: [
         wallet,
         recipients,
-        utxos,
+        txs,
         unspendable,
+        foreignUtxos,
         changePolicy,
         manuallySelectedOnly,
         feeRate,
@@ -2535,8 +2612,68 @@ class AgentDartImpl implements AgentDart {
         argNames: [
           "wallet",
           "recipients",
-          "utxos",
+          "txs",
           "unspendable",
+          "foreignUtxos",
+          "changePolicy",
+          "manuallySelectedOnly",
+          "feeRate",
+          "feeAbsolute",
+          "drainWallet",
+          "drainTo",
+          "rbf",
+          "data",
+          "shuffleUtxo"
+        ],
+      );
+
+  Future<int> txCalFeeFinishStaticMethodApi({required WalletInstance wallet, required List<ScriptAmount> recipients, required List<TxBytes> txs, required List<OutPoint> unspendable, required List<ForeignUtxo> foreignUtxos, required ChangeSpendPolicy changePolicy, required bool manuallySelectedOnly, double? feeRate, int? feeAbsolute, required bool drainWallet, Script? drainTo, RbfValue? rbf, required Uint8List data, bool? shuffleUtxo, dynamic hint}) {
+    var arg0 = _platform.api2wire_WalletInstance(wallet);
+    var arg1 = _platform.api2wire_list_script_amount(recipients);
+    var arg2 = _platform.api2wire_list_tx_bytes(txs);
+    var arg3 = _platform.api2wire_list_out_point(unspendable);
+    var arg4 = _platform.api2wire_list_foreign_utxo(foreignUtxos);
+    var arg5 = api2wire_change_spend_policy(changePolicy);
+    var arg6 = manuallySelectedOnly;
+    var arg7 = _platform.api2wire_opt_box_autoadd_f32(feeRate);
+    var arg8 = _platform.api2wire_opt_box_autoadd_u64(feeAbsolute);
+    var arg9 = drainWallet;
+    var arg10 = _platform.api2wire_opt_box_autoadd_script(drainTo);
+    var arg11 = _platform.api2wire_opt_box_autoadd_rbf_value(rbf);
+    var arg12 = _platform.api2wire_uint_8_list(data);
+    var arg13 = _platform.api2wire_opt_box_autoadd_bool(shuffleUtxo);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_tx_cal_fee_finish__static_method__Api(port_, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13),
+      parseSuccessData: _wire2api_u64,
+      constMeta: kTxCalFeeFinishStaticMethodApiConstMeta,
+      argValues: [
+        wallet,
+        recipients,
+        txs,
+        unspendable,
+        foreignUtxos,
+        changePolicy,
+        manuallySelectedOnly,
+        feeRate,
+        feeAbsolute,
+        drainWallet,
+        drainTo,
+        rbf,
+        data,
+        shuffleUtxo
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kTxCalFeeFinishStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "tx_cal_fee_finish__static_method__Api",
+        argNames: [
+          "wallet",
+          "recipients",
+          "txs",
+          "unspendable",
+          "foreignUtxos",
           "changePolicy",
           "manuallySelectedOnly",
           "feeRate",
@@ -3553,6 +3690,29 @@ class AgentDartImpl implements AgentDart {
         debugName: "list_unspent__static_method__Api",
         argNames: [
           "wallet"
+        ],
+      );
+
+  Future<bool> cacheAddressStaticMethodApi({required WalletInstance wallet, required int cacheSize, dynamic hint}) {
+    var arg0 = _platform.api2wire_WalletInstance(wallet);
+    var arg1 = api2wire_u32(cacheSize);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_cache_address__static_method__Api(port_, arg0, arg1),
+      parseSuccessData: _wire2api_bool,
+      constMeta: kCacheAddressStaticMethodApiConstMeta,
+      argValues: [
+        wallet,
+        cacheSize
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kCacheAddressStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "cache_address__static_method__Api",
+        argNames: [
+          "wallet",
+          "cacheSize"
         ],
       );
 

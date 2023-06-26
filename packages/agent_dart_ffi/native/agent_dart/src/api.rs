@@ -28,12 +28,14 @@ use crate::bdk::types::{
     KeychainKind, Network, Payload, RbfValue, Script, TransactionDetails, TxIn, TxOut, WordCount,
 };
 pub use crate::bdk::wallet::{DatabaseConfig, WalletInstance};
-use bdk::bitcoin::{Address as BdkAddress, OutPoint as BdkOutPoint, Sequence, Txid};
-use bdk::keys::DescriptorSecretKey as BdkDescriptorSecretKey;
-use bdk::Error;
+use bdk_lite::bitcoin::{
+    Address as BdkAddress, OutPoint as BdkOutPoint, Sequence, Transaction as BdkTransaction, Txid,
+};
+use bdk_lite::keys::DescriptorSecretKey as BdkDescriptorSecretKey;
+use bdk_lite::Error;
 use flutter_rust_bridge::RustOpaque;
 
-use bdk::wallet::tx_builder::TxOrdering;
+use bdk_lite::wallet::tx_builder::{ForeignUtxo as BdkForeignUtxo, TxOrdering};
 use bitcoin::hashes::hex::ToHex;
 use std::ops::Deref;
 use std::str::FromStr;
@@ -88,6 +90,16 @@ impl Api {
         let transaction: Transaction = tx.into();
         return match blockchain.broadcast(transaction) {
             Ok(e) => Ok(e),
+            Err(e) => anyhow::bail!("{:?}", e),
+        };
+    }
+
+    pub fn get_tx(
+        tx: String,
+        blockchain: RustOpaque<BlockchainInstance>,
+    ) -> anyhow::Result<String> {
+        return match blockchain.get_tx(tx) {
+            Ok(e) => Ok(hex::encode(e.serialize())),
             Err(e) => anyhow::bail!("{:?}", e),
         };
     }
@@ -205,8 +217,9 @@ impl Api {
     pub fn tx_builder_finish(
         wallet: RustOpaque<WalletInstance>,
         recipients: Vec<ScriptAmount>,
-        utxos: Vec<OutPoint>,
+        txs: Vec<TxBytes>,
         unspendable: Vec<OutPoint>,
+        foreign_utxos: Vec<ForeignUtxo>,
         change_policy: ChangeSpendPolicy,
         manually_selected_only: bool,
         fee_rate: Option<f32>,
@@ -238,10 +251,15 @@ impl Api {
             }
         };
 
-        if !utxos.is_empty() {
-            let bdk_utxos: Vec<BdkOutPoint> = utxos.iter().map(BdkOutPoint::from).collect();
-            let utxos: &[BdkOutPoint] = &bdk_utxos;
-            tx_builder.add_utxos(utxos).unwrap();
+        if !foreign_utxos.is_empty() {
+            // let bdk_utxos: Vec<BdkOutPoint> = utxos.iter().map(BdkOutPoint::from).collect();
+            // let utxos: &[BdkOutPoint] = &bdk_utxos;
+            // tx_builder.add_utxos(utxos).unwrap();
+            let utxos = foreign_utxos
+                .iter()
+                .map(BdkForeignUtxo::from)
+                .collect::<Vec<BdkForeignUtxo>>();
+            tx_builder.add_utxo_foreign(&utxos).unwrap();
         }
         if !unspendable.is_empty() {
             let bdk_unspendable: Vec<BdkOutPoint> =
@@ -252,7 +270,7 @@ impl Api {
             tx_builder.manually_selected_only();
         }
         if let Some(sat_per_vb) = fee_rate {
-            tx_builder.fee_rate(bdk::FeeRate::from_sat_per_vb(sat_per_vb));
+            tx_builder.fee_rate(bdk_lite::FeeRate::from_sat_per_vb(sat_per_vb));
         }
         if let Some(fee_amount) = fee_absolute {
             tx_builder.fee_absolute(fee_amount);
@@ -277,6 +295,14 @@ impl Api {
             tx_builder.add_data(data.as_slice());
         }
 
+        if !txs.is_empty() {
+            let tt = txs
+                .iter()
+                .map(|f| f.to_transaction().unwrap().internal)
+                .collect::<Vec<BdkTransaction>>();
+            tx_builder.add_txs(&tt).unwrap();
+        }
+
         return match tx_builder.finish() {
             Ok((p, d)) => Ok(BdkTxBuilderResult(
                 Arc::new(PartiallySignedTransaction {
@@ -285,6 +311,102 @@ impl Api {
                 .serialize(),
                 TransactionDetails::from(&d),
             )),
+            Err(e) => anyhow::bail!("{:?}", e),
+        };
+    }
+
+    //========TxBuilder==========
+    pub fn tx_cal_fee_finish(
+        wallet: RustOpaque<WalletInstance>,
+        recipients: Vec<ScriptAmount>,
+        txs: Vec<TxBytes>,
+        unspendable: Vec<OutPoint>,
+        foreign_utxos: Vec<ForeignUtxo>,
+        change_policy: ChangeSpendPolicy,
+        manually_selected_only: bool,
+        fee_rate: Option<f32>,
+        fee_absolute: Option<u64>,
+        drain_wallet: bool,
+        drain_to: Option<Script>,
+        rbf: Option<RbfValue>,
+        data: Vec<u8>,
+        shuffle_utxo: Option<bool>,
+    ) -> anyhow::Result<u64> {
+        let binding = wallet.get_wallet();
+        let mut tx_builder = binding.build_tx();
+
+        for e in recipients {
+            tx_builder.add_recipient(e.script.into(), e.amount);
+        }
+        tx_builder.change_policy(change_policy.into());
+
+        match shuffle_utxo {
+            None => {
+                tx_builder.ordering(TxOrdering::Untouched);
+            }
+            Some(r) => {
+                if r == true {
+                    tx_builder.ordering(TxOrdering::Shuffle);
+                } else {
+                    tx_builder.ordering(TxOrdering::Untouched);
+                }
+            }
+        };
+
+        if !foreign_utxos.is_empty() {
+            // let bdk_utxos: Vec<BdkOutPoint> = utxos.iter().map(BdkOutPoint::from).collect();
+            // let utxos: &[BdkOutPoint] = &bdk_utxos;
+            // tx_builder.add_utxos(utxos).unwrap();
+            let utxos = foreign_utxos
+                .iter()
+                .map(BdkForeignUtxo::from)
+                .collect::<Vec<BdkForeignUtxo>>();
+            tx_builder.add_utxo_foreign(&utxos).unwrap();
+        }
+        if !unspendable.is_empty() {
+            let bdk_unspendable: Vec<BdkOutPoint> =
+                unspendable.iter().map(BdkOutPoint::from).collect();
+            tx_builder.unspendable(bdk_unspendable);
+        }
+        if manually_selected_only {
+            tx_builder.manually_selected_only();
+        }
+        if let Some(sat_per_vb) = fee_rate {
+            tx_builder.fee_rate(bdk_lite::FeeRate::from_sat_per_vb(sat_per_vb));
+        }
+        if let Some(fee_amount) = fee_absolute {
+            tx_builder.fee_absolute(fee_amount);
+        }
+        if drain_wallet {
+            tx_builder.drain_wallet();
+        }
+        if let Some(script_) = drain_to {
+            tx_builder.drain_to(script_.into());
+        }
+        if let Some(rbf) = &rbf {
+            match *rbf {
+                RbfValue::RbfDefault => {
+                    tx_builder.enable_rbf();
+                }
+                RbfValue::Value(nsequence) => {
+                    tx_builder.enable_rbf_with_sequence(Sequence(nsequence));
+                }
+            }
+        }
+        if !data.is_empty() {
+            tx_builder.add_data(data.as_slice());
+        }
+
+        if !txs.is_empty() {
+            let tt = txs
+                .iter()
+                .map(|f| f.to_transaction().unwrap().internal)
+                .collect::<Vec<BdkTransaction>>();
+            tx_builder.add_txs(&tt).unwrap();
+        }
+
+        return match tx_builder.cal_fee() {
+            Ok(r) => Ok(r),
             Err(e) => anyhow::bail!("{:?}", e),
         };
     }
@@ -305,7 +427,7 @@ impl Api {
             Ok(e) => e,
             Err(e) => anyhow::bail!("{:?}", e),
         };
-        tx_builder.fee_rate(bdk::FeeRate::from_sat_per_vb(fee_rate));
+        tx_builder.fee_rate(bdk_lite::FeeRate::from_sat_per_vb(fee_rate));
         if let Some(allow_shrinking) = &allow_shrinking {
             let address = BdkAddress::from_str(allow_shrinking)
                 .map_err(|e| Error::Generic(e.to_string()))
@@ -314,7 +436,7 @@ impl Api {
             tx_builder.allow_shrinking(script).unwrap();
         }
         if let Some(n_sequence) = n_sequence {
-            tx_builder.enable_rbf_with_sequence(bdk::bitcoin::Sequence(n_sequence));
+            tx_builder.enable_rbf_with_sequence(bdk_lite::bitcoin::Sequence(n_sequence));
         }
         if enable_rbf {
             tx_builder.enable_rbf();
@@ -780,6 +902,16 @@ impl Api {
         match wallet.list_unspent() {
             Ok(e) => Ok(e),
             Err(e) => anyhow::bail!("{:?}", e),
+        }
+    }
+
+    pub fn cache_address(
+        wallet: RustOpaque<WalletInstance>,
+        cache_size: u32,
+    ) -> anyhow::Result<bool> {
+        match wallet.cache_address(cache_size) {
+            Ok(e) => Ok(e),
+            Err(e) => panic!("{:?}", e),
         }
     }
 
