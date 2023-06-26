@@ -7,7 +7,6 @@ import 'package:agent_dart_base/agent/ord/utxo.dart';
 import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
-import 'package:tuple/tuple.dart';
 
 import 'btc/bdk/bdk.dart';
 
@@ -45,10 +44,11 @@ enum AddressType {
 }
 
 class UtxoHandlers {
+  UtxoHandlers({required this.ins, required this.nonIns, required this.txs});
+
   final List<OutPointExt> ins;
   final List<OutPointExt> nonIns;
   final List<dynamic> txs;
-  UtxoHandlers({required this.ins, required this.nonIns, required this.txs});
 }
 
 const UTXO_DUST = 546;
@@ -66,6 +66,18 @@ class BitcoinBalance {
         'spendable': balance.spendable,
         'total': balance.total,
       };
+
+  int get total => balance.total;
+
+  int get spendable => balance.spendable;
+
+  int get confirmed => balance.confirmed;
+
+  int get untrustedPending => balance.untrustedPending;
+
+  int get trustedPending => balance.trustedPending;
+
+  int get immature => balance.immature;
 }
 
 Future<AddressInfo> getAddressInfo({
@@ -80,8 +92,7 @@ Future<AddressInfo> getAddressInfo({
     addressType: addressType,
   );
   final descriptor = descriptors[KeychainKind.External]!;
-  final res = await descriptor.descriptor.deriveAddressAt(index, network);
-  return res;
+  return descriptor.descriptor.deriveAddressAt(index, network);
 }
 
 Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
@@ -195,18 +206,22 @@ class BitcoinWallet {
     _useExternalApi = use;
   }
 
-  Future<void> blockchainInit({Network? net = Network.Bitcoin}) async {
+  Future<void> blockchainInit({
+    Network network = Network.Bitcoin,
+    BlockchainConfig? blockchainConfig,
+  }) async {
     blockchain = await Blockchain.create(
-      config: BlockchainConfig.electrum(
-        config: ElectrumConfig(
-          stopGap: 10,
-          timeout: 5,
-          retry: 5,
-          url:
-              'ssl://electrum.blockstream.info:${(net ?? network) == Network.Bitcoin ? 50002 : 60002}',
-          validateDomain: false,
-        ),
-      ),
+      config: blockchainConfig ??
+          BlockchainConfig.electrum(
+            config: ElectrumConfig(
+              stopGap: 10,
+              timeout: 5,
+              retry: 5,
+              url:
+                  'ssl://electrum.blockstream.info:${network == Network.Bitcoin ? 50002 : 60002}',
+              validateDomain: false,
+            ),
+          ),
     );
     // blockchain = await Blockchain.create(
     //     config: BlockchainConfig.esplora(
@@ -239,7 +254,7 @@ class BitcoinWallet {
       descriptor: descriptor,
     );
     wallet.setNetwork(network);
-    await wallet.blockchainInit(net: network);
+    await wallet.blockchainInit(network: network);
     return wallet;
   }
 
