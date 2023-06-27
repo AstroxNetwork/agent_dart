@@ -37,6 +37,7 @@ void btc_wallet() {
   Future<BitcoinWallet> getWallet() async {
     final wallet = await BitcoinWallet.fromPhrase(
       (await Mnemonic.create(WordCount.Words12)).asString(),
+      addressType: AddressType.P2TR,
     );
 
     await wallet.selectSigner(0);
@@ -66,19 +67,48 @@ void btc_wallet() {
       final us = await wallet.listUnspent();
       us.forEach((e) => print(e.toJson()));
 
-      final tx2 = await blockstream.getTxHex(
+      final tx2 = await blockstream.getTx(
           'ad4370edce9d1671f7fdc8bf56e409a4d82a6a9044531b1567daccdcd76e14df');
       // print(tx2);
+      print('\n getTx ==> \n');
+      print(tx2.toJson());
 
-      final tx3 = await Transaction.create(transactionBytes: tx2.toU8a());
-      // print(tx3);
+      final addressState = await blockstream.getAddressStats(
+          'bc1prhylusp2j4ks7ut2pu0scxtxz76p2wn849jjzay42vvvcyxy4uzqhkng7h');
+      print('\n getAddressStats ==> \n');
+      print(addressState.toJson());
 
-      final ins = await ord.getInscriptions(
-        'bc1prhylusp2j4ks7ut2pu0scxtxz76p2wn849jjzay42vvvcyxy4uzqhkng7h',
+      final addessUtxo = await blockstream
+          .getAddressUtxo('bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76');
+
+      print('\n getAddressUtxo ==> \n');
+      print(addessUtxo.map((e) => e.toJson()).toList());
+
+      final txs = await blockstream.getAddressTxs(
+        address: 'bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76',
+        filter: TxsFilter.Unconfirmed,
       );
-      ins.map((e) => e.toJson()).forEach(print);
 
-      final safeBlance = await wallet.getSafeBalance();
+      print('\n getAddressTxs ==> \n');
+      print(txs.map((e) => e.toJson()).toList());
+
+      final b = await wallet.getBalance(
+        address: 'bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76',
+        calculateUnconfirmed: true,
+      );
+      print('\n getBalance ==> \n');
+      print(b.toJson());
+
+      final c = await wallet.blockchain.getHeight();
+      print('\n getHeight ==> \n');
+      print(c);
+
+      // final ins = await ord.getInscriptions(
+      //   'bc1prhylusp2j4ks7ut2pu0scxtxz76p2wn849jjzay42vvvcyxy4uzqhkng7h',
+      // );
+      // ins.map((e) => e.toJson()).forEach(print);
+
+      // final safeBlance = await wallet.getSafeBalance();
 
       // print(safeBlance);
 
@@ -93,7 +123,8 @@ void btc_wallet() {
       // await btcTx.dumpTx();
 
       // final signedBtcTX = await wallet.sign(btcTx);
-      // // final btcTxId = await wallet.broadCast(signedBtcTX);
+      // final btcTxId = await wallet.broadCast(signedBtcTX);
+      // print(btcTxId)
 
       // send an ordTx
       // final ordTx = await wallet.createSendInscription(
@@ -108,6 +139,19 @@ void btc_wallet() {
 
       // final signedOrdTx = await wallet.sign(ordTx);
       // final ordTxId = await wallet.broadCast(signedOrdTx);
+
+      // send btc from an Ord
+      // final ordTx2 = await wallet.sendBTCFromInscription(
+      //   toAddress: 'bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76',
+      //   insId:
+      //       '154f473080e054795e2e678ea20e0bdc482088abfef3e7e2cb9849441db3ade3i0',
+      //   feeRate: 1,
+      //   btcAmount: 2000,
+      // );
+
+      // await ordTx2.dumpTx();
+
+      // final signedOrdTx = await wallet.sign(ordTx2);
 
       // final bumpFeeTx = await wallet.bumpFee(txid: ordTxId, feeRate: 20);
       // final signedBumpFeeTx = await wallet.sign(bumpFeeTx);
