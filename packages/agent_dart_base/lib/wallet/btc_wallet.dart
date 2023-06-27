@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:agent_dart_base/agent/ord/blockstream.dart';
 import 'package:agent_dart_base/agent/ord/inscriptionItem.dart';
 import 'package:agent_dart_base/agent/ord/service.dart';
+import 'package:agent_dart_base/agent/ord/tx.dart';
 import 'package:agent_dart_base/agent/ord/utxo.dart';
 import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:collection/collection.dart';
@@ -57,6 +58,21 @@ class BitcoinBalance {
   BitcoinBalance._(this.balance);
 
   final Balance balance;
+  int mempoolSpendTxValue = 0;
+  int mempoolReceiveTxValue = 0;
+  bool tooManyUnconfirmed = false;
+
+  void setMempoolSpendTxValue(int value) {
+    mempoolSpendTxValue = value;
+  }
+
+  void setMempoolReceiveTxValue(int value) {
+    mempoolReceiveTxValue = value;
+  }
+
+  void settooManyUnconfirmed(bool value) {
+    tooManyUnconfirmed = value;
+  }
 
   Map<String, dynamic> toJson() => {
         'immature': balance.immature,
@@ -64,6 +80,11 @@ class BitcoinBalance {
         'untrustedPending': balance.untrustedPending,
         'confirmed': balance.confirmed,
         'spendable': balance.spendable,
+        'unconfirmed': {
+          'spendTxValue': mempoolSpendTxValue,
+          'receiveTxValue': mempoolReceiveTxValue,
+          'tooManyUnconfirmed': tooManyUnconfirmed,
+        },
         'total': balance.total,
       };
 
@@ -193,6 +214,8 @@ class BitcoinWallet {
 
   bool _useExternalApi = false;
 
+  final int COINBASE_MATURITY = 100;
+
   void connect({OrdService? service, BlockStreamApi? api}) {
     ordService ??= service;
     blockStreamApi ??= api;
@@ -290,11 +313,106 @@ class BitcoinWallet {
 
   ///Return the [Balance], separated into available, trusted-pending, untrusted-pending and immature values.
   ///
-  ///Note that this method only operates on the internal database, which first needs to be Wallet().sync manually.
-  Future<BitcoinBalance> getBalance() async {
+  /// Note that this method only operates on the internal database, which first needs to be Wallet().sync manually.
+  /// Note we don't use  wallet sync anymore, use external api instead
+  Future<BitcoinBalance> getBalance({
+    String? address,
+    bool calculateUnconfirmed = false,
+  }) async {
     try {
-      final res = await wallet.getBalance();
-      return BitcoinBalance._(res);
+      if (blockStreamApi == null) {
+        throw Exception('blockStreamApi should be initialized first');
+      }
+      final theAddress = address ?? _selectedSigner.address;
+      var immature = 0;
+      const trustedPending = 0; // we don't use internal key to receive
+      var untrustedPending = 0;
+      var confirmed = 0;
+      var mempoolSpendTxValue = 0;
+      var mempoolReceiveTxValue = 0;
+      var tooManyUnconfirmed = false;
+
+      final utxos = await blockStreamApi!.getAddressUtxo(theAddress);
+
+      for (var i = 0; i < utxos.length; i++) {
+        final u = utxos[i];
+
+        if (u.status.confirmed) {
+          final tx = await getTx(u.txid);
+
+          final blockHeight = await blockchain.getHeight();
+
+          if (await tx.isCoinBase() &&
+              (blockHeight - u.status.block_height!) < COINBASE_MATURITY) {
+            immature += u.value;
+          } else {
+            confirmed += u.value;
+          }
+        } else {
+          untrustedPending += u.value;
+        }
+      }
+      final spendable = confirmed + trustedPending;
+      final total = spendable + immature;
+
+      if (calculateUnconfirmed) {
+        final txCount = (await blockStreamApi!.getAddressStats(theAddress))
+            .mempool_stats
+            .tx_count;
+        if (txCount <= 0) {
+          mempoolSpendTxValue = 0;
+          mempoolReceiveTxValue = 0;
+        } else {
+          if (txCount > 50) {
+            tooManyUnconfirmed = true;
+          }
+          final mempoolTxs = await blockStreamApi!.getAddressTxs(
+            address: theAddress,
+          );
+
+          for (var i = 0; i < mempoolTxs.length; i++) {
+            final tx = mempoolTxs[i];
+            if (tx.status.confirmed) {
+              continue;
+            }
+            mempoolSpendTxValue += tx.vin
+                .where(
+                  (element) =>
+                      element.prevout.scriptpubkey_address == theAddress,
+                )
+                .fold(
+                  0,
+                  (previousValue, element) =>
+                      previousValue + element.prevout.value,
+                );
+            mempoolReceiveTxValue += tx.vout
+                .where(
+                  (element) => element.scriptpubkey_address == theAddress,
+                )
+                .fold(
+                  0,
+                  (previousValue, element) => previousValue + element.value,
+                );
+          }
+        }
+      }
+      final finalBalance = BitcoinBalance._(
+        Balance(
+          immature: immature,
+          trustedPending: trustedPending,
+          untrustedPending: untrustedPending,
+          confirmed: confirmed,
+          spendable: spendable,
+          total: total,
+        ),
+      );
+      if (calculateUnconfirmed) {
+        finalBalance
+          ..setMempoolReceiveTxValue(mempoolReceiveTxValue)
+          ..setMempoolSpendTxValue(mempoolSpendTxValue)
+          ..settooManyUnconfirmed(tooManyUnconfirmed);
+      }
+      return finalBalance;
     } on FfiException catch (e) {
       throw e.message;
     }
@@ -674,6 +792,173 @@ class BitcoinWallet {
     if (leftAmount >= UTXO_DUST) {
       // change dummy output to true output
       builder.addRecipient(changeAddress, leftAmount);
+    } else {
+      // builder.addRecipient(changeAddress, 1);
+      throw Exception('Output below Dust Limit of $UTXO_DUST Sats.');
+    }
+
+    final lastFinalFee = leftAmount + (await builder.calNetworkFee(wallet))!;
+
+    if (lastFinalFee > tmpSum) {
+      throw Exception(
+          'You need $lastFinalFee to finish the payment, but only $tmpSum avaliable.');
+    }
+
+    // finish the build and get ready to dump Data
+    final res = await builder.finish(wallet);
+    res.addInputs(tempInputs);
+
+    return res;
+  }
+
+  // ====== OrdTransaction ======
+  Future<TxBuilderResult> sendBTCFromInscription({
+    required String toAddress,
+    required String insId,
+    required int feeRate,
+    required int btcAmount,
+  }) async {
+    final builder = TxBuilder();
+    builder.enableRbf();
+    builder.manuallySelectedOnly();
+    builder.feeRate(feeRate.toDouble());
+
+    final outputValue = btcAmount;
+
+    // 2. address setting
+    final formatedAddress = await Address.create(address: toAddress);
+
+    // changeAddress to be receiver
+    final sendToAddress =
+        await (await Address.create(address: currentSigner().address))
+            .scriptPubKey();
+
+    // 3. handle utxo and get inscriptions
+    final xos = await handleUtxo();
+    final ins = xos.ins;
+    final txs = xos.txs;
+
+    void addTx(String txId) {
+      final tx = txs.firstWhereOrNull((element) => element.txId == txId);
+      if (tx != null) {
+        builder.addTx(tx);
+      }
+    }
+
+    // 3.1 select inscription and proctect those unspendables
+    final tempInputs = <OutPointExt>[];
+    var satoshis = 0;
+    var found = false;
+    var ordLeft = 0;
+    for (final e in ins) {
+      // try and find the inscription matches the inscription id
+      final index =
+          e.inscriptions!.indexWhere((element) => element.detail.id == insId);
+      if (index > -1) {
+        // add to input map
+        builder.addInput(e);
+        // add to bdk utxo
+        builder.addForeignUtxo(e);
+
+        addTx(e.txid);
+        // add to dump data inputs
+        tempInputs.add(e);
+        // get actual output value, if outputValue is null, use the original value
+        satoshis = outputValue;
+
+        // add output to output map
+        builder.addOutput(
+          OutPointExt(
+            e.inscriptions,
+            outputIndex: e.outputIndex,
+            txid: e.txid,
+            vout: e.vout,
+            satoshis: satoshis,
+            scriptPk: (await formatedAddress.scriptPubKey()).internal.toHex(),
+          ),
+        );
+        // add to bdk recipient
+        builder.addRecipient(await formatedAddress.scriptPubKey(), satoshis);
+
+        // add change output
+        if (outputValue < e.inscriptions![index].detail.output_value) {
+          ordLeft = e.inscriptions![index].detail.output_value - outputValue;
+          // add to output map as part of change output value
+          // builder.addOutput(
+          //   OutPointExt(
+          //     e.inscriptions,
+          //     outputIndex: e.outputIndex,
+          //     txid: e.txid,
+          //     vout: e.vout,
+          //     satoshis: ordLeft,
+          //     scriptPk: changeAddress.internal.toHex(),
+          //   ),
+          // );
+        }
+        found = true;
+      } else {
+        builder.addUnSpendable(e);
+      }
+    }
+    if (found == false) {
+      throw Exception('Inscription not found');
+    }
+
+    // 4. handle utxo
+    // 4.1 add non inscriptions to inputs
+    final nonIns = xos.nonIns;
+
+    // tempInputs.addAll(nonIns);
+
+    // calcluate output amount
+    final outputAmount = builder.getTotalOutput();
+    // print('outputAmount: $outputAmount');
+
+    var tmpSum = builder.getTotalInput();
+
+    var fee = 0;
+    for (var i = 0; i < nonIns.length; i++) {
+      final nonOrdUtxo = nonIns[i];
+      if (tmpSum < outputAmount) {
+        // manually add input to inputs
+        builder.addInput(nonOrdUtxo);
+        builder.addForeignUtxo(nonOrdUtxo);
+        addTx(nonOrdUtxo.txid);
+        tmpSum += nonOrdUtxo.satoshis;
+        continue;
+      }
+
+      fee = await builder.calFee(wallet);
+
+      if (tmpSum < outputAmount + fee) {
+        // manually add input to inputs
+        builder.addInput(nonOrdUtxo);
+        builder.addForeignUtxo(nonOrdUtxo);
+        addTx(nonOrdUtxo.txid);
+        tmpSum += nonOrdUtxo.satoshis;
+      } else {
+        break;
+      }
+    }
+
+    final unspent = builder.getUnspend();
+    if (unspent <= 0) {
+      throw Exception('Balance not enough to pay network fee.');
+    }
+
+    final networkFee = await builder.calNetworkFee(wallet);
+
+    if (unspent < networkFee!) {
+      throw Exception(
+        'Balance not enough. Need $networkFee Sats as network fee, but only $unspent BTC.',
+      );
+    }
+
+    final leftAmount = unspent - networkFee;
+
+    if (leftAmount >= UTXO_DUST) {
+      // change dummy output to true output
+      builder.addRecipient(sendToAddress, leftAmount);
     } else {
       // builder.addRecipient(changeAddress, 1);
       throw Exception('Output below Dust Limit of $UTXO_DUST Sats.');

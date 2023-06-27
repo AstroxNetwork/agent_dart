@@ -1438,7 +1438,7 @@ class TxBuilderResult {
       if (found != null) {
         totalInput += input.satoshis;
         inputStrings.add('''
-  =>${i} ${input.satoshis} Sats
+  #${i} ${input.satoshis}
   lock-size: ${input.scriptPk.toU8a().length}
   via ${input.txid} [${input.outputIndex}]
 ''');
@@ -1449,7 +1449,7 @@ class TxBuilderResult {
     for (var i = 0; i < outputs.length; i += 1) {
       final output = outputs[i];
       outputString.add('''
-  =>${i} ${output.scriptPubkey.internal.toHex()} ${output.value} Sats
+  #${i} ${output.scriptPubkey.internal.toHex()} ${output.value}
 ''');
     }
 
@@ -1459,24 +1459,41 @@ class TxBuilderResult {
     );
 
     print('''
-=============================================================================================
-Summary
+==============================================================================================
+
+Transaction Detail
+
   txid:     ${await tx.txid()}
   Size:     ${size}
   Fee Paid: ${feePaid}
   Fee Rate: ${feeRate} sat/B
   Detail:   ${inputs.length} Inputs, ${outputs.length} Outputs
+  
 ----------------------------------------------------------------------------------------------
-Inputs
+
+Inputs in Sats
 
 ${inputStrings.join('\n')}
-total: ${totalInput} Sats
+  total: ${totalInput}          
+
 ----------------------------------------------------------------------------------------------
-Outputs
+
+Outputs in Sats
 
 ${outputString.join("\n")}
-total: ${totalOutput - feePaid!} Sats
-=============================================================================================
+  total:  ${totalOutput}
+
+----------------------------------------------------------------------------------------------
+
+Summary in Sats
+
+  Inputs:   + ${totalInput}
+  Outputs:  - ${totalOutput}
+  fee:      - ${feePaid!}
+  
+  Remain:   ${totalOutput - feePaid}
+
+==============================================================================================
 
     ''');
   }
@@ -1648,7 +1665,7 @@ class Wallet {
   }
 }
 
-extension Tx on TransactionDetails {
+extension TxExt on TransactionDetails {
   Transaction? get transaction =>
       serializedTx == null ? null : Transaction._(serializedTx);
 }
