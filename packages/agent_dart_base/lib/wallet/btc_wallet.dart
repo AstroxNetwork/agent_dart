@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:agent_dart_base/agent/ord/blockstream.dart';
 import 'package:agent_dart_base/agent/ord/inscriptionItem.dart';
 import 'package:agent_dart_base/agent/ord/service.dart';
-import 'package:agent_dart_base/agent/ord/tx.dart';
 import 'package:agent_dart_base/agent/ord/utxo.dart';
 import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:collection/collection.dart';
@@ -55,14 +54,15 @@ class UtxoHandlers {
 const UTXO_DUST = 546;
 
 class UnconfirmedBalance {
-  int mempoolSpendTxValue = 0;
-  int mempoolReceiveTxValue = 0;
-  bool tooManyUnconfirmed = false;
   UnconfirmedBalance({
     required this.mempoolSpendTxValue,
     required this.mempoolReceiveTxValue,
     required this.tooManyUnconfirmed,
   });
+
+  int mempoolSpendTxValue = 0;
+  int mempoolReceiveTxValue = 0;
+  bool tooManyUnconfirmed = false;
 
   Map<String, dynamic> toJson() => {
         'mempoolSpendTxValue': mempoolSpendTxValue,
@@ -99,34 +99,6 @@ class BitcoinBalance {
     setTooManyUnconfirmed(unconfirmedBalance.tooManyUnconfirmed);
   }
 
-  int getImmature() {
-    return balance.immature;
-  }
-
-  int getTrustedPending() {
-    return balance.trustedPending;
-  }
-
-  int getUntrustedPending() {
-    return balance.untrustedPending;
-  }
-
-  int getConfirmed() {
-    return balance.confirmed;
-  }
-
-  int getSpendable() {
-    return balance.spendable;
-  }
-
-  int getTotal() {
-    return balance.total;
-  }
-
-  UnconfirmedBalance getUnconfirmed() {
-    return _unconfirmedBalance;
-  }
-
   Map<String, dynamic> toJson() => {
         'immature': balance.immature,
         'trustedPending': balance.trustedPending,
@@ -148,6 +120,8 @@ class BitcoinBalance {
   int get trustedPending => balance.trustedPending;
 
   int get immature => balance.immature;
+
+  UnconfirmedBalance get unconfirmed => _unconfirmedBalance;
 }
 
 Future<AddressInfo> getAddressInfo({
@@ -510,7 +484,7 @@ class BitcoinWallet {
       final res = await blockchain.getHeight();
       return res;
     } on FfiException catch (e) {
-      throw (e.message);
+      throw e.message;
     }
   }
 
@@ -519,7 +493,7 @@ class BitcoinWallet {
       final res = await blockchain.getTx(txid);
       return await Transaction.create(transactionBytes: res.toU8a());
     } on FfiException catch (e) {
-      throw (e.message);
+      throw e.message;
     }
   }
 
@@ -589,6 +563,20 @@ class BitcoinWallet {
       (previousValue, element) => previousValue + element.satoshis,
     );
     return res;
+  }
+
+  Future<int?> getSendBTCFee({
+    required String toAddress,
+    required int amount,
+    required int feeRate,
+  }) async {
+    final txr = await createSendBTC(
+      toAddress: toAddress,
+      amount: amount,
+      feeRate: feeRate,
+    );
+    final signed = await sign(txr);
+    return signed.psbt.feeAmount();
   }
 
   /// ====== OrdTransaction ======
@@ -698,6 +686,22 @@ class BitcoinWallet {
     final res = await builder.finish(wallet);
     res.addInputs(nonIns);
     return res;
+  }
+
+  Future<int?> getSendInscriptionFee({
+    required String toAddress,
+    required String insId,
+    required int feeRate,
+    int? outputValue,
+  }) async {
+    final txr = await createSendInscription(
+      toAddress: toAddress,
+      insId: insId,
+      feeRate: feeRate,
+      outputValue: outputValue,
+    );
+    final signed = await sign(txr);
+    return signed.psbt.feeAmount();
   }
 
   // ====== OrdTransaction ======
