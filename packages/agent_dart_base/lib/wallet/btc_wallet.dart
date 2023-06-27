@@ -54,24 +54,77 @@ class UtxoHandlers {
 
 const UTXO_DUST = 546;
 
+class UnconfirmedBalance {
+  int mempoolSpendTxValue = 0;
+  int mempoolReceiveTxValue = 0;
+  bool tooManyUnconfirmed = false;
+  UnconfirmedBalance({
+    required this.mempoolSpendTxValue,
+    required this.mempoolReceiveTxValue,
+    required this.tooManyUnconfirmed,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'mempoolSpendTxValue': mempoolSpendTxValue,
+        'mempoolReceiveTxValue': mempoolReceiveTxValue,
+        'tooManyUnconfirmed': tooManyUnconfirmed,
+      };
+}
+
 class BitcoinBalance {
   BitcoinBalance._(this.balance);
 
   final Balance balance;
-  int mempoolSpendTxValue = 0;
-  int mempoolReceiveTxValue = 0;
-  bool tooManyUnconfirmed = false;
+  final UnconfirmedBalance _unconfirmedBalance = UnconfirmedBalance(
+    mempoolReceiveTxValue: 0,
+    mempoolSpendTxValue: 0,
+    tooManyUnconfirmed: false,
+  );
 
   void setMempoolSpendTxValue(int value) {
-    mempoolSpendTxValue = value;
+    _unconfirmedBalance.mempoolSpendTxValue = value;
   }
 
   void setMempoolReceiveTxValue(int value) {
-    mempoolReceiveTxValue = value;
+    _unconfirmedBalance.mempoolReceiveTxValue = value;
   }
 
-  void settooManyUnconfirmed(bool value) {
-    tooManyUnconfirmed = value;
+  void setTooManyUnconfirmed(bool value) {
+    _unconfirmedBalance.tooManyUnconfirmed = value;
+  }
+
+  void setUnconfirmed(UnconfirmedBalance unconfirmedBalance) {
+    setMempoolReceiveTxValue(unconfirmedBalance.mempoolReceiveTxValue);
+    setMempoolSpendTxValue(unconfirmedBalance.mempoolSpendTxValue);
+    setTooManyUnconfirmed(unconfirmedBalance.tooManyUnconfirmed);
+  }
+
+  int getImmature() {
+    return balance.immature;
+  }
+
+  int getTrustedPending() {
+    return balance.trustedPending;
+  }
+
+  int getUntrustedPending() {
+    return balance.untrustedPending;
+  }
+
+  int getConfirmed() {
+    return balance.confirmed;
+  }
+
+  int getSpendable() {
+    return balance.spendable;
+  }
+
+  int getTotal() {
+    return balance.total;
+  }
+
+  UnconfirmedBalance getUnconfirmed() {
+    return _unconfirmedBalance;
   }
 
   Map<String, dynamic> toJson() => {
@@ -80,11 +133,7 @@ class BitcoinBalance {
         'untrustedPending': balance.untrustedPending,
         'confirmed': balance.confirmed,
         'spendable': balance.spendable,
-        'unconfirmed': {
-          'spendTxValue': mempoolSpendTxValue,
-          'receiveTxValue': mempoolReceiveTxValue,
-          'tooManyUnconfirmed': tooManyUnconfirmed,
-        },
+        'unconfirmed': _unconfirmedBalance.toJson(),
         'total': balance.total,
       };
 
@@ -317,7 +366,7 @@ class BitcoinWallet {
   /// Note we don't use  wallet sync anymore, use external api instead
   Future<BitcoinBalance> getBalance({
     String? address,
-    bool calculateUnconfirmed = false,
+    bool includeUnconfirmed = false,
   }) async {
     try {
       if (blockStreamApi == null) {
@@ -353,9 +402,9 @@ class BitcoinWallet {
         }
       }
       final spendable = confirmed + trustedPending;
-      final total = spendable + immature;
+      var total = spendable + immature;
 
-      if (calculateUnconfirmed) {
+      if (includeUnconfirmed) {
         final txCount = (await blockStreamApi!.getAddressStats(theAddress))
             .mempool_stats
             .tx_count;
@@ -395,7 +444,10 @@ class BitcoinWallet {
                 );
           }
         }
+
+        total = total + mempoolReceiveTxValue + mempoolSpendTxValue;
       }
+
       final finalBalance = BitcoinBalance._(
         Balance(
           immature: immature,
@@ -406,11 +458,12 @@ class BitcoinWallet {
           total: total,
         ),
       );
-      if (calculateUnconfirmed) {
-        finalBalance
-          ..setMempoolReceiveTxValue(mempoolReceiveTxValue)
-          ..setMempoolSpendTxValue(mempoolSpendTxValue)
-          ..settooManyUnconfirmed(tooManyUnconfirmed);
+      if (includeUnconfirmed) {
+        finalBalance.setUnconfirmed(UnconfirmedBalance(
+          mempoolSpendTxValue: mempoolSpendTxValue,
+          mempoolReceiveTxValue: mempoolReceiveTxValue,
+          tooManyUnconfirmed: tooManyUnconfirmed,
+        ));
       }
       return finalBalance;
     } on FfiException catch (e) {

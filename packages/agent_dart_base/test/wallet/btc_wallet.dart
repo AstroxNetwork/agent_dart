@@ -59,7 +59,6 @@ void btc_wallet() {
     'ord connect',
     () async {
       final wallet = await getWallet();
-
       wallet.connect(service: ord, api: blockstream);
       wallet.useExternalApi(true);
       print(wallet.currentSigner().address);
@@ -73,8 +72,8 @@ void btc_wallet() {
       print('\n getTx ==> \n');
       print(tx2.toJson());
 
-      final addressState = await blockstream.getAddressStats(
-          'bc1prhylusp2j4ks7ut2pu0scxtxz76p2wn849jjzay42vvvcyxy4uzqhkng7h');
+      final addressState = await blockstream
+          .getAddressStats('bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76');
       print('\n getAddressStats ==> \n');
       print(addressState.toJson());
 
@@ -94,7 +93,7 @@ void btc_wallet() {
 
       final b = await wallet.getBalance(
         address: 'bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76',
-        calculateUnconfirmed: true,
+        includeUnconfirmed: true,
       );
       print('\n getBalance ==> \n');
       print(b.toJson());
