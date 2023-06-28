@@ -58,6 +58,26 @@ class UnconfirmedBalance {
 }
 
 class BitcoinBalance {
+  factory BitcoinBalance.fromJson(Map json) {
+    final balance = Balance(
+      immature: json['immature'],
+      trustedPending: json['trustedPending'],
+      untrustedPending: json['untrustedPending'],
+      confirmed: json['confirmed'],
+      spendable: json['spendable'],
+      total: json['total'],
+    );
+    final unconfirmed = (json['unconfirmed'] as Map).cast<String, dynamic>();
+    final unconfirmedBalance = UnconfirmedBalance(
+      mempoolReceiveTxValue: unconfirmed['mempoolReceiveTxValue'],
+      mempoolSpendTxValue: unconfirmed['mempoolSpendTxValue'],
+      tooManyUnconfirmed: unconfirmed['tooManyUnconfirmed'],
+    );
+    final bitcoinBalance = BitcoinBalance._(balance);
+    bitcoinBalance.setUnconfirmed(unconfirmedBalance);
+    return bitcoinBalance;
+  }
+
   BitcoinBalance._(this.balance);
 
   final Balance balance;
@@ -491,54 +511,66 @@ class BitcoinWallet {
     }
   }
 
-  Future<UtxoHandlers> handleUtxo() async {
-    final utxos = await listUnspent();
-    final ins = <OutPointExt>[];
-    final nonIns = <OutPointExt>[];
-    final txDetails = <TxBytes>[];
-    final allIns = await listInscriptions()
-      ..sort((a, b) => b.num!.compareTo(a.num!));
+  Completer<UtxoHandlers>? _handleUtxoCompleter;
 
-    for (var i = 0; i < utxos.length; i += 1) {
-      final e = utxos[i];
-      final bytes = !_useExternalApi
-          ? Uint8List.fromList(await (await getTx(e.txId)).serialize())
-          : ((await blockchain.getTx(e.txId)).toU8a());
-      final tx = TxBytes(
-        bytes: bytes,
-        txId: e.txId,
-      );
-      txDetails.add(tx);
-      if (e.inscriptions.isNotEmpty) {
-        final idList = e.inscriptions.map((e) => e.id).toList();
-        final insList =
-            allIns.where((element) => idList.contains(element.id)).toList();
-
-        ins.add(
-          OutPointExt(
-            insList,
-            txid: e.txId,
-            vout: e.outputIndex,
-            satoshis: e.satoshis,
-            scriptPk: e.scriptPk,
-            outputIndex: e.outputIndex,
-          ),
-        );
-      } else {
-        nonIns.add(
-          OutPointExt(
-            null,
-            txid: e.txId,
-            vout: e.outputIndex,
-            satoshis: e.satoshis,
-            scriptPk: e.scriptPk,
-            outputIndex: e.outputIndex,
-          ),
-        );
-      }
+  Future<UtxoHandlers> handleUtxo({
+    bool useCache = false,
+  }) async {
+    if (_handleUtxoCompleter != null && useCache) {
+      return _handleUtxoCompleter!.future;
     }
+    final completer = Completer<UtxoHandlers>();
+    _handleUtxoCompleter = completer;
+    Future(() async {
+      final utxos = await listUnspent();
+      final ins = <OutPointExt>[];
+      final nonIns = <OutPointExt>[];
+      final txDetails = <TxBytes>[];
+      final allIns = await listInscriptions()
+        ..sort((a, b) => b.num!.compareTo(a.num!));
 
-    return UtxoHandlers(ins: ins, nonIns: nonIns, txs: txDetails);
+      for (var i = 0; i < utxos.length; i += 1) {
+        final e = utxos[i];
+        final bytes = !_useExternalApi
+            ? Uint8List.fromList(await (await getTx(e.txId)).serialize())
+            : ((await blockchain.getTx(e.txId)).toU8a());
+        final tx = TxBytes(
+          bytes: bytes,
+          txId: e.txId,
+        );
+        txDetails.add(tx);
+        if (e.inscriptions.isNotEmpty) {
+          final idList = e.inscriptions.map((e) => e.id).toList();
+          final insList =
+              allIns.where((element) => idList.contains(element.id)).toList();
+
+          ins.add(
+            OutPointExt(
+              insList,
+              txid: e.txId,
+              vout: e.outputIndex,
+              satoshis: e.satoshis,
+              scriptPk: e.scriptPk,
+              outputIndex: e.outputIndex,
+            ),
+          );
+        } else {
+          nonIns.add(
+            OutPointExt(
+              null,
+              txid: e.txId,
+              vout: e.outputIndex,
+              satoshis: e.satoshis,
+              scriptPk: e.scriptPk,
+              outputIndex: e.outputIndex,
+            ),
+          );
+        }
+      }
+      return UtxoHandlers(ins: ins, nonIns: nonIns, txs: txDetails);
+    }).then(completer.complete).catchError(completer.completeError);
+
+    return completer.future;
   }
 
   Future<int> getSafeBalance() async {
