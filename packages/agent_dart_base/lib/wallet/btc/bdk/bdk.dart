@@ -44,7 +44,7 @@ class Address {
     }
   }
 
-  static Future<AddressType> getAddressType({required String address}) async {
+  static Future<AddressType> getAddressType(String address) async {
     try {
       final res = await AgentDartFFI.impl
           .getAddressTypeStaticMethodApi(address: address);
