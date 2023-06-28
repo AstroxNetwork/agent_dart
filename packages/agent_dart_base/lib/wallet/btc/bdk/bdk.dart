@@ -52,8 +52,7 @@ class Address {
     try {
       final res = await AgentDartFFI.impl
           .getAddressTypeStaticMethodApi(address: address);
-
-      return addressTypefromString(res);
+      return AddressType.fromRaw(res);
     } on FfiException catch (e) {
       throw configException(e.message);
     }
@@ -85,7 +84,7 @@ class Address {
   Future<bridge.Script> scriptPubKey() async {
     try {
       final res = await AgentDartFFI.impl
-          .addressToScriptPubkeyStaticMethodApi(address: address.toString());
+          .addressToScriptPubkeyStaticMethodApi(address: address);
       return res;
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -94,7 +93,7 @@ class Address {
 
   @override
   String toString() {
-    return address.toString();
+    return address;
   }
 }
 
@@ -1144,8 +1143,9 @@ class TxBuilder {
   TxBuilder addForeignUtxo(OutPointExt ext) {
     _foreign_utxos.add(
       ForeignUtxo(
-          outpoint: OutPoint(txid: ext.txid, vout: ext.vout),
-          txout: TxOutForeign(value: ext.satoshis, scriptPubkey: ext.scriptPk)),
+        outpoint: OutPoint(txid: ext.txid, vout: ext.vout),
+        txout: TxOutForeign(value: ext.satoshis, scriptPubkey: ext.scriptPk),
+      ),
     );
     return this;
   }
@@ -1706,55 +1706,31 @@ abstract class AddressTypeString {
 }
 
 enum AddressType {
-  P2TR,
-  P2WPKH,
-  P2SH_P2WPKH,
-  P2PKH,
-}
+  P2TR('p2tr', "m/84'/0'/0'/0/0"),
+  P2WPKH('p2wpkh', "m/84'/0'/0'/0/0"),
+  P2SH_P2WPKH('p2sh', "m/49'/0'/0'/0/0"),
+  P2PKH('p2pkh', "m/44'/0'/0'/0/0"),
+  ;
 
-AddressType addressTypefromString(String str) {
-  switch (str.toLowerCase()) {
-    case AddressTypeString.P2TR:
-      return AddressType.P2TR;
-    case AddressTypeString.P2WPKH:
-      return AddressType.P2WPKH;
-    case AddressTypeString.P2SH_P2WPKH:
-      return AddressType.P2SH_P2WPKH;
-    case AddressTypeString.P2PKH:
-      return AddressType.P2PKH;
-    default:
+  const AddressType(this.raw, this.derivedPath);
+
+  factory AddressType.fromRaw(String raw) {
+    raw = raw.toLowerCase();
+    final type = AddressType.values.firstWhereOrNull((e) => e.raw == raw);
+    if (type == null) {
       throw Exception('AddressTypeExt.fromString: unknown address type');
-  }
-}
-
-extension AddressTypeExt on AddressType {
-  String toAddressString() {
-    switch (this) {
-      case AddressType.P2TR:
-        return AddressTypeString.P2TR;
-      case AddressType.P2WPKH:
-        return AddressTypeString.P2WPKH;
-      case AddressType.P2SH_P2WPKH:
-        return AddressTypeString.P2SH_P2WPKH;
-      case AddressType.P2PKH:
-        return AddressTypeString.P2PKH;
-      default:
-        throw Exception('AddressTypeExt.toAddressString: unknown address type');
     }
+    return type;
   }
 
-  String getDerivedPath() {
-    switch (this) {
-      case AddressType.P2TR:
-        return "m/86'/0'/0'/0/0";
-      case AddressType.P2WPKH:
-        return "m/84'/0'/0'/0/0";
-      case AddressType.P2SH_P2WPKH:
-        return "m/49'/0'/0'/0/0";
-      case AddressType.P2PKH:
-        return "m/44'/0'/0'/0/0";
-      default:
-        throw Exception('AddressTypeExt.toAddressString: unknown address type');
+  factory AddressType.fromName(String name) {
+    final type = AddressType.values.firstWhereOrNull((e) => e.name == name);
+    if (type == null) {
+      throw Exception('AddressTypeExt.fromString: unknown address type');
     }
+    return type;
   }
+
+  final String raw;
+  final String derivedPath;
 }
