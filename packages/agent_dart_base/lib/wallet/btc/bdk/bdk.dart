@@ -13,8 +13,10 @@ import '../../../src/ffi/io.dart';
 
 ///A Bitcoin address.
 class Address {
-  Address._(this._address);
-  final String? _address;
+  Address._(this.address, this.addressType);
+
+  final String address;
+  final AddressType addressType;
 
   /// Creates an instance of [Address] from address given.
   ///
@@ -23,7 +25,8 @@ class Address {
     try {
       final res = await AgentDartFFI.impl
           .createAddressStaticMethodApi(address: address);
-      return Address._(res);
+      final addressType = await getAddressType(res);
+      return Address._(res, addressType);
     } on FfiException catch (e) {
       throw configException(e.message);
     }
@@ -38,7 +41,8 @@ class Address {
     try {
       final res = await AgentDartFFI.impl
           .addressFromScriptStaticMethodApi(script: script, network: network);
-      return Address._(res);
+      final addressType = await getAddressType(res);
+      return Address._(res, addressType);
     } on FfiException catch (e) {
       throw configException(e.message);
     }
@@ -60,7 +64,7 @@ class Address {
   Future<Payload> payload() async {
     try {
       final res =
-          await AgentDartFFI.impl.payloadStaticMethodApi(address: _address!);
+          await AgentDartFFI.impl.payloadStaticMethodApi(address: address);
       return res;
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -70,7 +74,7 @@ class Address {
   Future<Network> network() async {
     try {
       final res = await AgentDartFFI.impl
-          .addressNetworkStaticMethodApi(address: _address!);
+          .addressNetworkStaticMethodApi(address: address);
       return res;
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -81,7 +85,7 @@ class Address {
   Future<bridge.Script> scriptPubKey() async {
     try {
       final res = await AgentDartFFI.impl
-          .addressToScriptPubkeyStaticMethodApi(address: _address.toString());
+          .addressToScriptPubkeyStaticMethodApi(address: address.toString());
       return res;
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -90,14 +94,15 @@ class Address {
 
   @override
   String toString() {
-    return _address.toString();
+    return address.toString();
   }
 }
 
 /// Blockchain backends  module provides the implementation of a few commonly-used backends like Electrum, and Esplora.
 class Blockchain {
   Blockchain._(this._blockchain);
-  final BlockchainInstance? _blockchain;
+
+  final BlockchainInstance _blockchain;
 
   ///  [Blockchain] constructor
   static Future<Blockchain> create({required BlockchainConfig config}) async {
@@ -115,7 +120,7 @@ class Blockchain {
     try {
       final res = await AgentDartFFI.impl.getBlockchainHashStaticMethodApi(
         blockchainHeight: height,
-        blockchain: _blockchain!,
+        blockchain: _blockchain,
       );
       return res;
     } on FfiException catch (e) {
@@ -127,7 +132,7 @@ class Blockchain {
   Future<int> getHeight() async {
     try {
       final res = await AgentDartFFI.impl
-          .getHeightStaticMethodApi(blockchain: _blockchain!);
+          .getHeightStaticMethodApi(blockchain: _blockchain);
       return res;
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -138,7 +143,7 @@ class Blockchain {
   Future<FeeRate> estimateFee(int target) async {
     try {
       final res = await AgentDartFFI.impl
-          .estimateFeeStaticMethodApi(blockchain: _blockchain!, target: target);
+          .estimateFeeStaticMethodApi(blockchain: _blockchain, target: target);
       return FeeRate._(res);
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -149,7 +154,7 @@ class Blockchain {
   Future<String> broadcast(Transaction tx) async {
     try {
       final txid = await AgentDartFFI.impl
-          .broadcastStaticMethodApi(blockchain: _blockchain!, tx: tx._tx!);
+          .broadcastStaticMethodApi(blockchain: _blockchain, tx: tx._tx!);
       return txid;
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -160,7 +165,7 @@ class Blockchain {
   Future<String> getTx(String txId) async {
     try {
       final txTring = await AgentDartFFI.impl
-          .getTxStaticMethodApi(blockchain: _blockchain!, tx: txId);
+          .getTxStaticMethodApi(blockchain: _blockchain, tx: txId);
       return txTring;
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -171,6 +176,7 @@ class Blockchain {
 /// The BumpFeeTxBuilder is used to bump the fee on a transaction that has been broadcast and has its RBF flag set to true.
 class BumpFeeTxBuilder {
   BumpFeeTxBuilder({required this.txid, required this.feeRate});
+
   int? _nSequence;
   String? _allowShrinking;
   bool _enableRbf = false;
@@ -238,6 +244,7 @@ class BumpFeeTxBuilder {
 ///A `BIP-32` derivation path
 class DerivationPath {
   DerivationPath._(this._path);
+
   final String? _path;
 
   ///  [DerivationPath] constructor
@@ -260,6 +267,7 @@ class DerivationPath {
 ///Script descriptor
 class Descriptor {
   Descriptor._(this._descriptorInstance);
+
   final BdkDescriptor? _descriptorInstance;
   DescriptorSecretKey? descriptorSecretKey;
 
@@ -510,6 +518,7 @@ class Descriptor {
 ///An extended public key.
 class DescriptorPublicKey {
   DescriptorPublicKey._(this._descriptorPublicKey);
+
   final String? _descriptorPublicKey;
 
   /// Get the public key as string.
@@ -576,6 +585,7 @@ class DescriptorPublicKey {
 
 class DescriptorSecretKey {
   DescriptorSecretKey._(this._descriptorSecretKey);
+
   final String _descriptorSecretKey;
   DerivationPath? derivationPath;
   String? derivedPathPrefix;
@@ -724,6 +734,7 @@ class DescriptorSecretKey {
 
 class FeeRate {
   FeeRate._(this._feeRate);
+
   final double _feeRate;
 
   double asSatPerVb() {
@@ -735,6 +746,7 @@ class FeeRate {
 /// Supported number of words are 12, 18, and 24.
 class Mnemonic {
   Mnemonic._(this._mnemonic);
+
   final String? _mnemonic;
 
   /// Generates [Mnemonic] with given [WordCount]
@@ -791,6 +803,7 @@ class Mnemonic {
 ///A Partially Signed Transaction
 class PartiallySignedTransaction {
   PartiallySignedTransaction({required this.psbtBase64});
+
   final String psbtBase64;
 
   /// Combines this [PartiallySignedTransaction] with other PSBT as described by BIP 174.
@@ -917,6 +930,7 @@ class Script extends bridge.Script {
 ///A bitcoin transaction.
 class Transaction {
   Transaction._(this._tx);
+
   final String? _tx;
 
   ///  [Transaction] constructor
@@ -1378,6 +1392,7 @@ class OutPointExt extends OutPoint {
   final int outputIndex;
   final int satoshis;
   final String scriptPk;
+
   Map<String, dynamic> toJson() => {
         'txid': txid,
         'vout': vout,
@@ -1394,6 +1409,7 @@ class TxBuilderResult {
     this.bumpFeeBuilder,
     this.signed,
   });
+
   final PartiallySignedTransaction psbt;
 
   ///The transaction details.
@@ -1522,6 +1538,7 @@ Summary in Sats
 ///
 class Wallet {
   Wallet._(this._wallet);
+
   final WalletInstance _wallet;
   String? publicKey;
 
@@ -1622,7 +1639,7 @@ class Wallet {
     try {
       await AgentDartFFI.impl.syncWalletStaticMethodApi(
         wallet: _wallet,
-        blockchain: blockchain._blockchain!,
+        blockchain: blockchain._blockchain,
       );
     } on FfiException catch (e) {
       throw configException(e.message);
