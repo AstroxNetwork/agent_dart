@@ -77,9 +77,20 @@ void btc_wallet() {
       print('\n getAddressStats ==> \n');
       print(addressState.toJson());
 
+      final a = await Address.create(
+          address:
+              'bc1paa0y2d7kqwk9szjyykan484rgzce9huyhkadpmgu4lyuxkfz4k2sjh9dup');
+      print('\n Address.create ==> \n');
+      print(a);
+
+      final addressType = await Address.getAddressType(
+          address:
+              'bc1paa0y2d7kqwk9szjyykan484rgzce9huyhkadpmgu4lyuxkfz4k2sjh9dup');
+      print('\n Address.getAddressType ==> \n');
+      print(addressType);
+
       final addessUtxo = await blockstream
           .getAddressUtxo('bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76');
-
       print('\n getAddressUtxo ==> \n');
       print(addessUtxo.map((e) => e.toJson()).toList());
 
@@ -91,12 +102,12 @@ void btc_wallet() {
       print('\n getAddressTxs ==> \n');
       print(txs.map((e) => e.toJson()).toList());
 
-      final b = await wallet.getBalance(
+      final balance = await wallet.getBalance(
         address: 'bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76',
         includeUnconfirmed: true,
       );
       print('\n getBalance ==> \n');
-      print(b.toJson());
+      print(balance.toJson());
 
       final c = await wallet.blockchain.getHeight();
       print('\n getHeight ==> \n');

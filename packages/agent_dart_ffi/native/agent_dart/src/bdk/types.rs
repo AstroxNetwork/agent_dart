@@ -10,11 +10,13 @@ use bdk_lite::bitcoin::locktime::Error;
 use bdk_lite::bitcoin::util::address::{
     Payload as BdkPayload, WitnessVersion as BdkWitnessVersion,
 };
-use bdk_lite::bitcoin::{Address as BdkAddress, OutPoint as BdkOutPoint, Txid};
+use bdk_lite::bitcoin::{
+    Address as BdkAddress, AddressType as BdkAddressType, OutPoint as BdkOutPoint, Txid,
+};
 use bdk_lite::blockchain::Progress as BdkProgress;
 
+use bdk_lite::bitcoin::hashes::hex::FromHex;
 use bdk_lite::{Balance as BdkBalance, Error as BdkError};
-use bitcoin::hashes::hex::FromHex;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::fmt::Debug;
@@ -357,6 +359,48 @@ impl From<bdk_lite::bitcoin::Network> for Network {
         }
     }
 }
+#[derive(Clone)]
+///The address type mapping
+pub enum AddressType {
+    ///P2PKH
+    P2PKH,
+    ///P2SH
+    P2SH,
+    ///P2WPKH
+    P2WPKH,
+    ///P2WSH
+    P2WSH,
+    ///P2TR
+    P2TR,
+    ///
+    Unknown,
+}
+
+impl From<BdkAddressType> for AddressType {
+    fn from(address_type: BdkAddressType) -> Self {
+        match address_type {
+            BdkAddressType::P2pkh => AddressType::P2PKH,
+            BdkAddressType::P2sh => AddressType::P2SH,
+            BdkAddressType::P2wpkh => AddressType::P2WPKH,
+            BdkAddressType::P2wsh => AddressType::P2WSH,
+            BdkAddressType::P2tr => AddressType::P2TR,
+            _ => AddressType::Unknown,
+        }
+    }
+}
+
+impl AddressType {
+    pub fn to_string(&self) -> Result<String, BdkError> {
+        match self {
+            AddressType::P2PKH => Ok("p2pkh".to_string()),
+            AddressType::P2SH => Ok("p2sh".to_string()),
+            AddressType::P2WPKH => Ok("p2wpkh".to_string()),
+            AddressType::P2WSH => Ok("p2wsh".to_string()),
+            AddressType::P2TR => Ok("p2tr".to_string()),
+            AddressType::Unknown => Err(BdkError::Generic("Unknown address type".to_string())),
+        }
+    }
+}
 
 ///Type describing entropy length (aka word count) in the mnemonic
 pub enum WordCount {
@@ -384,6 +428,22 @@ impl Address {
         BdkAddress::from_str(address.as_str())
             .map(|a| Address { address: a })
             .map_err(|e| BdkError::Generic(e.to_string()))
+    }
+
+    pub fn get_address_type(address: String) -> Result<String, BdkError> {
+        BdkAddress::from_str(address.as_str())
+            .map(|a| Address { address: a }.address_type().unwrap().to_string())
+            .map_err(|e| BdkError::Generic(e.to_string()))
+    }
+
+    pub fn address_type(&self) -> Result<String, BdkError> {
+        match self.address.address_type() {
+            None => Err(BdkError::Generic("Unknown Address Type".to_string())),
+            Some(r) => match AddressType::from(r).to_string() {
+                Ok(s) => Ok(s),
+                Err(e) => Err(BdkError::Generic(e.to_string())),
+            },
+        }
     }
 
     pub fn from_script(script: Script, network: Network) -> Result<Self, BdkError> {

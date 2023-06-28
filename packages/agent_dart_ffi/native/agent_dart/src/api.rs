@@ -800,6 +800,13 @@ impl Api {
         }
     }
 
+    pub fn get_address_type(address: String) -> anyhow::Result<String> {
+        match Address::get_address_type(address) {
+            Ok(e) => Ok(e),
+            Err(e) => anyhow::bail!("{:?}", e),
+        }
+    }
+
     //========Wallet==========
     pub fn create_wallet(
         descriptor: RustOpaque<BdkDescriptor>,
