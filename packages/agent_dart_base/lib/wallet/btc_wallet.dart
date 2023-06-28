@@ -558,7 +558,10 @@ class BitcoinWallet {
         }
       }
       return UtxoHandlers(ins: ins, nonIns: nonIns, txs: txDetails);
-    }).then(completer.complete).catchError(completer.completeError);
+    }).then(completer.complete).catchError((e, s) {
+      completer.completeError(e, s);
+      _handleUtxoCompleter = null;
+    });
 
     return completer.future;
   }
