@@ -8,8 +8,6 @@ import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
-import 'btc/bdk/bdk.dart';
-
 typedef PsbtSignature = Uint8List;
 
 enum BitcoinNetwork {
@@ -162,7 +160,7 @@ Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
       switch (addressType) {
         case AddressType.P2TR:
           descriptorSecretKey.derivationPath =
-              await DerivationPath.create(path: "m/86'/0'/0'/0/0");
+              await DerivationPath.create(path: addressType.derivedPath);
           descriptor = await Descriptor.newBip86(
             secretKey: descriptorSecretKey,
             network: network,
@@ -171,7 +169,7 @@ Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
           break;
         case AddressType.P2WPKH:
           descriptorSecretKey.derivationPath =
-              await DerivationPath.create(path: "m/84'/0'/0'/0/0");
+              await DerivationPath.create(path: addressType.derivedPath);
           descriptor = await Descriptor.newBip84(
             secretKey: descriptorSecretKey,
             network: network,
@@ -180,7 +178,7 @@ Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
           break;
         case AddressType.P2SH_P2WPKH:
           descriptorSecretKey.derivationPath =
-              await DerivationPath.create(path: "m/49'/0'/0'/0/0");
+              await DerivationPath.create(path: addressType.derivedPath);
           descriptor = await Descriptor.newBip49(
             secretKey: descriptorSecretKey,
             network: network,
@@ -189,21 +187,13 @@ Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
           break;
         case AddressType.P2PKH:
           descriptorSecretKey.derivationPath =
-              await DerivationPath.create(path: "m/44'/0'/0'/0/0");
+              await DerivationPath.create(path: addressType.derivedPath);
           descriptor = await Descriptor.newBip44(
             secretKey: descriptorSecretKey,
             network: network,
             keychain: e,
           );
           break;
-        default:
-          descriptorSecretKey.derivationPath =
-              await DerivationPath.create(path: "m/86'/0'/0'/0/0");
-          descriptor = await Descriptor.newBip86(
-            secretKey: descriptorSecretKey,
-            network: network,
-            keychain: e,
-          );
       }
 
       descriptors[e] = BTCDescriptor(
@@ -587,11 +577,13 @@ class BitcoinWallet {
     required String toAddress,
     required int amount,
     required int feeRate,
+    bool useUTXOCache = false,
   }) async {
     final txr = await createSendBTC(
       toAddress: toAddress,
       amount: amount,
       feeRate: feeRate,
+      useUTXOCache: useUTXOCache,
     );
     final signed = await sign(txr);
     return signed.psbt.feeAmount();
@@ -602,6 +594,7 @@ class BitcoinWallet {
     required String toAddress,
     required int amount,
     required int feeRate,
+    bool useUTXOCache = false,
   }) async {
     final builder = TxBuilder();
     builder.enableRbf();
@@ -611,7 +604,7 @@ class BitcoinWallet {
     final changeAddress =
         await (await Address.create(address: currentSigner().address))
             .scriptPubKey();
-    final xos = await handleUtxo();
+    final xos = await handleUtxo(useCache: useUTXOCache);
     final ins = xos.ins;
     final nonIns = xos.nonIns;
     final txs = xos.txs;
@@ -711,12 +704,14 @@ class BitcoinWallet {
     required String insId,
     required int feeRate,
     int? outputValue,
+    bool useUTXOCache = false,
   }) async {
     final txr = await createSendInscription(
       toAddress: toAddress,
       insId: insId,
       feeRate: feeRate,
       outputValue: outputValue,
+      useUTXOCache: useUTXOCache,
     );
     final signed = await sign(txr);
     return signed.psbt.feeAmount();
@@ -728,6 +723,7 @@ class BitcoinWallet {
     required String insId,
     required int feeRate,
     int? outputValue,
+    bool useUTXOCache = false,
   }) async {
     // 1. basic setting
     final builder = TxBuilder();
@@ -742,7 +738,7 @@ class BitcoinWallet {
             .scriptPubKey();
 
     // 3. handle utxo and get inscriptions
-    final xos = await handleUtxo();
+    final xos = await handleUtxo(useCache: useUTXOCache);
     final ins = xos.ins;
     final txs = xos.txs;
 

@@ -242,9 +242,9 @@ class BumpFeeTxBuilder {
 
 ///A `BIP-32` derivation path
 class DerivationPath {
-  DerivationPath._(this._path);
+  DerivationPath._(this.path);
 
-  final String? _path;
+  final String path;
 
   ///  [DerivationPath] constructor
   static Future<DerivationPath> create({required String path}) async {
@@ -259,7 +259,7 @@ class DerivationPath {
 
   @override
   String toString() {
-    return _path!;
+    return path;
   }
 }
 
@@ -542,7 +542,7 @@ class DescriptorPublicKey {
     try {
       final res = await AgentDartFFI.impl.createDescriptorPublicStaticMethodApi(
         xpub: _descriptorPublicKey,
-        path: derivationPath._path.toString(),
+        path: derivationPath.path.toString(),
         derive: true,
       );
       return DescriptorPublicKey._(res);
@@ -556,7 +556,7 @@ class DescriptorPublicKey {
     try {
       final res = await AgentDartFFI.impl.createDescriptorPublicStaticMethodApi(
         xpub: _descriptorPublicKey,
-        path: derivationPath._path.toString(),
+        path: derivationPath.path.toString(),
         derive: false,
       );
       return DescriptorPublicKey._(res);
@@ -652,7 +652,7 @@ class DescriptorSecretKey {
           await DerivationPath.create(path: '${derivedPathPrefix!}/$index');
       final res = await AgentDartFFI.impl.deriveDescriptorSecretStaticMethodApi(
         secret: _descriptorSecretKey,
-        path: derivationPath!._path.toString(),
+        path: derivationPath!.path.toString(),
       );
       final r = DescriptorSecretKey._(res);
       r.derivationPath = derivationPath;
@@ -667,7 +667,7 @@ class DescriptorSecretKey {
     try {
       final res = await AgentDartFFI.impl.deriveDescriptorSecretStaticMethodApi(
         secret: _descriptorSecretKey,
-        path: derivationPath._path.toString(),
+        path: derivationPath.path.toString(),
       );
       final r = DescriptorSecretKey._(res);
       r.derivationPath = derivationPath;
@@ -682,7 +682,7 @@ class DescriptorSecretKey {
     try {
       final res = await AgentDartFFI.impl.extendDescriptorSecretStaticMethodApi(
         secret: _descriptorSecretKey,
-        path: derivationPath._path.toString(),
+        path: derivationPath.path.toString(),
       );
       final r = DescriptorSecretKey._(res);
       r.derivationPath = derivationPath;
