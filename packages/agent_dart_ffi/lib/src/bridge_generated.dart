@@ -404,6 +404,10 @@ abstract class AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kAddressNetworkStaticMethodApiConstMeta;
 
+  Future<String> getAddressTypeStaticMethodApi({required String address, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetAddressTypeStaticMethodApiConstMeta;
+
   Future<WalletInstance> createWalletStaticMethodApi({required BdkDescriptor descriptor, BdkDescriptor? changeDescriptor, required Network network, required DatabaseConfig databaseConfig, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kCreateWalletStaticMethodApiConstMeta;
@@ -3438,6 +3442,26 @@ class AgentDartImpl implements AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kAddressNetworkStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
         debugName: "address_network__static_method__Api",
+        argNames: [
+          "address"
+        ],
+      );
+
+  Future<String> getAddressTypeStaticMethodApi({required String address, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(address);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_get_address_type__static_method__Api(port_, arg0),
+      parseSuccessData: _wire2api_String,
+      constMeta: kGetAddressTypeStaticMethodApiConstMeta,
+      argValues: [
+        address
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kGetAddressTypeStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "get_address_type__static_method__Api",
         argNames: [
           "address"
         ],

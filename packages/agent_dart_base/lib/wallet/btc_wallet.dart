@@ -29,20 +29,6 @@ class BTCDescriptor {
   final Network network;
 }
 
-abstract class AddressTypeString {
-  static const P2TR = 'p2tr';
-  static const P2WPKH = 'p2wpkh';
-  static const P2SH_P2WPKH = 'p2sh';
-  static const P2PKH = 'p2pkh';
-}
-
-enum AddressType {
-  P2TR,
-  P2WPKH,
-  P2SH_P2WPKH,
-  P2PKH,
-}
-
 class UtxoHandlers {
   UtxoHandlers({required this.ins, required this.nonIns, required this.txs});
 

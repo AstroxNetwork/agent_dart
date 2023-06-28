@@ -941,6 +941,8 @@ class AgentDartWasmModule implements WasmModule {
 
   external dynamic /* void */ wire_address_network__static_method__Api(NativePortType port_, String address);
 
+  external dynamic /* void */ wire_get_address_type__static_method__Api(NativePortType port_, String address);
+
   external dynamic /* void */ wire_create_wallet__static_method__Api(NativePortType port_, Object descriptor, Object? change_descriptor, int network, List<dynamic> database_config);
 
   external dynamic /* void */ wire_get_address__static_method__Api(NativePortType port_, Object wallet, List<dynamic> address_index);
@@ -1166,6 +1168,8 @@ class AgentDartWire extends FlutterRustBridgeWasmWireBase<AgentDartWasmModule> {
   void wire_payload__static_method__Api(NativePortType port_, String address) => wasmModule.wire_payload__static_method__Api(port_, address);
 
   void wire_address_network__static_method__Api(NativePortType port_, String address) => wasmModule.wire_address_network__static_method__Api(port_, address);
+
+  void wire_get_address_type__static_method__Api(NativePortType port_, String address) => wasmModule.wire_get_address_type__static_method__Api(port_, address);
 
   void wire_create_wallet__static_method__Api(NativePortType port_, Object descriptor, Object? change_descriptor, int network, List<dynamic> database_config) => wasmModule.wire_create_wallet__static_method__Api(port_, descriptor, change_descriptor, network, database_config);
 

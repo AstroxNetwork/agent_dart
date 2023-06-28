@@ -44,6 +44,17 @@ class Address {
     }
   }
 
+  static Future<AddressType> getAddressType({required String address}) async {
+    try {
+      final res = await AgentDartFFI.impl
+          .getAddressTypeStaticMethodApi(address: address);
+
+      return addressTypefromString(res);
+    } on FfiException catch (e) {
+      throw configException(e.message);
+    }
+  }
+
   ///The type of the address.
   ///
   Future<Payload> payload() async {
@@ -1668,4 +1679,65 @@ class Wallet {
 extension TxExt on TransactionDetails {
   Transaction? get transaction =>
       serializedTx == null ? null : Transaction._(serializedTx);
+}
+
+abstract class AddressTypeString {
+  static const P2TR = 'p2tr';
+  static const P2WPKH = 'p2wpkh';
+  static const P2SH_P2WPKH = 'p2sh';
+  static const P2PKH = 'p2pkh';
+}
+
+enum AddressType {
+  P2TR,
+  P2WPKH,
+  P2SH_P2WPKH,
+  P2PKH,
+}
+
+AddressType addressTypefromString(String str) {
+  switch (str.toLowerCase()) {
+    case AddressTypeString.P2TR:
+      return AddressType.P2TR;
+    case AddressTypeString.P2WPKH:
+      return AddressType.P2WPKH;
+    case AddressTypeString.P2SH_P2WPKH:
+      return AddressType.P2SH_P2WPKH;
+    case AddressTypeString.P2PKH:
+      return AddressType.P2PKH;
+    default:
+      throw Exception('AddressTypeExt.fromString: unknown address type');
+  }
+}
+
+extension AddressTypeExt on AddressType {
+  String toAddressString() {
+    switch (this) {
+      case AddressType.P2TR:
+        return AddressTypeString.P2TR;
+      case AddressType.P2WPKH:
+        return AddressTypeString.P2WPKH;
+      case AddressType.P2SH_P2WPKH:
+        return AddressTypeString.P2SH_P2WPKH;
+      case AddressType.P2PKH:
+        return AddressTypeString.P2PKH;
+      default:
+        throw Exception('AddressTypeExt.toAddressString: unknown address type');
+    }
+  }
+
+  String getDerivedPath() {
+    switch (this) {
+      case AddressType.P2TR:
+        return "m/86'/0'/0'/0/0";
+      case AddressType.P2WPKH:
+        return "m/84'/0'/0'/0/0";
+      case AddressType.P2SH_P2WPKH:
+        return "m/49'/0'/0'/0/0";
+      case AddressType.P2PKH:
+        return "m/44'/0'/0'/0/0";
+      default:
+        throw Exception('AddressTypeExt.toAddressString: unknown address type');
+    }
+  }
 }

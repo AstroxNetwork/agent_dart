@@ -1715,6 +1715,22 @@ fn wire_address_network__static_method__Api_impl(
         },
     )
 }
+fn wire_get_address_type__static_method__Api_impl(
+    port_: MessagePort,
+    address: impl Wire2Api<String> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_address_type__static_method__Api",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_address = address.wire2api();
+            move |task_callback| Api::get_address_type(api_address)
+        },
+    )
+}
 fn wire_create_wallet__static_method__Api_impl(
     port_: MessagePort,
     descriptor: impl Wire2Api<RustOpaque<BdkDescriptor>> + UnwindSafe,
@@ -2987,6 +3003,11 @@ mod web {
     #[wasm_bindgen]
     pub fn wire_address_network__static_method__Api(port_: MessagePort, address: String) {
         wire_address_network__static_method__Api_impl(port_, address)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire_get_address_type__static_method__Api(port_: MessagePort, address: String) {
+        wire_get_address_type__static_method__Api_impl(port_, address)
     }
 
     #[wasm_bindgen]
@@ -4775,6 +4796,14 @@ mod io {
         address: *mut wire_uint_8_list,
     ) {
         wire_address_network__static_method__Api_impl(port_, address)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn wire_get_address_type__static_method__Api(
+        port_: i64,
+        address: *mut wire_uint_8_list,
+    ) {
+        wire_get_address_type__static_method__Api_impl(port_, address)
     }
 
     #[no_mangle]
