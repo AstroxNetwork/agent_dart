@@ -41,5 +41,8 @@ xcodebuild -create-xcframework \
         -output $FRAMEWORK
 zip -r $FRAMEWORK.zip $FRAMEWORK
 
+cp -r -f $FRAMEWORK ../packages/agent_dart/ios/Frameworks
+cp -r -f $FRAMEWORK ../packages/agent_dart/macos/Frameworks
+
 # Cleanup
 rm -rf ios-sim-lipo mac-lipo $FRAMEWORK
