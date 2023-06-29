@@ -26,6 +26,8 @@ cargo ndk -o $JNI_DIR \
         -t x86_64 \
         build --release 
 
+cp -r -f $JNI_DIR ../packages/agent_dart/android/src/main
+
 # Archive the dynamic libs
 cd $JNI_DIR
 tar -czvf ../android.tar.gz *
