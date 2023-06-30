@@ -6,6 +6,7 @@
 .DS_Store
 /build
 /captures
+/.cxx
 
 # Ignore Rust binaries
 src/main/jniLibs/
