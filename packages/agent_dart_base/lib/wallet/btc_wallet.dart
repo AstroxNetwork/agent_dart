@@ -15,16 +15,24 @@ enum BitcoinNetwork {
   testnet,
 }
 
-class ReciverItem {
+class ReceiverItem {
+  ReceiverItem({
+    required this.address,
+    required this.amount,
+  });
+
   final String address;
   final int amount;
-  ReciverItem({required this.address, required this.amount});
 }
 
-class ReciverItemWithAddress {
+class ReceiverItemWithAddress {
+  ReceiverItemWithAddress({
+    required this.address,
+    required this.amount,
+  });
+
   final Address address;
   final int amount;
-  ReciverItemWithAddress({required this.address, required this.amount});
 }
 
 class BTCDescriptor {
@@ -714,8 +722,22 @@ class BitcoinWallet {
     return res;
   }
 
+  Future<int?> getSendMultiBTCFee({
+    required List<ReceiverItem> toAddresses,
+    required int feeRate,
+    bool useUTXOCache = false,
+  }) async {
+    final txr = await createSendMultiBTC(
+      toAddresses: toAddresses,
+      feeRate: feeRate,
+      useUTXOCache: useUTXOCache,
+    );
+    final signed = await sign(txr);
+    return signed.psbt.feeAmount();
+  }
+
   Future<TxBuilderResult> createSendMultiBTC({
-    required List<ReciverItem> toAddresses,
+    required List<ReceiverItem> toAddresses,
     required int feeRate,
     bool useUTXOCache = false,
   }) async {
@@ -725,10 +747,10 @@ class BitcoinWallet {
     builder.feeRate(feeRate.toDouble());
 
     int amount = 0;
-    // foramted addresses
-    final formatedAddresses = <ReciverItemWithAddress>[];
+    // formatted addresses
+    final formattedAddresses = <ReceiverItemWithAddress>[];
     for (var i = 0; i < toAddresses.length; i++) {
-      formatedAddresses.add(ReciverItemWithAddress(
+      formattedAddresses.add(ReceiverItemWithAddress(
           address: await Address.create(address: toAddresses[i].address),
           amount: toAddresses[i].amount));
     }
@@ -752,8 +774,8 @@ class BitcoinWallet {
       }
     }
 
-    for (var i = 0; i < formatedAddresses.length; i++) {
-      final formatedAddress = formatedAddresses[i];
+    for (var i = 0; i < formattedAddresses.length; i++) {
+      final formattedAddress = formattedAddresses[i];
       // recepient setting
       // calculate output amount
       builder.addOutput(
@@ -762,16 +784,16 @@ class BitcoinWallet {
           outputIndex: 0,
           txid: '',
           vout: 0,
-          satoshis: formatedAddress.amount,
+          satoshis: formattedAddress.amount,
           scriptPk:
-              (await formatedAddress.address.scriptPubKey()).internal.toHex(),
+              (await formattedAddress.address.scriptPubKey()).internal.toHex(),
         ),
       );
       builder.addRecipient(
-        await formatedAddress.address.scriptPubKey(),
-        formatedAddress.amount,
+        await formattedAddress.address.scriptPubKey(),
+        formattedAddress.amount,
       );
-      amount += formatedAddress.amount;
+      amount += formattedAddress.amount;
     }
 
     final outputAmount =
@@ -1020,6 +1042,24 @@ class BitcoinWallet {
     res.addInputs(tempInputs);
 
     return res;
+  }
+
+  Future<int?> getSendMultiInscriptionsFee({
+    required String toAddress,
+    required List<String> insIds,
+    required int feeRate,
+    int? outputValue,
+    bool useUTXOCache = false,
+  }) async {
+    final txr = await createSendMultiInscriptions(
+      toAddress: toAddress,
+      insIds: insIds,
+      feeRate: feeRate,
+      outputValue: outputValue,
+      useUTXOCache: useUTXOCache,
+    );
+    final signed = await sign(txr);
+    return signed.psbt.feeAmount();
   }
 
   // ====== OrdTransaction ======
