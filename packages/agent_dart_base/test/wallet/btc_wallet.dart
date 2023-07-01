@@ -84,8 +84,7 @@ void btc_wallet() {
       print(a);
 
       final addressType = await Address.getAddressType(
-          address:
-              'bc1paa0y2d7kqwk9szjyykan484rgzce9huyhkadpmgu4lyuxkfz4k2sjh9dup');
+          'bc1paa0y2d7kqwk9szjyykan484rgzce9huyhkadpmgu4lyuxkfz4k2sjh9dup');
       print('\n Address.getAddressType ==> \n');
       print(addressType);
 
@@ -136,11 +135,31 @@ void btc_wallet() {
       // final btcTxId = await wallet.broadCast(signedBtcTX);
       // print(btcTxId)
 
+      // final btcTx = await wallet.createSendMultiBTC(
+      //   toAddresses: [
+      //     ReciverItem(
+      //         address:
+      //             'bc1prhylusp2j4ks7ut2pu0scxtxz76p2wn849jjzay42vvvcyxy4uzqhkng7h',
+      //         amount: 560),
+      //     ReciverItem(
+      //         address:
+      //             'bc1pkv9d7upgvuer37j79dpgkvkugk4z6jtt6gnjvd383duassc82mdqv73r35',
+      //         amount: 560)
+      //   ],
+      //   feeRate: 1,
+      // );
+
+      // await btcTx.dumpTx();
+
+      // final signedBtcTX = await wallet.sign(btcTx);
+
       // send an ordTx
-      // final ordTx = await wallet.createSendInscription(
+      // final ordTx = await wallet.createSendMultiInscriptions(
       //   toAddress: 'bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76',
-      //   insId:
-      //       '154f473080e054795e2e678ea20e0bdc482088abfef3e7e2cb9849441db3ade3i0',
+      //   insIds: [
+      //     '154f473080e054795e2e678ea20e0bdc482088abfef3e7e2cb9849441db3ade3i0',
+      //     '17f6144dcddcea0ca0e7c2267878fafd862d3d0cef016539243a11eb86b631e0i0'
+      //   ],
       //   feeRate: 1,
       //   outputValue: 546,
       // );
