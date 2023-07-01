@@ -1081,4 +1081,19 @@ class BitcoinWallet {
       throw e.message;
     }
   }
+
+  Future<String> signPsbt(String psbtHex) async {
+    try {
+      if (isHex(psbtHex)) {
+        final psbt = PartiallySignedTransaction(
+            psbtBase64: base64Encode(psbtHex.toU8a()));
+        final res = await wallet.sign(psbt: psbt);
+        return base64Decode(res.psbtBase64).toHex();
+      } else {
+        throw Exception('Invalid psbt hex');
+      }
+    } on FfiException catch (e) {
+      throw e.message;
+    }
+  }
 }
