@@ -377,7 +377,7 @@ class BitcoinWallet {
         final u = utxos[i];
 
         if (u.status.confirmed) {
-          final tx = await getTx(u.txid);
+          final tx = await getTxFromTxId(u.txid);
 
           final blockHeight = await blockchain.getHeight();
 
@@ -507,6 +507,15 @@ class BitcoinWallet {
   Future<Transaction> getTx(String txid) async {
     try {
       final res = await blockchain.getTx(txid);
+      return await Transaction.create(transactionBytes: res.toU8a());
+    } on FfiException catch (e) {
+      throw e.message;
+    }
+  }
+
+  Future<Transaction> getTxFromTxId(String txid) async {
+    try {
+      final res = await blockStreamApi!.getTxHex(txid);
       return await Transaction.create(transactionBytes: res.toU8a());
     } on FfiException catch (e) {
       throw e.message;
