@@ -134,4 +134,13 @@ class BlockStreamApi {
 
     return int.parse(response.toJson()['body'].toString(), radix: 10);
   }
+
+  Future<String> broadcastTx(String txHex) async {
+    final response = await _client.httpPostString(
+      '/tx',
+      txHex,
+      _override,
+    );
+    return response.toJson()['body'];
+  }
 }
