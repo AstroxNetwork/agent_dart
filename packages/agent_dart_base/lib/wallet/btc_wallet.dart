@@ -379,7 +379,7 @@ class BitcoinWallet {
         if (u.status.confirmed) {
           final tx = await getTxFromTxId(u.txid);
 
-          final blockHeight = await blockchain.getHeight();
+          final blockHeight = await getHeight();
 
           if (await tx.isCoinBase() &&
               (blockHeight - u.status.block_height!) < COINBASE_MATURITY) {
@@ -497,7 +497,7 @@ class BitcoinWallet {
 
   Future<int> getHeight() async {
     try {
-      final res = await blockchain.getHeight();
+      final res = await blockStreamApi!.getBlockHeight();
       return res;
     } on FfiException catch (e) {
       throw e.message;
@@ -551,8 +551,10 @@ class BitcoinWallet {
       for (var i = 0; i < utxos.length; i += 1) {
         final e = utxos[i];
         final bytes = !_useExternalApi
-            ? Uint8List.fromList(await (await getTx(e.txId)).serialize())
-            : ((await blockchain.getTx(e.txId)).toU8a());
+            ? Uint8List.fromList(
+                await (await getTxFromTxId(e.txId)).serialize(),
+              )
+            : ((await blockStreamApi!.getTxHex(e.txId)).toU8a());
         final tx = TxBytes(
           bytes: bytes,
           txId: e.txId,

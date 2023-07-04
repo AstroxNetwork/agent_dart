@@ -160,7 +160,7 @@ class Blockchain {
     }
   }
 
-  /// The function for broadcasting a transaction
+  /// The function for getting a transaction
   Future<String> getTx(String txId) async {
     try {
       final txTring = await AgentDartFFI.impl
