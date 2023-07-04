@@ -523,14 +523,10 @@ class BitcoinWallet {
   }
 
   Future<String> broadCast(TxBuilderResult tx) async {
-    // try {
-    //   return await blockchain.broadcast(await tx.psbt.extractTx());
-    // } on FfiException catch (e) {
-    //   throw e.message;
-    // }
     try {
       final theTx = await tx.psbt.extractTx();
-      return await blockStreamApi!.broadcastTx(theTx.toString());
+      return await blockStreamApi!
+          .broadcastTx(Uint8List.fromList(await theTx.serialize()).toHex());
     } on FfiException catch (e) {
       throw e.message;
     }
