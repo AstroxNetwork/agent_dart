@@ -124,4 +124,14 @@ class BlockStreamApi {
 
     return response.toJson()['body'];
   }
+
+  Future<int> getBlockHeight() async {
+    final response = await _client.httpGet(
+      '/blocks/tip/height',
+      {},
+      _override,
+    );
+
+    return int.parse(response.toJson()['body'].toString(), radix: 10);
+  }
 }
