@@ -37,7 +37,7 @@ void btc_wallet() {
   Future<BitcoinWallet> getWallet() async {
     final wallet = await BitcoinWallet.fromPhrase(
       (await Mnemonic.create(WordCount.Words12)).asString(),
-      addressType: AddressType.P2TR,
+      addressType: AddressType.P2SH_P2WPKH,
     );
 
     await wallet.selectSigner(0);
@@ -63,54 +63,54 @@ void btc_wallet() {
       wallet.useExternalApi(true);
       print(wallet.currentSigner().address);
 
-      final us = await wallet.listUnspent();
-      us.forEach((e) => print(e.toJson()));
+      // final us = await wallet.listUnspent();
+      // us.forEach((e) => print(e.toJson()));
 
-      final tx2 = await blockstream.getTx(
-          'ad4370edce9d1671f7fdc8bf56e409a4d82a6a9044531b1567daccdcd76e14df');
-      // print(tx2);
-      print('\n getTx ==> \n');
-      print(tx2.toJson());
+      // final tx2 = await blockstream.getTx(
+      //     'ad4370edce9d1671f7fdc8bf56e409a4d82a6a9044531b1567daccdcd76e14df');
+      // // print(tx2);
+      // print('\n getTx ==> \n');
+      // print(tx2.toJson());
 
-      final addressState = await blockstream
-          .getAddressStats('bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76');
-      print('\n getAddressStats ==> \n');
-      print(addressState.toJson());
+      // final addressState = await blockstream
+      //     .getAddressStats('bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76');
+      // print('\n getAddressStats ==> \n');
+      // print(addressState.toJson());
 
-      final a = await Address.create(
-          address:
-              'bc1paa0y2d7kqwk9szjyykan484rgzce9huyhkadpmgu4lyuxkfz4k2sjh9dup');
-      print('\n Address.create ==> \n');
-      print(a);
+      // final a = await Address.create(
+      //     address:
+      //         'bc1paa0y2d7kqwk9szjyykan484rgzce9huyhkadpmgu4lyuxkfz4k2sjh9dup');
+      // print('\n Address.create ==> \n');
+      // print(a);
 
-      final addressType = await Address.getAddressType(
-          'bc1paa0y2d7kqwk9szjyykan484rgzce9huyhkadpmgu4lyuxkfz4k2sjh9dup');
-      print('\n Address.getAddressType ==> \n');
-      print(addressType);
+      // final addressType = await Address.getAddressType(
+      //     'bc1paa0y2d7kqwk9szjyykan484rgzce9huyhkadpmgu4lyuxkfz4k2sjh9dup');
+      // print('\n Address.getAddressType ==> \n');
+      // print(addressType);
 
-      final addessUtxo = await blockstream
-          .getAddressUtxo('bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76');
-      print('\n getAddressUtxo ==> \n');
-      print(addessUtxo.map((e) => e.toJson()).toList());
+      // final addessUtxo = await blockstream
+      //     .getAddressUtxo('bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76');
+      // print('\n getAddressUtxo ==> \n');
+      // print(addessUtxo.map((e) => e.toJson()).toList());
 
-      final txs = await blockstream.getAddressTxs(
-        address: 'bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76',
-        filter: TxsFilter.Unconfirmed,
-      );
+      // final txs = await blockstream.getAddressTxs(
+      //   address: 'bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76',
+      //   filter: TxsFilter.Unconfirmed,
+      // );
 
-      print('\n getAddressTxs ==> \n');
-      print(txs.map((e) => e.toJson()).toList());
+      // print('\n getAddressTxs ==> \n');
+      // print(txs.map((e) => e.toJson()).toList());
 
-      final balance = await wallet.getBalance(
-        address: 'bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76',
-        includeUnconfirmed: true,
-      );
-      print('\n getBalance ==> \n');
-      print(balance.toJson());
+      // final balance = await wallet.getBalance(
+      //   address: 'bc1qpxekutw2eq0jcmzx39gr5a75hdtuywt6uamt76',
+      //   includeUnconfirmed: true,
+      // );
+      // print('\n getBalance ==> \n');
+      // print(balance.toJson());
 
-      final c = await wallet.blockchain.getHeight();
-      print('\n getHeight ==> \n');
-      print(c);
+      // final c = await wallet.blockchain.getHeight();
+      // print('\n getHeight ==> \n');
+      // print(c);
 
       // final ins = await ord.getInscriptions(
       //   'bc1prhylusp2j4ks7ut2pu0scxtxz76p2wn849jjzay42vvvcyxy4uzqhkng7h',
@@ -125,15 +125,15 @@ void btc_wallet() {
       // final btcTx = await wallet.createSendBTC(
       //   toAddress:
       //       'bc1prhylusp2j4ks7ut2pu0scxtxz76p2wn849jjzay42vvvcyxy4uzqhkng7h',
-      //   amount: 508,
-      //   feeRate: 1,
+      //   amount: 10086,
+      //   feeRate: 12,
       // );
 
       // await btcTx.dumpTx();
 
       // final signedBtcTX = await wallet.sign(btcTx);
       // final btcTxId = await wallet.broadCast(signedBtcTX);
-      // print(btcTxId)
+      // print(btcTxId);
 
       // final btcTx = await wallet.createSendMultiBTC(
       //   toAddresses: [
