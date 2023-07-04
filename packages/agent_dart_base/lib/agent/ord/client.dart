@@ -116,6 +116,31 @@ class OrdClient {
     return CallResponseBody.fromJson({...response});
   }
 
+  Future<SubmitResponse> httpPostString(
+    String endpoint,
+    String body,
+    OverrideOptions? override,
+  ) async {
+    final response = await _fetch!(
+      host: override?.host ?? _host,
+      endpoint: endpoint,
+      method: FetchMethod.post,
+      headers: {
+        ...override?.headers ?? {},
+      },
+      body: body,
+    );
+
+    if (!(response['ok'] as bool)) {
+      throw AgentFetchError(
+        statusCode: response['statusCode'],
+        statusText: response['statusText'],
+        body: response[body],
+      );
+    }
+    return CallResponseBody.fromJson({...response});
+  }
+
   Future<SubmitResponse> httpGet(
     String endpoint,
     Map<String, dynamic> body,
