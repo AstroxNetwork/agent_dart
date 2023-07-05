@@ -543,13 +543,13 @@ class BitcoinWallet {
     final completer = Completer<UtxoHandlers>();
     _handleUtxoCompleter = completer;
     Future(() async {
-      final utxos = await listUnspent();
+      final rets = await Future.wait([listUnspent(), listInscriptions()]);
+      final List<Utxo> utxos = rets[0] as List<Utxo>;
+      final List<InscriptionItem> allIns = (rets[1] as List<InscriptionItem>)
+        ..sort((a, b) => b.num!.compareTo(a.num!));
       final ins = <OutPointExt>[];
       final nonIns = <OutPointExt>[];
       final txDetails = <TxBytes>[];
-      final allIns = await listInscriptions()
-        ..sort((a, b) => b.num!.compareTo(a.num!));
-
       for (var i = 0; i < utxos.length; i += 1) {
         final e = utxos[i];
         final bytes = !_useExternalApi
@@ -563,10 +563,9 @@ class BitcoinWallet {
         );
         txDetails.add(tx);
         if (e.inscriptions.isNotEmpty) {
-          final idList = e.inscriptions.map((e) => e.id).toList();
+          final idList = e.inscriptions.map((e) => e.id).toSet();
           final insList =
               allIns.where((element) => idList.contains(element.id)).toList();
-
           ins.add(
             OutPointExt(
               insList,
