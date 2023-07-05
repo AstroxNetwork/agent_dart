@@ -609,6 +609,16 @@ class BitcoinWallet {
     return res;
   }
 
+  Future<int> getOrdinalBalance() async {
+    final xos = await handleUtxo();
+    final ins = xos.ins;
+    final res = ins.fold(
+      0,
+      (previousValue, element) => previousValue + element.satoshis,
+    );
+    return res;
+  }
+
   Future<int?> getSendBTCFee({
     required String toAddress,
     required int amount,
@@ -636,7 +646,7 @@ class BitcoinWallet {
     builder.enableRbf();
     builder.manuallySelectedOnly();
     builder.feeRate(feeRate.toDouble());
-    final formatedAddress = await Address.create(address: toAddress);
+    final formattedAddress = await Address.create(address: toAddress);
     final changeAddress =
         await (await Address.create(address: currentSigner().address))
             .scriptPubKey();
@@ -665,10 +675,10 @@ class BitcoinWallet {
         txid: '',
         vout: 0,
         satoshis: amount,
-        scriptPk: (await formatedAddress.scriptPubKey()).internal.toHex(),
+        scriptPk: (await formattedAddress.scriptPubKey()).internal.toHex(),
       ),
     );
-    builder.addRecipient(await formatedAddress.scriptPubKey(), amount);
+    builder.addRecipient(await formattedAddress.scriptPubKey(), amount);
 
     final outputAmount =
         builder.getTotalOutput() == 0 ? amount : builder.getTotalOutput();
