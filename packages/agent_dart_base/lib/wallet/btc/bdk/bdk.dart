@@ -1706,7 +1706,7 @@ abstract class AddressTypeString {
 }
 
 enum AddressType {
-  P2TR('p2tr', "m/84'/0'/0'/0/0"),
+  P2TR('p2tr', "m/86'/0'/0'/0/0"),
   P2WPKH('p2wpkh', "m/84'/0'/0'/0/0"),
   P2SH_P2WPKH('p2sh', "m/49'/0'/0'/0/0"),
   P2PKH('p2pkh', "m/44'/0'/0'/0/0"),
