@@ -8,7 +8,10 @@ import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:agent_dart_base/principal/utils/sha256.dart';
 import 'package:agent_dart_base/src/ffi/io.dart';
 import 'package:agent_dart_base/wallet/btc/bdk/buffer.dart';
+import 'package:agent_dart_base/wallet/btc/bdk/wif.dart';
+import 'package:bip32/bip32.dart';
 import 'package:collection/collection.dart';
+import 'package:dart_bs58check/dart_bs58check.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
 typedef PsbtSignature = Uint8List;
@@ -363,13 +366,30 @@ class BitcoinWallet {
   }
 
   static Future<BitcoinWallet> fromWif(
-    String wif, {
+    String wifOrHex, {
     Network network = Network.Bitcoin,
     AddressType addressType = AddressType.P2TR,
   }) async {
     // final wallet = await BitcoinWallet.fromPhrase();
-    final descriptor =
-        await importSingleWif(wif, network: network, addressType: addressType);
+    WIF wif;
+    var mayBeWif;
+    if (isHex(wifOrHex)) {
+      wif = WIF.fromHex(wifOrHex.toU8a());
+      mayBeWif = wifEncoder.convert(wif);
+    } else {
+      try {
+        wif = wifDecoder.convert(wifOrHex);
+        mayBeWif = wifEncoder.convert(wif);
+      } catch (e) {
+        rethrow;
+      }
+    }
+
+    final descriptor = await importSingleWif(
+      mayBeWif,
+      network: network,
+      addressType: addressType,
+    );
     final res = await Wallet.create(
       descriptor: descriptor.descriptor,
       changeDescriptor: descriptor.descriptor,
