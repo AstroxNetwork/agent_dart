@@ -6,6 +6,7 @@ import 'package:agent_dart_base/agent/ord/service.dart';
 import 'package:agent_dart_base/agent/ord/utxo.dart';
 import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:agent_dart_base/principal/utils/sha256.dart';
+import 'package:agent_dart_base/src/ffi/io.dart';
 import 'package:agent_dart_base/wallet/btc/bdk/buffer.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
@@ -1469,26 +1470,44 @@ class BitcoinWallet {
     }
   }
 
-  Future<String> signMessage(String message, {bool toBase64 = true}) async {
+  Future<String> signMessage(String message,
+      {bool toBase64 = true, bool useBip322 = false}) async {
     try {
       final k = await descriptor.descriptor.descriptorSecretKey!
           .deriveIndex(currentIndex() ?? 0);
 
       final kBytes = Uint8List.fromList(await k.secretBytes());
 
-      final res = await signSecp256k1WithRNG(messageHandler(message), kBytes);
+      if (!useBip322) {
+        final res = await signSecp256k1WithRNG(messageHandler(message), kBytes);
 
-      /// move v to the top, and plus 27
-      final v = res.sublist(64, 65);
-      v[0] = v[0] + 27;
+        /// move v to the top, and plus 27
+        final v = res.sublist(64, 65);
+        v[0] = v[0] + 27;
 
-      // regroup the signature
-      final msgSig = u8aConcat([v, res.sublist(0, 64)]);
+        // regroup the signature
+        final msgSig = u8aConcat([v, res.sublist(0, 64)]);
 
-      if (toBase64) {
-        return base64Encode(msgSig);
+        if (toBase64) {
+          return base64Encode(msgSig);
+        }
+        return msgSig.toHex();
+      } else {
+        String? res;
+        if (addressType == AddressType.P2TR) {
+          res = await AgentDartFFI.impl.bip322SignTaprootStaticMethodApi(
+              secret: kBytes, message: message);
+        } else {
+          res = await AgentDartFFI.impl.bip322SignSegwitStaticMethodApi(
+              secret: kBytes, message: message);
+        }
+
+        if (toBase64) {
+          return res;
+        } else {
+          return base64Decode(res).toHex();
+        }
       }
-      return msgSig.toHex();
     } on FfiException catch (e) {
       throw e.message;
     }

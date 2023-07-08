@@ -2017,6 +2017,42 @@ fn wire_generate_seed_from_entropy__static_method__Api_impl(
         },
     )
 }
+fn wire_bip322_sign_segwit__static_method__Api_impl(
+    port_: MessagePort,
+    secret: impl Wire2Api<Vec<u8>> + UnwindSafe,
+    message: impl Wire2Api<String> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "bip322_sign_segwit__static_method__Api",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_secret = secret.wire2api();
+            let api_message = message.wire2api();
+            move |task_callback| Ok(Api::bip322_sign_segwit(api_secret, api_message))
+        },
+    )
+}
+fn wire_bip322_sign_taproot__static_method__Api_impl(
+    port_: MessagePort,
+    secret: impl Wire2Api<Vec<u8>> + UnwindSafe,
+    message: impl Wire2Api<String> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "bip322_sign_taproot__static_method__Api",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_secret = secret.wire2api();
+            let api_message = message.wire2api();
+            move |task_callback| Ok(Api::bip322_sign_taproot(api_secret, api_message))
+        },
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks
@@ -3155,6 +3191,24 @@ mod web {
         entropy: Box<[u8]>,
     ) {
         wire_generate_seed_from_entropy__static_method__Api_impl(port_, entropy)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire_bip322_sign_segwit__static_method__Api(
+        port_: MessagePort,
+        secret: Box<[u8]>,
+        message: String,
+    ) {
+        wire_bip322_sign_segwit__static_method__Api_impl(port_, secret, message)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire_bip322_sign_taproot__static_method__Api(
+        port_: MessagePort,
+        secret: Box<[u8]>,
+        message: String,
+    ) {
+        wire_bip322_sign_taproot__static_method__Api_impl(port_, secret, message)
     }
 
     // Section: allocate functions
@@ -4986,6 +5040,24 @@ mod io {
         entropy: *mut wire_uint_8_list,
     ) {
         wire_generate_seed_from_entropy__static_method__Api_impl(port_, entropy)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn wire_bip322_sign_segwit__static_method__Api(
+        port_: i64,
+        secret: *mut wire_uint_8_list,
+        message: *mut wire_uint_8_list,
+    ) {
+        wire_bip322_sign_segwit__static_method__Api_impl(port_, secret, message)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn wire_bip322_sign_taproot__static_method__Api(
+        port_: i64,
+        secret: *mut wire_uint_8_list,
+        message: *mut wire_uint_8_list,
+    ) {
+        wire_bip322_sign_taproot__static_method__Api_impl(port_, secret, message)
     }
 
     // Section: allocate functions
