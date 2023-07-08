@@ -472,6 +472,14 @@ abstract class AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kGenerateSeedFromEntropyStaticMethodApiConstMeta;
 
+  Future<String> bip322SignSegwitStaticMethodApi({required Uint8List secret, required String message, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kBip322SignSegwitStaticMethodApiConstMeta;
+
+  Future<String> bip322SignTaprootStaticMethodApi({required Uint8List secret, required String message, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kBip322SignTaprootStaticMethodApiConstMeta;
+
   DropFnType get dropOpaqueBdkDescriptor;
   ShareFnType get shareOpaqueBdkDescriptor;
   OpaqueTypeFinalizer get BdkDescriptorFinalizer;
@@ -3831,6 +3839,52 @@ class AgentDartImpl implements AgentDart {
         debugName: "generate_seed_from_entropy__static_method__Api",
         argNames: [
           "entropy"
+        ],
+      );
+
+  Future<String> bip322SignSegwitStaticMethodApi({required Uint8List secret, required String message, dynamic hint}) {
+    var arg0 = _platform.api2wire_uint_8_list(secret);
+    var arg1 = _platform.api2wire_String(message);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_bip322_sign_segwit__static_method__Api(port_, arg0, arg1),
+      parseSuccessData: _wire2api_String,
+      constMeta: kBip322SignSegwitStaticMethodApiConstMeta,
+      argValues: [
+        secret,
+        message
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kBip322SignSegwitStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "bip322_sign_segwit__static_method__Api",
+        argNames: [
+          "secret",
+          "message"
+        ],
+      );
+
+  Future<String> bip322SignTaprootStaticMethodApi({required Uint8List secret, required String message, dynamic hint}) {
+    var arg0 = _platform.api2wire_uint_8_list(secret);
+    var arg1 = _platform.api2wire_String(message);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_bip322_sign_taproot__static_method__Api(port_, arg0, arg1),
+      parseSuccessData: _wire2api_String,
+      constMeta: kBip322SignTaprootStaticMethodApiConstMeta,
+      argValues: [
+        secret,
+        message
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kBip322SignTaprootStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "bip322_sign_taproot__static_method__Api",
+        argNames: [
+          "secret",
+          "message"
         ],
       );
 

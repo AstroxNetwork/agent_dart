@@ -2542,6 +2542,36 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _wire_generate_seed_from_entropy__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_generate_seed_from_entropy__static_method__Api');
   late final _wire_generate_seed_from_entropy__static_method__Api = _wire_generate_seed_from_entropy__static_method__ApiPtr.asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
+  void wire_bip322_sign_segwit__static_method__Api(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> secret,
+    ffi.Pointer<wire_uint_8_list> message,
+  ) {
+    return _wire_bip322_sign_segwit__static_method__Api(
+      port_,
+      secret,
+      message,
+    );
+  }
+
+  late final _wire_bip322_sign_segwit__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>>('wire_bip322_sign_segwit__static_method__Api');
+  late final _wire_bip322_sign_segwit__static_method__Api = _wire_bip322_sign_segwit__static_method__ApiPtr.asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_bip322_sign_taproot__static_method__Api(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> secret,
+    ffi.Pointer<wire_uint_8_list> message,
+  ) {
+    return _wire_bip322_sign_taproot__static_method__Api(
+      port_,
+      secret,
+      message,
+    );
+  }
+
+  late final _wire_bip322_sign_taproot__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>>('wire_bip322_sign_taproot__static_method__Api');
+  late final _wire_bip322_sign_taproot__static_method__Api = _wire_bip322_sign_taproot__static_method__ApiPtr.asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
   wire_BdkDescriptor new_BdkDescriptor() {
     return _new_BdkDescriptor();
   }

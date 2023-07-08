@@ -988,6 +988,10 @@ class AgentDartWasmModule implements WasmModule {
 
   external dynamic /* void */ wire_generate_seed_from_entropy__static_method__Api(NativePortType port_, Uint8List entropy);
 
+  external dynamic /* void */ wire_bip322_sign_segwit__static_method__Api(NativePortType port_, Uint8List secret, String message);
+
+  external dynamic /* void */ wire_bip322_sign_taproot__static_method__Api(NativePortType port_, Uint8List secret, String message);
+
   external dynamic /*  */ drop_opaque_BdkDescriptor(ptr);
 
   external int /* *const c_void */ share_opaque_BdkDescriptor(ptr);
@@ -1217,6 +1221,10 @@ class AgentDartWire extends FlutterRustBridgeWasmWireBase<AgentDartWasmModule> {
   void wire_generate_seed_from_string__static_method__Api(NativePortType port_, String mnemonic) => wasmModule.wire_generate_seed_from_string__static_method__Api(port_, mnemonic);
 
   void wire_generate_seed_from_entropy__static_method__Api(NativePortType port_, Uint8List entropy) => wasmModule.wire_generate_seed_from_entropy__static_method__Api(port_, entropy);
+
+  void wire_bip322_sign_segwit__static_method__Api(NativePortType port_, Uint8List secret, String message) => wasmModule.wire_bip322_sign_segwit__static_method__Api(port_, secret, message);
+
+  void wire_bip322_sign_taproot__static_method__Api(NativePortType port_, Uint8List secret, String message) => wasmModule.wire_bip322_sign_taproot__static_method__Api(port_, secret, message);
 
   dynamic /*  */ drop_opaque_BdkDescriptor(ptr) => wasmModule.drop_opaque_BdkDescriptor(ptr);
 

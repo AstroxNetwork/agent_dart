@@ -909,6 +909,14 @@ void wire_generate_seed_from_string__static_method__Api(int64_t port_,
 void wire_generate_seed_from_entropy__static_method__Api(int64_t port_,
                                                          struct wire_uint_8_list *entropy);
 
+void wire_bip322_sign_segwit__static_method__Api(int64_t port_,
+                                                 struct wire_uint_8_list *secret,
+                                                 struct wire_uint_8_list *message);
+
+void wire_bip322_sign_taproot__static_method__Api(int64_t port_,
+                                                  struct wire_uint_8_list *secret,
+                                                  struct wire_uint_8_list *message);
+
 struct wire_BdkDescriptor new_BdkDescriptor(void);
 
 struct wire_BlockchainInstance new_BlockchainInstance(void);
@@ -1147,6 +1155,8 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_generate_seed_from_word_count__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_generate_seed_from_string__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_generate_seed_from_entropy__static_method__Api);
+    dummy_var ^= ((int64_t) (void*) wire_bip322_sign_segwit__static_method__Api);
+    dummy_var ^= ((int64_t) (void*) wire_bip322_sign_taproot__static_method__Api);
     dummy_var ^= ((int64_t) (void*) new_BdkDescriptor);
     dummy_var ^= ((int64_t) (void*) new_BlockchainInstance);
     dummy_var ^= ((int64_t) (void*) new_WalletInstance);

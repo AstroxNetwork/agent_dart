@@ -36,6 +36,7 @@ use bdk_lite::keys::DescriptorSecretKey as BdkDescriptorSecretKey;
 use bdk_lite::Error;
 use flutter_rust_bridge::RustOpaque;
 
+use crate::bdk::bip322::{simple_signature_with_segwit, simple_signature_with_taproot};
 use bdk_lite::wallet::tx_builder::{ForeignUtxo as BdkForeignUtxo, TxOrdering};
 use bitcoin::hashes::hex::ToHex;
 use std::ops::Deref;
@@ -941,6 +942,14 @@ impl Api {
             Ok(e) => Ok(e.as_string()),
             Err(e) => anyhow::bail!("{:?}", e),
         }
+    }
+    //================== BIP322 ==========
+    pub fn bip322_sign_segwit(secret: Vec<u8>, message: String) -> String {
+        simple_signature_with_segwit(message.as_str(), &secret)
+    }
+
+    pub fn bip322_sign_taproot(secret: Vec<u8>, message: String) -> String {
+        simple_signature_with_taproot(message.as_str(), &secret)
     }
 }
 
