@@ -75,6 +75,10 @@ abstract class AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kSecp256K1SignConstMeta;
 
+  Future<SignatureFFI> secp256K1SignWithRng({required Secp256k1SignWithRngReq req, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kSecp256K1SignWithRngConstMeta;
+
   Future<SignatureFFI> secp256K1SignRecoverable({required Secp256k1SignWithSeedReq req, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kSecp256K1SignRecoverableConstMeta;
@@ -1152,6 +1156,16 @@ class Secp256k1ShareSecretReq {
   });
 }
 
+class Secp256k1SignWithRngReq {
+  final Uint8List msg;
+  final Uint8List privateBytes;
+
+  const Secp256k1SignWithRngReq({
+    required this.msg,
+    required this.privateBytes,
+  });
+}
+
 class Secp256k1SignWithSeedReq {
   final Uint8List msg;
   final Uint8List seed;
@@ -1632,6 +1646,26 @@ class AgentDartImpl implements AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kSecp256K1SignConstMeta => const FlutterRustBridgeTaskConstMeta(
         debugName: "secp256k1_sign",
+        argNames: [
+          "req"
+        ],
+      );
+
+  Future<SignatureFFI> secp256K1SignWithRng({required Secp256k1SignWithRngReq req, dynamic hint}) {
+    var arg0 = _platform.api2wire_box_autoadd_secp_256_k_1_sign_with_rng_req(req);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_secp256k1_sign_with_rng(port_, arg0),
+      parseSuccessData: _wire2api_signature_ffi,
+      constMeta: kSecp256K1SignWithRngConstMeta,
+      argValues: [
+        req
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kSecp256K1SignWithRngConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "secp256k1_sign_with_rng",
         argNames: [
           "req"
         ],

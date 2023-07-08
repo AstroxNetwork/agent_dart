@@ -1,20 +1,29 @@
 use crate::types::{
     Secp256k1FromSeedReq, Secp256k1RecoverReq, Secp256k1ShareSecretReq, Secp256k1SignReq,
-    Secp256k1VerifyReq, SignatureFFI,
+    Secp256k1SignWithRngReq, Secp256k1VerifyReq, SignatureFFI,
 };
-use std::convert::TryFrom;
+
+use bip32::{PrivateKey, PublicKey as Bip32PublicKey};
 
 use k256::ecdsa::signature::hazmat::PrehashSigner;
-use k256::ecdsa::signature::{Signer, Verifier};
+use k256::ecdsa::signature::{RandomizedDigestSigner, Signer, Verifier};
 use k256::ecdsa::{recoverable, signature, Signature, SigningKey, VerifyingKey};
 
+use std::convert::TryFrom;
+
+use k256::ecdsa::digest::Digest;
+use k256::elliptic_curve::rand_core::{OsRng, RngCore};
 use k256::elliptic_curve::sec1::ToEncodedPoint;
 use k256::pkcs8::DecodePublicKey;
 use k256::{
-    ecdsa,
+    //ecdsa,
     pkcs8::{Document, EncodePublicKey},
-    FieldBytes, PublicKey, Secp256k1, SecretKey,
+    FieldBytes,
+    PublicKey,
+    Secp256k1,
+    SecretKey,
 };
+use sha2::Sha256;
 
 #[derive(Clone, Debug)]
 pub struct Secp256k1FFI {
@@ -68,7 +77,7 @@ impl Secp256k1FFI {
         }
     }
     pub fn sign(&self, req: Secp256k1SignReq) -> Result<SignatureFFI, String> {
-        let ecdsa_sig: ecdsa::Signature = self
+        let ecdsa_sig: k256::ecdsa::Signature = self
             .private_key
             .try_sign(req.msg.as_slice())
             .map_err(|err| format!("Cannot create secp256k1 signature: {}", err))?;
@@ -82,6 +91,40 @@ impl Secp256k1FFI {
         bytes[32 + (32 - s.len())..].clone_from_slice(&s);
         let signature = Some(bytes.to_vec());
         let public_key = Some(self.der_encoded_public_key.as_ref().to_vec());
+        Ok(SignatureFFI {
+            public_key,
+            signature,
+        })
+    }
+    pub fn sign_with_rng(req: Secp256k1SignWithRngReq) -> Result<SignatureFFI, String> {
+        let mut aux_rand = [0u8; 32];
+        let mut rng = OsRng;
+        rng.fill_bytes(&mut aux_rand);
+
+        let mut bytes_mut = [0u8; 32];
+        bytes_mut.clone_from_slice(&req.private_bytes);
+
+        let dig = Sha256::new_with_prefix(req.msg.as_slice());
+
+        let sk = SecretKey::from_bytes(&bytes_mut).unwrap();
+
+        let ecdsa_sig: recoverable::Signature = SigningKey::from(&sk)
+            .try_sign_digest_with_rng(&mut OsRng, dig)
+            .map_err(|err| format!("Cannot create secp256k1 signature: {}", err))?;
+        let r = ecdsa_sig.r().as_ref().to_bytes();
+        let s = ecdsa_sig.s().as_ref().to_bytes();
+        let v = u8::from(ecdsa_sig.recovery_id());
+
+        let mut bytes = [0u8; 65];
+        if r.len() > 32 || s.len() > 32 {
+            return Err("Cannot create secp256k1 signature: malformed signature.".to_string());
+        }
+        bytes[0..32].clone_from_slice(&r);
+        bytes[32..64].clone_from_slice(&s);
+        bytes[64] = v;
+
+        let signature = Some(bytes.to_vec());
+        let public_key = Some(sk.public_key().to_bytes().to_vec());
         Ok(SignatureFFI {
             public_key,
             signature,

@@ -13,6 +13,7 @@ export 'candid/idl.dart';
 export 'identity/identity.dart';
 // principal;
 export 'principal/principal.dart';
+export 'principal/utils/utils.dart';
 export 'src/ffi.dart';
 // utils
 export 'utils/base64.dart';

@@ -256,6 +256,11 @@ typedef struct wire_Secp256k1SignWithSeedReq {
   struct wire_uint_8_list *seed;
 } wire_Secp256k1SignWithSeedReq;
 
+typedef struct wire_Secp256k1SignWithRngReq {
+  struct wire_uint_8_list *msg;
+  struct wire_uint_8_list *private_bytes;
+} wire_Secp256k1SignWithRngReq;
+
 typedef struct wire_Secp256k1VerifyReq {
   struct wire_uint_8_list *message_hash;
   struct wire_uint_8_list *signature_bytes;
@@ -586,6 +591,8 @@ void wire_ed25519_verify(int64_t port_, struct wire_ED25519VerifyReq *req);
 void wire_secp256k1_from_seed(int64_t port_, struct wire_Secp256k1FromSeedReq *req);
 
 void wire_secp256k1_sign(int64_t port_, struct wire_Secp256k1SignWithSeedReq *req);
+
+void wire_secp256k1_sign_with_rng(int64_t port_, struct wire_Secp256k1SignWithRngReq *req);
 
 void wire_secp256k1_sign_recoverable(int64_t port_, struct wire_Secp256k1SignWithSeedReq *req);
 
@@ -970,6 +977,8 @@ struct wire_Secp256k1RecoverReq *new_box_autoadd_secp_256_k_1_recover_req_0(void
 
 struct wire_Secp256k1ShareSecretReq *new_box_autoadd_secp_256_k_1_share_secret_req_0(void);
 
+struct wire_Secp256k1SignWithRngReq *new_box_autoadd_secp_256_k_1_sign_with_rng_req_0(void);
+
 struct wire_Secp256k1SignWithSeedReq *new_box_autoadd_secp_256_k_1_sign_with_seed_req_0(void);
 
 struct wire_Secp256k1VerifyReq *new_box_autoadd_secp_256_k_1_verify_req_0(void);
@@ -1041,6 +1050,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_ed25519_verify);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_from_seed);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_sign);
+    dummy_var ^= ((int64_t) (void*) wire_secp256k1_sign_with_rng);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_sign_recoverable);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_verify);
     dummy_var ^= ((int64_t) (void*) wire_secp256k1_get_shared_secret);
@@ -1171,6 +1181,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_from_seed_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_recover_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_share_secret_req_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_sign_with_rng_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_sign_with_seed_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_secp_256_k_1_verify_req_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_seed_to_key_req_0);

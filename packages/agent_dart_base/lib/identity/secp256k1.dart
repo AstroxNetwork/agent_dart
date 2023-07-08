@@ -6,6 +6,7 @@ import 'package:agent_dart_base/src/ffi/io.dart';
 
 import 'package:pointycastle/api.dart' as p_api;
 import 'package:pointycastle/digests/sha256.dart';
+
 import 'package:pointycastle/ecc/api.dart';
 import 'package:pointycastle/macs/hmac.dart';
 import 'package:pointycastle/signers/ecdsa_signer.dart';
@@ -183,6 +184,24 @@ Future<Uint8List> signSecp256k1Async(Uint8List blob, Uint8List seed) async {
   final result = await AgentDartFFI.impl.secp256K1Sign(
     req: Secp256k1SignWithSeedReq(seed: seed, msg: blob),
   );
+  return result.signature!;
+}
+
+Future<Uint8List> signSecp256k1Recoverable(
+  Uint8List blob,
+  Uint8List seed,
+) async {
+  final result = await AgentDartFFI.impl.secp256K1SignRecoverable(
+    req: Secp256k1SignWithSeedReq(seed: seed, msg: blob),
+  );
+  return result.signature!;
+}
+
+Future<Uint8List> signSecp256k1WithRNG(Uint8List blob, Uint8List bytes) async {
+  final result = await AgentDartFFI.impl.secp256K1SignWithRng(
+    req: Secp256k1SignWithRngReq(privateBytes: bytes, msg: blob),
+  );
+
   return result.signature!;
 }
 

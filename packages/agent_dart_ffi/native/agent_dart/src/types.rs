@@ -89,6 +89,12 @@ pub struct Secp256k1SignReq {
 }
 
 #[derive(Clone, Debug, Serialize)]
+pub struct Secp256k1SignWithRngReq {
+    pub msg: Vec<u8>,
+    pub private_bytes: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Serialize)]
 pub struct P256VerifyReq {
     pub message_hash: Vec<u8>,
     pub signature_bytes: Vec<u8>,

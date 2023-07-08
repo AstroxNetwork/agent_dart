@@ -273,6 +273,11 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> with Flutte
   }
 
   @protected
+  List<dynamic> api2wire_box_autoadd_secp_256_k_1_sign_with_rng_req(Secp256k1SignWithRngReq raw) {
+    return api2wire_secp_256_k_1_sign_with_rng_req(raw);
+  }
+
+  @protected
   List<dynamic> api2wire_box_autoadd_secp_256_k_1_sign_with_seed_req(Secp256k1SignWithSeedReq raw) {
     return api2wire_secp_256_k_1_sign_with_seed_req(raw);
   }
@@ -657,6 +662,14 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> with Flutte
   }
 
   @protected
+  List<dynamic> api2wire_secp_256_k_1_sign_with_rng_req(Secp256k1SignWithRngReq raw) {
+    return [
+      api2wire_uint_8_list(raw.msg),
+      api2wire_uint_8_list(raw.privateBytes)
+    ];
+  }
+
+  @protected
   List<dynamic> api2wire_secp_256_k_1_sign_with_seed_req(Secp256k1SignWithSeedReq raw) {
     return [
       api2wire_uint_8_list(raw.msg),
@@ -780,6 +793,8 @@ class AgentDartWasmModule implements WasmModule {
   external dynamic /* void */ wire_secp256k1_from_seed(NativePortType port_, List<dynamic> req);
 
   external dynamic /* void */ wire_secp256k1_sign(NativePortType port_, List<dynamic> req);
+
+  external dynamic /* void */ wire_secp256k1_sign_with_rng(NativePortType port_, List<dynamic> req);
 
   external dynamic /* void */ wire_secp256k1_sign_recoverable(NativePortType port_, List<dynamic> req);
 
@@ -1008,6 +1023,8 @@ class AgentDartWire extends FlutterRustBridgeWasmWireBase<AgentDartWasmModule> {
   void wire_secp256k1_from_seed(NativePortType port_, List<dynamic> req) => wasmModule.wire_secp256k1_from_seed(port_, req);
 
   void wire_secp256k1_sign(NativePortType port_, List<dynamic> req) => wasmModule.wire_secp256k1_sign(port_, req);
+
+  void wire_secp256k1_sign_with_rng(NativePortType port_, List<dynamic> req) => wasmModule.wire_secp256k1_sign_with_rng(port_, req);
 
   void wire_secp256k1_sign_recoverable(NativePortType port_, List<dynamic> req) => wasmModule.wire_secp256k1_sign_recoverable(port_, req);
 

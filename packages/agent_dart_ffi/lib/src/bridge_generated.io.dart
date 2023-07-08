@@ -256,6 +256,13 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
   }
 
   @protected
+  ffi.Pointer<wire_Secp256k1SignWithRngReq> api2wire_box_autoadd_secp_256_k_1_sign_with_rng_req(Secp256k1SignWithRngReq raw) {
+    final ptr = inner.new_box_autoadd_secp_256_k_1_sign_with_rng_req_0();
+    _api_fill_to_wire_secp_256_k_1_sign_with_rng_req(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   ffi.Pointer<wire_Secp256k1SignWithSeedReq> api2wire_box_autoadd_secp_256_k_1_sign_with_seed_req(Secp256k1SignWithSeedReq raw) {
     final ptr = inner.new_box_autoadd_secp_256_k_1_sign_with_seed_req_0();
     _api_fill_to_wire_secp_256_k_1_sign_with_seed_req(raw, ptr.ref);
@@ -637,6 +644,10 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
     _api_fill_to_wire_secp_256_k_1_share_secret_req(apiObj, wireObj.ref);
   }
 
+  void _api_fill_to_wire_box_autoadd_secp_256_k_1_sign_with_rng_req(Secp256k1SignWithRngReq apiObj, ffi.Pointer<wire_Secp256k1SignWithRngReq> wireObj) {
+    _api_fill_to_wire_secp_256_k_1_sign_with_rng_req(apiObj, wireObj.ref);
+  }
+
   void _api_fill_to_wire_box_autoadd_secp_256_k_1_sign_with_seed_req(Secp256k1SignWithSeedReq apiObj, ffi.Pointer<wire_Secp256k1SignWithSeedReq> wireObj) {
     _api_fill_to_wire_secp_256_k_1_sign_with_seed_req(apiObj, wireObj.ref);
   }
@@ -859,6 +870,11 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
   void _api_fill_to_wire_secp_256_k_1_share_secret_req(Secp256k1ShareSecretReq apiObj, wire_Secp256k1ShareSecretReq wireObj) {
     wireObj.seed = api2wire_uint_8_list(apiObj.seed);
     wireObj.public_key_raw_bytes = api2wire_uint_8_list(apiObj.publicKeyRawBytes);
+  }
+
+  void _api_fill_to_wire_secp_256_k_1_sign_with_rng_req(Secp256k1SignWithRngReq apiObj, wire_Secp256k1SignWithRngReq wireObj) {
+    wireObj.msg = api2wire_uint_8_list(apiObj.msg);
+    wireObj.private_bytes = api2wire_uint_8_list(apiObj.privateBytes);
   }
 
   void _api_fill_to_wire_secp_256_k_1_sign_with_seed_req(Secp256k1SignWithSeedReq apiObj, wire_Secp256k1SignWithSeedReq wireObj) {
@@ -1102,6 +1118,19 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
 
   late final _wire_secp256k1_signPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_Secp256k1SignWithSeedReq>)>>('wire_secp256k1_sign');
   late final _wire_secp256k1_sign = _wire_secp256k1_signPtr.asFunction<void Function(int, ffi.Pointer<wire_Secp256k1SignWithSeedReq>)>();
+
+  void wire_secp256k1_sign_with_rng(
+    int port_,
+    ffi.Pointer<wire_Secp256k1SignWithRngReq> req,
+  ) {
+    return _wire_secp256k1_sign_with_rng(
+      port_,
+      req,
+    );
+  }
+
+  late final _wire_secp256k1_sign_with_rngPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_Secp256k1SignWithRngReq>)>>('wire_secp256k1_sign_with_rng');
+  late final _wire_secp256k1_sign_with_rng = _wire_secp256k1_sign_with_rngPtr.asFunction<void Function(int, ffi.Pointer<wire_Secp256k1SignWithRngReq>)>();
 
   void wire_secp256k1_sign_recoverable(
     int port_,
@@ -2759,6 +2788,13 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _new_box_autoadd_secp_256_k_1_share_secret_req_0Ptr = _lookup<ffi.NativeFunction<ffi.Pointer<wire_Secp256k1ShareSecretReq> Function()>>('new_box_autoadd_secp_256_k_1_share_secret_req_0');
   late final _new_box_autoadd_secp_256_k_1_share_secret_req_0 = _new_box_autoadd_secp_256_k_1_share_secret_req_0Ptr.asFunction<ffi.Pointer<wire_Secp256k1ShareSecretReq> Function()>();
 
+  ffi.Pointer<wire_Secp256k1SignWithRngReq> new_box_autoadd_secp_256_k_1_sign_with_rng_req_0() {
+    return _new_box_autoadd_secp_256_k_1_sign_with_rng_req_0();
+  }
+
+  late final _new_box_autoadd_secp_256_k_1_sign_with_rng_req_0Ptr = _lookup<ffi.NativeFunction<ffi.Pointer<wire_Secp256k1SignWithRngReq> Function()>>('new_box_autoadd_secp_256_k_1_sign_with_rng_req_0');
+  late final _new_box_autoadd_secp_256_k_1_sign_with_rng_req_0 = _new_box_autoadd_secp_256_k_1_sign_with_rng_req_0Ptr.asFunction<ffi.Pointer<wire_Secp256k1SignWithRngReq> Function()>();
+
   ffi.Pointer<wire_Secp256k1SignWithSeedReq> new_box_autoadd_secp_256_k_1_sign_with_seed_req_0() {
     return _new_box_autoadd_secp_256_k_1_sign_with_seed_req_0();
   }
@@ -3085,6 +3121,12 @@ final class wire_Secp256k1SignWithSeedReq extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> msg;
 
   external ffi.Pointer<wire_uint_8_list> seed;
+}
+
+final class wire_Secp256k1SignWithRngReq extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> msg;
+
+  external ffi.Pointer<wire_uint_8_list> private_bytes;
 }
 
 final class wire_Secp256k1VerifyReq extends ffi.Struct {

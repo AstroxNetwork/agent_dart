@@ -36,6 +36,9 @@ lazy_static = "1.4.0"
 openssl = { version = "0.10.49", features = ["vendored"] }
 tokio = { version = "1", default-features = false, features = [ "rt-multi-thread", "time", "sync" ] }
 hex = "0.4.3"
+ecdsa = { version = "0.14.6", features = ["der"], default-features = false }
+
+
 
 [dev-dependencies]
 assert_matches = "1.5"
@@ -47,5 +50,6 @@ flutter_rust_bridge_codegen = "1.77.0"
 debug = false
 opt-level = "z"
 lto = true
+
 
 

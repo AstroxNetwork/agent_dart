@@ -13,7 +13,8 @@ use crate::types::{
     P256SignWithSeedReq, P256VerifyReq, PBKDFDeriveReq, PhraseToSeedReq, SchnorrFromSeedReq,
     SchnorrSignReq, SchnorrSignWithSeedReq, SchnorrVerifyReq, ScriptDeriveReq,
     Secp256k1FromSeedReq, Secp256k1RecoverReq, Secp256k1ShareSecretReq, Secp256k1SignReq,
-    Secp256k1SignWithSeedReq, Secp256k1VerifyReq, SeedToKeyReq, SignatureFFI,
+    Secp256k1SignWithRngReq, Secp256k1SignWithSeedReq, Secp256k1VerifyReq, SeedToKeyReq,
+    SignatureFFI,
 };
 use lazy_static::lazy_static;
 
@@ -1003,6 +1004,10 @@ pub fn secp256k1_sign(req: Secp256k1SignWithSeedReq) -> SignatureFFI {
     Secp256k1FFI::from_seed(Secp256k1FromSeedReq { seed: req.seed })
         .sign(Secp256k1SignReq { msg: req.msg })
         .unwrap()
+}
+
+pub fn secp256k1_sign_with_rng(req: Secp256k1SignWithRngReq) -> SignatureFFI {
+    Secp256k1FFI::sign_with_rng(req).unwrap()
 }
 
 pub fn secp256k1_sign_recoverable(req: Secp256k1SignWithSeedReq) -> SignatureFFI {
