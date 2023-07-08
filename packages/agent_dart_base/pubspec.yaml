@@ -15,6 +15,7 @@ dependencies:
   basic_utils: ^4.2.2
   bip32: ^2.0.0
   bip39: ^1.0.6
+  dart_bs58check: ^3.0.2
   cbor: ^4.1.0
   collection: ^1.16.0
   convert: ^3.0.1
