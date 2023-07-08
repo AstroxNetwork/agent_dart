@@ -742,6 +742,11 @@ void wire_create_descriptor__static_method__Api(int64_t port_,
                                                 struct wire_uint_8_list *descriptor,
                                                 int32_t network);
 
+void wire_import_single_wif__static_method__Api(int64_t port_,
+                                                struct wire_uint_8_list *wif,
+                                                struct wire_uint_8_list *address_type,
+                                                int32_t network);
+
 void wire_new_bip44_descriptor__static_method__Api(int64_t port_,
                                                    int32_t key_chain_kind,
                                                    struct wire_uint_8_list *secret_key,
@@ -1109,6 +1114,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_tx_cal_fee_finish__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_bump_fee_tx_builder_finish__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_create_descriptor__static_method__Api);
+    dummy_var ^= ((int64_t) (void*) wire_import_single_wif__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_new_bip44_descriptor__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_new_bip44_public__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_new_bip49_descriptor__static_method__Api);

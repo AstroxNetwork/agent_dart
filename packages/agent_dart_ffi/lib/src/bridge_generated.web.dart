@@ -896,6 +896,8 @@ class AgentDartWasmModule implements WasmModule {
 
   external dynamic /* void */ wire_create_descriptor__static_method__Api(NativePortType port_, String descriptor, int network);
 
+  external dynamic /* void */ wire_import_single_wif__static_method__Api(NativePortType port_, String wif, String address_type, int network);
+
   external dynamic /* void */ wire_new_bip44_descriptor__static_method__Api(NativePortType port_, int key_chain_kind, String secret_key, int network);
 
   external dynamic /* void */ wire_new_bip44_public__static_method__Api(NativePortType port_, int key_chain_kind, String public_key, int network, String fingerprint);
@@ -1129,6 +1131,8 @@ class AgentDartWire extends FlutterRustBridgeWasmWireBase<AgentDartWasmModule> {
   void wire_bump_fee_tx_builder_finish__static_method__Api(NativePortType port_, String txid, double fee_rate, String? allow_shrinking, Object wallet, bool enable_rbf, bool keep_change, int? n_sequence) => wasmModule.wire_bump_fee_tx_builder_finish__static_method__Api(port_, txid, fee_rate, allow_shrinking, wallet, enable_rbf, keep_change, n_sequence);
 
   void wire_create_descriptor__static_method__Api(NativePortType port_, String descriptor, int network) => wasmModule.wire_create_descriptor__static_method__Api(port_, descriptor, network);
+
+  void wire_import_single_wif__static_method__Api(NativePortType port_, String wif, String address_type, int network) => wasmModule.wire_import_single_wif__static_method__Api(port_, wif, address_type, network);
 
   void wire_new_bip44_descriptor__static_method__Api(NativePortType port_, int key_chain_kind, String secret_key, int network) => wasmModule.wire_new_bip44_descriptor__static_method__Api(port_, key_chain_kind, secret_key, network);
 

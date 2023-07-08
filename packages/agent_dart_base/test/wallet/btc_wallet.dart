@@ -63,10 +63,6 @@ void btc_wallet() {
       wallet.useExternalApi(true);
       print(wallet.currentSigner().address);
 
-      final sig = await wallet.signMessage('abcdefghijk123456789');
-
-      print(sig);
-
       // final us = await wallet.listUnspent();
       // us.forEach((e) => print(e.toJson()));
 

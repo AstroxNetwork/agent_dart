@@ -179,9 +179,7 @@ impl DescriptorSecretKey {
             BdkDescriptorSecretKey::XPrv(descriptor_x_key) => {
                 descriptor_x_key.xkey.private_key.secret_bytes().to_vec()
             }
-            BdkDescriptorSecretKey::Single(_) => {
-                unreachable!()
-            }
+            BdkDescriptorSecretKey::Single(r) => r.key.to_bytes(),
         };
 
         Ok(secret_bytes)

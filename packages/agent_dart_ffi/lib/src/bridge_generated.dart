@@ -288,6 +288,10 @@ abstract class AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kCreateDescriptorStaticMethodApiConstMeta;
 
+  Future<BdkDescriptor> importSingleWifStaticMethodApi({required String wif, required String addressType, required Network network, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kImportSingleWifStaticMethodApiConstMeta;
+
   Future<BdkDescriptor> newBip44DescriptorStaticMethodApi({required KeychainKind keyChainKind, required String secretKey, required Network network, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kNewBip44DescriptorStaticMethodApiConstMeta;
@@ -2789,6 +2793,32 @@ class AgentDartImpl implements AgentDart {
         debugName: "create_descriptor__static_method__Api",
         argNames: [
           "descriptor",
+          "network"
+        ],
+      );
+
+  Future<BdkDescriptor> importSingleWifStaticMethodApi({required String wif, required String addressType, required Network network, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(wif);
+    var arg1 = _platform.api2wire_String(addressType);
+    var arg2 = api2wire_network(network);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_import_single_wif__static_method__Api(port_, arg0, arg1, arg2),
+      parseSuccessData: _wire2api_BdkDescriptor,
+      constMeta: kImportSingleWifStaticMethodApiConstMeta,
+      argValues: [
+        wif,
+        addressType,
+        network
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kImportSingleWifStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "import_single_wif__static_method__Api",
+        argNames: [
+          "wif",
+          "addressType",
           "network"
         ],
       );

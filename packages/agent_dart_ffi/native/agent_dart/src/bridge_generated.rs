@@ -1127,6 +1127,32 @@ fn wire_create_descriptor__static_method__Api_impl(
         },
     )
 }
+fn wire_import_single_wif__static_method__Api_impl(
+    port_: MessagePort,
+    wif: impl Wire2Api<String> + UnwindSafe,
+    address_type: impl Wire2Api<String> + UnwindSafe,
+    network: impl Wire2Api<Network> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "import_single_wif__static_method__Api",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_wif = wif.wire2api();
+            let api_address_type = address_type.wire2api();
+            let api_network = network.wire2api();
+            move |task_callback| {
+                Ok(Api::import_single_wif(
+                    api_wif,
+                    api_address_type,
+                    api_network,
+                ))
+            }
+        },
+    )
+}
 fn wire_new_bip44_descriptor__static_method__Api_impl(
     port_: MessagePort,
     key_chain_kind: impl Wire2Api<KeychainKind> + UnwindSafe,
@@ -2776,6 +2802,16 @@ mod web {
         network: i32,
     ) {
         wire_create_descriptor__static_method__Api_impl(port_, descriptor, network)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire_import_single_wif__static_method__Api(
+        port_: MessagePort,
+        wif: String,
+        address_type: String,
+        network: i32,
+    ) {
+        wire_import_single_wif__static_method__Api_impl(port_, wif, address_type, network)
     }
 
     #[wasm_bindgen]
@@ -4580,6 +4616,16 @@ mod io {
         network: i32,
     ) {
         wire_create_descriptor__static_method__Api_impl(port_, descriptor, network)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn wire_import_single_wif__static_method__Api(
+        port_: i64,
+        wif: *mut wire_uint_8_list,
+        address_type: *mut wire_uint_8_list,
+        network: i32,
+    ) {
+        wire_import_single_wif__static_method__Api_impl(port_, wif, address_type, network)
     }
 
     #[no_mangle]
