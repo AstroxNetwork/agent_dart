@@ -8,11 +8,12 @@ use bdk_lite::keys::{
     DescriptorPublicKey as BdkDescriptorPublicKey, DescriptorSecretKey as BdkDescriptorSecretKey,
 };
 // use bdk::miniscript::DefiniteDescriptorKey;
+use crate::api::AddressType;
 use crate::bdk::types::AddressInfo;
 use bdk_lite::miniscript::Error;
 use bdk_lite::template::{
     Bip44, Bip44Public, Bip49, Bip49Public, Bip84, Bip84Public, Bip86, Bip86Public,
-    DescriptorTemplate,
+    DescriptorTemplate, P2Pkh, P2Wpkh, P2Wpkh_P2Sh, P2TR,
 };
 use bdk_lite::Error as BdkError;
 use bdk_lite::KeychainKind;
@@ -34,6 +35,35 @@ impl BdkDescriptor {
             extended_descriptor,
             key_map,
         })
+    }
+
+    pub(crate) fn import_single_wif(
+        wif: &str,
+        address_type: AddressType,
+        network: Network,
+    ) -> Self {
+        let prvkey = bitcoin::PrivateKey::from_wif(wif).unwrap();
+        let (extended_descriptor, key_map, _) = match address_type {
+            AddressType::P2PKH => P2Pkh(prvkey)
+                .build(network)
+                .expect("Cannot build P2Pkh template"),
+            AddressType::P2SH => P2Wpkh_P2Sh(prvkey)
+                .build(network)
+                .expect("Cannot build P2Wpkh_P2Sh template"),
+            AddressType::P2WPKH => P2Wpkh(prvkey)
+                .build(network)
+                .expect("Cannot build P2Wpkh template"),
+            AddressType::P2WSH => panic!("{}", "No P2WSH template support".to_string()),
+            AddressType::P2TR => P2TR(prvkey)
+                .build(network)
+                .expect("Cannot build P2TR template"),
+            AddressType::Unknown => panic!("{}", "Unknown Address".to_string()),
+        };
+
+        Self {
+            extended_descriptor,
+            key_map,
+        }
     }
 
     pub(crate) fn new_bip44(

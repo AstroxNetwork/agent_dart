@@ -1858,6 +1858,23 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _wire_create_descriptor__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>, ffi.Int32)>>('wire_create_descriptor__static_method__Api');
   late final _wire_create_descriptor__static_method__Api = _wire_create_descriptor__static_method__ApiPtr.asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, int)>();
 
+  void wire_import_single_wif__static_method__Api(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> wif,
+    ffi.Pointer<wire_uint_8_list> address_type,
+    int network,
+  ) {
+    return _wire_import_single_wif__static_method__Api(
+      port_,
+      wif,
+      address_type,
+      network,
+    );
+  }
+
+  late final _wire_import_single_wif__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>, ffi.Int32)>>('wire_import_single_wif__static_method__Api');
+  late final _wire_import_single_wif__static_method__Api = _wire_import_single_wif__static_method__ApiPtr.asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>, int)>();
+
   void wire_new_bip44_descriptor__static_method__Api(
     int port_,
     int key_chain_kind,

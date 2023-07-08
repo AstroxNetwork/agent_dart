@@ -286,6 +286,24 @@ class Descriptor {
     }
   }
 
+  ///  [Descriptor] constructor
+  static Future<Descriptor> importSingleWif({
+    required String wif,
+    required AddressType addressType,
+    required Network network,
+  }) async {
+    try {
+      final res = await AgentDartFFI.impl.importSingleWifStaticMethodApi(
+        wif: wif,
+        addressType: addressType.name,
+        network: network,
+      );
+      return Descriptor._(res);
+    } on FfiException catch (e) {
+      throw configException(e.message);
+    }
+  }
+
   ///BIP44 template. Expands to pkh(key/44'/{0,1}'/0'/{0,1}/*)
   ///
   /// Since there are hardened derivation steps, this template requires a private derivable key (generally a xprv/tprv).

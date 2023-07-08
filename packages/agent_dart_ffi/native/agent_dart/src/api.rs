@@ -465,6 +465,17 @@ impl Api {
             Err(e) => anyhow::bail!("{:?}", e),
         };
     }
+    pub fn import_single_wif(
+        wif: String,
+        address_type: String,
+        network: Network,
+    ) -> RustOpaque<BdkDescriptor> {
+        return RustOpaque::new(BdkDescriptor::import_single_wif(
+            wif.as_str(),
+            AddressType::from(address_type),
+            network.into(),
+        ));
+    }
 
     pub fn new_bip44_descriptor(
         key_chain_kind: KeychainKind,

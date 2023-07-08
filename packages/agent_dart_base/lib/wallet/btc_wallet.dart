@@ -231,6 +231,33 @@ Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
   }
 }
 
+Future<BTCDescriptor> importSingleWif(
+  String wif, {
+  AddressType addressType = AddressType.P2TR,
+  Network network = Network.Bitcoin,
+}) async {
+  final descriptor = await Descriptor.importSingleWif(
+    wif: wif,
+    addressType: addressType,
+    network: network,
+  );
+
+  final sec = await DescriptorSecretKey.fromString(wif);
+
+  descriptor.descriptorSecretKey = sec;
+
+  return BTCDescriptor(
+    addressType: addressType,
+    descriptor: descriptor,
+    network: network,
+  );
+}
+
+enum WalletType {
+  HD,
+  Single,
+}
+
 class BitcoinWallet {
   BitcoinWallet({
     required this.wallet,
@@ -240,6 +267,7 @@ class BitcoinWallet {
   });
 
   final Wallet wallet;
+
   final AddressType addressType;
   final BTCDescriptor descriptor;
   late AddressInfo _selectedSigner;
@@ -252,6 +280,7 @@ class BitcoinWallet {
 
   String? _publicKey;
   int? _index;
+  WalletType? _walletType;
 
   String? getPublicKey() => _publicKey;
 
@@ -270,6 +299,14 @@ class BitcoinWallet {
 
   void useExternalApi(bool use) {
     _useExternalApi = use;
+  }
+
+  void setWalletType(WalletType type) {
+    _walletType = type;
+  }
+
+  WalletType? getWalletType() {
+    return _walletType;
   }
 
   Future<void> blockchainInit({
@@ -320,20 +357,52 @@ class BitcoinWallet {
       descriptor: descriptor,
     );
     wallet.setNetwork(network);
+    wallet.setWalletType(WalletType.HD);
+    await wallet.blockchainInit(network: network);
+    return wallet;
+  }
+
+  static Future<BitcoinWallet> fromWif(
+    String wif, {
+    Network network = Network.Bitcoin,
+    AddressType addressType = AddressType.P2TR,
+  }) async {
+    // final wallet = await BitcoinWallet.fromPhrase();
+    final descriptor =
+        await importSingleWif(wif, network: network, addressType: addressType);
+    final res = await Wallet.create(
+      descriptor: descriptor.descriptor,
+      changeDescriptor: descriptor.descriptor,
+      network: network,
+      databaseConfig: const DatabaseConfig.memory(),
+    );
+    final wallet = BitcoinWallet(
+      wallet: res,
+      addressType: descriptor.addressType,
+      descriptor: descriptor,
+    );
+    wallet.setNetwork(network);
+    wallet.setWalletType(WalletType.Single);
     await wallet.blockchainInit(network: network);
     return wallet;
   }
 
   // ====== Signer ======
   Future<AddressInfo> getSigner(int index) async {
-    final k =
-        await descriptor.descriptor.descriptorSecretKey!.deriveIndex(index);
+    if (getWalletType() == WalletType.HD) {
+      final k =
+          await descriptor.descriptor.descriptorSecretKey!.deriveIndex(index);
 
-    final kBytes = Uint8List.fromList(await k.secretBytes());
-    _publicKey = await k.getPubFromBytes(kBytes);
-    return wallet.getAddress(
-      addressIndex: AddressIndex.reset(index: index),
-    );
+      final kBytes = Uint8List.fromList(await k.secretBytes());
+      _publicKey = await k.getPubFromBytes(kBytes);
+      return wallet.getAddress(
+        addressIndex: AddressIndex.reset(index: index),
+      );
+    } else {
+      return wallet.getAddress(
+        addressIndex: const AddressIndex.reset(index: 0),
+      );
+    }
   }
 
   Future<void> selectSigner(int index) async {
@@ -1473,8 +1542,10 @@ class BitcoinWallet {
   Future<String> signMessage(String message,
       {bool toBase64 = true, bool useBip322 = false}) async {
     try {
-      final k = await descriptor.descriptor.descriptorSecretKey!
-          .deriveIndex(currentIndex() ?? 0);
+      final k = getWalletType() == WalletType.HD
+          ? await descriptor.descriptor.descriptorSecretKey!
+              .deriveIndex(currentIndex() ?? 0)
+          : descriptor.descriptor.descriptorSecretKey!;
 
       final kBytes = Uint8List.fromList(await k.secretBytes());
 

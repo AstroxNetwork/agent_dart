@@ -389,6 +389,20 @@ impl From<BdkAddressType> for AddressType {
     }
 }
 
+impl From<String> for AddressType {
+    fn from(address_type_string: String) -> Self {
+        match address_type_string.to_lowercase().as_str() {
+            "p2pkh" => AddressType::P2PKH,
+            "p2sh" => AddressType::P2SH,
+            "p2Sh_p2wpkh" => AddressType::P2SH,
+            "p2wpkh" => AddressType::P2WPKH,
+            "p2wsh" => AddressType::P2WSH,
+            "p2tr" => AddressType::P2TR,
+            _ => AddressType::Unknown,
+        }
+    }
+}
+
 impl AddressType {
     pub fn to_string(&self) -> Result<String, BdkError> {
         match self {
