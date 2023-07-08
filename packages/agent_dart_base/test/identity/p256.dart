@@ -1,7 +1,9 @@
 import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
+import '../test_utils.dart';
 
 void main() {
+  matchFFI();
   p256Test();
 }
 

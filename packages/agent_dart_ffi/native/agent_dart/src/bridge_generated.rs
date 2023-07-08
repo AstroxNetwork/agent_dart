@@ -75,6 +75,7 @@ use crate::types::ScriptDeriveReq;
 use crate::types::Secp256k1FromSeedReq;
 use crate::types::Secp256k1RecoverReq;
 use crate::types::Secp256k1ShareSecretReq;
+use crate::types::Secp256k1SignWithRngReq;
 use crate::types::Secp256k1SignWithSeedReq;
 use crate::types::Secp256k1VerifyReq;
 use crate::types::SeedToKeyReq;
@@ -208,6 +209,22 @@ fn wire_secp256k1_sign_impl(
         move || {
             let api_req = req.wire2api();
             move |task_callback| Ok(secp256k1_sign(api_req))
+        },
+    )
+}
+fn wire_secp256k1_sign_with_rng_impl(
+    port_: MessagePort,
+    req: impl Wire2Api<Secp256k1SignWithRngReq> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "secp256k1_sign_with_rng",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_req = req.wire2api();
+            move |task_callback| Ok(secp256k1_sign_with_rng(api_req))
         },
     )
 }
@@ -2373,6 +2390,11 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire_secp256k1_sign_with_rng(port_: MessagePort, req: JsValue) {
+        wire_secp256k1_sign_with_rng_impl(port_, req)
+    }
+
+    #[wasm_bindgen]
     pub fn wire_secp256k1_sign_recoverable(port_: MessagePort, req: JsValue) {
         wire_secp256k1_sign_recoverable_impl(port_, req)
     }
@@ -3757,6 +3779,21 @@ mod web {
             }
         }
     }
+    impl Wire2Api<Secp256k1SignWithRngReq> for JsValue {
+        fn wire2api(self) -> Secp256k1SignWithRngReq {
+            let self_ = self.dyn_into::<JsArray>().unwrap();
+            assert_eq!(
+                self_.length(),
+                2,
+                "Expected 2 elements, got {}",
+                self_.length()
+            );
+            Secp256k1SignWithRngReq {
+                msg: self_.get(0).wire2api(),
+                private_bytes: self_.get(1).wire2api(),
+            }
+        }
+    }
     impl Wire2Api<Secp256k1SignWithSeedReq> for JsValue {
         fn wire2api(self) -> Secp256k1SignWithSeedReq {
             let self_ = self.dyn_into::<JsArray>().unwrap();
@@ -4083,6 +4120,14 @@ mod io {
     #[no_mangle]
     pub extern "C" fn wire_secp256k1_sign(port_: i64, req: *mut wire_Secp256k1SignWithSeedReq) {
         wire_secp256k1_sign_impl(port_, req)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn wire_secp256k1_sign_with_rng(
+        port_: i64,
+        req: *mut wire_Secp256k1SignWithRngReq,
+    ) {
+        wire_secp256k1_sign_with_rng_impl(port_, req)
     }
 
     #[no_mangle]
@@ -5121,6 +5166,12 @@ mod io {
     }
 
     #[no_mangle]
+    pub extern "C" fn new_box_autoadd_secp_256_k_1_sign_with_rng_req_0(
+    ) -> *mut wire_Secp256k1SignWithRngReq {
+        support::new_leak_box_ptr(wire_Secp256k1SignWithRngReq::new_with_null_ptr())
+    }
+
+    #[no_mangle]
     pub extern "C" fn new_box_autoadd_secp_256_k_1_sign_with_seed_req_0(
     ) -> *mut wire_Secp256k1SignWithSeedReq {
         support::new_leak_box_ptr(wire_Secp256k1SignWithSeedReq::new_with_null_ptr())
@@ -5550,6 +5601,12 @@ mod io {
             Wire2Api::<Secp256k1ShareSecretReq>::wire2api(*wrap).into()
         }
     }
+    impl Wire2Api<Secp256k1SignWithRngReq> for *mut wire_Secp256k1SignWithRngReq {
+        fn wire2api(self) -> Secp256k1SignWithRngReq {
+            let wrap = unsafe { support::box_from_leak_ptr(self) };
+            Wire2Api::<Secp256k1SignWithRngReq>::wire2api(*wrap).into()
+        }
+    }
     impl Wire2Api<Secp256k1SignWithSeedReq> for *mut wire_Secp256k1SignWithSeedReq {
         fn wire2api(self) -> Secp256k1SignWithSeedReq {
             let wrap = unsafe { support::box_from_leak_ptr(self) };
@@ -5888,6 +5945,14 @@ mod io {
             Secp256k1ShareSecretReq {
                 seed: self.seed.wire2api(),
                 public_key_raw_bytes: self.public_key_raw_bytes.wire2api(),
+            }
+        }
+    }
+    impl Wire2Api<Secp256k1SignWithRngReq> for wire_Secp256k1SignWithRngReq {
+        fn wire2api(self) -> Secp256k1SignWithRngReq {
+            Secp256k1SignWithRngReq {
+                msg: self.msg.wire2api(),
+                private_bytes: self.private_bytes.wire2api(),
             }
         }
     }
@@ -6233,6 +6298,13 @@ mod io {
     pub struct wire_Secp256k1ShareSecretReq {
         seed: *mut wire_uint_8_list,
         public_key_raw_bytes: *mut wire_uint_8_list,
+    }
+
+    #[repr(C)]
+    #[derive(Clone)]
+    pub struct wire_Secp256k1SignWithRngReq {
+        msg: *mut wire_uint_8_list,
+        private_bytes: *mut wire_uint_8_list,
     }
 
     #[repr(C)]
@@ -7016,6 +7088,21 @@ mod io {
     }
 
     impl Default for wire_Secp256k1ShareSecretReq {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+
+    impl NewWithNullPtr for wire_Secp256k1SignWithRngReq {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                msg: core::ptr::null_mut(),
+                private_bytes: core::ptr::null_mut(),
+            }
+        }
+    }
+
+    impl Default for wire_Secp256k1SignWithRngReq {
         fn default() -> Self {
             Self::new_with_null_ptr()
         }

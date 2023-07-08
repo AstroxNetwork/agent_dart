@@ -1,7 +1,9 @@
 import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
+import '../test_utils.dart';
 
 void main() {
+  matchFFI();
   secp256k1Test();
 }
 
@@ -116,11 +118,13 @@ void secp256k1Test() {
     const message =
         '879a053d4800c6354e76c7985a865d2922c82fb5b3f4577b2fe08b998954f2e0';
 
-    const signatures =
-        '8ea8ec3af6234ce47a431e0bbb525a41c725b40a2d59921d98580b914fc438934a47284e5e90fcff763db5442cae37787683c85a9b3fe59af897b797e06374dd1c';
+    final eckeys = await getECkeyFromPrivateKey(prv.toU8a());
 
-    final pub =
-        await recoverSecp256k1PubKey(message.toU8a(), signatures.toU8a());
-    print(pub.toHex());
+    final sig = await signSecp256k1WithRNG(message.toU8a(), prv.toU8a());
+
+    // while recover we have to sha256 the raw message bytes
+    final pub2 = await recoverSecp256k1PubKey(
+        sha256Hash(message.toU8a().buffer), sig.toU8a());
+    expect(eckeys.ecPublicKey!.toHex(), pub2.toHex());
   });
 }

@@ -37,7 +37,7 @@ void btc_wallet() {
   Future<BitcoinWallet> getWallet() async {
     final wallet = await BitcoinWallet.fromPhrase(
       (await Mnemonic.create(WordCount.Words12)).asString(),
-      addressType: AddressType.P2SH_P2WPKH,
+      addressType: AddressType.P2TR,
     );
 
     await wallet.selectSigner(0);

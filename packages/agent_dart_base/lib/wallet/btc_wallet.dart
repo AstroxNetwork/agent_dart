@@ -5,6 +5,8 @@ import 'package:agent_dart_base/agent/ord/inscriptionItem.dart';
 import 'package:agent_dart_base/agent/ord/service.dart';
 import 'package:agent_dart_base/agent/ord/utxo.dart';
 import 'package:agent_dart_base/agent_dart_base.dart';
+import 'package:agent_dart_base/principal/utils/sha256.dart';
+import 'package:agent_dart_base/wallet/btc/bdk/buffer.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
@@ -248,6 +250,7 @@ class BitcoinWallet {
   BlockStreamApi? blockStreamApi;
 
   String? _publicKey;
+  int? _index;
 
   String? getPublicKey() => _publicKey;
 
@@ -334,6 +337,11 @@ class BitcoinWallet {
 
   Future<void> selectSigner(int index) async {
     _selectedSigner = await getSigner(index);
+    _index = index;
+  }
+
+  int? currentIndex() {
+    return _index;
   }
 
   AddressInfo currentSigner() {
@@ -1459,5 +1467,45 @@ class BitcoinWallet {
     } on FfiException catch (e) {
       throw e.message;
     }
+  }
+
+  Future<String> signMessage(String message, {bool toBase64 = true}) async {
+    try {
+      final k = await descriptor.descriptor.descriptorSecretKey!
+          .deriveIndex(currentIndex() ?? 0);
+
+      final kBytes = Uint8List.fromList(await k.secretBytes());
+
+      final res = await signSecp256k1WithRNG(messageHandler(message), kBytes);
+
+      /// move v to the top, and plus 27
+      final v = res.sublist(64, 65);
+      v[0] = v[0] + 27;
+
+      // regroup the signature
+      final msgSig = u8aConcat([v, res.sublist(0, 64)]);
+
+      if (toBase64) {
+        return base64Encode(msgSig);
+      }
+      return msgSig.toHex();
+    } on FfiException catch (e) {
+      throw e.message;
+    }
+  }
+
+  Uint8List messageHandler(String message) {
+    final MAGIC_BYTES = 'Bitcoin Signed Message:\n'.plainToU8a();
+
+    final prefix1 = BufferWriter.varintBufNum(MAGIC_BYTES.toU8a().byteLength)
+        .buffer
+        .asUint8List();
+    final messageBuffer = message.plainToU8a();
+    final prefix2 =
+        BufferWriter.varintBufNum(messageBuffer.length).buffer.asUint8List();
+
+    final buf = u8aConcat([prefix1, MAGIC_BYTES, prefix2, messageBuffer]);
+
+    return sha256Hash(buf.buffer);
   }
 }
