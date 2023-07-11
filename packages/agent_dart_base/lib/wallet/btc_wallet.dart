@@ -1561,6 +1561,34 @@ class BitcoinWallet {
     }
   }
 
+  Future<String> pushPsbt(String psbtHex) async {
+    try {
+      if (isHex(psbtHex)) {
+        final psbt = PartiallySignedTransaction(
+            psbtBase64: base64Encode(psbtHex.toU8a()));
+        final tx = await psbt.extractTx();
+        return await blockStreamApi!
+            .broadcastTx(Uint8List.fromList(await tx.serialize()).toHex());
+      } else {
+        throw Exception('Invalid psbt hex');
+      }
+    } on FfiException catch (e) {
+      throw e.message;
+    }
+  }
+
+  Future<List<String>> signPsbts(List<String> psbtHexs) async {
+    try {
+      List<String> signedPsbtHexs = [];
+      for (var i = 0; i < psbtHexs.length; i++) {
+        signedPsbtHexs.add(await signPsbt(psbtHexs[i]));
+      }
+      return signedPsbtHexs;
+    } on FfiException catch (e) {
+      throw e.message;
+    }
+  }
+
   Future<String> signMessage(String message,
       {bool toBase64 = true, bool useBip322 = false}) async {
     try {
