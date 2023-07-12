@@ -1,6 +1,7 @@
 use bdk_lite::bitcoin::consensus::Decodable;
 use bdk_lite::bitcoin::hashes::hex::ToHex;
 use bdk_lite::bitcoin::psbt::serialize::Serialize;
+use bdk_lite::bitcoin::util::psbt::Input as BdkInput;
 use bdk_lite::bitcoin::util::psbt::PartiallySignedTransaction as BdkPartiallySignedTransaction;
 use bdk_lite::bitcoin::Transaction as BdkTransaction;
 
@@ -12,7 +13,7 @@ use std::ops::Deref;
 use std::str::FromStr;
 use std::sync::{Arc, Mutex};
 
-use crate::bdk::types::{TxIn, TxOut};
+use crate::bdk::types::{Script, TxIn, TxOut};
 
 #[derive(Debug)]
 pub struct PartiallySignedTransaction {
@@ -83,15 +84,18 @@ impl PartiallySignedTransaction {
 
     pub(crate) fn get_inputs(&self) -> Vec<TxOut> {
         let psbt = self.internal.lock().unwrap();
-        let tx = psbt.clone().extract_tx();
-        let mut outs: Vec<TxOut> = vec![];
-        for (n, _) in tx.input.iter().enumerate() {
-            let done = &psbt.inputs.get(n).expect("Out of Range");
-            if done.witness_utxo.is_some() {
-                outs.push(TxOut::from(&done.witness_utxo.clone().unwrap()))
-            }
-        }
-        outs
+        psbt.inputs
+            .iter()
+            .enumerate()
+            .map(|v| {
+                let input = Input::from(v.1.clone());
+                if input.internal.witness_utxo.is_some() {
+                    TxOut::from(&input.internal.witness_utxo.clone().unwrap())
+                } else {
+                    TxOut::from(&input.internal.non_witness_utxo.clone().unwrap().output[v.0])
+                }
+            })
+            .collect()
     }
 }
 
@@ -172,5 +176,75 @@ impl Transaction {
 
     pub fn output(&self) -> Vec<TxOut> {
         self.internal.output.iter().map(|x| x.into()).collect()
+    }
+}
+
+#[derive(Debug)]
+pub struct Input {
+    pub(crate) internal: BdkInput,
+}
+
+impl From<BdkInput> for Input {
+    fn from(input: BdkInput) -> Self {
+        Input { internal: input }
+    }
+}
+
+impl Input {
+    pub fn witness_utxo(&self) -> Option<TxOut> {
+        match &self.internal.witness_utxo {
+            Some(e) => Some(TxOut::from(e)),
+            None => None,
+        }
+    }
+
+    pub fn non_witness_utxo(&self) -> Option<Transaction> {
+        match &self.internal.non_witness_utxo {
+            Some(e) => Some(Transaction::from(e.clone())),
+            None => None,
+        }
+    }
+
+    pub fn redeem_script(&self) -> Option<Script> {
+        match &self.internal.redeem_script {
+            Some(e) => Some(Script::from(e.clone())),
+            None => None,
+        }
+    }
+
+    pub fn witness_script(&self) -> Option<Script> {
+        match &self.internal.witness_script {
+            Some(e) => Some(Script::from(e.clone())),
+            None => None,
+        }
+    }
+
+    pub fn final_script_sig(&self) -> Option<Script> {
+        match &self.internal.final_script_sig {
+            Some(e) => Some(Script::from(e.clone())),
+            None => None,
+        }
+    }
+
+    pub fn final_script_witness(&self) -> Option<Vec<Vec<u8>>> {
+        match &self.internal.final_script_witness {
+            Some(e) => Some(e.clone().to_vec()),
+            None => None,
+        }
+    }
+
+    pub fn sighash_type(&self) -> Option<u32> {
+        match &self.internal.sighash_type {
+            Some(e) => Some(e.clone().to_u32()),
+            None => None,
+        }
+    }
+
+    pub fn partial_sigs(&self) -> Option<String> {
+        serde_json::to_string(&self.internal.partial_sigs).ok()
+    }
+
+    pub fn is_signed(&self) -> bool {
+        self.final_script_witness().is_some() || self.final_script_sig().is_some()
     }
 }

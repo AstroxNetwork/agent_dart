@@ -53,6 +53,63 @@ class BTCDescriptor {
   final Network network;
 }
 
+class PSBTDetail {
+  PSBTDetail({
+    required this.inputs,
+    required this.outputs,
+    required this.fee,
+    required this.feeRate,
+    required this.size,
+    required this.totalInputValue,
+    required this.totalOutputValue,
+    required this.txId,
+    required this.psbt,
+  });
+  final String txId;
+  final List<TxOutExt> inputs;
+  final List<TxOutExt> outputs;
+  final int fee;
+  final double feeRate;
+  final int size;
+  final int totalInputValue;
+  final int totalOutputValue;
+  final PartiallySignedTransaction psbt;
+
+  Map<String, dynamic> toJson() => {
+        'txId': txId,
+        'inputs': inputs.map((e) => e.toJson()),
+        'outputs': outputs.map((e) => e.toJson()),
+        'fee': fee,
+        'feeRate': feeRate,
+        'size': size,
+        'totalInputValue': totalInputValue,
+        'totalOutputValue': totalOutputValue,
+        'psbt': psbt.psbtBase64
+      };
+}
+
+class TxOutExt {
+  TxOutExt({
+    required this.index,
+    required this.address,
+    required this.value,
+    required this.isChange,
+    required this.isMine,
+  });
+  final int index;
+  final Address address;
+  final int value;
+  final bool isChange;
+  final bool isMine;
+  Map<String, dynamic> toJson() => {
+        'index': index,
+        'address': address.toString(),
+        'value': value,
+        'isChange': isChange,
+        'isMine': isMine
+      };
+}
+
 class UtxoHandlers {
   UtxoHandlers({required this.ins, required this.nonIns, required this.txs});
 
@@ -1548,13 +1605,23 @@ class BitcoinWallet {
 
   Future<String> signPsbt(String psbtHex) async {
     try {
+      const options = SignOptions(
+        trustWitnessUtxo: true,
+        allowAllSighashes: false,
+        removePartialSigs: true,
+        tryFinalize: true,
+        allowGrinding: true,
+        signWithTapInternalKey: true,
+      );
       if (isHex(psbtHex)) {
         final psbt = PartiallySignedTransaction(
             psbtBase64: base64Encode(psbtHex.toU8a()));
-        final res = await wallet.sign(psbt: psbt);
+        final res = await wallet.sign(psbt: psbt, signOptions: options);
         return base64Decode(res.psbtBase64).toHex();
       } else {
-        throw Exception('Invalid psbt hex');
+        final psbt = PartiallySignedTransaction(psbtBase64: psbtHex);
+        final res = await wallet.sign(psbt: psbt, signOptions: options);
+        return base64Decode(res.psbtBase64).toHex();
       }
     } on FfiException catch (e) {
       throw e.message;
@@ -1570,7 +1637,11 @@ class BitcoinWallet {
         return await blockStreamApi!
             .broadcastTx(Uint8List.fromList(await tx.serialize()).toHex());
       } else {
-        throw Exception('Invalid psbt hex');
+        final psbt =
+            PartiallySignedTransaction(psbtBase64: base64Encode(psbtHex));
+        final tx = await psbt.extractTx();
+        return await blockStreamApi!
+            .broadcastTx(Uint8List.fromList(await tx.serialize()).toHex());
       }
     } on FfiException catch (e) {
       throw e.message;
@@ -1587,6 +1658,72 @@ class BitcoinWallet {
     } on FfiException catch (e) {
       throw e.message;
     }
+  }
+
+  Future<PSBTDetail> dumpPsbt(String psbtHex) async {
+    Transaction tx;
+    PartiallySignedTransaction psbt;
+    if (isHex(psbtHex)) {
+      psbt =
+          PartiallySignedTransaction(psbtBase64: base64Encode(psbtHex.toU8a()));
+      tx = await psbt.extractTx();
+    } else {
+      psbt = PartiallySignedTransaction(psbtBase64: base64Encode(psbtHex));
+      tx = await psbt.extractTx();
+    }
+
+    final psbtInputs = await psbt.getPsbtInputs();
+
+    final inputsExt = <TxOutExt>[];
+
+    for (var i = 0; i < psbtInputs.length; i += 1) {
+      final element = psbtInputs[i];
+      final addr = await Address.fromScript(element.scriptPubkey, network);
+
+      inputsExt.add(
+        TxOutExt(
+          index: i,
+          address: addr,
+          value: element.value,
+          isMine: addr == currentSigner().address ? true : false,
+          isChange: false,
+        ),
+      );
+    }
+    final outputs = await tx.output();
+    final outputsExt = <TxOutExt>[];
+
+    for (var i = 0; i < outputs.length; i += 1) {
+      final element = outputs[i];
+      final addr = await Address.fromScript(element.scriptPubkey, network);
+
+      outputsExt.add(
+        TxOutExt(
+          index: i,
+          address: addr,
+          value: element.value,
+          isMine: addr == currentSigner().address ? true : false,
+          isChange: i == outputs.length - 1 ? true : false,
+        ),
+      );
+    }
+
+    final size = Uint8List.fromList(await tx.serialize()).length;
+    final feePaid = await psbt.feeAmount();
+    final feeRate = (await psbt.feeRate())!.asSatPerVb();
+    final txId = (await tx.txid()).toString();
+
+    return PSBTDetail(
+      txId: txId,
+      inputs: inputsExt,
+      outputs: outputsExt,
+      fee: feePaid!,
+      feeRate: feeRate,
+      size: size,
+      totalInputValue: inputsExt.fold(0, (v, i) => i.value + v),
+      totalOutputValue: outputsExt.fold(0, (v, i) => i.value + v),
+      psbt: psbt,
+    );
   }
 
   Future<String> signMessage(String message,

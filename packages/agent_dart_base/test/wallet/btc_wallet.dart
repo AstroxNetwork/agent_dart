@@ -5,6 +5,8 @@ import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:agent_dart_base/wallet/btc/bdk/bdk.dart';
 import 'package:agent_dart_base/wallet/btc_wallet.dart';
 import 'package:test/test.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import '../test_utils.dart';
 
@@ -125,9 +127,18 @@ void btc_wallet() {
       // final btcTx = await wallet.createSendBTC(
       //   toAddress:
       //       'bc1prhylusp2j4ks7ut2pu0scxtxz76p2wn849jjzay42vvvcyxy4uzqhkng7h',
-      //   amount: 10086,
-      //   feeRate: 12,
+      //   amount: 800,
+      //   feeRate: 1,
       // );
+
+      // print(Uint8List.fromList(await (await btcTx.psbt.extractTx()).serialize())
+      //     .toHex());
+
+      // final psbt = PartiallySignedTransaction(
+      //     psbtBase64: base64Encode(
+      //         (await wallet.signPsbt(await btcTx.psbt.psbtBase64)).toU8a()));
+      // final tx = await psbt.extractTx();
+      // print(Uint8List.fromList(await tx.serialize()).toHex());
 
       // await btcTx.dumpTx();
 
