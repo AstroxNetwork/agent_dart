@@ -1661,16 +1661,12 @@ class BitcoinWallet {
   }
 
   Future<PSBTDetail> dumpPsbt(String psbtHex) async {
-    Transaction tx;
-    PartiallySignedTransaction psbt;
-    if (isHex(psbtHex)) {
-      psbt =
-          PartiallySignedTransaction(psbtBase64: base64Encode(psbtHex.toU8a()));
-      tx = await psbt.extractTx();
-    } else {
-      psbt = PartiallySignedTransaction(psbtBase64: base64Encode(psbtHex));
-      tx = await psbt.extractTx();
-    }
+    final psbt = PartiallySignedTransaction(
+      psbtBase64: isHex(psbtHex)
+          ? base64Encode(psbtHex.toU8a())
+          : base64Encode(psbtHex),
+    );
+    final tx = await psbt.extractTx();
 
     final psbtInputs = await psbt.getPsbtInputs();
 
