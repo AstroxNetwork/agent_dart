@@ -5,13 +5,10 @@ import 'package:agent_dart_base/agent/ord/inscriptionItem.dart';
 import 'package:agent_dart_base/agent/ord/service.dart';
 import 'package:agent_dart_base/agent/ord/utxo.dart';
 import 'package:agent_dart_base/agent_dart_base.dart';
-import 'package:agent_dart_base/principal/utils/sha256.dart';
 import 'package:agent_dart_base/src/ffi/io.dart';
 import 'package:agent_dart_base/wallet/btc/bdk/buffer.dart';
 import 'package:agent_dart_base/wallet/btc/bdk/wif.dart';
-import 'package:bip32/bip32.dart';
 import 'package:collection/collection.dart';
-import 'package:dart_bs58check/dart_bs58check.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
 typedef PsbtSignature = Uint8List;
@@ -340,7 +337,7 @@ class BitcoinWallet {
 
   String? _publicKey;
   int? _index;
-  WalletType? _walletType;
+  WalletType _walletType = WalletType.HD;
 
   String? getPublicKey() => _publicKey;
 
@@ -367,7 +364,7 @@ class BitcoinWallet {
     _walletType = type;
   }
 
-  WalletType? getWalletType() {
+  WalletType getWalletType() {
     return _walletType;
   }
 
@@ -519,7 +516,7 @@ class BitcoinWallet {
       if (blockStreamApi == null) {
         throw Exception('blockStreamApi should be initialized first');
       }
-      final theAddress = address ?? _selectedSigner.address;
+      address ??= _selectedSigner.address;
       var immature = 0;
       const trustedPending = 0; // we don't use internal key to receive
       var untrustedPending = 0;
@@ -528,7 +525,7 @@ class BitcoinWallet {
       var mempoolReceiveTxValue = 0;
       var tooManyUnconfirmed = false;
 
-      final utxos = await blockStreamApi!.getAddressUtxo(theAddress);
+      final utxos = await blockStreamApi!.getAddressUtxo(address);
 
       for (var i = 0; i < utxos.length; i++) {
         final u = utxos[i];
@@ -552,7 +549,7 @@ class BitcoinWallet {
       var total = spendable + immature;
 
       if (includeUnconfirmed) {
-        final txCount = (await blockStreamApi!.getAddressStats(theAddress))
+        final txCount = (await blockStreamApi!.getAddressStats(address))
             .mempool_stats
             .tx_count;
         if (txCount <= 0) {
@@ -562,9 +559,8 @@ class BitcoinWallet {
           if (txCount > 50) {
             tooManyUnconfirmed = true;
           }
-          final mempoolTxs = await blockStreamApi!.getAddressTxs(
-            address: theAddress,
-          );
+          final mempoolTxs =
+              await blockStreamApi!.getAddressTxs(address: address);
 
           for (var i = 0; i < mempoolTxs.length; i++) {
             final tx = mempoolTxs[i];
@@ -572,23 +568,11 @@ class BitcoinWallet {
               continue;
             }
             mempoolSpendTxValue += tx.vin
-                .where(
-                  (element) =>
-                      element.prevout.scriptpubkey_address == theAddress,
-                )
-                .fold(
-                  0,
-                  (previousValue, element) =>
-                      previousValue + element.prevout.value,
-                );
+                .where((e) => e.prevout.scriptpubkey_address == address)
+                .fold(0, (prev, e) => prev + e.prevout.value);
             mempoolReceiveTxValue += tx.vout
-                .where(
-                  (element) => element.scriptpubkey_address == theAddress,
-                )
-                .fold(
-                  0,
-                  (previousValue, element) => previousValue + element.value,
-                );
+                .where((e) => e.scriptpubkey_address == address)
+                .fold(0, (prev, e) => prev + e.value);
           }
         }
 
@@ -621,20 +605,26 @@ class BitcoinWallet {
   ///Return the list of unspent outputs of this wallet
   ///
   /// Note that this method only operates on the internal database, which first needs to be Wallet().sync manually.
-  Future<List<Utxo>> listUnspent() async {
+  Future<List<Utxo>> listUnspent({
+    String? address,
+  }) async {
     try {
       // final utxos = await ordService!.getUtxo(_selectedSigner.address);
-      final utxos = await ordService!.getUtxoGet(_selectedSigner.address);
+      final utxos =
+          await ordService!.getUtxoGet(address ?? _selectedSigner.address);
       return utxos;
     } on FfiException catch (e) {
       throw e.message;
     }
   }
 
-  Future<List<InscriptionItem>> listInscriptions() async {
+  Future<List<InscriptionItem>> listInscriptions({
+    String? address,
+  }) async {
     try {
       // final utxos = await ordService!.getUtxo(_selectedSigner.address);
-      final ins = await ordService!.getInscriptions(_selectedSigner.address);
+      final ins =
+          await ordService!.getInscriptions(address ?? _selectedSigner.address);
       return ins;
     } on FfiException catch (e) {
       throw e.message;
@@ -693,6 +683,7 @@ class BitcoinWallet {
 
   Future<UtxoHandlers> handleUtxo({
     bool useCache = false,
+    String? address,
   }) async {
     if (_handleUtxoCompleter != null && useCache) {
       return _handleUtxoCompleter!.future;
@@ -700,7 +691,10 @@ class BitcoinWallet {
     final completer = Completer<UtxoHandlers>();
     _handleUtxoCompleter = completer;
     Future(() async {
-      final rets = await Future.wait([listUnspent(), listInscriptions()]);
+      final rets = await Future.wait([
+        listUnspent(address: address),
+        listInscriptions(address: address),
+      ]);
       final List<Utxo> utxos = rets[0] as List<Utxo>;
       final List<InscriptionItem> allIns = (rets[1] as List<InscriptionItem>)
         ..sort((a, b) => b.num!.compareTo(a.num!));
@@ -755,8 +749,10 @@ class BitcoinWallet {
     return completer.future;
   }
 
-  Future<int> getSafeBalance() async {
-    final xos = await handleUtxo();
+  Future<int> getSafeBalance({
+    String? address,
+  }) async {
+    final xos = await handleUtxo(address: address);
     final nonIns = xos.nonIns;
     final res = nonIns.fold(
       0,
@@ -765,8 +761,10 @@ class BitcoinWallet {
     return res;
   }
 
-  Future<int> getOrdinalBalance() async {
-    final xos = await handleUtxo();
+  Future<int> getOrdinalBalance({
+    String? address,
+  }) async {
+    final xos = await handleUtxo(address: address);
     final ins = xos.ins;
     final res = ins.fold(
       0,
@@ -1073,7 +1071,7 @@ class BitcoinWallet {
     builder.feeRate(feeRate.toDouble());
 
     // 2. address setting
-    final formatedAddress = await Address.create(address: toAddress);
+    final formattedAddress = await Address.create(address: toAddress);
     final changeAddress =
         await (await Address.create(address: currentSigner().address))
             .scriptPubKey();
@@ -1119,11 +1117,11 @@ class BitcoinWallet {
             txid: e.txid,
             vout: e.vout,
             satoshis: satoshis,
-            scriptPk: (await formatedAddress.scriptPubKey()).internal.toHex(),
+            scriptPk: (await formattedAddress.scriptPubKey()).internal.toHex(),
           ),
         );
         // add to bdk recipient
-        builder.addRecipient(await formatedAddress.scriptPubKey(), satoshis);
+        builder.addRecipient(await formattedAddress.scriptPubKey(), satoshis);
 
         // add change output
         if (outputValue != null &&
@@ -1421,7 +1419,7 @@ class BitcoinWallet {
     final outputValue = btcAmount;
 
     // 2. address setting
-    final formatedAddress = await Address.create(address: toAddress);
+    final formattedAddress = await Address.create(address: toAddress);
 
     // changeAddress to be receiver
     final sendToAddress =
@@ -1469,11 +1467,11 @@ class BitcoinWallet {
             txid: e.txid,
             vout: e.vout,
             satoshis: satoshis,
-            scriptPk: (await formatedAddress.scriptPubKey()).internal.toHex(),
+            scriptPk: (await formattedAddress.scriptPubKey()).internal.toHex(),
           ),
         );
         // add to bdk recipient
-        builder.addRecipient(await formatedAddress.scriptPubKey(), satoshis);
+        builder.addRecipient(await formattedAddress.scriptPubKey(), satoshis);
 
         // add change output
         if (outputValue < e.inscriptions![index].detail.output_value) {
