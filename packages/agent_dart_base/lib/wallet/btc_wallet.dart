@@ -87,18 +87,21 @@ class PSBTDetail {
 
 class TxOutExt {
   TxOutExt({
+    this.txId,
     required this.index,
     required this.address,
     required this.value,
     required this.isChange,
     required this.isMine,
   });
+  String? txId;
   final int index;
   final Address address;
   final int value;
   final bool isChange;
   final bool isMine;
   Map<String, dynamic> toJson() => {
+        'txId': txId,
         'index': index,
         'address': address.toString(),
         'value': value,
@@ -465,20 +468,18 @@ class BitcoinWallet {
 
   // ====== Signer ======
   Future<AddressInfo> getSigner(int index) async {
-    if (getWalletType() == WalletType.HD) {
-      final k =
-          await descriptor.descriptor.descriptorSecretKey!.deriveIndex(index);
+    final k = getWalletType() == WalletType.HD
+        ? await descriptor.descriptor.descriptorSecretKey!
+            .deriveIndex(currentIndex() ?? 0)
+        : descriptor.descriptor.descriptorSecretKey!;
+    final walletIndex = getWalletType() == WalletType.HD ? index : 0;
 
-      final kBytes = Uint8List.fromList(await k.secretBytes());
-      _publicKey = await k.getPubFromBytes(kBytes);
-      return wallet.getAddress(
-        addressIndex: AddressIndex.reset(index: index),
-      );
-    } else {
-      return wallet.getAddress(
-        addressIndex: const AddressIndex.reset(index: 0),
-      );
-    }
+    final kBytes = Uint8List.fromList(await k.secretBytes());
+    _publicKey = await k.getPubFromBytes(kBytes);
+
+    return wallet.getAddress(
+      addressIndex: AddressIndex.reset(index: walletIndex),
+    );
   }
 
   Future<void> selectSigner(int index) async {
@@ -778,13 +779,14 @@ class BitcoinWallet {
     required int amount,
     required int feeRate,
     bool useUTXOCache = false,
+    bool bigAmountFirst = true,
   }) async {
     final txr = await createSendBTC(
-      toAddress: toAddress,
-      amount: amount,
-      feeRate: feeRate,
-      useUTXOCache: useUTXOCache,
-    );
+        toAddress: toAddress,
+        amount: amount,
+        feeRate: feeRate,
+        useUTXOCache: useUTXOCache,
+        bigAmountFirst: bigAmountFirst);
     final signed = await sign(txr);
     return signed.psbt.feeAmount();
   }
@@ -795,6 +797,7 @@ class BitcoinWallet {
     required int amount,
     required int feeRate,
     bool useUTXOCache = false,
+    bool bigAmountFirst = true,
   }) async {
     final builder = TxBuilder();
     builder.enableRbf();
@@ -807,6 +810,13 @@ class BitcoinWallet {
     final xos = await handleUtxo(useCache: useUTXOCache);
     final ins = xos.ins;
     final nonIns = xos.nonIns;
+
+    if (bigAmountFirst) {
+      nonIns.sort((a, b) => b.satoshis.compareTo(a.satoshis));
+    } else {
+      nonIns.sort((a, b) => a.satoshis.compareTo(b.satoshis));
+    }
+
     final txs = xos.txs;
     // builder.addInscriptions(ins);
     for (final e in ins) {
@@ -838,6 +848,7 @@ class BitcoinWallet {
         builder.getTotalOutput() == 0 ? amount : builder.getTotalOutput();
 
     var tmpSum = builder.getTotalInput();
+    final tempAddInputs = <OutPointExt>[];
 
     var fee = 0;
     for (var i = 0; i < nonIns.length; i++) {
@@ -847,6 +858,7 @@ class BitcoinWallet {
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
         tmpSum += nonOrdUtxo.satoshis;
+        tempAddInputs.add(nonOrdUtxo);
         continue;
       }
 
@@ -857,6 +869,7 @@ class BitcoinWallet {
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
         tmpSum += nonOrdUtxo.satoshis;
+        tempAddInputs.add(nonOrdUtxo);
       } else {
         break;
       }
@@ -895,7 +908,7 @@ class BitcoinWallet {
 
     // build finish
     final res = await builder.finish(wallet);
-    res.addInputs(nonIns);
+    res.addInputs(tempAddInputs);
     return res;
   }
 
@@ -903,11 +916,13 @@ class BitcoinWallet {
     required List<ReceiverItem> toAddresses,
     required int feeRate,
     bool useUTXOCache = false,
+    bool bigAmountFirst = true,
   }) async {
     final txr = await createSendMultiBTC(
       toAddresses: toAddresses,
       feeRate: feeRate,
       useUTXOCache: useUTXOCache,
+      bigAmountFirst: bigAmountFirst,
     );
     final signed = await sign(txr);
     return signed.psbt.feeAmount();
@@ -917,6 +932,7 @@ class BitcoinWallet {
     required List<ReceiverItem> toAddresses,
     required int feeRate,
     bool useUTXOCache = false,
+    bool bigAmountFirst = true,
   }) async {
     final builder = TxBuilder();
     builder.enableRbf();
@@ -938,6 +954,11 @@ class BitcoinWallet {
     final xos = await handleUtxo(useCache: useUTXOCache);
     final ins = xos.ins;
     final nonIns = xos.nonIns;
+    if (bigAmountFirst) {
+      nonIns.sort((a, b) => b.satoshis.compareTo(a.satoshis));
+    } else {
+      nonIns.sort((a, b) => a.satoshis.compareTo(b.satoshis));
+    }
     final txs = xos.txs;
     // builder.addInscriptions(ins);
     for (final e in ins) {
@@ -977,6 +998,7 @@ class BitcoinWallet {
         builder.getTotalOutput() == 0 ? amount : builder.getTotalOutput();
 
     var tmpSum = builder.getTotalInput();
+    final tempAddInputs = <OutPointExt>[];
 
     var fee = 0;
     for (var i = 0; i < nonIns.length; i++) {
@@ -986,6 +1008,7 @@ class BitcoinWallet {
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
         tmpSum += nonOrdUtxo.satoshis;
+        tempAddInputs.add(nonOrdUtxo);
         continue;
       }
 
@@ -996,6 +1019,7 @@ class BitcoinWallet {
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
         tmpSum += nonOrdUtxo.satoshis;
+        tempAddInputs.add(nonOrdUtxo);
       } else {
         break;
       }
@@ -1034,7 +1058,7 @@ class BitcoinWallet {
 
     // build finish
     final res = await builder.finish(wallet);
-    res.addInputs(nonIns);
+    res.addInputs(tempAddInputs);
     return res;
   }
 
@@ -1044,6 +1068,7 @@ class BitcoinWallet {
     required int feeRate,
     int? outputValue,
     bool useUTXOCache = false,
+    bool bigAmountFirst = true,
   }) async {
     final txr = await createSendInscription(
       toAddress: toAddress,
@@ -1063,6 +1088,7 @@ class BitcoinWallet {
     required int feeRate,
     int? outputValue,
     bool useUTXOCache = false,
+    bool bigAmountFirst = true,
   }) async {
     // 1. basic setting
     final builder = TxBuilder();
@@ -1152,7 +1178,11 @@ class BitcoinWallet {
     // 4.1 add non inscriptions to inputs
     final nonIns = xos.nonIns;
 
-    tempInputs.addAll(nonIns);
+    if (bigAmountFirst) {
+      nonIns.sort((a, b) => b.satoshis.compareTo(a.satoshis));
+    } else {
+      nonIns.sort((a, b) => a.satoshis.compareTo(b.satoshis));
+    }
 
     // calcluate output amount
     final outputAmount = builder.getTotalOutput();
@@ -1168,6 +1198,7 @@ class BitcoinWallet {
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
         tmpSum += nonOrdUtxo.satoshis;
+        tempInputs.add(nonOrdUtxo);
         continue;
       }
 
@@ -1179,6 +1210,7 @@ class BitcoinWallet {
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
         tmpSum += nonOrdUtxo.satoshis;
+        tempInputs.add(nonOrdUtxo);
       } else {
         break;
       }
@@ -1227,14 +1259,15 @@ class BitcoinWallet {
     required int feeRate,
     int? outputValue,
     bool useUTXOCache = false,
+    bool bigAmountFirst = true,
   }) async {
     final txr = await createSendMultiInscriptions(
-      toAddress: toAddress,
-      insIds: insIds,
-      feeRate: feeRate,
-      outputValue: outputValue,
-      useUTXOCache: useUTXOCache,
-    );
+        toAddress: toAddress,
+        insIds: insIds,
+        feeRate: feeRate,
+        outputValue: outputValue,
+        useUTXOCache: useUTXOCache,
+        bigAmountFirst: bigAmountFirst);
     final signed = await sign(txr);
     return signed.psbt.feeAmount();
   }
@@ -1246,6 +1279,7 @@ class BitcoinWallet {
     required int feeRate,
     int? outputValue,
     bool useUTXOCache = false,
+    bool bigAmountFirst = true,
   }) async {
     // 1. basic setting
     final builder = TxBuilder();
@@ -1335,7 +1369,11 @@ class BitcoinWallet {
     // 4.1 add non inscriptions to inputs
     final nonIns = xos.nonIns;
 
-    tempInputs.addAll(nonIns);
+    if (bigAmountFirst) {
+      nonIns.sort((a, b) => b.satoshis.compareTo(a.satoshis));
+    } else {
+      nonIns.sort((a, b) => a.satoshis.compareTo(b.satoshis));
+    }
 
     // calcluate output amount
     final outputAmount = builder.getTotalOutput();
@@ -1351,6 +1389,7 @@ class BitcoinWallet {
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
         tmpSum += nonOrdUtxo.satoshis;
+        tempInputs.add(nonOrdUtxo);
         continue;
       }
 
@@ -1362,6 +1401,7 @@ class BitcoinWallet {
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
         tmpSum += nonOrdUtxo.satoshis;
+        tempInputs.add(nonOrdUtxo);
       } else {
         break;
       }
@@ -1410,6 +1450,7 @@ class BitcoinWallet {
     required String insId,
     required int feeRate,
     required int btcAmount,
+    bool bigAmountFirst = true,
   }) async {
     final builder = TxBuilder();
     builder.enableRbf();
@@ -1501,6 +1542,12 @@ class BitcoinWallet {
     // 4.1 add non inscriptions to inputs
     final nonIns = xos.nonIns;
 
+    if (bigAmountFirst) {
+      nonIns.sort((a, b) => b.satoshis.compareTo(a.satoshis));
+    } else {
+      nonIns.sort((a, b) => a.satoshis.compareTo(b.satoshis));
+    }
+
     // tempInputs.addAll(nonIns);
 
     // calcluate output amount
@@ -1518,6 +1565,7 @@ class BitcoinWallet {
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
         tmpSum += nonOrdUtxo.satoshis;
+        tempInputs.add(nonOrdUtxo);
         continue;
       }
 
@@ -1529,6 +1577,7 @@ class BitcoinWallet {
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
         tmpSum += nonOrdUtxo.satoshis;
+        tempInputs.add(nonOrdUtxo);
       } else {
         break;
       }
@@ -1606,21 +1655,18 @@ class BitcoinWallet {
       const options = SignOptions(
         trustWitnessUtxo: true,
         allowAllSighashes: false,
-        removePartialSigs: true,
+        removePartialSigs: false,
         tryFinalize: true,
         allowGrinding: true,
         signWithTapInternalKey: true,
+        finalizeMineOnly: true,
       );
-      if (isHex(psbtHex)) {
-        final psbt = PartiallySignedTransaction(
-            psbtBase64: base64Encode(psbtHex.toU8a()));
-        final res = await wallet.sign(psbt: psbt, signOptions: options);
-        return base64Decode(res.psbtBase64).toHex();
-      } else {
-        final psbt = PartiallySignedTransaction(psbtBase64: psbtHex);
-        final res = await wallet.sign(psbt: psbt, signOptions: options);
-        return base64Decode(res.psbtBase64).toHex();
-      }
+      final psbt = PartiallySignedTransaction(
+        psbtBase64: isHex(psbtHex) ? base64Encode(psbtHex.toU8a()) : psbtHex,
+      );
+
+      final res = await wallet.sign(psbt: psbt, signOptions: options);
+      return base64Decode(res.psbtBase64).toHex();
     } on FfiException catch (e) {
       throw e.message;
     }
@@ -1628,19 +1674,13 @@ class BitcoinWallet {
 
   Future<String> pushPsbt(String psbtHex) async {
     try {
-      if (isHex(psbtHex)) {
-        final psbt = PartiallySignedTransaction(
-            psbtBase64: base64Encode(psbtHex.toU8a()));
-        final tx = await psbt.extractTx();
-        return await blockStreamApi!
-            .broadcastTx(Uint8List.fromList(await tx.serialize()).toHex());
-      } else {
-        final psbt =
-            PartiallySignedTransaction(psbtBase64: base64Encode(psbtHex));
-        final tx = await psbt.extractTx();
-        return await blockStreamApi!
-            .broadcastTx(Uint8List.fromList(await tx.serialize()).toHex());
-      }
+      final psbt = PartiallySignedTransaction(
+        psbtBase64: base64Encode(isHex(psbtHex) ? psbtHex.toU8a() : psbtHex),
+      );
+      final tx = await psbt.extractTx();
+
+      return await blockStreamApi!
+          .broadcastTx(Uint8List.fromList(await tx.serialize()).toHex());
     } on FfiException catch (e) {
       throw e.message;
     }
@@ -1669,13 +1709,17 @@ class BitcoinWallet {
     final psbtInputs = await psbt.getPsbtInputs();
 
     final inputsExt = <TxOutExt>[];
+    final txInputs = await tx.input();
 
     for (var i = 0; i < psbtInputs.length; i += 1) {
       final element = psbtInputs[i];
+      final input = txInputs[i];
+      final txId = input.previousOutput.txid;
       final addr = await Address.fromScript(element.scriptPubkey, network);
 
       inputsExt.add(
         TxOutExt(
+          txId: txId,
           index: i,
           address: addr,
           value: element.value,

@@ -3935,8 +3935,8 @@ mod web {
             let self_ = self.dyn_into::<JsArray>().unwrap();
             assert_eq!(
                 self_.length(),
-                7,
-                "Expected 7 elements, got {}",
+                8,
+                "Expected 8 elements, got {}",
                 self_.length()
             );
             SignOptions {
@@ -3945,8 +3945,9 @@ mod web {
                 allow_all_sighashes: self_.get(2).wire2api(),
                 remove_partial_sigs: self_.get(3).wire2api(),
                 try_finalize: self_.get(4).wire2api(),
-                sign_with_tap_internal_key: self_.get(5).wire2api(),
-                allow_grinding: self_.get(6).wire2api(),
+                finalize_mine_only: self_.get(5).wire2api(),
+                sign_with_tap_internal_key: self_.get(6).wire2api(),
+                allow_grinding: self_.get(7).wire2api(),
             }
         }
     }
@@ -6107,6 +6108,7 @@ mod io {
                 allow_all_sighashes: self.allow_all_sighashes.wire2api(),
                 remove_partial_sigs: self.remove_partial_sigs.wire2api(),
                 try_finalize: self.try_finalize.wire2api(),
+                finalize_mine_only: self.finalize_mine_only.wire2api(),
                 sign_with_tap_internal_key: self.sign_with_tap_internal_key.wire2api(),
                 allow_grinding: self.allow_grinding.wire2api(),
             }
@@ -6455,6 +6457,7 @@ mod io {
         allow_all_sighashes: bool,
         remove_partial_sigs: bool,
         try_finalize: bool,
+        finalize_mine_only: bool,
         sign_with_tap_internal_key: bool,
         allow_grinding: bool,
     }
@@ -7280,6 +7283,7 @@ mod io {
                 allow_all_sighashes: Default::default(),
                 remove_partial_sigs: Default::default(),
                 try_finalize: Default::default(),
+                finalize_mine_only: Default::default(),
                 sign_with_tap_internal_key: Default::default(),
                 allow_grinding: Default::default(),
             }

@@ -297,7 +297,6 @@ impl<T: InputSigner> TransactionSigner for T {
         for input_index in 0..psbt.inputs.len() {
             self.sign_input(psbt, input_index, sign_options, secp)?;
         }
-
         Ok(())
     }
 }
@@ -347,7 +346,9 @@ impl InputSigner for SignerWrapper<DescriptorXKey<ExtendedPrivKey>> {
                 }
             }) {
             Some((pk, full_path)) => (pk, full_path),
-            None => return Ok(()),
+            None => {
+                return Ok(());
+            }
         };
 
         let derived_key = match self.origin.clone() {
@@ -733,6 +734,11 @@ pub struct SignOptions {
     /// Defaults to `true` which will try finalizing PSBT after inputs are signed.
     pub try_finalize: bool,
 
+    /// Whether to try finalizing the PSBT after the inputs are signed.
+    ///
+    /// Defaults to `true` which will only finalize current signer .
+    pub finalize_mine_only: bool,
+
     /// Specifies which Taproot script-spend leaves we should sign for. This option is
     /// ignored if we're signing a non-taproot PSBT.
     ///
@@ -783,6 +789,7 @@ impl Default for SignOptions {
             tap_leaves_options: TapLeavesOptions::default(),
             sign_with_tap_internal_key: true,
             allow_grinding: true,
+            finalize_mine_only: false,
         }
     }
 }

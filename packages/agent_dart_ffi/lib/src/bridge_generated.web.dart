@@ -702,6 +702,7 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> with Flutte
       api2wire_bool(raw.allowAllSighashes),
       api2wire_bool(raw.removePartialSigs),
       api2wire_bool(raw.tryFinalize),
+      api2wire_bool(raw.finalizeMineOnly),
       api2wire_bool(raw.signWithTapInternalKey),
       api2wire_bool(raw.allowGrinding)
     ];

@@ -24,6 +24,7 @@ use std::sync::Arc;
 use bitcoin::secp256k1::Secp256k1;
 
 use bitcoin::consensus::encode::serialize;
+// use bitcoin::hashes::hex::ToHex;
 use bitcoin::util::psbt;
 use bitcoin::{
     Address, EcdsaSighashType, LockTime, Network, OutPoint, SchnorrSighashType, Script, Sequence,
@@ -1476,6 +1477,7 @@ where
             //   is in `src/descriptor/mod.rs`, but it will basically look at `bip32_derivation`,
             //   `redeem_script` and `witness_script` to determine the right derivation
             // - If that also fails, it will try it on the internal descriptor, if present
+
             let desc = self.descriptor.derive_from_psbt_input(
                 psbt_input,
                 psbt.get_utxo_for(n),
@@ -1507,7 +1509,13 @@ where
                         }
                     }
                 }
-                None => finished = false,
+                None => {
+                    if sign_options.finalize_mine_only {
+                        continue;
+                    } else {
+                        finished = false
+                    }
+                }
             }
         }
 

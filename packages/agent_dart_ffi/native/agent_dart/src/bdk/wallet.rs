@@ -188,6 +188,10 @@ pub struct SignOptions {
     /// Defaults to `true` which will try finalizing PSBT after inputs are signed.
     pub try_finalize: bool,
 
+    /// Whether to try finalizing the PSBT after the inputs are signed.
+    ///
+    /// Defaults to `true` which will try finalizing PSBT of Mine.
+    pub finalize_mine_only: bool,
     // Specifies which Taproot script-spend leaves we should sign for. This option is
     // ignored if we're signing a non-taproot PSBT.
     //
@@ -213,6 +217,7 @@ impl From<SignOptions> for BdkSignOptions {
             allow_all_sighashes: sign_options.allow_all_sighashes,
             remove_partial_sigs: sign_options.remove_partial_sigs,
             try_finalize: sign_options.try_finalize,
+            finalize_mine_only: sign_options.finalize_mine_only,
             tap_leaves_options: Default::default(),
             sign_with_tap_internal_key: sign_options.sign_with_tap_internal_key,
             allow_grinding: sign_options.allow_grinding,
