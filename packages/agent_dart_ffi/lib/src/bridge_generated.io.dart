@@ -899,6 +899,7 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
     wireObj.allow_all_sighashes = api2wire_bool(apiObj.allowAllSighashes);
     wireObj.remove_partial_sigs = api2wire_bool(apiObj.removePartialSigs);
     wireObj.try_finalize = api2wire_bool(apiObj.tryFinalize);
+    wireObj.finalize_mine_only = api2wire_bool(apiObj.finalizeMineOnly);
     wireObj.sign_with_tap_internal_key = api2wire_bool(apiObj.signWithTapInternalKey);
     wireObj.allow_grinding = api2wire_bool(apiObj.allowGrinding);
   }
@@ -3551,6 +3552,9 @@ final class wire_SignOptions extends ffi.Struct {
 
   @ffi.Bool()
   external bool try_finalize;
+
+  @ffi.Bool()
+  external bool finalize_mine_only;
 
   @ffi.Bool()
   external bool sign_with_tap_internal_key;

@@ -1252,6 +1252,11 @@ class SignOptions {
   /// Defaults to `true` which will try finalizing PSBT after inputs are signed.
   final bool tryFinalize;
 
+  /// Whether to try finalizing the PSBT after the inputs are signed.
+  ///
+  /// Defaults to `true` which will try finalizing PSBT of Mine.
+  final bool finalizeMineOnly;
+
   /// Whether we should try to sign a taproot transaction with the taproot internal key
   /// or not. This option is ignored if we're signing a non-taproot PSBT.
   ///
@@ -1269,6 +1274,7 @@ class SignOptions {
     required this.allowAllSighashes,
     required this.removePartialSigs,
     required this.tryFinalize,
+    required this.finalizeMineOnly,
     required this.signWithTapInternalKey,
     required this.allowGrinding,
   });

@@ -110,7 +110,7 @@ class OrdClient {
       throw AgentFetchError(
         statusCode: response['statusCode'],
         statusText: response['statusText'],
-        body: response[body],
+        body: response['body'],
       );
     }
     return CallResponseBody.fromJson({...response});
@@ -135,7 +135,7 @@ class OrdClient {
       throw AgentFetchError(
         statusCode: response['statusCode'],
         statusText: response['statusText'],
-        body: response[body],
+        body: response['body'],
       );
     }
     return CallResponseBody.fromJson({...response});
@@ -160,7 +160,7 @@ class OrdClient {
       throw AgentFetchError(
         statusCode: response['statusCode'],
         statusText: response['statusText'],
-        body: response[body],
+        body: response['body'],
       );
     }
     return CallResponseBody.fromJson({...response});

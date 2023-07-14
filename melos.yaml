@@ -34,6 +34,10 @@ scripts:
     run: bash scripts/build-apple.sh
     description: Build the XCFramework for iOS and macOS.
 
+  build:mac:
+    run: bash scripts/build-mac.sh
+    description: Build the XCFramework macOS(dev only).
+
   build:android:
     run: bash scripts/build-android.sh
     description: Build the .tar.gz for Android.

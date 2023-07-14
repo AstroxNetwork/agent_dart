@@ -546,6 +546,7 @@ typedef struct wire_SignOptions {
   bool allow_all_sighashes;
   bool remove_partial_sigs;
   bool try_finalize;
+  bool finalize_mine_only;
   bool sign_with_tap_internal_key;
   bool allow_grinding;
 } wire_SignOptions;
