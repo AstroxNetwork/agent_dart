@@ -110,7 +110,7 @@ void btc_wallet() {
       // print('\n getBalance ==> \n');
       // print(balance.toJson());
 
-      // final c = await wallet.blockchain.getHeight();
+      // final c = await wallet.getHeight();
       // print('\n getHeight ==> \n');
       // print(c);
 
@@ -123,7 +123,7 @@ void btc_wallet() {
 
       // print(safeBlance);
 
-      // send a btcTx
+      // // send a btcTx
       // final btcTx = await wallet.createSendBTC(
       //   toAddress:
       //       'bc1prhylusp2j4ks7ut2pu0scxtxz76p2wn849jjzay42vvvcyxy4uzqhkng7h',

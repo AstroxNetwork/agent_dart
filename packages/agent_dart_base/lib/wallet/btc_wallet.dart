@@ -331,7 +331,7 @@ class BitcoinWallet {
   final AddressType addressType;
   final BTCDescriptor descriptor;
   late AddressInfo _selectedSigner;
-  late Blockchain blockchain;
+  // late Blockchain blockchain;
 
   Network network = Network.Bitcoin;
 
@@ -371,32 +371,32 @@ class BitcoinWallet {
     return _walletType;
   }
 
-  Future<void> blockchainInit({
-    Network network = Network.Bitcoin,
-    BlockchainConfig? blockchainConfig,
-  }) async {
-    blockchain = await Blockchain.create(
-      config: blockchainConfig ??
-          BlockchainConfig.electrum(
-            config: ElectrumConfig(
-              stopGap: 10,
-              timeout: 5,
-              retry: 5,
-              url:
-                  'ssl://electrum.blockstream.info:${network == Network.Bitcoin ? 50002 : 60002}',
-              validateDomain: false,
-            ),
-          ),
-    );
-    // blockchain = await Blockchain.create(
-    //     config: BlockchainConfig.esplora(
-    //         config: EsploraConfig(
-    //   baseUrl:
-    //       'https://mempool.space/${(net ?? network) == Network.Bitcoin ? '' : 'testnet/'}api', // https://mempool.space/api',
-    //   concurrency: 4,
-    //   stopGap: 10,
-    // )));
-  }
+  // Future<void> blockchainInit({
+  //   Network network = Network.Bitcoin,
+  //   BlockchainConfig? blockchainConfig,
+  // }) async {
+  //   blockchain = await Blockchain.create(
+  //     config: blockchainConfig ??
+  //         BlockchainConfig.electrum(
+  //           config: ElectrumConfig(
+  //             stopGap: 10,
+  //             timeout: 5,
+  //             retry: 5,
+  //             url:
+  //                 'ssl://electrum.blockstream.info:${network == Network.Bitcoin ? 50002 : 60002}',
+  //             validateDomain: false,
+  //           ),
+  //         ),
+  //   );
+  //   // blockchain = await Blockchain.create(
+  //   //     config: BlockchainConfig.esplora(
+  //   //         config: EsploraConfig(
+  //   //   baseUrl:
+  //   //       'https://mempool.space/${(net ?? network) == Network.Bitcoin ? '' : 'testnet/'}api', // https://mempool.space/api',
+  //   //   concurrency: 4,
+  //   //   stopGap: 10,
+  //   // )));
+  // }
 
   static Future<BitcoinWallet> fromPhrase(
     String phrase, {
@@ -420,7 +420,7 @@ class BitcoinWallet {
     );
     wallet.setNetwork(network);
     wallet.setWalletType(WalletType.HD);
-    await wallet.blockchainInit(network: network);
+    // await wallet.blockchainInit(network: network);
     return wallet;
   }
 
@@ -462,7 +462,7 @@ class BitcoinWallet {
     );
     wallet.setNetwork(network);
     wallet.setWalletType(WalletType.Single);
-    await wallet.blockchainInit(network: network);
+    // await wallet.blockchainInit(network: network);
     return wallet;
   }
 
@@ -495,9 +495,9 @@ class BitcoinWallet {
     return _selectedSigner;
   }
 
-  Future<void> sync() {
-    return wallet.sync(blockchain);
-  }
+  // Future<void> sync() {
+  //   return wallet.sync(blockchain);
+  // }
 
   Future<bool> cacheAddress(int cacheSize) {
     return wallet.cacheAddresses(cacheSize: cacheSize);
@@ -652,14 +652,14 @@ class BitcoinWallet {
     }
   }
 
-  Future<Transaction> getTx(String txid) async {
-    try {
-      final res = await blockchain.getTx(txid);
-      return await Transaction.create(transactionBytes: res.toU8a());
-    } on FfiException catch (e) {
-      throw e.message;
-    }
-  }
+  // Future<Transaction> getTx(String txid) async {
+  //   try {
+  //     final res = await blockchain.getTx(txid);
+  //     return await Transaction.create(transactionBytes: res.toU8a());
+  //   } on FfiException catch (e) {
+  //     throw e.message;
+  //   }
+  // }
 
   Future<Transaction> getTxFromTxId(String txid) async {
     try {
