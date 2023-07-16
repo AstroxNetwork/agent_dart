@@ -1724,13 +1724,13 @@ abstract class AddressTypeString {
 }
 
 enum AddressType {
-  P2TR('p2tr', "m/86'/0'/0'/0/0"),
-  P2WPKH('p2wpkh', "m/84'/0'/0'/0/0"),
-  P2SH_P2WPKH('p2sh', "m/49'/0'/0'/0/0"),
-  P2PKH('p2pkh', "m/44'/0'/0'/0/0"),
+  P2TR('p2tr', 'Taproot', "m/86'/0'/0'/0/0"),
+  P2WPKH('p2wpkh', 'Native Segwit', "m/84'/0'/0'/0/0"),
+  P2SH_P2WPKH('p2sh', 'Nested Segwit', "m/49'/0'/0'/0/0"),
+  P2PKH('p2pkh', 'Legacy', "m/44'/0'/0'/0/0"),
   ;
 
-  const AddressType(this.raw, this.derivedPath);
+  const AddressType(this.raw, this.display, this.derivedPath);
 
   factory AddressType.fromRaw(String raw) {
     raw = raw.toLowerCase();
@@ -1750,5 +1750,6 @@ enum AddressType {
   }
 
   final String raw;
+  final String display;
   final String derivedPath;
 }
