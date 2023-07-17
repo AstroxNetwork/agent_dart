@@ -470,15 +470,13 @@ class BitcoinWallet {
   Future<AddressInfo> getSigner(int index) async {
     final k = getWalletType() == WalletType.HD
         ? await descriptor.descriptor.descriptorSecretKey!
-            .deriveIndex(currentIndex() ?? 0)
+            .deriveIndex(index)
         : descriptor.descriptor.descriptorSecretKey!;
-    final walletIndex = getWalletType() == WalletType.HD ? index : 0;
 
     final kBytes = Uint8List.fromList(await k.secretBytes());
     _publicKey = await k.getPubFromBytes(kBytes);
-
     return wallet.getAddress(
-      addressIndex: AddressIndex.reset(index: walletIndex),
+      addressIndex: AddressIndex.reset(index: index),
     );
   }
 
