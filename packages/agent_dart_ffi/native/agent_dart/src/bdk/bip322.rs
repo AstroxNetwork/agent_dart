@@ -202,10 +202,22 @@ fn sign_psbt_taproot<C: Signing + Verification>(
             .to_inner(),
         Some(_) => keypair, // no tweak for script spend
     };
-    let sig = secp.sign_schnorr_no_aux_rand(
-        &Message::from_slice(hash.to_vec().as_slice()).unwrap(),
-        &keypair,
-    );
+
+    let sk = k256::schnorr::SigningKey::from_bytes(keypair.secret_bytes().as_slice()).unwrap();
+
+    let sig = sk
+        .try_sign_prehashed(
+            &Message::from_slice(hash.to_vec().as_slice())
+                .unwrap()
+                .as_ref(),
+            &Default::default(),
+        )
+        .unwrap();
+
+    // let sig = secp.sign_schnorr_no_aux_rand(
+    //     &Message::from_slice(hash.to_vec().as_slice()).unwrap(),
+    //     &keypair,
+    // );
     let witness = vec![sig.as_ref().to_vec()];
 
     let result: Vec<u8> = witness_to_vec(witness);
