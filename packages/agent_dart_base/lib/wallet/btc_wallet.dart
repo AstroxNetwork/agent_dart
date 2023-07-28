@@ -62,6 +62,7 @@ class PSBTDetail {
     required this.txId,
     required this.psbt,
   });
+
   final String txId;
   final List<TxOutExt> inputs;
   final List<TxOutExt> outputs;
@@ -94,12 +95,14 @@ class TxOutExt {
     required this.isChange,
     required this.isMine,
   });
+
   String? txId;
   final int index;
   final Address address;
   final int value;
   final bool isChange;
   final bool isMine;
+
   Map<String, dynamic> toJson() => {
         'txId': txId,
         'index': index,
@@ -113,8 +116,8 @@ class TxOutExt {
 class UtxoHandlers {
   UtxoHandlers({required this.ins, required this.nonIns, required this.txs});
 
-  final List<OutPointExt> ins;
-  final List<OutPointExt> nonIns;
+  final List<OutPointWithInscription> ins;
+  final List<OutPointWithInscription> nonIns;
   final List<dynamic> txs;
 }
 
@@ -331,6 +334,7 @@ class BitcoinWallet {
   final AddressType addressType;
   final BTCDescriptor descriptor;
   late AddressInfo _selectedSigner;
+
   // late Blockchain blockchain;
 
   Network network = Network.Bitcoin;
@@ -527,15 +531,12 @@ class BitcoinWallet {
       var tooManyUnconfirmed = false;
 
       final utxos = await blockStreamApi!.getAddressUtxo(address);
-
+      final blockHeight = await getHeight();
       for (var i = 0; i < utxos.length; i++) {
         final u = utxos[i];
 
         if (u.status.confirmed) {
           final tx = await getTxFromTxId(u.txid);
-
-          final blockHeight = await getHeight();
-
           if (await tx.isCoinBase() &&
               (blockHeight - u.status.block_height!) < COINBASE_MATURITY) {
             immature += u.value;
@@ -699,8 +700,8 @@ class BitcoinWallet {
       final List<Utxo> utxos = rets[0] as List<Utxo>;
       final List<InscriptionItem> allIns = (rets[1] as List<InscriptionItem>)
         ..sort((a, b) => b.num!.compareTo(a.num!));
-      final ins = <OutPointExt>[];
-      final nonIns = <OutPointExt>[];
+      final ins = <OutPointWithInscription>[];
+      final nonIns = <OutPointWithInscription>[];
       final txDetails = <TxBytes>[];
       for (var i = 0; i < utxos.length; i += 1) {
         final e = utxos[i];
@@ -716,27 +717,31 @@ class BitcoinWallet {
         txDetails.add(tx);
         if (e.inscriptions.isNotEmpty) {
           final idList = e.inscriptions.map((e) => e.id).toSet();
-          final insList =
-              allIns.where((element) => idList.contains(element.id)).toList();
+          final insList = allIns
+              .where((element) => idList.contains(element.id))
+              .map(
+                (e) => InscriptionValue(
+                  inscriptionId: e.id,
+                  outputValue: e.detail.output_value,
+                ),
+              )
+              .toList();
           ins.add(
-            OutPointExt(
-              insList,
+            OutPointWithInscription(
+              inscriptions: insList,
               txid: e.txId,
               vout: e.outputIndex,
-              satoshis: e.satoshis,
+              value: e.satoshis,
               scriptPk: e.scriptPk,
-              outputIndex: e.outputIndex,
             ),
           );
         } else {
           nonIns.add(
-            OutPointExt(
-              null,
+            OutPointWithInscription(
               txid: e.txId,
               vout: e.outputIndex,
-              satoshis: e.satoshis,
+              value: e.satoshis,
               scriptPk: e.scriptPk,
-              outputIndex: e.outputIndex,
             ),
           );
         }
@@ -757,7 +762,7 @@ class BitcoinWallet {
     final nonIns = xos.nonIns;
     final res = nonIns.fold(
       0,
-      (previousValue, element) => previousValue + element.satoshis,
+      (previousValue, element) => previousValue + element.value,
     );
     return res;
   }
@@ -769,7 +774,7 @@ class BitcoinWallet {
     final ins = xos.ins;
     final res = ins.fold(
       0,
-      (previousValue, element) => previousValue + element.satoshis,
+      (previousValue, element) => previousValue + element.value,
     );
     return res;
   }
@@ -812,9 +817,9 @@ class BitcoinWallet {
     final nonIns = xos.nonIns;
 
     if (bigAmountFirst) {
-      nonIns.sort((a, b) => b.satoshis.compareTo(a.satoshis));
+      nonIns.sort((a, b) => b.value.compareTo(a.value));
     } else {
-      nonIns.sort((a, b) => a.satoshis.compareTo(b.satoshis));
+      nonIns.sort((a, b) => a.value.compareTo(b.value));
     }
 
     final txs = xos.txs;
@@ -833,12 +838,10 @@ class BitcoinWallet {
     // recepient setting
     // calculate output amount
     builder.addOutput(
-      OutPointExt(
-        null,
-        outputIndex: 0,
+      OutPointWithInscription(
         txid: '',
         vout: 0,
-        satoshis: amount,
+        value: amount,
         scriptPk: (await formattedAddress.scriptPubKey()).internal.toHex(),
       ),
     );
@@ -848,7 +851,7 @@ class BitcoinWallet {
         builder.getTotalOutput() == 0 ? amount : builder.getTotalOutput();
 
     var tmpSum = builder.getTotalInput();
-    final tempAddInputs = <OutPointExt>[];
+    final tempAddInputs = <OutPointWithInscription>[];
 
     var fee = 0;
     for (var i = 0; i < nonIns.length; i++) {
@@ -857,7 +860,7 @@ class BitcoinWallet {
         builder.addInput(nonOrdUtxo);
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
-        tmpSum += nonOrdUtxo.satoshis;
+        tmpSum += nonOrdUtxo.value;
         tempAddInputs.add(nonOrdUtxo);
         continue;
       }
@@ -868,7 +871,7 @@ class BitcoinWallet {
         builder.addInput(nonOrdUtxo);
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
-        tmpSum += nonOrdUtxo.satoshis;
+        tmpSum += nonOrdUtxo.value;
         tempAddInputs.add(nonOrdUtxo);
       } else {
         break;
@@ -955,9 +958,9 @@ class BitcoinWallet {
     final ins = xos.ins;
     final nonIns = xos.nonIns;
     if (bigAmountFirst) {
-      nonIns.sort((a, b) => b.satoshis.compareTo(a.satoshis));
+      nonIns.sort((a, b) => b.value.compareTo(a.value));
     } else {
-      nonIns.sort((a, b) => a.satoshis.compareTo(b.satoshis));
+      nonIns.sort((a, b) => a.value.compareTo(b.value));
     }
     final txs = xos.txs;
     // builder.addInscriptions(ins);
@@ -977,12 +980,10 @@ class BitcoinWallet {
       // recepient setting
       // calculate output amount
       builder.addOutput(
-        OutPointExt(
-          null,
-          outputIndex: 0,
+        OutPointWithInscription(
           txid: '',
           vout: 0,
-          satoshis: formattedAddress.amount,
+          value: formattedAddress.amount,
           scriptPk:
               (await formattedAddress.address.scriptPubKey()).internal.toHex(),
         ),
@@ -998,7 +999,7 @@ class BitcoinWallet {
         builder.getTotalOutput() == 0 ? amount : builder.getTotalOutput();
 
     var tmpSum = builder.getTotalInput();
-    final tempAddInputs = <OutPointExt>[];
+    final tempAddInputs = <OutPointWithInscription>[];
 
     var fee = 0;
     for (var i = 0; i < nonIns.length; i++) {
@@ -1007,7 +1008,7 @@ class BitcoinWallet {
         builder.addInput(nonOrdUtxo);
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
-        tmpSum += nonOrdUtxo.satoshis;
+        tmpSum += nonOrdUtxo.value;
         tempAddInputs.add(nonOrdUtxo);
         continue;
       }
@@ -1018,7 +1019,7 @@ class BitcoinWallet {
         builder.addInput(nonOrdUtxo);
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
-        tmpSum += nonOrdUtxo.satoshis;
+        tmpSum += nonOrdUtxo.value;
         tempAddInputs.add(nonOrdUtxo);
       } else {
         break;
@@ -1115,14 +1116,14 @@ class BitcoinWallet {
     }
 
     // 3.1 select inscription and proctect those unspendables
-    final tempInputs = <OutPointExt>[];
+    final tempInputs = <OutPointWithInscription>[];
     var satoshis = 0;
     var found = false;
     var ordLeft = 0;
     for (final e in ins) {
       // try and find the inscription matches the inscription id
-      final index =
-          e.inscriptions!.indexWhere((element) => element.detail.id == insId);
+      final index = e.inscriptions!
+          .indexWhere((element) => element.inscriptionId == insId);
       if (index > -1) {
         // add to input map
         builder.addInput(e);
@@ -1133,16 +1134,15 @@ class BitcoinWallet {
         // add to dump data inputs
         tempInputs.add(e);
         // get actual output value, if outputValue is null, use the original value
-        satoshis = outputValue ?? e.inscriptions![index].detail.output_value;
+        satoshis = outputValue ?? e.inscriptions![index].outputValue;
 
         // add output to output map
         builder.addOutput(
-          OutPointExt(
-            e.inscriptions,
-            outputIndex: e.outputIndex,
+          OutPointWithInscription(
+            inscriptions: e.inscriptions,
             txid: e.txid,
             vout: e.vout,
-            satoshis: satoshis,
+            value: satoshis,
             scriptPk: (await formattedAddress.scriptPubKey()).internal.toHex(),
           ),
         );
@@ -1151,8 +1151,8 @@ class BitcoinWallet {
 
         // add change output
         if (outputValue != null &&
-            outputValue < e.inscriptions![index].detail.output_value) {
-          ordLeft = e.inscriptions![index].detail.output_value - outputValue;
+            outputValue < e.inscriptions![index].outputValue) {
+          ordLeft = e.inscriptions![index].outputValue - outputValue;
           // add to output map as part of change output value
           // builder.addOutput(
           //   OutPointExt(
@@ -1179,9 +1179,9 @@ class BitcoinWallet {
     final nonIns = xos.nonIns;
 
     if (bigAmountFirst) {
-      nonIns.sort((a, b) => b.satoshis.compareTo(a.satoshis));
+      nonIns.sort((a, b) => b.value.compareTo(a.value));
     } else {
-      nonIns.sort((a, b) => a.satoshis.compareTo(b.satoshis));
+      nonIns.sort((a, b) => a.value.compareTo(b.value));
     }
 
     // calcluate output amount
@@ -1197,7 +1197,7 @@ class BitcoinWallet {
         builder.addInput(nonOrdUtxo);
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
-        tmpSum += nonOrdUtxo.satoshis;
+        tmpSum += nonOrdUtxo.value;
         tempInputs.add(nonOrdUtxo);
         continue;
       }
@@ -1209,7 +1209,7 @@ class BitcoinWallet {
         builder.addInput(nonOrdUtxo);
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
-        tmpSum += nonOrdUtxo.satoshis;
+        tmpSum += nonOrdUtxo.value;
         tempInputs.add(nonOrdUtxo);
       } else {
         break;
@@ -1306,14 +1306,14 @@ class BitcoinWallet {
     }
 
     // 3.1 select inscription and proctect those unspendables
-    final tempInputs = <OutPointExt>[];
+    final tempInputs = <OutPointWithInscription>[];
     var satoshis = 0;
     var found = false;
     var ordLeft = 0;
     for (final e in ins) {
       // try and find the inscription matches the inscription id
       final index = e.inscriptions!
-          .indexWhere((element) => insIds.contains(element.detail.id));
+          .indexWhere((element) => insIds.contains(element.inscriptionId));
       if (index > -1) {
         // add to input map
         builder.addInput(e);
@@ -1324,16 +1324,15 @@ class BitcoinWallet {
         // add to dump data inputs
         tempInputs.add(e);
         // get actual output value, if outputValue is null, use the original value
-        satoshis = outputValue ?? e.inscriptions![index].detail.output_value;
+        satoshis = outputValue ?? e.inscriptions![index].outputValue;
 
         // add output to output map
         builder.addOutput(
-          OutPointExt(
-            e.inscriptions,
-            outputIndex: e.outputIndex,
+          OutPointWithInscription(
+            inscriptions: e.inscriptions,
             txid: e.txid,
             vout: e.vout,
-            satoshis: satoshis,
+            value: satoshis,
             scriptPk: (await formatedAddress.scriptPubKey()).internal.toHex(),
           ),
         );
@@ -1342,8 +1341,8 @@ class BitcoinWallet {
 
         // add change output
         if (outputValue != null &&
-            outputValue < e.inscriptions![index].detail.output_value) {
-          ordLeft = e.inscriptions![index].detail.output_value - outputValue;
+            outputValue < e.inscriptions![index].outputValue) {
+          ordLeft = e.inscriptions![index].outputValue - outputValue;
           // add to output map as part of change output value
           // builder.addOutput(
           //   OutPointExt(
@@ -1370,9 +1369,9 @@ class BitcoinWallet {
     final nonIns = xos.nonIns;
 
     if (bigAmountFirst) {
-      nonIns.sort((a, b) => b.satoshis.compareTo(a.satoshis));
+      nonIns.sort((a, b) => b.value.compareTo(a.value));
     } else {
-      nonIns.sort((a, b) => a.satoshis.compareTo(b.satoshis));
+      nonIns.sort((a, b) => a.value.compareTo(b.value));
     }
 
     // calcluate output amount
@@ -1388,7 +1387,7 @@ class BitcoinWallet {
         builder.addInput(nonOrdUtxo);
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
-        tmpSum += nonOrdUtxo.satoshis;
+        tmpSum += nonOrdUtxo.value;
         tempInputs.add(nonOrdUtxo);
         continue;
       }
@@ -1400,7 +1399,7 @@ class BitcoinWallet {
         builder.addInput(nonOrdUtxo);
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
-        tmpSum += nonOrdUtxo.satoshis;
+        tmpSum += nonOrdUtxo.value;
         tempInputs.add(nonOrdUtxo);
       } else {
         break;
@@ -1480,14 +1479,14 @@ class BitcoinWallet {
     }
 
     // 3.1 select inscription and proctect those unspendables
-    final tempInputs = <OutPointExt>[];
+    final tempInputs = <OutPointWithInscription>[];
     var satoshis = 0;
     var found = false;
     var ordLeft = 0;
     for (final e in ins) {
       // try and find the inscription matches the inscription id
-      final index =
-          e.inscriptions!.indexWhere((element) => element.detail.id == insId);
+      final index = e.inscriptions!
+          .indexWhere((element) => element.inscriptionId == insId);
       if (index > -1) {
         // add to input map
         builder.addInput(e);
@@ -1502,12 +1501,11 @@ class BitcoinWallet {
 
         // add output to output map
         builder.addOutput(
-          OutPointExt(
-            e.inscriptions,
-            outputIndex: e.outputIndex,
+          OutPointWithInscription(
+            inscriptions: e.inscriptions,
             txid: e.txid,
             vout: e.vout,
-            satoshis: satoshis,
+            value: satoshis,
             scriptPk: (await formattedAddress.scriptPubKey()).internal.toHex(),
           ),
         );
@@ -1515,8 +1513,8 @@ class BitcoinWallet {
         builder.addRecipient(await formattedAddress.scriptPubKey(), satoshis);
 
         // add change output
-        if (outputValue < e.inscriptions![index].detail.output_value) {
-          ordLeft = e.inscriptions![index].detail.output_value - outputValue;
+        if (outputValue < e.inscriptions![index].outputValue) {
+          ordLeft = e.inscriptions![index].outputValue - outputValue;
           // add to output map as part of change output value
           // builder.addOutput(
           //   OutPointExt(
@@ -1543,9 +1541,9 @@ class BitcoinWallet {
     final nonIns = xos.nonIns;
 
     if (bigAmountFirst) {
-      nonIns.sort((a, b) => b.satoshis.compareTo(a.satoshis));
+      nonIns.sort((a, b) => b.value.compareTo(a.value));
     } else {
-      nonIns.sort((a, b) => a.satoshis.compareTo(b.satoshis));
+      nonIns.sort((a, b) => a.value.compareTo(b.value));
     }
 
     // tempInputs.addAll(nonIns);
@@ -1564,7 +1562,7 @@ class BitcoinWallet {
         builder.addInput(nonOrdUtxo);
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
-        tmpSum += nonOrdUtxo.satoshis;
+        tmpSum += nonOrdUtxo.value;
         tempInputs.add(nonOrdUtxo);
         continue;
       }
@@ -1576,7 +1574,7 @@ class BitcoinWallet {
         builder.addInput(nonOrdUtxo);
         builder.addForeignUtxo(nonOrdUtxo);
         addTx(nonOrdUtxo.txid);
-        tmpSum += nonOrdUtxo.satoshis;
+        tmpSum += nonOrdUtxo.value;
         tempInputs.add(nonOrdUtxo);
       } else {
         break;

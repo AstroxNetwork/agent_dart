@@ -1,6 +1,5 @@
 import 'dart:typed_data' as typed_data;
 
-import 'package:agent_dart_base/agent/ord/inscriptionItem.dart';
 import 'package:agent_dart_base/utils/extension.dart';
 import 'package:agent_dart_ffi/agent_dart_ffi.dart' hide Script;
 import 'package:agent_dart_ffi/agent_dart_ffi.dart' as bridge;
@@ -1162,7 +1161,10 @@ class TxBuilder {
     _foreign_utxos.add(
       ForeignUtxo(
         outpoint: OutPoint(txid: ext.txid, vout: ext.vout),
-        txout: TxOutForeign(value: ext.satoshis, scriptPubkey: ext.scriptPk),
+        txout: TxOutForeign(
+          value: ext.value,
+          scriptPubkey: ext.scriptPk,
+        ),
       ),
     );
     return this;
@@ -1330,7 +1332,7 @@ class TxBuilder {
   int getTotalOutput() {
     var total = 0;
     for (final e in _txOutputs) {
-      total += e.satoshis;
+      total += e.value;
     }
     return total;
   }
@@ -1338,7 +1340,7 @@ class TxBuilder {
   int getTotalInput() {
     var total = 0;
     for (final e in _txInputs) {
-      total += e.satoshis;
+      total += e.value;
     }
     return total;
   }
@@ -1395,26 +1397,64 @@ class TxBuilder {
   }
 }
 
-class OutPointExt extends OutPoint {
-  OutPointExt(
-    this.inscriptions, {
-    required super.txid,
-    required super.vout,
-    required this.outputIndex,
-    required this.satoshis,
+class InscriptionValue {
+  InscriptionValue({
+    required this.inscriptionId,
+    required this.outputValue,
+  });
+
+  final String inscriptionId;
+  final int outputValue;
+}
+
+class OutPointExt implements OutPoint {
+  OutPointExt({
+    required this.txid,
+    required this.vout,
+    required this.value,
     required this.scriptPk,
   });
 
   /// The referenced transaction's txid.
-  List<InscriptionItem>? inscriptions;
-  final int outputIndex;
-  final int satoshis;
+  final String txid;
+
+  /// The index of the referenced output in its transaction's vout.
+  final int vout;
+  final int value;
+  final String scriptPk;
+}
+
+class OutPointWithInscription implements OutPointExt {
+  OutPointWithInscription({
+    this.inscriptions,
+    required this.txid,
+    required this.vout,
+    required this.value,
+    required this.scriptPk,
+  });
+
+  /// The referenced transaction's txid.
+  List<InscriptionValue>? inscriptions;
+
+  /// The referenced transaction's txid.
+  final String txid;
+
+  /// The index of the referenced output in its transaction's vout.
+  final int vout;
+  final int value;
   final String scriptPk;
 
   Map<String, dynamic> toJson() => {
         'txid': txid,
         'vout': vout,
-        'inscriptions': inscriptions?.map((e) => e.toJson())
+        'value': value,
+        'scriptPk': scriptPk,
+        'inscriptions': inscriptions?.map(
+          (e) => {
+            'inscriptionId': e.inscriptionId,
+            'outputValue': e.outputValue,
+          },
+        )
       };
 }
 
@@ -1460,7 +1500,7 @@ class TxBuilderResult {
   int getTotalInput() {
     return txInputs.fold(
       0,
-      (pre, cur) => pre + cur.satoshis,
+      (pre, cur) => pre + cur.value,
     );
   }
 
@@ -1481,11 +1521,11 @@ class TxBuilderResult {
         return e.previousOutput.txid == input.txid;
       });
       if (found != null) {
-        totalInput += input.satoshis;
+        totalInput += input.value;
         inputStrings.add('''
-  #${i} ${input.satoshis}
+  #${i} ${input.value}
   lock-size: ${input.scriptPk.toU8a().length}
-  via ${input.txid} [${input.outputIndex}]
+  via ${input.txid} [${input.vout}]
 ''');
       }
     }
