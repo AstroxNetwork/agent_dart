@@ -1595,10 +1595,18 @@ Summary in Sats
 ///     3. Signers that can contribute signatures to addresses instantiated from the descriptors.
 ///
 class Wallet {
-  Wallet._(this._wallet);
+  Wallet._(
+    this._wallet, {
+    required this.descriptor,
+    this.changeDescriptor,
+    required this.network,
+  });
 
   final WalletInstance _wallet;
-  String? publicKey;
+
+  final Descriptor descriptor;
+  final Descriptor? changeDescriptor;
+  final Network network;
 
   ///  [Wallet] constructor
   static Future<Wallet> create({
@@ -1614,10 +1622,21 @@ class Wallet {
         network: network,
         databaseConfig: databaseConfig,
       );
-      return Wallet._(res);
+      return Wallet._(
+        res,
+        descriptor: descriptor,
+        changeDescriptor: changeDescriptor,
+        network: network,
+      );
     } on FfiException catch (e) {
       throw configException(e.message);
     }
+  }
+
+  Future<String> getPublicKey(int index) async {
+    final k = await descriptor.descriptorSecretKey!.deriveIndex(index);
+    final kBytes = Uint8List.fromList(await k.secretBytes());
+    return k.getPubFromBytes(kBytes);
   }
 
   ///Return a derived address using the external descriptor, see [AddressIndex] for available address index selection strategies.
@@ -1669,15 +1688,15 @@ class Wallet {
   }
 
   ///Get the Bitcoin network the wallet is using.
-  Future<Network> network() async {
-    try {
-      final res =
-          await AgentDartFFI.impl.walletNetworkStaticMethodApi(wallet: _wallet);
-      return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
-    }
-  }
+  // Future<Network> getNetwork() async {
+  //   try {
+  //     final res =
+  //         await AgentDartFFI.impl.walletNetworkStaticMethodApi(wallet: _wallet);
+  //     return res;
+  //   } on FfiException catch (e) {
+  //     throw configException(e.message);
+  //   }
+  // }
 
   ///Return the list of unspent outputs of this wallet
   ///
