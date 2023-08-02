@@ -1,7 +1,6 @@
 import 'dart:typed_data' as typed_data;
 
-import 'package:agent_dart_base/utils/extension.dart';
-import 'package:agent_dart_ffi/agent_dart_ffi.dart' hide Script;
+import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:agent_dart_ffi/agent_dart_ffi.dart' as bridge;
 import 'package:collection/collection.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
@@ -9,6 +8,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import './bdk_exception.dart';
 import './config.dart';
 import '../../../src/ffi/io.dart';
+import 'buffer.dart';
 
 ///A Bitcoin address.
 class Address {
@@ -1306,27 +1306,23 @@ class TxBuilder {
   }
 
   Future<int> calFee(Wallet wallet) async {
-    try {
-      final res = await AgentDartFFI.impl.txCalFeeFinishStaticMethodApi(
-        wallet: wallet._wallet,
-        recipients: _recipients,
-        foreignUtxos: _foreign_utxos,
-        txs: _txs,
-        unspendable: _unSpendable,
-        manuallySelectedOnly: _manuallySelectedOnly,
-        drainWallet: _drainWallet,
-        rbf: _rbfValue,
-        drainTo: _drainTo,
-        feeAbsolute: _feeAbsolute,
-        feeRate: _feeRate,
-        data: _data,
-        changePolicy: _changeSpendPolicy,
-        shuffleUtxo: _shuffleUtxos,
-      );
-      return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
-    }
+    final res = await AgentDartFFI.impl.txCalFeeFinishStaticMethodApi(
+      wallet: wallet._wallet,
+      recipients: _recipients,
+      foreignUtxos: _foreign_utxos,
+      txs: _txs,
+      unspendable: _unSpendable,
+      manuallySelectedOnly: _manuallySelectedOnly,
+      drainWallet: _drainWallet,
+      rbf: _rbfValue,
+      drainTo: _drainTo,
+      feeAbsolute: _feeAbsolute,
+      feeRate: _feeRate,
+      data: _data,
+      changePolicy: _changeSpendPolicy,
+      shuffleUtxo: _shuffleUtxos,
+    );
+    return res;
   }
 
   int getTotalOutput() {
@@ -1743,19 +1739,233 @@ class Wallet {
     required PartiallySignedTransaction psbt,
     SignOptions? signOptions,
   }) async {
-    try {
-      final sbt = await AgentDartFFI.impl.signStaticMethodApi(
-        signOptions: signOptions,
-        psbtStr: psbt.psbtBase64,
-        wallet: _wallet,
-      );
-      if (sbt == null) {
-        throw const BdkException.unExpected('Unable to sign transaction');
-      }
-      return PartiallySignedTransaction(psbtBase64: sbt);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    final sbt = await AgentDartFFI.impl.signStaticMethodApi(
+      signOptions: signOptions,
+      psbtStr: psbt.psbtBase64,
+      wallet: _wallet,
+    );
+    if (sbt == null) {
+      throw const BdkException.unExpected('Unable to sign transaction');
     }
+    return PartiallySignedTransaction(psbtBase64: sbt);
+  }
+
+  Future<Transaction> signToTx({
+    required TxBuilderResult tbr,
+    SignOptions? signOptions,
+  }) async {
+    await tbr.dumpTx();
+    final res = await sign(psbt: tbr.psbt, signOptions: signOptions);
+    final sbt = PartiallySignedTransaction(psbtBase64: res.psbtBase64);
+    final signed = TxBuilderResult(
+      psbt: sbt,
+      txDetails: tbr.txDetails,
+      signed: true,
+    );
+    return signed.psbt.extractTx();
+  }
+
+  Future<TxBuilderResult> signTBR({
+    required TxBuilderResult tbr,
+    SignOptions? signOptions,
+  }) async {
+    await tbr.dumpTx();
+    final res = await sign(psbt: tbr.psbt, signOptions: signOptions);
+    final sbt = PartiallySignedTransaction(psbtBase64: res.psbtBase64);
+    final signed = TxBuilderResult(
+      psbt: sbt,
+      txDetails: tbr.txDetails,
+      signed: true,
+    );
+    return signed;
+  }
+
+  Future<String> signToTxHex({
+    required TxBuilderResult tbr,
+    SignOptions? signOptions,
+  }) async {
+    final tx = await signToTx(tbr: tbr, signOptions: signOptions);
+    return Uint8List.fromList(await tx.serialize()).toHex();
+  }
+
+  Future<String> signMessage(
+    String message, {
+    bool toBase64 = true,
+    bool useBip322 = false,
+    WalletType walletType = WalletType.HD,
+    int? index,
+    required AddressType addressType,
+  }) async {
+    final k = walletType == WalletType.HD
+        ? await descriptor.descriptorSecretKey!.deriveIndex(index!)
+        : descriptor.descriptorSecretKey!;
+
+    final kBytes = Uint8List.fromList(await k.secretBytes());
+
+    if (!useBip322) {
+      final res = await signSecp256k1WithRNG(messageHandler(message), kBytes);
+
+      /// move v to the top, and plus 27
+      final v = res.sublist(64, 65);
+      v[0] = v[0] + 27;
+
+      // regroup the signature
+      final msgSig = u8aConcat([v, res.sublist(0, 64)]);
+
+      if (toBase64) {
+        return base64Encode(msgSig);
+      }
+      return msgSig.toHex();
+    } else {
+      String? res;
+      if (addressType == AddressType.P2TR) {
+        res = await AgentDartFFI.impl.bip322SignTaprootStaticMethodApi(
+          secret: kBytes,
+          message: message,
+        );
+      } else {
+        res = await AgentDartFFI.impl.bip322SignSegwitStaticMethodApi(
+          secret: kBytes,
+          message: message,
+        );
+      }
+
+      if (toBase64) {
+        return res;
+      } else {
+        return base64Decode(res).toHex();
+      }
+    }
+  }
+
+  Uint8List messageHandler(String message) {
+    final MAGIC_BYTES = 'Bitcoin Signed Message:\n'.plainToU8a();
+
+    final prefix1 = BufferWriter.varintBufNum(MAGIC_BYTES.toU8a().byteLength)
+        .buffer
+        .asUint8List();
+    final messageBuffer = message.plainToU8a();
+    final prefix2 =
+        BufferWriter.varintBufNum(messageBuffer.length).buffer.asUint8List();
+
+    final buf = u8aConcat([prefix1, MAGIC_BYTES, prefix2, messageBuffer]);
+
+    return sha256Hash(buf.buffer);
+  }
+
+  Future<String> signPsbt(String psbtHex) async {
+    const options = SignOptions(
+      trustWitnessUtxo: true,
+      allowAllSighashes: false,
+      removePartialSigs: false,
+      tryFinalize: true,
+      allowGrinding: true,
+      signWithTapInternalKey: true,
+      finalizeMineOnly: true,
+    );
+    final psbt = PartiallySignedTransaction(
+      psbtBase64: isHex(psbtHex) ? base64Encode(psbtHex.toU8a()) : psbtHex,
+    );
+
+    final res = await sign(psbt: psbt, signOptions: options);
+    return base64Decode(res.psbtBase64).toHex();
+  }
+
+  Future<String> psbtToTxHex(String psbtHex) async {
+    final psbt = PartiallySignedTransaction(
+      psbtBase64: base64Encode(isHex(psbtHex) ? psbtHex.toU8a() : psbtHex),
+    );
+    final tx = await psbt.extractTx();
+    return Uint8List.fromList(await tx.serialize()).toHex();
+  }
+
+  Future<List<String>> signPsbts(List<String> psbtHexs) async {
+    final signedPsbtHexs = <String>[];
+    for (int i = 0; i < psbtHexs.length; i++) {
+      signedPsbtHexs.add(await signPsbt(psbtHexs[i]));
+    }
+    return signedPsbtHexs;
+  }
+
+  Future<PSBTDetail> dumpPsbt(
+    String psbtHex, {
+    required String address,
+  }) async {
+    final psbt = PartiallySignedTransaction(
+      psbtBase64: isHex(psbtHex)
+          ? base64Encode(psbtHex.toU8a())
+          : base64Encode(psbtHex),
+    );
+    final tx = await psbt.extractTx();
+
+    final psbtInputs = await psbt.getPsbtInputs();
+
+    final inputsExt = <TxOutExt>[];
+    final txInputs = await tx.input();
+
+    for (var i = 0; i < psbtInputs.length; i += 1) {
+      final element = psbtInputs[i];
+      final input = txInputs[i];
+      final txId = input.previousOutput.txid;
+      final addr = await Address.fromScript(element.scriptPubkey, network);
+
+      inputsExt.add(
+        TxOutExt(
+          txId: txId,
+          index: i,
+          address: addr,
+          value: element.value,
+          isMine: addr == address ? true : false,
+          isChange: false,
+        ),
+      );
+    }
+    final outputs = await tx.output();
+    final outputsExt = <TxOutExt>[];
+
+    for (var i = 0; i < outputs.length; i += 1) {
+      final element = outputs[i];
+      final addr = await Address.fromScript(element.scriptPubkey, network);
+
+      outputsExt.add(
+        TxOutExt(
+          index: i,
+          address: addr,
+          value: element.value,
+          isMine: addr == address ? true : false,
+          isChange: i == outputs.length - 1 ? true : false,
+        ),
+      );
+    }
+
+    final size = Uint8List.fromList(await tx.serialize()).length;
+    final feePaid = await psbt.feeAmount();
+    final feeRate = (await psbt.feeRate())!.asSatPerVb();
+    final txId = (await tx.txid()).toString();
+
+    return PSBTDetail(
+      txId: txId,
+      inputs: inputsExt,
+      outputs: outputsExt,
+      fee: feePaid!,
+      feeRate: feeRate,
+      size: size,
+      totalInputValue: inputsExt.fold(0, (v, i) => i.value + v),
+      totalOutputValue: outputsExt.fold(0, (v, i) => i.value + v),
+      psbt: psbt,
+    );
+  }
+
+  Future<SignIdentity> getIdentity({
+    WalletType walletType = WalletType.HD,
+    int? index,
+  }) async {
+    final k = walletType == WalletType.HD
+        ? await descriptor.descriptorSecretKey!.deriveIndex(index!)
+        : descriptor.descriptorSecretKey!;
+
+    final kBytes = Uint8List.fromList(await k.secretBytes());
+    return Secp256k1KeyIdentity.fromSecretKey(kBytes);
   }
 
   Future<bool> cacheAddresses({required int cacheSize}) async {
