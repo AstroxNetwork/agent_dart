@@ -6,7 +6,6 @@ import 'package:agent_dart_base/agent/ord/service.dart';
 import 'package:agent_dart_base/agent/ord/utxo.dart';
 import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:agent_dart_base/src/ffi/io.dart';
-import 'package:agent_dart_base/wallet/btc/bdk/buffer.dart';
 import 'package:agent_dart_base/wallet/btc/bdk/wif.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
@@ -1686,7 +1685,7 @@ class BitcoinWallet {
 
   Future<List<String>> signPsbts(List<String> psbtHexs) async {
     try {
-      List<String> signedPsbtHexs = [];
+      final signedPsbtHexs = <String>[];
       for (var i = 0; i < psbtHexs.length; i++) {
         signedPsbtHexs.add(await signPsbt(psbtHexs[i]));
       }
@@ -1762,8 +1761,11 @@ class BitcoinWallet {
     );
   }
 
-  Future<String> signMessage(String message,
-      {bool toBase64 = true, bool useBip322 = false}) async {
+  Future<String> signMessage(
+    String message, {
+    bool toBase64 = true,
+    bool useBip322 = false,
+  }) async {
     try {
       final k = getWalletType() == WalletType.HD
           ? await descriptor.descriptor.descriptorSecretKey!
@@ -1773,7 +1775,8 @@ class BitcoinWallet {
       final kBytes = Uint8List.fromList(await k.secretBytes());
 
       if (!useBip322) {
-        final res = await signSecp256k1WithRNG(messageHandler(message), kBytes);
+        final res =
+            await signSecp256k1WithRNG(wallet.messageHandler(message), kBytes);
 
         /// move v to the top, and plus 27
         final v = res.sublist(64, 65);
@@ -1805,21 +1808,6 @@ class BitcoinWallet {
     } on FfiException catch (e) {
       throw e.message;
     }
-  }
-
-  Uint8List messageHandler(String message) {
-    final MAGIC_BYTES = 'Bitcoin Signed Message:\n'.plainToU8a();
-
-    final prefix1 = BufferWriter.varintBufNum(MAGIC_BYTES.toU8a().byteLength)
-        .buffer
-        .asUint8List();
-    final messageBuffer = message.plainToU8a();
-    final prefix2 =
-        BufferWriter.varintBufNum(messageBuffer.length).buffer.asUint8List();
-
-    final buf = u8aConcat([prefix1, MAGIC_BYTES, prefix2, messageBuffer]);
-
-    return sha256Hash(buf.buffer);
   }
 
   Future<SignIdentity> getIdentity() async {
