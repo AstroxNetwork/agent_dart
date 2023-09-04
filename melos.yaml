@@ -26,10 +26,6 @@ scripts:
     run: melos run build:apple && melos run build:android && melos run build:other
     description: Build all native libraries for the project.
 
-  build:dart:
-    run: bash scripts/build-dart.sh
-    description: Build dart libraries for the project.
-
   build:apple:
     run: bash scripts/build-apple.sh
     description: Build the XCFramework for iOS and macOS.
