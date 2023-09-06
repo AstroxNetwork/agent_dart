@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.16
+
+- Support composite_query in candid.
+
 ## 1.0.0-dev.15
 
 - Support for Dart 3.0.
