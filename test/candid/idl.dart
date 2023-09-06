@@ -399,8 +399,17 @@ void idlTest() {
     );
 
     final foobar = FooBar.fromJson({'foo': '💩', 'bar': BigInt.from(42)});
-    final encode = IDL.encode([IDL.Opt(IDL.Record({'foo': IDL.Text, 'bar': IDL.Int}))], [[foobar]]);
-    final decode = IDL.decode([IDL.Opt(IDL.Record({'foo': IDL.Text, 'bar': IDL.Int}))], encode);
+    final encode = IDL.encode([
+      IDL.Opt(IDL.Record({'foo': IDL.Text, 'bar': IDL.Int}))
+    ], [
+      [foobar]
+    ]);
+    final decode = IDL.decode(
+      [
+        IDL.Opt(IDL.Record({'foo': IDL.Text, 'bar': IDL.Int}))
+      ],
+      encode,
+    );
     final newFoobar = FooBar.fromJson((decode.first as List).first);
     expect(foobar, newFoobar);
   });
@@ -530,6 +539,12 @@ void idlTest() {
       '4449444c016a0171017d01010100010103caffee03666f6f',
       'query function',
     );
+    testArg(
+      IDL.Func([IDL.Text], [IDL.Nat], ['composite_query']),
+      [Principal.fromText('w7x7r-cok77-xa'), 'foo'],
+      '4449444c016a0171017d01030100010103caffee03666f6f',
+      'composite_query function',
+    );
   });
 
   test('IDL encoding (service)', () {
@@ -557,6 +572,14 @@ void idlTest() {
       }),
       Principal.fromText('w7x7r-cok77-xa'),
       '4449444c026a0171017d00690203666f6f0004666f6f320001010103caffee',
+      'service',
+    );
+    testArg(
+      IDL.Service({
+        'foo': IDL.Func([IDL.Text], [IDL.Nat], ['composite_query'])
+      }),
+      Principal.fromText('w7x7r-cok77-xa'),
+      '4449444c026a0171017d0103690103666f6f0001010103caffee',
       'service',
     );
   });
@@ -734,8 +757,8 @@ class FooBar {
   });
 
   factory FooBar.fromJson(
-      Map<dynamic, dynamic> map,
-      ) {
+    Map<dynamic, dynamic> map,
+  ) {
     return FooBar(
       foo: map['foo'],
       bar: map['bar'],
@@ -757,8 +780,8 @@ class FooBar {
       'foo': foo,
       'bar': bar,
     }..removeWhere((String key, dynamic value) {
-      return value == null;
-    });
+        return value == null;
+      });
   }
 
   @override

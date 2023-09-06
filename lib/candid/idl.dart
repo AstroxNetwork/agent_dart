@@ -1492,6 +1492,8 @@ class FuncClass extends ConstructType<List> {
       return Uint8List.fromList([1]);
     } else if (ann == 'oneway') {
       return Uint8List.fromList([2]);
+    } else if (ann == 'composite_query') {
+      return Uint8List.fromList([3]);
     }
     throw StateError('invalid function annotation.');
   }
@@ -1675,15 +1677,38 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
           typeTable.add([ty, fields]);
           break;
         case IDLTypeIds.Func:
-          for (int k = 0; k < 2; k++) {
-            int funcLength = lebDecode(pipe).toInt();
-            while (funcLength-- > 0) {
-              slebDecode(pipe);
+          final args = [];
+          int argLength = lebDecode(pipe).toInt();
+          while (argLength-- > 0) {
+            args.add(slebDecode(pipe).toInt());
+          }
+          final returnValues = [];
+          int returnValuesLength = lebDecode(pipe).toInt();
+          while (returnValuesLength-- > 0) {
+            returnValues.add(slebDecode(pipe).toInt());
+          }
+          final annotations = [];
+          int annotationLength = lebDecode(pipe).toInt();
+          while (annotationLength-- > 0) {
+            final annotation = lebDecode(pipe).toInt();
+            switch (annotation) {
+              case 1:
+                annotations.add('query');
+                break;
+              case 2:
+                annotations.add('oneway');
+                break;
+              case 3:
+                annotations.add('composite_query');
+                break;
+              default:
+                throw ArgumentError('unknown annotation($annotation)');
             }
           }
-          final annLen = lebDecode(pipe).toInt();
-          safeRead(pipe, annLen);
-          typeTable.add([ty, null]);
+          typeTable.add([
+            ty,
+            [args, returnValues, annotations],
+          ]);
           break;
         case IDLTypeIds.Service:
           int servLength = lebDecode(pipe).toInt();
