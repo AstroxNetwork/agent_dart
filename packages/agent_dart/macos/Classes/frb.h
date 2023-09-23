@@ -759,6 +759,17 @@ void wire_new_bip44_public__static_method__Api(int64_t port_,
                                                int32_t network,
                                                struct wire_uint_8_list *fingerprint);
 
+void wire_new_bip44_tr_descriptor__static_method__Api(int64_t port_,
+                                                      int32_t key_chain_kind,
+                                                      struct wire_uint_8_list *secret_key,
+                                                      int32_t network);
+
+void wire_new_bip44_tr_public__static_method__Api(int64_t port_,
+                                                  int32_t key_chain_kind,
+                                                  struct wire_uint_8_list *public_key,
+                                                  int32_t network,
+                                                  struct wire_uint_8_list *fingerprint);
+
 void wire_new_bip49_descriptor__static_method__Api(int64_t port_,
                                                    int32_t key_chain_kind,
                                                    struct wire_uint_8_list *secret_key,
@@ -1118,6 +1129,8 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_import_single_wif__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_new_bip44_descriptor__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_new_bip44_public__static_method__Api);
+    dummy_var ^= ((int64_t) (void*) wire_new_bip44_tr_descriptor__static_method__Api);
+    dummy_var ^= ((int64_t) (void*) wire_new_bip44_tr_public__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_new_bip49_descriptor__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_new_bip49_public__static_method__Api);
     dummy_var ^= ((int64_t) (void*) wire_new_bip84_descriptor__static_method__Api);

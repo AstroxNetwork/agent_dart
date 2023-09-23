@@ -480,6 +480,26 @@ impl<K: DerivableKey<Tap>> DescriptorTemplate for Bip86Public<K> {
     }
 }
 
+/// b44_p2tr
+pub struct Bip44TR<K: DerivableKey<Tap>>(pub K, pub KeychainKind);
+
+impl<K: DerivableKey<Tap>> DescriptorTemplate for Bip44TR<K> {
+    fn build(self, network: Network) -> Result<DescriptorTemplateOut, DescriptorError> {
+        P2TR(segwit_v1::make_bipxx_private(44, self.0, self.1, network)?).build(network)
+    }
+}
+
+pub struct Bip44TRPublic<K: DerivableKey<Tap>>(pub K, pub bip32::Fingerprint, pub KeychainKind);
+
+impl<K: DerivableKey<Tap>> DescriptorTemplate for Bip44TRPublic<K> {
+    fn build(self, network: Network) -> Result<DescriptorTemplateOut, DescriptorError> {
+        P2TR(segwit_v1::make_bipxx_public(
+            44, self.0, self.1, self.2, network,
+        )?)
+        .build(network)
+    }
+}
+
 macro_rules! expand_make_bipxx {
     ( $mod_name:ident, $ctx:ty ) => {
         mod $mod_name {

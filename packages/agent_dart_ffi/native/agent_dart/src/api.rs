@@ -507,6 +507,37 @@ impl Api {
         );
         RustOpaque::new(descriptor)
     }
+
+    pub fn new_bip44_tr_descriptor(
+        key_chain_kind: KeychainKind,
+        secret_key: String,
+        network: Network,
+    ) -> RustOpaque<BdkDescriptor> {
+        let key = match DescriptorSecretKey::from_string(secret_key) {
+            Ok(e) => e,
+            Err(e) => panic!("{:?}", e),
+        };
+        let descriptor = BdkDescriptor::new_bip44_tr(key, key_chain_kind.into(), network.into());
+        RustOpaque::new(descriptor)
+    }
+    pub fn new_bip44_tr_public(
+        key_chain_kind: KeychainKind,
+        public_key: String,
+        network: Network,
+        fingerprint: String,
+    ) -> RustOpaque<BdkDescriptor> {
+        let key = match DescriptorPublicKey::from_string(public_key) {
+            Ok(e) => e,
+            Err(e) => panic!("{:?}", e),
+        };
+        let descriptor = BdkDescriptor::new_bip44_tr_public(
+            key,
+            fingerprint,
+            key_chain_kind.into(),
+            network.into(),
+        );
+        RustOpaque::new(descriptor)
+    }
     pub fn new_bip49_descriptor(
         key_chain_kind: KeychainKind,
         secret_key: String,

@@ -1912,6 +1912,42 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   late final _wire_new_bip44_public__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Int32, ffi.Pointer<wire_uint_8_list>, ffi.Int32, ffi.Pointer<wire_uint_8_list>)>>('wire_new_bip44_public__static_method__Api');
   late final _wire_new_bip44_public__static_method__Api = _wire_new_bip44_public__static_method__ApiPtr.asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>, int, ffi.Pointer<wire_uint_8_list>)>();
 
+  void wire_new_bip44_tr_descriptor__static_method__Api(
+    int port_,
+    int key_chain_kind,
+    ffi.Pointer<wire_uint_8_list> secret_key,
+    int network,
+  ) {
+    return _wire_new_bip44_tr_descriptor__static_method__Api(
+      port_,
+      key_chain_kind,
+      secret_key,
+      network,
+    );
+  }
+
+  late final _wire_new_bip44_tr_descriptor__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Int32, ffi.Pointer<wire_uint_8_list>, ffi.Int32)>>('wire_new_bip44_tr_descriptor__static_method__Api');
+  late final _wire_new_bip44_tr_descriptor__static_method__Api = _wire_new_bip44_tr_descriptor__static_method__ApiPtr.asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>, int)>();
+
+  void wire_new_bip44_tr_public__static_method__Api(
+    int port_,
+    int key_chain_kind,
+    ffi.Pointer<wire_uint_8_list> public_key,
+    int network,
+    ffi.Pointer<wire_uint_8_list> fingerprint,
+  ) {
+    return _wire_new_bip44_tr_public__static_method__Api(
+      port_,
+      key_chain_kind,
+      public_key,
+      network,
+      fingerprint,
+    );
+  }
+
+  late final _wire_new_bip44_tr_public__static_method__ApiPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Int32, ffi.Pointer<wire_uint_8_list>, ffi.Int32, ffi.Pointer<wire_uint_8_list>)>>('wire_new_bip44_tr_public__static_method__Api');
+  late final _wire_new_bip44_tr_public__static_method__Api = _wire_new_bip44_tr_public__static_method__ApiPtr.asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>, int, ffi.Pointer<wire_uint_8_list>)>();
+
   void wire_new_bip49_descriptor__static_method__Api(
     int port_,
     int key_chain_kind,
