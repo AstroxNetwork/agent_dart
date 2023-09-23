@@ -351,6 +351,51 @@ class Descriptor {
     }
   }
 
+  static Future<Descriptor> newBip44TR({
+    required DescriptorSecretKey secretKey,
+    required Network network,
+    required KeychainKind keychain,
+  }) async {
+    try {
+      secretKey.derivedPathPrefix = "m/44'/0'/0'/0";
+      secretKey.derivedIndex = 0;
+      final res = await AgentDartFFI.impl.newBip44TrDescriptorStaticMethodApi(
+        secretKey: secretKey.asString(),
+        network: network,
+        keyChainKind: keychain,
+      );
+      final r = Descriptor._(res);
+      r.descriptorSecretKey = secretKey;
+      return r;
+    } on FfiException catch (e) {
+      throw configException(e.message);
+    }
+  }
+
+  ///BIP44 public template. Expands to pkh(key/{0,1}/*)
+  ///
+  /// This assumes that the key used has already been derived with m/44'/0'/0' for Mainnet or m/44'/1'/0' for Testnet.
+  ///
+  /// This template requires the parent fingerprint to populate correctly the metadata of PSBTs.
+  static Future<Descriptor> newBip44TRPublic({
+    required DescriptorPublicKey publicKey,
+    required String fingerPrint,
+    required Network network,
+    required KeychainKind keychain,
+  }) async {
+    try {
+      final res = await AgentDartFFI.impl.newBip44TrPublicStaticMethodApi(
+        keyChainKind: keychain,
+        publicKey: publicKey.asString(),
+        network: network,
+        fingerprint: fingerPrint,
+      );
+      return Descriptor._(res);
+    } on FfiException catch (e) {
+      throw configException(e.message);
+    }
+  }
+
   ///BIP49 template. Expands to sh(wpkh(key/49'/{0,1}'/0'/{0,1}/*))
   ///
   ///Since there are hardened derivation steps, this template requires a private derivable key (generally a xprv/tprv).
@@ -1990,6 +2035,7 @@ abstract class AddressTypeString {
   static const P2WPKH = 'p2wpkh';
   static const P2SH_P2WPKH = 'p2sh';
   static const P2PKH = 'p2pkh';
+  static const P2PKHTR = 'p2pkhtr';
 }
 
 enum AddressType {
@@ -1997,6 +2043,7 @@ enum AddressType {
   P2WPKH('p2wpkh', 'Native Segwit', "m/84'/0'/0'/0/0"),
   P2SH_P2WPKH('p2sh', 'Nested Segwit', "m/49'/0'/0'/0/0"),
   P2PKH('p2pkh', 'Legacy', "m/44'/0'/0'/0/0"),
+  P2PKHTR('p2pkhtr', 'Legacy Taproot', "m/44'/0'/0'/0/0"),
   ;
 
   const AddressType(this.raw, this.display, this.derivedPath);

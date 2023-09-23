@@ -1,6 +1,9 @@
+import 'dart:typed_data';
+
+import 'package:agent_dart_base/agent/crypto/index.dart';
 import 'package:agent_dart_base/principal/principal.dart';
 import 'package:test/test.dart';
-
+import 'package:agent_dart_base/utils/extension.dart';
 import '../test_utils.dart';
 
 void main() {
@@ -57,4 +60,31 @@ void principalTest() {
       throwsA(assertionThrowsContains('Invalid character')),
     );
   });
+  test('ddd', () {
+    final ddd = Principal.fromText('f3nhr-bmaaa-aaaaa-qaayq-cai');
+    print(ddd.toUint8List());
+    final first = Principal.fromText('rwlgt-iiaaa-aaaaa-aaaaa-cai');
+    print(first.toUint8List());
+    final ttt = Principal.fromText('2gyec-vyaaa-aaaah-acmua-cai');
+    print(ttt.toUint8List());
+
+    final ss = Principal.fromText("3ejs3-eaaaa-aaaag-qbl2a-cai").toAccountId(
+        subAccount: fromPrincipal(Principal.fromText(
+            "idbjp-7cvie-zfmuk-rphe5-sic4b-is6i5-edoui-by4kc-pemjv-lsgyg-gqe")));
+
+    print(ss.toHex());
+  });
+}
+
+Uint8List fromPrincipal(Principal principal) {
+  final bytes = Uint8List(32)..fillRange(0, 32, 0);
+
+  final principalBytes = principal.toUint8List();
+  bytes[0] = principalBytes.length;
+
+  for (var i = 0; i < principalBytes.length; i++) {
+    bytes[1 + i] = principalBytes[i];
+  }
+
+  return bytes;
 }
