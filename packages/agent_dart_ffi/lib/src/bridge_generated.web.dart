@@ -903,6 +903,10 @@ class AgentDartWasmModule implements WasmModule {
 
   external dynamic /* void */ wire_new_bip44_public__static_method__Api(NativePortType port_, int key_chain_kind, String public_key, int network, String fingerprint);
 
+  external dynamic /* void */ wire_new_bip44_tr_descriptor__static_method__Api(NativePortType port_, int key_chain_kind, String secret_key, int network);
+
+  external dynamic /* void */ wire_new_bip44_tr_public__static_method__Api(NativePortType port_, int key_chain_kind, String public_key, int network, String fingerprint);
+
   external dynamic /* void */ wire_new_bip49_descriptor__static_method__Api(NativePortType port_, int key_chain_kind, String secret_key, int network);
 
   external dynamic /* void */ wire_new_bip49_public__static_method__Api(NativePortType port_, int key_chain_kind, String public_key, int network, String fingerprint);
@@ -1138,6 +1142,10 @@ class AgentDartWire extends FlutterRustBridgeWasmWireBase<AgentDartWasmModule> {
   void wire_new_bip44_descriptor__static_method__Api(NativePortType port_, int key_chain_kind, String secret_key, int network) => wasmModule.wire_new_bip44_descriptor__static_method__Api(port_, key_chain_kind, secret_key, network);
 
   void wire_new_bip44_public__static_method__Api(NativePortType port_, int key_chain_kind, String public_key, int network, String fingerprint) => wasmModule.wire_new_bip44_public__static_method__Api(port_, key_chain_kind, public_key, network, fingerprint);
+
+  void wire_new_bip44_tr_descriptor__static_method__Api(NativePortType port_, int key_chain_kind, String secret_key, int network) => wasmModule.wire_new_bip44_tr_descriptor__static_method__Api(port_, key_chain_kind, secret_key, network);
+
+  void wire_new_bip44_tr_public__static_method__Api(NativePortType port_, int key_chain_kind, String public_key, int network, String fingerprint) => wasmModule.wire_new_bip44_tr_public__static_method__Api(port_, key_chain_kind, public_key, network, fingerprint);
 
   void wire_new_bip49_descriptor__static_method__Api(NativePortType port_, int key_chain_kind, String secret_key, int network) => wasmModule.wire_new_bip49_descriptor__static_method__Api(port_, key_chain_kind, secret_key, network);
 

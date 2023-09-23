@@ -300,6 +300,14 @@ abstract class AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kNewBip44PublicStaticMethodApiConstMeta;
 
+  Future<BdkDescriptor> newBip44TrDescriptorStaticMethodApi({required KeychainKind keyChainKind, required String secretKey, required Network network, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kNewBip44TrDescriptorStaticMethodApiConstMeta;
+
+  Future<BdkDescriptor> newBip44TrPublicStaticMethodApi({required KeychainKind keyChainKind, required String publicKey, required Network network, required String fingerprint, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kNewBip44TrPublicStaticMethodApiConstMeta;
+
   Future<BdkDescriptor> newBip49DescriptorStaticMethodApi({required KeychainKind keyChainKind, required String secretKey, required Network network, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kNewBip49DescriptorStaticMethodApiConstMeta;
@@ -2876,6 +2884,61 @@ class AgentDartImpl implements AgentDart {
 
   FlutterRustBridgeTaskConstMeta get kNewBip44PublicStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
         debugName: "new_bip44_public__static_method__Api",
+        argNames: [
+          "keyChainKind",
+          "publicKey",
+          "network",
+          "fingerprint"
+        ],
+      );
+
+  Future<BdkDescriptor> newBip44TrDescriptorStaticMethodApi({required KeychainKind keyChainKind, required String secretKey, required Network network, dynamic hint}) {
+    var arg0 = api2wire_keychain_kind(keyChainKind);
+    var arg1 = _platform.api2wire_String(secretKey);
+    var arg2 = api2wire_network(network);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_new_bip44_tr_descriptor__static_method__Api(port_, arg0, arg1, arg2),
+      parseSuccessData: _wire2api_BdkDescriptor,
+      constMeta: kNewBip44TrDescriptorStaticMethodApiConstMeta,
+      argValues: [
+        keyChainKind,
+        secretKey,
+        network
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kNewBip44TrDescriptorStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "new_bip44_tr_descriptor__static_method__Api",
+        argNames: [
+          "keyChainKind",
+          "secretKey",
+          "network"
+        ],
+      );
+
+  Future<BdkDescriptor> newBip44TrPublicStaticMethodApi({required KeychainKind keyChainKind, required String publicKey, required Network network, required String fingerprint, dynamic hint}) {
+    var arg0 = api2wire_keychain_kind(keyChainKind);
+    var arg1 = _platform.api2wire_String(publicKey);
+    var arg2 = api2wire_network(network);
+    var arg3 = _platform.api2wire_String(fingerprint);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_new_bip44_tr_public__static_method__Api(port_, arg0, arg1, arg2, arg3),
+      parseSuccessData: _wire2api_BdkDescriptor,
+      constMeta: kNewBip44TrPublicStaticMethodApiConstMeta,
+      argValues: [
+        keyChainKind,
+        publicKey,
+        network,
+        fingerprint
+      ],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kNewBip44TrPublicStaticMethodApiConstMeta => const FlutterRustBridgeTaskConstMeta(
+        debugName: "new_bip44_tr_public__static_method__Api",
         argNames: [
           "keyChainKind",
           "publicKey",

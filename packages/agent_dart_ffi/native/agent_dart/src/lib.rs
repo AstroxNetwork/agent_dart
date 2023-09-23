@@ -1,8 +1,8 @@
+mod bridge_generated; /* AUTO INJECTED BY flutter_rust_bridge. This line may not be accurate, and you can change it according to your needs. */
 #[allow(clippy::all)]
 #[allow(dead_code)]
 mod api;
 mod bls_ffi;
-mod bridge_generated; /* AUTO INJECTED BY flutter_rust_bridge. This line may not be accurate, and you can change it according to your needs. */
 mod errors;
 mod keyring;
 mod types;

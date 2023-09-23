@@ -10,10 +10,10 @@ use bdk_lite::keys::{
 // use bdk::miniscript::DefiniteDescriptorKey;
 use crate::api::AddressType;
 use crate::bdk::types::AddressInfo;
-use bdk_lite::miniscript::Error;
+use bdk_lite::miniscript::{Error, TranslatePk};
 use bdk_lite::template::{
-    Bip44, Bip44Public, Bip49, Bip49Public, Bip84, Bip84Public, Bip86, Bip86Public,
-    DescriptorTemplate, P2Pkh, P2Wpkh, P2Wpkh_P2Sh, P2TR,
+    Bip44, Bip44Public, Bip44TR, Bip44TRPublic, Bip49, Bip49Public, Bip84, Bip84Public, Bip86,
+    Bip86Public, DescriptorTemplate, P2Pkh, P2Wpkh, P2Wpkh_P2Sh, P2TR,
 };
 use bdk_lite::Error as BdkError;
 use bdk_lite::KeychainKind;
@@ -103,6 +103,58 @@ impl BdkDescriptor {
                 let derivable_key = descriptor_x_key.xkey;
                 let (extended_descriptor, key_map, _) =
                     Bip44Public(derivable_key, fingerprint, keychain_kind)
+                        .build(network)
+                        .unwrap();
+
+                Self {
+                    extended_descriptor,
+                    key_map,
+                }
+            }
+            BdkDescriptorPublicKey::Single(_) => {
+                unreachable!()
+            }
+        }
+    }
+
+    pub(crate) fn new_bip44_tr(
+        secret_key: Arc<DescriptorSecretKey>,
+        keychain_kind: KeychainKind,
+        network: Network,
+    ) -> Self {
+        let derivable_key = secret_key.descriptor_secret_key_mutex.lock().unwrap();
+
+        match derivable_key.deref() {
+            BdkDescriptorSecretKey::XPrv(descriptor_x_key) => {
+                let derivable_key = descriptor_x_key.xkey;
+                let (extended_descriptor, key_map, _) = Bip44TR(derivable_key, keychain_kind)
+                    .build(network)
+                    .unwrap();
+                Self {
+                    extended_descriptor,
+                    key_map,
+                }
+            }
+            BdkDescriptorSecretKey::Single(_) => {
+                unreachable!()
+            }
+        }
+    }
+
+    pub(crate) fn new_bip44_tr_public(
+        public_key: Arc<DescriptorPublicKey>,
+        fingerprint: String,
+        keychain_kind: KeychainKind,
+        network: Network,
+    ) -> Self {
+        let fingerprint = Fingerprint::from_str(fingerprint.as_str()).unwrap();
+        let derivable_key = public_key.descriptor_public_key_mutex.lock().unwrap();
+
+        match derivable_key.deref() {
+            BdkDescriptorPublicKey::XPub(descriptor_x_key) => {
+                let derivable_key = descriptor_x_key.xkey;
+                let (extended_descriptor, key_map, _) =
+                    Bip44TRPublic(derivable_key, fingerprint, keychain_kind)
                         .build(network)
                         .unwrap();
 
