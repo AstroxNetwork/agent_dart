@@ -279,6 +279,15 @@ Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
             keychain: e,
           );
           break;
+        case AddressType.P2PKHTR:
+          descriptorSecretKey.derivationPath =
+              await DerivationPath.create(path: addressType.derivedPath);
+          descriptor = await Descriptor.newBip44TR(
+            secretKey: descriptorSecretKey,
+            network: network,
+            keychain: e,
+          );
+          break;
       }
 
       descriptors[e] = BTCDescriptor(
