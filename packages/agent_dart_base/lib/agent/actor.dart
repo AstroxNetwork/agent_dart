@@ -342,7 +342,8 @@ typedef MethodCaller = Future Function(CallConfig options, List args);
 
 ActorMethod _createActorMethod(Actor actor, String methodName, Func func) {
   MethodCaller caller;
-  if (func.annotations.contains('query')) {
+  if (func.annotations.contains('query') ||
+      func.annotations.contains('composite_query')) {
     caller = (CallConfig options, List args) async {
       // First, if there's a config transformation, call it.
       final presetOption = actor.metadata.config!.queryTransform?.call(
