@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # Setup
-BUILD_DIR=platform-build
+BUILD_DIR="platform-build"
+PACKAGE_NAME="agent_dart"
+RELEASE_ARCHIVE_NAME=$(grep -E 'set\(LibraryVersion "(.+)"\)' "packages/${PACKAGE_NAME}/android/CMakeLists.txt" | awk -F'"' '{print $2}')
+
 mkdir $BUILD_DIR
 cd $BUILD_DIR
 
@@ -24,7 +27,7 @@ cargo ndk -o $JNI_DIR \
         -t arm64-v8a \
         -t x86 \
         -t x86_64 \
-        build --release 
+        build --release
 
 cp -r -f $JNI_DIR ../packages/agent_dart/android/src/main
 
@@ -34,4 +37,5 @@ tar -czvf ../android.tar.gz *
 cd -
 
 # Cleanup
+cp -f android.tar.gz "../packages/agent_dart/android/${RELEASE_ARCHIVE_NAME}.tar.gz"
 rm -rf $JNI_DIR
