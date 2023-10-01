@@ -1,25 +1,42 @@
 #!/bin/bash
 
-source ./scripts/variables.sh
+# Setup
+BUILD_DIR="platform-build"
+PACKAGE_NAME="agent_dart"
+RELEASE_ARCHIVE_NAME=$(grep -E 'set\(LibraryVersion "(.+)"\)' "android/CMakeLists.txt" | awk -F'"' '{print $2}')
 
-cd rust
+mkdir $BUILD_DIR
+cd $BUILD_DIR
 
-CC_aarch64_linux_android="${ANDROID_PREBUILD_BIN}/aarch64-linux-android${API_LEVEL}-clang" \
-AR_aarch64_linux_android="${ANDROID_PREBUILD_BIN}/aarch64-linux-android-ar" \
-CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="${ANDROID_PREBUILD_BIN}/aarch64-linux-android${API_LEVEL}-clang" \
-  cargo ndk --bindgen -t aarch64-linux-android -o ../android/src/main/jniLibs build
+# Create the jniLibs build directory
+JNI_DIR=jniLibs
+mkdir $JNI_DIR
 
-CC_armv7_linux_androideabi="${ANDROID_PREBUILD_BIN}/armv7a-linux-androideabi${API_LEVEL}-clang" \
-AR_armv7_linux_androideabi="${ANDROID_PREBUILD_BIN}/arm-linux-androideabi-ar" \
-CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER="${ANDROID_PREBUILD_BIN}/armv7a-linux-androideabi${API_LEVEL}-clang" \
-  cargo ndk --bindgen -t armv7-linux-androideabi -o ../android/src/main/jniLibs build
+# Set up cargo-ndk
+cargo install cargo-ndk
+rustup target add \
+        aarch64-linux-android \
+        armv7-linux-androideabi \
+        x86_64-linux-android \
+        i686-linux-android
 
-CC_i686_linux_android="${ANDROID_PREBUILD_BIN}/i686-linux-android${API_LEVEL}-clang" \
-AR_i686_linux_android="${ANDROID_PREBUILD_BIN}/i686-linux-android-ar" \
-CARGO_TARGET_I686_LINUX_ANDROID_LINKER="${ANDROID_PREBUILD_BIN}/i686-linux-android${API_LEVEL}-clang" \
-  cargo ndk --bindgen -t i686-linux-android -o ../android/src/main/jniLibs build
+# Build the android libraries in the jniLibs directory
+cd ../rust
+cargo ndk -o ../$BUILD_DIR/$JNI_DIR \
+        --manifest-path Cargo.toml \
+        -t armeabi-v7a \
+        -t arm64-v8a \
+        -t x86 \
+        -t x86_64 \
+        build --release
+cd -
 
-CC_x86_64_linux_android="${ANDROID_PREBUILD_BIN}/x86_64-linux-android${API_LEVEL}-clang" \
-AR_x86_64_linux_android="${ANDROID_PREBUILD_BIN}/x86_64-linux-android-ar" \
-CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER="${ANDROID_PREBUILD_BIN}/x86_64-linux-android${API_LEVEL}-clang" \
-  cargo ndk --bindgen -t x86_64-linux-android -o ../android/src/main/jniLibs build
+cp -r -f $JNI_DIR ../android/src/main
+## Archive the dynamic libs
+cd $JNI_DIR
+tar -czvf ../android.tar.gz *
+cd -
+
+## Cleanup
+cp -f android.tar.gz "../android/${RELEASE_ARCHIVE_NAME}.tar.gz"
+rm -rf $JNI_DIR
