@@ -1,7 +1,7 @@
 [workspace]
 members = [
-    "agent_dart",
-    "ed_compact",
+    "rust/agent_dart",
+    "rust/ed_compact",
 ]
 
 [profile.release]

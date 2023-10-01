@@ -21,17 +21,16 @@ rustup target add \
         i686-linux-android
 
 # Build the android libraries in the jniLibs directory
-cd ../rust
-cargo ndk -o ../$BUILD_DIR/$JNI_DIR \
-        --manifest-path Cargo.toml \
+cargo ndk -o $JNI_DIR \
+        --manifest-path ../Cargo.toml \
         -t armeabi-v7a \
         -t arm64-v8a \
         -t x86 \
         -t x86_64 \
         build --release
-cd -
 
 cp -r -f $JNI_DIR ../android/src/main
+
 ## Archive the dynamic libs
 cd $JNI_DIR
 tar -czvf ../android.tar.gz *
