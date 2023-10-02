@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   test:
@@ -25,10 +28,5 @@ jobs:
       - run: flutter --version
       - run: flutter pub get
       - run: flutter test ./test/agent_dart_test.dart # This is the only test that's runnable on actions.
-      - name: Dry run
+      - run: dart pub publish --dry-run
         if: github.repository == 'AstroxNetwork/agent_dart'
-        uses: k-paxian/dart-package-publisher@master
-        with:
-          credentialJson: ${{ secrets.CREDENTIAL_JSON }}
-          flutter: true
-          dryRunOnly: true
