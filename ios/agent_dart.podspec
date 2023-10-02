@@ -21,7 +21,7 @@ cd -
 
 Pod::Spec.new do |spec|
   spec.name          = 'agent_dart'
-  spec.version       = '0.0.1'
+  spec.version       = '1.0.0'
   spec.license       = { :file => '../LICENSE' }
   spec.homepage      = 'https://github.com/AstroxNetwork/agent_dart'
   spec.authors       = { 'AstroX Dev' => 'dev@astrox.network' }
@@ -31,7 +31,8 @@ Pod::Spec.new do |spec|
   spec.source_files        = 'Classes/**/*'
   spec.public_header_files = 'Classes/**/*.h'
   spec.vendored_frameworks = "Frameworks/#{framework_name}"
+  spec.dependency 'Flutter'
 
+  spec.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   spec.ios.deployment_target = '11.0'
-  spec.osx.deployment_target = '10.11'
 end
