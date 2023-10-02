@@ -8,7 +8,7 @@ DynamicLibrary createLibraryImpl() {
   if (Platform.isIOS || Platform.isMacOS) {
     return DynamicLibrary.executable();
   } else if (Platform.isWindows) {
-    return DynamicLibrary.open('windows/$base.dll');
+    return DynamicLibrary.open('$base.dll');
   } else {
     return DynamicLibrary.open('lib$base.so');
   }

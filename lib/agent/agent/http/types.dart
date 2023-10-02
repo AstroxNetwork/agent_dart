@@ -29,7 +29,7 @@ class Endpoint {
   static const call = 'call';
 }
 
-abstract class WithToJson {
+mixin WithToJson {
   Map<String, dynamic> toJson();
 }
 
