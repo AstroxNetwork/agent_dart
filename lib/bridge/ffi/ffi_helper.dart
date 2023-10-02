@@ -1,18 +1,27 @@
-import 'dart:ffi';
+import 'dart:ffi' show Abi, DynamicLibrary;
 import 'dart:io' show Platform;
+import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
+
 import 'ffi_bridge.dart';
 
-DynamicLibrary createLibraryImpl() {
-  const base = 'agent_dart';
+const String _libBase = 'agent_dart';
 
-  if (Platform.isIOS || Platform.isMacOS) {
-    return DynamicLibrary.executable();
-  } else if (Platform.isWindows) {
-    return DynamicLibrary.open('$base.dll');
-  } else {
-    return DynamicLibrary.open('lib$base.so');
+final DynamicLibrary _dylib = () {
+  final isFlutterTest = Platform.environment['FLUTTER_TEST'] != null;
+  if (isFlutterTest) {
+    if (Platform.isMacOS) {
+      final abi = Abi.current() == Abi.macosArm64
+          ? 'aarch64-apple-darwin'
+          : 'x86_64-apple-darwin';
+      return DynamicLibrary.open('macos/cli/$abi/lib$_libBase.dylib');
+    } else if (Platform.isLinux) {
+      return DynamicLibrary.open('linux/lib$_libBase.so');
+    }
   }
-}
+  return loadLibForFlutter(
+    Platform.isWindows ? '$_libBase.dll' : 'lib$_libBase.so',
+  );
+}();
 
 class AgentDartFFI {
   factory AgentDartFFI() => _instance;
@@ -22,5 +31,5 @@ class AgentDartFFI {
   static final AgentDartFFI _instance = AgentDartFFI._();
 
   static AgentDartImpl get impl => _instance._impl;
-  late final AgentDartImpl _impl = AgentDartImpl(createLibraryImpl());
+  late final AgentDartImpl _impl = AgentDartImpl(_dylib);
 }
