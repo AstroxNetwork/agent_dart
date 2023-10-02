@@ -25,11 +25,11 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_rust_bridge: '>=1.78.0 <1.79.0'
-  http: ^0.13.4
+  http: ^1.0.0
   js: ^0.6.4
   meta: ^1.7.0
   path: ^1.8.1
-  pinenacl: ^0.3.4
+  pinenacl: ^0.5.1
   pointycastle: ^3.6.0
   protobuf: ^2.0.1
   recase: ^4.0.0
