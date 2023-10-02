@@ -1,5 +1,8 @@
 #!/bin/bash
 
+LINUX_RELEASE_ARCHIVE_NAME=$(grep -E 'set\(LibraryVersion "(.+)"\)' "linux/CMakeLists.txt" | awk -F'"' '{print $2}')
+WIN_RELEASE_ARCHIVE_NAME=$(grep -E 'set\(LibraryVersion "(.+)"\)' "windows/CMakeLists.txt" | awk -F'"' '{print $2}')
+
 # Setup
 BUILD_DIR="platform-build"
 mkdir $BUILD_DIR
@@ -40,17 +43,17 @@ LINUX_LIB_NAME=libagent_dart.so
 zig_build aarch64-unknown-linux-gnu linux-arm64 $LINUX_LIB_NAME
 zig_build x86_64-unknown-linux-gnu linux-x64 $LINUX_LIB_NAME
 cp -f linux-x64/$LINUX_LIB_NAME "../linux/$LINUX_LIB_NAME"
+LINUX_ARCHIVE_NAME="linux.tar.gz"
+tar -czvf $LINUX_ARCHIVE_NAME linux-*
+cp -f $LINUX_ARCHIVE_NAME "../linux/${LINUX_RELEASE_ARCHIVE_NAME}.tar.gz"
+
 WINDOWS_LIB_NAME=agent_dart.dll
 win_build aarch64-pc-windows-msvc windows-arm64 $WINDOWS_LIB_NAME
 win_build x86_64-pc-windows-msvc windows-x64 $WINDOWS_LIB_NAME
 cp -f windows-x64/$WINDOWS_LIB_NAME "../windows/$WINDOWS_LIB_NAME"
-
-# Archive the dynamic libs
-tar -czvf other.tar.gz linux-* windows-*
-#tar -czvf other.tar.gz linux-*
-#tar -czvf other.tar.gz windows-*
-cp -f other.tar.gz ../linux/
-cp -f other.tar.gz ../windows/
+WIN_ARCHIVE_NAME="windows.tar.gz"
+tar -czvf $WIN_ARCHIVE_NAME windows-*
+cp -f $WIN_ARCHIVE_NAME "../windows/${WIN_RELEASE_ARCHIVE_NAME}.tar.gz"
 
 # Cleanup
 rm -rf linux-* windows-*

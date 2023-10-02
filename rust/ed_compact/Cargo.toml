@@ -22,3 +22,7 @@ ed25519 = { version = "1.2", optional = true }
 [dev-dependencies]
 getrandom = "0.2"
 ct-codecs = "1.1"
+
+[build-dependencies]
+flutter_rust_bridge_codegen = "=1.78.0"
+flutter_rust_bridge_macros = "=1.78.0"

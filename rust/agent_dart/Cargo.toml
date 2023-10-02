@@ -10,6 +10,7 @@ crate-type = ["staticlib", "cdylib"]
 
 [build-dependencies]
 flutter_rust_bridge_codegen = "=1.78.0"
+flutter_rust_bridge_macros = "=1.78.0"
 
 [dependencies]
 anyhow = "1.0.57"

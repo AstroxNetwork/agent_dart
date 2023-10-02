@@ -64,6 +64,7 @@ dependencies = [
  "ed_compact",
  "flutter_rust_bridge",
  "flutter_rust_bridge_codegen",
+ "flutter_rust_bridge_macros",
  "hmac",
  "k256",
  "p256",
@@ -702,6 +703,8 @@ version = "0.1.0"
 dependencies = [
  "ct-codecs",
  "ed25519",
+ "flutter_rust_bridge_codegen",
+ "flutter_rust_bridge_macros",
  "getrandom",
 ]
 
@@ -873,9 +876,9 @@ dependencies = [
 
 [[package]]
 name = "flutter_rust_bridge_macros"
-version = "1.82.1"
+version = "1.78.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ef4736aac920ca50be2c7747a46494d3740ca88bc49a6654b031d6f396282f3"
+checksum = "79f50b7e25ca3a833a5feabd0fdadb52ea10fc37f053deca87847059634a45ea"
 
 [[package]]
 name = "fnv"

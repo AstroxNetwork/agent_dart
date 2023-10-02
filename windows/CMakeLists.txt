@@ -19,7 +19,7 @@ set(LibRoot "${CMAKE_CURRENT_SOURCE_DIR}/${LibraryVersion}")
 set(ArchivePath "${LibRoot}.tar.gz")
 if(NOT EXISTS ${ArchivePath})
   file(DOWNLOAD
-    "https://github.com/AstroxNetwork/agent_dart/releases/download/${LibraryVersion}/other.tar.gz"
+    "https://github.com/AstroxNetwork/agent_dart/releases/download/${LibraryVersion}/windows.tar.gz"
     ${ArchivePath}
     TLS_VERIFY ON
   )
