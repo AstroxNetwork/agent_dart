@@ -1,24 +1,42 @@
-cmake_minimum_required(VERSION 3.15)
-set(PROJECT_NAME "agent_dart")
+set(LibraryVersion "agent_dart-v1.0.0") # generated; do not edit
+
+# TODO Remove this workaround once Flutter supports Windows ARM.
+# https://github.com/flutter/flutter/issues/116196
+set(FLUTTER_TARGET_PLATFORM windows-x64)
+
+# The Flutter tooling requires that developers have a version of Visual Studio
+# installed that includes CMake 3.14 or later. You should not increase this
+# version, as doing so will cause the plugin to fail to compile for some
+# customers of the plugin.
+cmake_minimum_required(VERSION 3.14)
+
+# Project-level configuration.
+set(PROJECT_NAME "flutter_agent_dart")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
-# This value is used when generating builds using this plugin, so it must
-# not be changed
-set(PLUGIN_NAME "agent_dart_plugin")
+# Download the binaries if they are not already present.
+set(LibRoot "${CMAKE_CURRENT_SOURCE_DIR}/${LibraryVersion}")
+set(ArchivePath "${LibRoot}.tar.gz")
+if(NOT EXISTS ${ArchivePath})
+  file(DOWNLOAD
+    "https://github.com/AstroxNetwork/agent_dart/releases/download/${LibraryVersion}/other.tar.gz"
+    ${ArchivePath}
+    TLS_VERIFY ON
+  )
+endif()
 
-add_library(${PLUGIN_NAME} SHARED
-  "agent_dart_plugin.cpp"
+# Extract the binaries, overriding any already present.
+file(REMOVE_RECURSE ${LibRoot})
+file(MAKE_DIRECTORY ${LibRoot})
+execute_process(
+  COMMAND ${CMAKE_COMMAND} -E tar xzf ${ArchivePath}
+  WORKING_DIRECTORY ${LibRoot}
 )
-apply_standard_settings(${PLUGIN_NAME})
-set_target_properties(${PLUGIN_NAME} PROPERTIES
-  CXX_VISIBILITY_PRESET hidden)
-target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
-target_include_directories(${PLUGIN_NAME} INTERFACE
-  "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
 
-# List of absolute paths to libraries that should be bundled with the plugin
-set(agent_dart_bundled_libraries
-  ""
+# List of absolute paths to libraries that should be bundled with the plugin.
+# This list could contain prebuilt libraries, or libraries created by an
+# external build triggered from this build file.
+set(flutter_agent_dart_bundled_libraries
+  "${LibRoot}/${FLUTTER_TARGET_PLATFORM}/agent_dart.dll"
   PARENT_SCOPE
 )
