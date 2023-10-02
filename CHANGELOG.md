@@ -4,6 +4,11 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.18
+
+- Upgrade FRB and roll new artifacts to all platforms.
+- Requires Dart 3.0.
+
 ## 1.0.0-dev.17
 
 - Fix composite query support in actor.ts.
