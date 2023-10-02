@@ -20,15 +20,6 @@ for i in "${WIN_ARCHS[@]}";
   do rustup target add "$i";
 done
 
-# for i in "${LINUX_ARCHS[@]}";
-#   do rustup target add "$i";
-# done
 
-# cargo install cargo-lipo && cargo install cbindgen --force
-
-# use ffigen 5.0.0
-dart pub global activate ffigen ^7.2.4 &&
-cargo install flutter_rust_bridge_codegen --force
-
-
-
+dart pub global activate ffigen ^8.0.0 &&
+cargo install flutter_rust_bridge_codegen --version 1.78.0 --force

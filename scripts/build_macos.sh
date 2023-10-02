@@ -1,20 +1,41 @@
 #!/bin/bash
 
-source ./scripts/variables.sh
+# Setup
+BUILD_DIR="platform-build"
+PACKAGE_NAME="agent_dart"
+RELEASE_ARCHIVE_NAME=$(grep -E "release_tag_name\s*=\s*'([^']+)" "packages/${PACKAGE_NAME}/ios/${PACKAGE_NAME}.podspec" | awk -F"'" '{print $2}')
 
-cd rust
+mkdir $BUILD_DIR
+cd $BUILD_DIR
 
-for i in "${!MACOS_ARCHS[@]}";
-  do
-    cargo lipo --release --targets="${MACOS_ARCHS[$i]}"
-    mkdir -p "../macos/cli/${MACOS_ARCHS[$i]}"
-    cp "./target/${MACOS_ARCHS[$i]}/release/lib${LIB_NAME}.dylib" "../macos/cli/${MACOS_ARCHS[$i]}/lib${LIB_NAME}.dylib"
+TARGET_DIR="target"
+
+# Build static libs, including [macOS Devices].
+for TARGET in \
+  x86_64-apple-darwin aarch64-apple-darwin; do
+  rustup target add $TARGET
+  cargo build -r --target=$TARGET --target-dir=$TARGET_DIR
+  mkdir -p ./dylib/$TARGET
+  cp "${TARGET_DIR}/${TARGET}/release/lib${PACKAGE_NAME}.dylib" "./dylib/${TARGET}/lib${PACKAGE_NAME}.dylib"
 done
 
-echo "#import <FlutterMacOS/FlutterMacOS.h>
+# Create XCFramework zip
+FRAMEWORK="AgentDart.xcframework"
+LIB_NAME="libagent_dart.a"
 
-@interface AgentDartPlugin : NSObject<FlutterPlugin>
-@end" > ../macos/Classes/AgentDartPlugin.h
-cat ./headers/bridge_generated.h >> ../macos/Classes/AgentDartPlugin.h
+mkdir mac-lipo
+MAC_LIPO="mac-lipo/${LIB_NAME}"
 
-lipo -create -output "../macos/lib${LIB_NAME}.a" "./target/aarch64-apple-darwin/release/libagent_dart.a" "./target/x86_64-apple-darwin/release/libagent_dart.a"
+lipo -create -output $MAC_LIPO \
+  "${TARGET_DIR}/aarch64-apple-darwin/release/${LIB_NAME}" \
+  "${TARGET_DIR}/x86_64-apple-darwin/release/${LIB_NAME}"
+xcodebuild -create-xcframework \
+  -library $MAC_LIPO \
+  -output $FRAMEWORK
+
+zip -r $FRAMEWORK.zip $FRAMEWORK
+cp -f $FRAMEWORK.zip "../macos/Frameworks/${RELEASE_ARCHIVE_NAME}.zip"
+cp -r -f $FRAMEWORK ../macos/Frameworks
+
+# Cleanup
+rm -rf mac-lipo $FRAMEWORK

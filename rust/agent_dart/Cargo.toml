@@ -8,6 +8,10 @@ edition = "2018"
 name = "agent_dart"
 crate-type = ["staticlib", "cdylib"]
 
+[build-dependencies]
+flutter_rust_bridge_codegen = "=1.78.0"
+flutter_rust_bridge_macros = "=1.78.0"
+
 [dependencies]
 anyhow = "1.0.57"
 bip32 = "0.4.0"
@@ -29,7 +33,7 @@ serde_bytes = "0.11.5"
 serde_cbor = "0.11.2"
 serde_with = "1.12.0"
 bytebuffer = "0.2.1"
-flutter_rust_bridge = "1.59.0"
+flutter_rust_bridge = "=1.78.0"
 
 [profile.release]
 debug = false

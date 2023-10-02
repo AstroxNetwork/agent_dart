@@ -1,5 +1,5 @@
 PODS:
-  - agent_dart (0.0.1):
+  - agent_dart (1.0.0):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
   - url_launcher_macos (0.0.1):
@@ -19,10 +19,10 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos
 
 SPEC CHECKSUMS:
-  agent_dart: 2f33c73c66d27a35def1ac7e46254212db64134d
-  FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
-  url_launcher_macos: 597e05b8e514239626bcf4a850fcf9ef5c856ec3
+  agent_dart: baeff650d9d637f215d23b2f9ef9a9e5c34e7f42
+  FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
+  url_launcher_macos: d2691c7dd33ed713bf3544850a623080ec693d95
 
-PODFILE CHECKSUM: 6eac6b3292e5142cfc23bdeb71848a40ec51c14c
+PODFILE CHECKSUM: 94c13412ea7d37a22dbff0ae1c74b259b3120765
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.12.1

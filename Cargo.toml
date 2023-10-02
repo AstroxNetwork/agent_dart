@@ -1,0 +1,9 @@
+[workspace]
+members = [
+    "rust/agent_dart",
+    "rust/ed_compact",
+]
+
+[profile.release]
+lto = true
+opt-level = 'z'

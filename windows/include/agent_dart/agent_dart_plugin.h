@@ -20,4 +20,4 @@ FLUTTER_PLUGIN_EXPORT void AgentDartPluginRegisterWithRegistrar(
 }  // extern "C"
 #endif
 
-#endif  // FLUTTER_PLUGIN_AGENT_DART_PLUGIN_H_
+#endif  // AGENT_DART_PLUGIN_H_
