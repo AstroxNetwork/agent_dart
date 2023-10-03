@@ -17,7 +17,6 @@ mod keystore;
 mod p256;
 mod schnorr;
 mod secp256k1;
-mod sha;
 
 #[cfg(test)]
 mod tests {
