@@ -25,9 +25,9 @@ use crate::bls::sha3::SHA3;
 
 pub const MC_SHA2: usize = 2;
 pub const MC_SHA3: usize = 3;
-pub const SHA256: usize = 32;
-pub const SHA384: usize = 48;
-pub const SHA512: usize = 64;
+const SHA256: usize = 32;
+const SHA384: usize = 48;
+const SHA512: usize = 64;
 
 #[allow(non_snake_case)]
 

@@ -2753,12 +2753,6 @@ const int WRONG_ORDER = -18;
 
 const int BAD_PIN = -19;
 
-const int SHA256 = 32;
-
-const int SHA384 = 48;
-
-const int SHA512 = 64;
-
 const int MAXPIN = 10000;
 
 const int PBLEN = 14;
