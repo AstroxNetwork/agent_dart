@@ -8,7 +8,7 @@ RELEASE_ARCHIVE_NAME=$(grep -E "release_tag_name\s*=\s*'([^']+)" "ios/${PACKAGE_
 mkdir $BUILD_DIR
 cd $BUILD_DIR
 
-TARGET_DIR="target"
+TARGET_DIR="../target"
 
 # Build static libs, including [iOS Devices, iOS Simulators].
 for TARGET in \

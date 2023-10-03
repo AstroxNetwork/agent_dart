@@ -8,7 +8,7 @@ RELEASE_ARCHIVE_NAME=$(grep -E "release_tag_name\s*=\s*'([^']+)" "ios/${PACKAGE_
 mkdir $BUILD_DIR
 cd $BUILD_DIR
 
-TARGET_DIR="target"
+TARGET_DIR="../target"
 
 # Build static libs, including [iOS Devices, iOS Simulators, macOS Devices].
 for TARGET in \
@@ -22,6 +22,7 @@ for TARGET in \
 done
 
 # Create XCFramework zip
+PLUGIN_NAME="AgentDartPlugin"
 FRAMEWORK="AgentDart.xcframework"
 LIB_NAME="libagent_dart.a"
 
@@ -52,3 +53,17 @@ cp -r -f $FRAMEWORK ../macos/Frameworks
 
 # Cleanup
 rm -rf ios-lipo ios-sim-lipo mac-lipo $FRAMEWORK
+
+# Copy headers
+cd -
+BRIDGE_HEADER_CONTENT=$(cat "rust/headers/bridge_generated.h")
+echo -e "#import <Flutter/Flutter.h>
+
+@interface AgentDartPlugin : NSObject<FlutterPlugin>
+@end
+$BRIDGE_HEADER_CONTENT" >"ios/Classes/$PLUGIN_NAME.h"
+echo -e "#import <FlutterMacOS/FlutterMacOS.h>
+
+@interface AgentDartPlugin : NSObject<FlutterPlugin>
+@end
+$BRIDGE_HEADER_CONTENT" >"macos/Classes/$PLUGIN_NAME.h"
