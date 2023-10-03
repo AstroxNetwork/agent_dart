@@ -8,6 +8,7 @@ that can be found in the LICENSE file. -->
 
 - Upgrade FRB and roll new artifacts to all platforms.
 - Requires Dart 3.0.
+- Revert `identityProviderDefault` to `https://identity.ic0.app`.
 
 ## 1.0.0-dev.17
 
