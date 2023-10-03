@@ -167,12 +167,6 @@ typedef struct _Dart_Handle* Dart_Handle;
 
 #define BAD_PIN -19
 
-#define SHA256 32
-
-#define SHA384 48
-
-#define SHA512 64
-
 #define MAXPIN 10000
 
 #define PBLEN 14

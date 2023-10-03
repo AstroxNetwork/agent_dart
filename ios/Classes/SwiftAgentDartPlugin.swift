@@ -1,7 +1,6 @@
 import Flutter
 import UIKit
 
-
 public class SwiftAgentDartPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     // ignore this
@@ -16,7 +15,3 @@ public class SwiftAgentDartPlugin: NSObject, FlutterPlugin {
     print("dummy_value=\(dummy_method_to_enforce_bundling())");
   }
 }
-
-
-
-

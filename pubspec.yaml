@@ -23,7 +23,7 @@ dependencies:
   fixnum: ^1.0.1
   flutter:
     sdk: flutter
-  flutter_rust_bridge: '>=1.78.0 <1.79.0'
+  flutter_rust_bridge: '>=1.82.0 <1.83.0'
   http: ^1.0.0
   js: ^0.6.4
   meta: ^1.7.0
@@ -42,7 +42,7 @@ dev_dependencies:
   lints: ^2.0.1
   flutter_test:
     sdk: flutter
-  ffigen: ^8.0.0
+  ffigen: ^9.0.0
 
 flutter:
   plugin:

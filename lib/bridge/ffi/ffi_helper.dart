@@ -16,6 +16,8 @@ final DynamicLibrary _dylib = () {
       return DynamicLibrary.open('macos/cli/$abi/lib$_libBase.dylib');
     } else if (Platform.isLinux) {
       return DynamicLibrary.open('linux/lib$_libBase.so');
+    } else if (Platform.isWindows) {
+      return DynamicLibrary.open('windows/$_libBase.dll');
     }
   }
   return loadLibForFlutter(
