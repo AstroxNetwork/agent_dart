@@ -8,7 +8,7 @@ RELEASE_ARCHIVE_NAME=$(grep -E "release_tag_name\s*=\s*'([^']+)" "packages/${PAC
 mkdir $BUILD_DIR
 cd $BUILD_DIR
 
-TARGET_DIR="target"
+TARGET_DIR="../target"
 
 # Build static libs, including [macOS Devices].
 for TARGET in \

@@ -18,7 +18,8 @@ rust/Cargo.lock
 _main.dart
 
 # build files
-platform-build/
+/platform-build/
+/target/
 # rust/headers/
 # rust/dylib/
 # macos/cli/
