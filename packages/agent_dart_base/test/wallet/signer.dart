@@ -11,24 +11,33 @@ void main() {
     const mne2 = 'open jelly jeans corn ketchup supreme brief element '
         'armed lens vault weather original scissors rug priority '
         'vicious lesson raven spot gossip powder person volcano';
-    final acc2CreateTime = DateTime.now();
+
+    final stopwatch = Stopwatch();
+
+    stopwatch
+      ..reset()
+      ..start();
     final acc2 = await ICPSigner.fromPhrase(mne2, curveType: CurveType.all);
-    final acc2TimePeriod = DateTime.now().millisecondsSinceEpoch -
-        acc2CreateTime.millisecondsSinceEpoch;
+    stopwatch.stop();
+    final allCurvesDuration = stopwatch.elapsed;
 
-    final acc21CreateTime = DateTime.now();
+    stopwatch
+      ..reset()
+      ..start();
     final acc21 = await ICPSigner.fromPhrase(mne2);
-    final acc21TimePeriod = DateTime.now().millisecondsSinceEpoch -
-        acc21CreateTime.millisecondsSinceEpoch;
+    stopwatch.stop();
+    final acc21TimePeriod = stopwatch.elapsed;
 
-    final acc22CreateTime = DateTime.now();
+    stopwatch
+      ..reset()
+      ..start();
     final acc22 =
         await ICPSigner.fromPhrase(mne2, curveType: CurveType.secp256k1);
-    final acc22TimePeriod = DateTime.now().millisecondsSinceEpoch -
-        acc22CreateTime.millisecondsSinceEpoch;
+    stopwatch.stop();
+    final acc22TimePeriod = stopwatch.elapsed;
 
-    expect(acc21TimePeriod < acc2TimePeriod, true);
-    expect(acc22TimePeriod < acc2TimePeriod, true);
+    expect(acc21TimePeriod < allCurvesDuration, true);
+    expect(acc22TimePeriod < allCurvesDuration, true);
     expect(acc2.account.identity != null, true);
     expect(acc2.account.ecIdentity != null, true);
     expect(acc21.account.ecIdentity, null);
