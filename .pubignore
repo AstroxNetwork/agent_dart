@@ -8,6 +8,7 @@
 .pub/
 
 build/
+example/build
 
 .env
 pubspec.lock
@@ -18,6 +19,8 @@ rust/Cargo.lock
 _main.dart
 
 # build files
+**/agent_dart-v*.zip
+**/agent_dart-v*.tar.gz
 /platform-build/
 /target/
 # rust/headers/
