@@ -8,6 +8,7 @@
 .pub/
 
 build/
+example/build
 
 .env
 pubspec.lock
