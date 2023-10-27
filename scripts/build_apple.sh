@@ -26,33 +26,39 @@ PLUGIN_NAME="AgentDartPlugin"
 FRAMEWORK="AgentDart.xcframework"
 LIB_NAME="libagent_dart.a"
 
-mkdir ios-lipo ios-sim-lipo mac-lipo
+mkdir ios-lipo ios-sim-lipo
 IOS_LIPO="ios-lipo/${LIB_NAME}"
 IOS_SIM_LIPO="ios-sim-lipo/${LIB_NAME}"
-MAC_LIPO="mac-lipo/${LIB_NAME}"
+IOS_FRAMEWORK="ios_${FRAMEWORK}"
 
 lipo -create -output $IOS_LIPO \
   "${TARGET_DIR}/aarch64-apple-ios/release/${LIB_NAME}"
 lipo -create -output $IOS_SIM_LIPO \
   "${TARGET_DIR}/aarch64-apple-ios-sim/release/${LIB_NAME}" \
   "${TARGET_DIR}/x86_64-apple-ios/release/${LIB_NAME}"
+xcodebuild -create-xcframework \
+  -library $IOS_LIPO \
+  -library $IOS_SIM_LIPO \
+  -output $IOS_FRAMEWORK
+zip -r $IOS_FRAMEWORK.zip $IOS_FRAMEWORK
+cp -f $IOS_FRAMEWORK.zip "../ios/Frameworks/${RELEASE_ARCHIVE_NAME}.zip"
+cp -r -f $IOS_FRAMEWORK ../ios/Frameworks
+
+mkdir mac-lipo
+MAC_LIPO="mac-lipo/${LIB_NAME}"
+MAC_FRAMEWORK="macos_${FRAMEWORK}"
 lipo -create -output $MAC_LIPO \
   "${TARGET_DIR}/aarch64-apple-darwin/release/${LIB_NAME}" \
   "${TARGET_DIR}/x86_64-apple-darwin/release/${LIB_NAME}"
 xcodebuild -create-xcframework \
-  -library $IOS_LIPO \
-  -library $IOS_SIM_LIPO \
   -library $MAC_LIPO \
-  -output $FRAMEWORK
-
-zip -r $FRAMEWORK.zip $FRAMEWORK
-cp -f $FRAMEWORK.zip "../ios/Frameworks/${RELEASE_ARCHIVE_NAME}.zip"
-cp -r -f $FRAMEWORK ../ios/Frameworks
-cp -f $FRAMEWORK.zip "../macos/Frameworks/${RELEASE_ARCHIVE_NAME}.zip"
-cp -r -f $FRAMEWORK ../macos/Frameworks
+  -output $MAC_FRAMEWORK
+zip -r $MAC_FRAMEWORK.zip $IOS_FRAMEWORK
+cp -f $MAC_FRAMEWORK.zip "../macos/Frameworks/${RELEASE_ARCHIVE_NAME}.zip"
+cp -r -f $MAC_FRAMEWORK ../macos/Frameworks
 
 # Cleanup
-rm -rf ios-lipo ios-sim-lipo mac-lipo $FRAMEWORK
+rm -rf ios-lipo ios-sim-lipo mac-lipo $IOS_FRAMEWORK $MAC_FRAMEWORK
 
 # Copy headers
 cd -
