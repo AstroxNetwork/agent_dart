@@ -8,14 +8,18 @@ url = "https://github.com/AstroxNetwork/agent_dart/releases/download/#{release_t
 local_zip_name = "#{release_tag_name}.zip"
 `
 cd Frameworks
-rm -rf #{framework_name}
 
 if [ ! -f #{local_zip_name} ]
 then
   curl -L #{url} -o #{local_zip_name}
 fi
 
-unzip #{local_zip_name}
+if [ -f #{local_zip_name} ]
+then
+  rm -rf #{framework_name}
+  unzip #{local_zip_name}
+fi
+
 cd -
 `
 
