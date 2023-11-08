@@ -23,14 +23,6 @@ _main.dart
 **/agent_dart-v*.tar.gz
 /platform-build/
 /target/
-# rust/headers/
-# rust/dylib/
-# macos/cli/
-# macos/libagent_dart.a
-# ios/libagent_dart.a
-# android/src/main/jniLibs/
-# linux/libagent_dart.so
-# windows/agent_dart.dll
 
 # Specified to pub.dev
 /.github/
