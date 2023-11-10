@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.20
+
+- Fix Darwin frameworks fetching during `pod install`.
+
 ## 1.0.0-dev.19
 
 - Fix Darwin frameworks initialization during `pod install`.
