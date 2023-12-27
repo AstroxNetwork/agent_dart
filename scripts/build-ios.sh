@@ -10,10 +10,10 @@ cd $BUILD_DIR
 
 # Build static libs, including [iOS Devices, iOS Simulators].
 for TARGET in \
-  aarch64-apple-ios \
-  x86_64-apple-ios aarch64-apple-ios-sim; do
+  aarch64-apple-ios x86_64-apple-ios \
+  aarch64-apple-ios-sim; do
   rustup target add $TARGET
-  cargo build -r --target=$TARGET
+  cargo build -r --target=$TARGET --package=${PACKAGE_NAME}
   mkdir -p ./dylib/$TARGET
   cp "../target/$TARGET/release/lib${PACKAGE_NAME}.dylib" "./dylib/$TARGET/lib${PACKAGE_NAME}.dylib"
 done

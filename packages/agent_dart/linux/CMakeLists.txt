@@ -1,4 +1,4 @@
-set(LibraryVersion "library_name-v0.0.0") # generated; do not edit
+set(LibraryVersion "agent_dart-v0.0.0") # generated; do not edit
 
 # The Flutter tooling requires that developers have CMake 3.10 or later
 # installed. You should not increase this version, as doing so will cause
@@ -21,17 +21,17 @@ if(NOT EXISTS ${ArchivePath})
 endif()
 
 # Extract the binaries, overriding any already present.
-file(REMOVE_RECURSE ${LibRoot})
-file(MAKE_DIRECTORY ${LibRoot})
+file(REMOVE_RECURSE "linux-arm64")
+file(REMOVE_RECURSE "linux-x64")
 execute_process(
   COMMAND ${CMAKE_COMMAND} -E tar xzf ${ArchivePath}
-  WORKING_DIRECTORY ${LibRoot}
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
 set(agent_dart_bundled_libraries
-  "${LibRoot}/${FLUTTER_TARGET_PLATFORM}/libagent_dart.so"
+  "${FLUTTER_TARGET_PLATFORM}/lib${PROJECT_NAME}.so"
   PARENT_SCOPE
 )

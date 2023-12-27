@@ -25,9 +25,9 @@ use crate::bls::sha3::SHA3;
 
 pub const MC_SHA2: usize = 2;
 pub const MC_SHA3: usize = 3;
-pub const SHA256: usize = 32;
-pub const SHA384: usize = 48;
-pub const SHA512: usize = 64;
+const U_SHA256: usize = 32;
+const U_SHA384: usize = 48;
+const U_SHA512: usize = 64;
 
 #[allow(non_snake_case)]
 
@@ -46,7 +46,7 @@ pub fn GPhashit(
     let mut r: [u8; 64] = [0; 64];
 
     if hash == MC_SHA2 {
-        if sha == SHA256 {
+        if sha == U_SHA256 {
             let mut h = HASH256::new();
             for _ in 0..zpad {
                 h.process(0);
@@ -65,7 +65,7 @@ pub fn GPhashit(
                 r[i] = hs[i];
             }
         }
-        if sha == SHA384 {
+        if sha == U_SHA384 {
             let mut h = HASH384::new();
             for _ in 0..zpad {
                 h.process(0);
@@ -84,7 +84,7 @@ pub fn GPhashit(
                 r[i] = hs[i];
             }
         }
-        if sha == SHA512 {
+        if sha == U_SHA512 {
             let mut h = HASH512::new();
             for _ in 0..zpad {
                 h.process(0);
@@ -532,19 +532,19 @@ pub fn pkcs15(sha: usize, m: &[u8], w: &mut [u8], rfs: usize) -> bool {
     w[i] = 0;
     i += 1;
 
-    if hlen == SHA256 {
+    if hlen == U_SHA256 {
         for j in 0..idlen {
             w[i] = SHA256ID[j];
             i += 1
         }
     }
-    if hlen == SHA384 {
+    if hlen == U_SHA384 {
         for j in 0..idlen {
             w[i] = SHA384ID[j];
             i += 1
         }
     }
-    if hlen == SHA512 {
+    if hlen == U_SHA512 {
         for j in 0..idlen {
             w[i] = SHA512ID[j];
             i += 1
