@@ -1,8 +1,8 @@
-// lib/src/ffi/io.dart
 import 'dart:ffi';
-import 'dart:io';
+import 'dart:io' show Platform;
 
-import 'package:agent_dart_ffi/agent_dart_ffi.dart';
+import 'package:flutter/foundation.dart';
+import 'package:agent_dart_base/agent_dart_base.dart' show AgentDartImpl;
 
 const libName = 'agent_dart';
 
@@ -44,10 +44,13 @@ class AgentDartFFI {
   AgentDartFFI._();
 
   static final AgentDartFFI _instance = AgentDartFFI._();
-  static String? dylib;
 
   static AgentDartImpl get impl => _instance._impl;
-  late final AgentDartImpl _impl = AgentDartImpl(
-    dylib == null ? createLibraryImpl() : DynamicLibrary.open(dylib!),
-  );
+  late final AgentDartImpl _impl = AgentDartImpl(createLibraryImpl());
+}
+
+extension AbiExtension on Abi {
+  String get architecture => toString().split('_').last;
+
+  String get os => toString().split('_').first;
 }
