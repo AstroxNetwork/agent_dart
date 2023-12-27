@@ -16,9 +16,6 @@ call :win_build x86_64-pc-windows-msvc windows-x64 agent_dart.dll
 REM Archive the dynamic libs
 tar -czvf windows.tar.gz windows-* && copy windows.tar.gz "..\packages\%PACKAGE_NAME%\windows\%PACKAGE_NAME%-v0.0.0.tar.gz"
 
-REM Archive the dynamic libs
-tar -czvf other.tar.gz linux-* windows-*
-
 REM Cleanup
 del /s /q linux-* windows-*
 exit /b
