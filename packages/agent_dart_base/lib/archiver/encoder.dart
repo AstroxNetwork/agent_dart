@@ -126,7 +126,7 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
           f,
           includeDirName ? ('$dirName/$relativePath') : relativePath,
           level,
-        ).then((_) => onProgress(++current / amount)),
+        ).then((_) => onProgress?.call(++current / amount)),
       );
     }
     await Future.wait(futures);
