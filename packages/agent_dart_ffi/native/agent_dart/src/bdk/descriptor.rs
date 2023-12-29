@@ -10,7 +10,7 @@ use bdk_lite::keys::{
 // use bdk::miniscript::DefiniteDescriptorKey;
 use crate::api::AddressType;
 use crate::bdk::types::AddressInfo;
-use bdk_lite::miniscript::{Error, TranslatePk};
+use bdk_lite::miniscript::{Error};
 use bdk_lite::template::{
     Bip44, Bip44Public, Bip44TR, Bip44TRPublic, Bip49, Bip49Public, Bip84, Bip84Public, Bip86,
     Bip86Public, DescriptorTemplate, P2Pkh, P2Wpkh, P2Wpkh_P2Sh, P2TR,

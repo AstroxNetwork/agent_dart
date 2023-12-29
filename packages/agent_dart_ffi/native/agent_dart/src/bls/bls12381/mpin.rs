@@ -41,9 +41,6 @@ pub const BAD_PARAMS: isize = -11;
 pub const INVALID_POINT: isize = -14;
 pub const WRONG_ORDER: isize = -18;
 pub const BAD_PIN: isize = -19;
-pub const SHA256: usize = 32;
-pub const SHA384: usize = 48;
-pub const SHA512: usize = 64;
 
 /* Configure your PIN here */
 

@@ -77,6 +77,7 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
     int? level,
     bool followLinks = true,
     DateTime? modified,
+    void Function(double)? onProgress,
   }) {
     final dirPath = dir.path;
     final zipPath = filename ?? '$dirPath.zip';
@@ -107,9 +108,12 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
     bool includeDirName = true,
     int? level,
     bool followLinks = true,
+    void Function(double)? onProgress,
   }) async {
     final List files = dir.listSync(recursive: true, followLinks: followLinks);
     final futures = <Future<void>>[];
+    final amount = files.length;
+    int current = 0;
     for (final file in files) {
       if (file is! File) {
         continue;
@@ -122,7 +126,7 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
           f,
           includeDirName ? ('$dirName/$relativePath') : relativePath,
           level,
-        ),
+        ).then((_) => onProgress?.call(++current / amount)),
       );
     }
     await Future.wait(futures);
