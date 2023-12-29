@@ -1,4 +1,4 @@
-set(LibraryVersion "library_name-v0.0.0") # generated; do not edit
+set(LibraryVersion "agent_dart-v0.0.0") # generated; do not edit
 
 # TODO Remove this workaround once Flutter supports Windows ARM.
 # https://github.com/flutter/flutter/issues/116196
@@ -11,7 +11,7 @@ set(FLUTTER_TARGET_PLATFORM windows-x64)
 cmake_minimum_required(VERSION 3.14)
 
 # Project-level configuration.
-set(PROJECT_NAME "flutter_agent_dart")
+set(PROJECT_NAME "agent_dart")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 # Download the binaries if they are not already present.
@@ -26,17 +26,17 @@ if(NOT EXISTS ${ArchivePath})
 endif()
 
 # Extract the binaries, overriding any already present.
-file(REMOVE_RECURSE ${LibRoot})
-file(MAKE_DIRECTORY ${LibRoot})
+file(REMOVE_RECURSE "windows-arm64")
+file(REMOVE_RECURSE "windows-x64")
 execute_process(
   COMMAND ${CMAKE_COMMAND} -E tar xzf ${ArchivePath}
-  WORKING_DIRECTORY ${LibRoot}
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
 set(flutter_agent_dart_bundled_libraries
-  "${LibRoot}/${FLUTTER_TARGET_PLATFORM}/agent_dart.dll"
+  "${FLUTTER_TARGET_PLATFORM}/${PROJECT_NAME}.dll"
   PARENT_SCOPE
 )

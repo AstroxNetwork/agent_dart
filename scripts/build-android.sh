@@ -22,14 +22,14 @@ rustup target add \
 
 # Build the android libraries in the jniLibs directory
 cargo ndk -o $JNI_DIR \
-        --manifest-path ../Cargo.toml \
+        --manifest-path ../packages/agent_dart_ffi/native/agent_dart/Cargo.toml \
         -t armeabi-v7a \
         -t arm64-v8a \
         -t x86 \
         -t x86_64 \
         build --release
 
-cp -r -f $JNI_DIR ../packages/agent_dart/android/src/main
+cp -r -f $JNI_DIR "../packages/${PACKAGE_NAME}/android/src/main"
 
 # Archive the dynamic libs
 cd $JNI_DIR
@@ -37,5 +37,5 @@ tar -czvf ../android.tar.gz *
 cd -
 
 # Cleanup
-cp -f android.tar.gz "../packages/agent_dart/android/${RELEASE_ARCHIVE_NAME}.tar.gz"
+cp -f android.tar.gz "../packages/${PACKAGE_NAME}/android/${RELEASE_ARCHIVE_NAME}.tar.gz"
 rm -rf $JNI_DIR
