@@ -14,6 +14,12 @@
       <excludeFolder url="file://$MODULE_DIR$/packages/agent_dart_base/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/packages/agent_dart_base/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/packages/agent_dart_base/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/agent_dart/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/agent_dart/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/agent_dart/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/agent_dart_ffi/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/agent_dart_ffi/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/agent_dart_ffi/build" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dart Packages" level="project" />
