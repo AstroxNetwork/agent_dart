@@ -12,7 +12,7 @@ cd $BUILD_DIR
 for TARGET in \
   x86_64-apple-darwin aarch64-apple-darwin; do
   rustup target add $TARGET
-  cargo build -r --target=$TARGET
+  cargo build -r --target=$TARGET --package=$PACKAGE_NAME
   mkdir -p ./dylib/$TARGET
   cp ../target/$TARGET/release/lib${PACKAGE_NAME}.dylib ./dylib/$TARGET/lib${PACKAGE_NAME}.dylib
 done
