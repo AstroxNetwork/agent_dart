@@ -1,9 +1,17 @@
 name: agent_dart
-
 repository: https://github.com/AstroxNetwork/agent_dart
 
 packages:
   - packages/**
+
+ide:
+  intellij:
+    enabled: true
+    moduleNamePrefix: ''
+
+command:
+  bootstrap:
+    runPubGetInParallel: false
 
 scripts:
   analyze:
