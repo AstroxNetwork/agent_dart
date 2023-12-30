@@ -19,7 +19,7 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.1.11
-  ffigen: ^8.0.2
+  ffigen: ^9.0.1
 
 false_secrets:
   - /rust/ed_compact/src/pem.rs
