@@ -4,11 +4,11 @@ import 'dart:typed_data';
 import 'package:agent_dart_base/agent/cbor.dart';
 import 'package:agent_dart_base/agent/request_id.dart';
 import 'package:agent_dart_base/agent/types.dart';
+import 'package:agent_dart_base/ffi/bls.base.dart';
 import 'package:agent_dart_base/utils/extension.dart';
 import 'package:agent_dart_base/utils/u8a.dart';
 import 'package:typed_data/typed_data.dart';
 
-import '../src/ffi/bls.base.dart';
 import 'agent/api.dart';
 import 'errors.dart';
 

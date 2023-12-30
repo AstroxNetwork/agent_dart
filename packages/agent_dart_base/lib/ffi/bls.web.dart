@@ -1,8 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:agent_dart_base/agent_dart_base.dart';
-import 'package:agent_dart_base/src/ffi/bls.base.dart';
-import 'package:agent_dart_base/src/ffi/wasm_interop.dart';
+
+import 'bls.base.dart';
+import 'wasm_interop.dart';
 
 final _wasmBytesBase64 = '''
     AGFzbQEAAAABXg9gAn9/AGABfwBgA39/fwBgAn9/AX9gAX8Bf2ADf39/AX9gBH9/f38AYAV/f39/fwBgBn9/f39/fwF/

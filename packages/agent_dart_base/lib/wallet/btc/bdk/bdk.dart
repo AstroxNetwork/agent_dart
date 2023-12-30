@@ -7,7 +7,6 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
 import './bdk_exception.dart';
 import './config.dart';
-import '../../../src/ffi/io.dart';
 import 'buffer.dart';
 
 ///A Bitcoin address.

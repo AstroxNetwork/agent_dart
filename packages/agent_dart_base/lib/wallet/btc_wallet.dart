@@ -5,7 +5,7 @@ import 'package:agent_dart_base/agent/ord/inscriptionItem.dart';
 import 'package:agent_dart_base/agent/ord/service.dart';
 import 'package:agent_dart_base/agent/ord/utxo.dart';
 import 'package:agent_dart_base/agent_dart_base.dart';
-import 'package:agent_dart_base/src/ffi/io.dart';
+import 'package:agent_dart_base/ffi/ffi.dart';
 import 'package:agent_dart_base/wallet/btc/bdk/wif.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';

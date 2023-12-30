@@ -1000,7 +1000,7 @@ impl Api {
 /// --------------------
 /// create_phrase
 /// phrase_to_seed
-/// seed_to_key  
+/// seed_to_key
 
 pub fn mnemonic_phrase_to_seed(req: PhraseToSeedReq) -> Vec<u8> {
     KeyRingFFI::phrase_to_seed(req)

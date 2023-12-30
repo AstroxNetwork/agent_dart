@@ -9,12 +9,13 @@ export 'auth_client/auth_client.dart';
 export 'authentication/authentication.dart';
 // candid
 export 'candid/idl.dart';
+// ffi
+export 'ffi/ffi.dart';
 // identity
 export 'identity/identity.dart';
 // principal;
 export 'principal/principal.dart';
 export 'principal/utils/utils.dart';
-export 'src/ffi.dart';
 // utils
 export 'utils/base64.dart';
 export 'utils/bech32.dart';
