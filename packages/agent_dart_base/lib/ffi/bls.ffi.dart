@@ -1,8 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/src/ffi/bls.base.dart';
-import 'package:agent_dart_base/src/ffi/io.dart';
 import 'package:agent_dart_ffi/agent_dart_ffi.dart';
+
+import 'bls.base.dart';
+import 'ffi.dart';
 
 class FFIBls implements BaseBLS {
   late bool _isInit = false;

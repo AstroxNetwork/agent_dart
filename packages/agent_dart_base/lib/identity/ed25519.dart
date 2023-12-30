@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:agent_dart_base/agent/auth.dart' as auth;
 import 'package:agent_dart_base/agent_dart_base.dart';
-import 'package:agent_dart_base/src/ffi/io.dart';
+import 'package:agent_dart_base/ffi/ffi.dart';
 import 'package:crypto/crypto.dart';
 import 'package:meta/meta.dart';
 

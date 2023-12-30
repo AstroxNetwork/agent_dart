@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:agent_dart_base/identity/identity.dart';
 import 'package:agent_dart_base/principal/principal.dart';
-import 'package:agent_dart_base/src/ffi/io.dart';
+import 'package:agent_dart_base/ffi/ffi.dart';
 import 'package:agent_dart_base/utils/extension.dart';
 import 'package:agent_dart_ffi/agent_dart_ffi.dart';
 import 'package:bip32/bip32.dart' as bip32;

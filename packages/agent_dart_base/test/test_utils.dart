@@ -1,6 +1,5 @@
 import 'dart:ffi';
 
-import 'package:agent_dart_base/src/ffi/io.dart';
 import 'package:test/test.dart';
 
 // import 'package:p4d_rust_binding/utils/utils.dart';
@@ -34,7 +33,7 @@ void matchFFI() {
   const dyLib = 'libagent_dart.dylib';
   const dySo = 'libagent_dart.so';
   const dyDll = 'agent_dart.dll';
-  var lib;
+  final String lib;
   switch (os) {
     case 'macos':
       {
@@ -69,5 +68,6 @@ void matchFFI() {
     default:
       throw 'Unsupported OS: $os';
   }
-  AgentDartFFI.dylib = lib;
+  print(lib);
+  // AgentDartFFI.dylib = lib;
 }

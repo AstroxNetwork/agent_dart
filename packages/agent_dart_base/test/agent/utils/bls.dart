@@ -1,4 +1,4 @@
-import 'package:agent_dart_base/src/ffi/bls.base.dart';
+import 'package:agent_dart_base/ffi/bls.base.dart';
 import 'package:agent_dart_base/utils/extension.dart';
 import 'package:test/test.dart';
 
