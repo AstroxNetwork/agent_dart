@@ -14,7 +14,7 @@ export 'identity/identity.dart';
 // principal;
 export 'principal/principal.dart';
 export 'principal/utils/utils.dart';
-export 'src/ffi.dart' hide AbiExtension;
+export 'src/ffi.dart';
 // utils
 export 'utils/base64.dart';
 export 'utils/bech32.dart';

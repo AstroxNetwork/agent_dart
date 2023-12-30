@@ -17,23 +17,10 @@ DynamicLibrary createLibraryImpl() {
     if (kReleaseMode) {
       return DynamicLibrary.open('lib$libName.dylib');
     }
-    return DynamicLibrary.open(
-      'linux/flutter/ephemeral/.plugin_symlinks/'
-      'agent_dart/linux/'
-      'linux-${Abi.current().architecture}/'
-      '$libName.so',
-    );
+    return DynamicLibrary.open('lib$libName.so');
   }
   if (Platform.isWindows) {
-    if (kReleaseMode) {
-      return DynamicLibrary.open('$libName.dll');
-    }
-    return DynamicLibrary.open(
-      'windows/flutter/ephemeral/.plugin_symlinks/'
-      'agent_dart/windows/'
-      'windows-${Abi.current().architecture}/'
-      '$libName.dll',
-    );
+    return DynamicLibrary.open('$libName.dll');
   }
   throw UnsupportedError('${Abi.current()} is not supported');
 }
@@ -47,10 +34,4 @@ class AgentDartFFI {
 
   static AgentDartImpl get impl => _instance._impl;
   late final AgentDartImpl _impl = AgentDartImpl(createLibraryImpl());
-}
-
-extension AbiExtension on Abi {
-  String get architecture => toString().split('_').last;
-
-  String get os => toString().split('_').first;
 }
