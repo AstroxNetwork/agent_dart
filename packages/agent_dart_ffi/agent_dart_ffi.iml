@@ -5,6 +5,10 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/native/agent_dart/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/native/bdk_lite/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/native/bdk_lite/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/native/ed_compact/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
