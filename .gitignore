@@ -2,7 +2,6 @@
 .dart_tool/
 .idea/
 .vscode/
-.iml
 
 .packages
 .pub/
@@ -38,7 +37,6 @@ _main.dart
 .svn/
 
 # IntelliJ related
-*.iml
 *.ipr
 *.iws
 .idea/
