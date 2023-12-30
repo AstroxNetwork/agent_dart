@@ -1,4 +1,4 @@
-name: agent_dart
+name: agent_dart_workspace
 repository: https://github.com/AstroxNetwork/agent_dart
 
 packages:

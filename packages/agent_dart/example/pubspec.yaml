@@ -1,5 +1,5 @@
-name: flutter_agent_dart_example
-description: Demonstrates how to use the flutter_agent_dart plugin.
+name: agent_dart_example
+description: Demonstrates how to use the agent_dart plugin.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
