@@ -23,7 +23,4 @@ else
   fi
 fi
 
-flutter_rust_bridge_codegen \
-  --rust-input native/agent_dart/src/api.rs \
-  --c-output native/headers/bridge_generated.h \
-  --dart-output lib/src/bridge_generated.dart
+flutter_rust_bridge_codegen

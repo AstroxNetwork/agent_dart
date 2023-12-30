@@ -1,0 +1,10 @@
+dart_format_line_length: 80
+rust_input:
+  - 'native/agent_dart/src/api.rs'
+dart_output:
+  - 'lib/src/bridge_generated.dart'
+c_output:
+  - 'native/headers/bridge_generated.h'
+extra_c_output_path:
+  - '../agent_dart/ios/Classes/'
+  - '../agent_dart/macos/Classes/'
