@@ -49,66 +49,6 @@ rustdoc-args = [
     "docsrs",
 ]
 
-[[example]]
-name = "compact_filters_balance"
-required-features = ["compact_filters"]
-
-[[example]]
-name = "miniscriptc"
-path = "examples/compiler.rs"
-required-features = ["compiler"]
-
-[[example]]
-name = "policy"
-path = "examples/policy.rs"
-
-[[example]]
-name = "rpcwallet"
-path = "examples/rpcwallet.rs"
-required-features = [
-    "keys-bip39",
-    "key-value-db",
-    "rpc",
-    "electrsd/bitcoind_22_0",
-]
-
-[[example]]
-name = "psbt_signer"
-path = "examples/psbt_signer.rs"
-required-features = ["electrum"]
-
-[[example]]
-name = "hardware_signer"
-path = "examples/hardware_signer.rs"
-required-features = [
-    "electrum",
-    "hardware-signer",
-]
-
-[[example]]
-name = "electrum_backend"
-path = "examples/electrum_backend.rs"
-required-features = ["electrum"]
-
-[[example]]
-name = "esplora_backend_synchronous"
-path = "examples/esplora_backend_synchronous.rs"
-required-features = ["use-esplora-ureq"]
-
-[[example]]
-name = "esplora_backend_asynchronous"
-path = "examples/esplora_backend_asynchronous.rs"
-required-features = [
-    "use-esplora-reqwest",
-    "reqwest-default-tls",
-    "async-interface",
-]
-
-[[example]]
-name = "mnemonic_to_descriptors"
-path = "examples/mnemonic_to_descriptors.rs"
-required-features = ["all-keys"]
-
 [dependencies.ahash]
 version = "0.7.6"
 optional = true
@@ -212,9 +152,6 @@ version = "<1.6.0"
 version = "0.29.2"
 features = ["std"]
 
-[dev-dependencies.electrsd]
-version = "0.22"
-
 [dev-dependencies.env_logger]
 version = "0.7"
 
@@ -267,32 +204,8 @@ test-blockchains = [
     "bitcoincore-rpc",
     "electrum-client",
 ]
-test-electrum = [
-    "electrum",
-    "electrsd/electrs_0_8_10",
-    "electrsd/bitcoind_22_0",
-    "test-blockchains",
-]
-test-esplora = [
-    "electrsd/legacy",
-    "electrsd/esplora_a33e97e1",
-    "electrsd/bitcoind_22_0",
-    "test-blockchains",
-]
 test-hardware-signer = ["hardware-signer"]
 test-md-docs = ["electrum"]
-test-rpc = [
-    "rpc",
-    "electrsd/electrs_0_8_10",
-    "electrsd/bitcoind_22_0",
-    "test-blockchains",
-]
-test-rpc-legacy = [
-    "rpc",
-    "electrsd/electrs_0_8_10",
-    "electrsd/bitcoind_0_20_0",
-    "test-blockchains",
-]
 use-esplora-async = [
     "esplora",
     "esplora-client/async",

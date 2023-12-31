@@ -113,8 +113,6 @@ use std::convert::TryInto;
 /// overridden
 
 pub type DefaultCoinSelectionAlgorithm = BranchAndBoundCoinSelection;
-#[cfg(test)]
-pub type DefaultCoinSelectionAlgorithmTest = LargestFirstCoinSelection; // make the tests more predictable
 
 // Base weight of a Txin, not counting the weight needed for satisfying it.
 // prev_txid (32 bytes) + prev_vout (4 bytes) + sequence (4 bytes)
