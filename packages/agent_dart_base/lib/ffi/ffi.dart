@@ -4,7 +4,7 @@ import 'ffi_stub.dart'
     if (dart.library.io) 'ffi_io.dart'
     if (dart.library.html) 'ffi_web.dart';
 
-AgentDart createLib() => createWrapper(createLibraryImpl());
+AgentDart createLib() => createWrapper(getDynamicLibrary());
 
 class AgentDartFFI {
   factory AgentDartFFI() => _instance;
@@ -14,5 +14,5 @@ class AgentDartFFI {
   static final AgentDartFFI _instance = AgentDartFFI._();
 
   static AgentDartImpl get impl => _instance._impl;
-  late final AgentDartImpl _impl = AgentDartImpl(createLibraryImpl());
+  late final AgentDartImpl _impl = AgentDartImpl(getDynamicLibrary());
 }

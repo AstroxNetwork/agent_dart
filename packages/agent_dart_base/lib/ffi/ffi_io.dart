@@ -1,28 +1,18 @@
 import 'dart:ffi';
 import 'dart:io' show Platform;
 
-const libName = 'agent_dart';
+const _lib = 'agent_dart';
+const _package = _lib;
+final _dylib = Platform.isWindows ? '$_lib.dll' : 'lib$_lib.so';
 
-DynamicLibrary createLibraryImpl() {
-  if (Platform.isAndroid) {
-    return DynamicLibrary.open('lib$libName.so');
-  }
+DynamicLibrary getDynamicLibrary() {
   if (Platform.isIOS || Platform.isMacOS) {
     if (_kDebugMode) {
-      return DynamicLibrary.open('agent_dart.framework/agent_dart');
+      return DynamicLibrary.open('$_package.framework/$_package');
     }
-    return DynamicLibrary.process();
+    return DynamicLibrary.executable();
   }
-  if (Platform.isLinux) {
-    if (_kDebugMode) {
-      return DynamicLibrary.open('lib$libName.so');
-    }
-    return DynamicLibrary.open('lib$libName.dylib');
-  }
-  if (Platform.isWindows) {
-    return DynamicLibrary.open('$libName.dll');
-  }
-  throw UnsupportedError('${Abi.current()} is not supported');
+  return DynamicLibrary.open(_dylib);
 }
 
 const bool _kReleaseMode = bool.fromEnvironment('dart.vm.product');
