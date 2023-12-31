@@ -10,14 +10,6 @@
 // licenses.
 #![allow(missing_docs)]
 
-#[cfg(test)]
-#[cfg(feature = "test-blockchains")]
-pub mod blockchain_tests;
-
-#[cfg(test)]
-#[cfg(feature = "test-blockchains")]
-pub mod configurable_blockchain_tests;
-
 use bitcoin::{Address, Txid};
 
 #[derive(Clone, Debug)]
