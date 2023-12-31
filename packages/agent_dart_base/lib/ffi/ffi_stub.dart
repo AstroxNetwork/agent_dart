@@ -1,3 +1,3 @@
 import 'dart:ffi';
 
-DynamicLibrary createLibraryImpl() => throw UnimplementedError();
+DynamicLibrary getDynamicLibrary() => throw UnimplementedError();
