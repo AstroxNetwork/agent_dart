@@ -56,6 +56,9 @@ xcodebuild -create-xcframework \
 zip -r $MAC_FRAMEWORK.zip $IOS_FRAMEWORK
 cp -f $MAC_FRAMEWORK.zip "../macos/Frameworks/${RELEASE_ARCHIVE_NAME}.zip"
 cp -r -f $MAC_FRAMEWORK ../macos/Frameworks
+# Copy for flutter_test
+cp -f "${TARGET_DIR}/aarch64-apple-darwin/release/${LIB_NAME}" "../test/_dylib/aarch64-apple-darwin/"
+cp -f "${TARGET_DIR}/x86_64-apple-darwin/release/${LIB_NAME}" "../test/_dylib/x86_64-apple-darwin/"
 
 # Cleanup
 rm -rf ios-lipo ios-sim-lipo mac-lipo $IOS_FRAMEWORK $MAC_FRAMEWORK
