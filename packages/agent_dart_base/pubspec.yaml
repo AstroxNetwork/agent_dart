@@ -6,7 +6,8 @@ repository: https://github.com/AstroxNetwork/agent_dart
 issue_tracker: https://github.com/AstroxNetwork/agent_dart/issues
 
 environment:
-  sdk: '>=2.18.6 <3.0.0'
+  sdk: '>=3.0.0 <4.0.0'
+
 dependencies:
   plugin_platform_interface: ^2.0.2
   agent_dart_ffi: ^1.0.0
