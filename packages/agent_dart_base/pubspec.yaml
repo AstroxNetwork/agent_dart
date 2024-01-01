@@ -9,8 +9,13 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
+  agent_dart_ffi:
+    git:
+      url: https://github.com/AstroxNetwork/agent_dart
+      path: packages/agent_dart_ffi
+      ref: bdk_lite
+
   plugin_platform_interface: ^2.0.2
-  agent_dart_ffi: ^1.0.0
   archive: ^3.4.9
   args: ^2.3.1
   basic_utils: ^4.2.2
