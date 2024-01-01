@@ -9,8 +9,6 @@ export 'auth_client/auth_client.dart';
 export 'authentication/authentication.dart';
 // candid
 export 'candid/idl.dart';
-// ffi
-export 'ffi/ffi.dart';
 // identity
 export 'identity/identity.dart';
 // principal;

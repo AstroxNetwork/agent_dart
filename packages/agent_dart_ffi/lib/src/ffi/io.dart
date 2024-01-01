@@ -7,16 +7,15 @@ const _lib = 'agent_dart';
 const _package = _lib;
 
 DynamicLibrary _getDynamicLibrary() {
-  if (Platform.isMacOS || Platform.isIOS) {
-    return DynamicLibrary.open('$_package.framework/$_package');
-  }
-  if (Platform.isAndroid || Platform.isLinux) {
-    return DynamicLibrary.open('lib$_lib.so');
-  }
-  if (Platform.isWindows) {
-    return DynamicLibrary.open('$_lib.dll');
-  }
-  throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
+  final libPath = switch (Platform.operatingSystem) {
+    'macos' || 'ios' => '$_package.framework/$_package',
+    'android' || 'linux' => 'lib$_lib.so',
+    'windows' => '$_lib.dll',
+    _ => throw UnsupportedError(
+        'unsupported operating system ${Platform.operatingSystem}',
+      ),
+  };
+  return DynamicLibrary.open(libPath);
 }
 
 AgentDartImpl createAgentDartImpl() => AgentDartImpl(_getDynamicLibrary());
