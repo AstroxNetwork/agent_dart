@@ -1,10 +1,10 @@
 import 'dart:ffi' show Abi, DynamicLibrary;
 import 'dart:io' show Platform;
-import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
 import 'ffi_bridge.dart';
 
-const String _libBase = 'agent_dart';
+const _lib = 'agent_dart';
+const _package = _lib;
 
 final DynamicLibrary _dylib = () {
   final isFlutterTest = Platform.environment['FLUTTER_TEST'] != null;
@@ -13,16 +13,26 @@ final DynamicLibrary _dylib = () {
       final abi = Abi.current() == Abi.macosArm64
           ? 'aarch64-apple-darwin'
           : 'x86_64-apple-darwin';
-      return DynamicLibrary.open('macos/cli/$abi/lib$_libBase.dylib');
+      return DynamicLibrary.open('macos/cli/$abi/lib$_lib.dylib');
     } else if (Platform.isLinux) {
-      return DynamicLibrary.open('linux/lib$_libBase.so');
+      return DynamicLibrary.open('linux/lib$_lib.so');
     } else if (Platform.isWindows) {
-      return DynamicLibrary.open('windows/$_libBase.dll');
+      return DynamicLibrary.open('windows/$_lib.dll');
     }
+    throw UnsupportedError(
+      'unsupported testing operating system ${Platform.operatingSystem}',
+    );
   }
-  return loadLibForFlutter(
-    Platform.isWindows ? '$_libBase.dll' : 'lib$_libBase.so',
-  );
+
+  final libPath = switch (Platform.operatingSystem) {
+    'macos' || 'ios' => '$_package.framework/$_package',
+    'android' || 'linux' => 'lib$_lib.so',
+    'windows' => '$_lib.dll',
+    _ => throw UnsupportedError(
+        'unsupported operating system ${Platform.operatingSystem}',
+      ),
+  };
+  return DynamicLibrary.open(libPath);
 }();
 
 class AgentDartFFI {
