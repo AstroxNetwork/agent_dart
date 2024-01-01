@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:agent_dart_base/agent_dart_base.dart';
-import 'package:agent_dart_base/ffi/ffi.dart';
 
 import 'package:pointycastle/api.dart' as p_api;
 import 'package:pointycastle/digests/sha256.dart';

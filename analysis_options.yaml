@@ -12,7 +12,7 @@ analyzer:
 linter:
   rules:
     avoid_print: false
-    avoid_redundant_argument_values: true
+    avoid_redundant_argument_values: false
     always_declare_return_types: true
     directives_ordering: true
     prefer_const_constructors: true

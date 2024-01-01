@@ -1,7 +1,22 @@
 import 'dart:ffi';
+import 'dart:io' show Platform;
 
-import 'package:agent_dart_ffi/src/bridge_generated.dart';
+import '../bridge_generated.dart';
 
-typedef ExternalLibrary = DynamicLibrary;
+const _lib = 'agent_dart';
+const _package = _lib;
 
-AgentDart createWrapperImpl(ExternalLibrary dylib) => AgentDartImpl(dylib);
+DynamicLibrary _getDynamicLibrary() {
+  if (Platform.isMacOS || Platform.isIOS) {
+    return DynamicLibrary.open('$_package.framework/$_package');
+  }
+  if (Platform.isAndroid || Platform.isLinux) {
+    return DynamicLibrary.open('lib$_lib.so');
+  }
+  if (Platform.isWindows) {
+    return DynamicLibrary.open('$_lib.dll');
+  }
+  throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
+}
+
+AgentDartImpl createAgentDartImpl() => AgentDartImpl(_getDynamicLibrary());

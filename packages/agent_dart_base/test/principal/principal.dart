@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/crypto/index.dart';
 import 'package:agent_dart_base/principal/principal.dart';
-import 'package:test/test.dart';
 import 'package:agent_dart_base/utils/extension.dart';
+import 'package:test/test.dart';
+
 import '../test_utils.dart';
 
 void main() {
@@ -68,9 +68,13 @@ void principalTest() {
     final ttt = Principal.fromText('2gyec-vyaaa-aaaah-acmua-cai');
     print(ttt.toUint8List());
 
-    final ss = Principal.fromText("3ejs3-eaaaa-aaaag-qbl2a-cai").toAccountId(
-        subAccount: fromPrincipal(Principal.fromText(
-            "idbjp-7cvie-zfmuk-rphe5-sic4b-is6i5-edoui-by4kc-pemjv-lsgyg-gqe")));
+    final ss = Principal.fromText('3ejs3-eaaaa-aaaag-qbl2a-cai').toAccountId(
+      subAccount: fromPrincipal(
+        Principal.fromText(
+          'idbjp-7cvie-zfmuk-rphe5-sic4b-is6i5-edoui-by4kc-pemjv-lsgyg-gqe',
+        ),
+      ),
+    );
 
     print(ss.toHex());
   });
