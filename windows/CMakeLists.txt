@@ -11,7 +11,7 @@ set(FLUTTER_TARGET_PLATFORM windows-x64)
 cmake_minimum_required(VERSION 3.14)
 
 # Project-level configuration.
-set(PROJECT_NAME "agent_dart")
+set(PROJECT_NAME "agent_dart") # Should match the name field in the pubspec.yaml.
 set(PLUGIN_NAME "agent_dart_plugin")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
@@ -63,10 +63,11 @@ execute_process(
   WORKING_DIRECTORY ${LibRoot}
 )
 
+set(LIBRARY_NAME "agent_dart") # Should match the library name you used to generate.
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
-set(agent_dart_bundled_libraries
-  "${LibRoot}/${FLUTTER_TARGET_PLATFORM}/agent_dart.dll"
+set(${PROJECT_NAME}_bundled_libraries
+  "${LibRoot}/${FLUTTER_TARGET_PLATFORM}/${LIBRARY_NAME}.dll"
   PARENT_SCOPE
 )
