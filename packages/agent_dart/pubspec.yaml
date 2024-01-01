@@ -12,7 +12,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  agent_dart_base: ^1.0.0
+
+  agent_dart_base:
+    git:
+      url: https://github.com/AstroxNetwork/agent_dart
+      path: packages/agent_dart_base
+      ref: bdk_lite
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
