@@ -1,12 +1,10 @@
 import 'package:agent_dart_base/agent/ord/blockstream.dart';
 import 'package:agent_dart_base/agent/ord/client.dart';
 import 'package:agent_dart_base/agent/ord/service.dart';
-import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:agent_dart_base/wallet/btc/bdk/bdk.dart';
 import 'package:agent_dart_base/wallet/btc_wallet.dart';
+import 'package:agent_dart_ffi/agent_dart_ffi.dart';
 import 'package:test/test.dart';
-import 'dart:convert';
-import 'dart:typed_data';
 
 import '../test_utils.dart';
 

@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/ffi/ffi.dart';
 import 'package:agent_dart_base/wallet/keysmith.dart';
 import 'package:agent_dart_ffi/agent_dart_ffi.dart';
 

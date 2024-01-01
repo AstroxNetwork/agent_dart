@@ -8,11 +8,6 @@ import 'package:convert/convert.dart';
 
 /// Buffer Reader
 class BufferReader {
-  ByteData buffer;
-  int offset;
-
-  get length => buffer.lengthInBytes;
-
   /// BufferReader from ByteData
   BufferReader(this.buffer, [this.offset = 0]);
 
@@ -27,8 +22,13 @@ class BufferReader {
         Uint8List.fromList(hex.decode(data)), offset);
   }
 
+  ByteData buffer;
+  int offset;
+
+  int get length => buffer.lengthInBytes;
+
   /// Set offset to zero
-  reset() {
+  void reset() {
     offset = 0;
   }
 
@@ -153,8 +153,8 @@ class BufferReader {
   /// Get next byte and return an int value based on the data length specified by this byte.
   /// The return value will between 0 and 2<sup>64</sup> - 1, inclusive.
   int getVarInt([Endian endian = Endian.little]) {
-    ByteData bufferByteData = buffer.buffer.asByteData();
-    int first = bufferByteData.getUint8(offset);
+    final ByteData bufferByteData = buffer.buffer.asByteData();
+    final int first = bufferByteData.getUint8(offset);
     int output;
     // 8 bit
     if (first < 0xfd) {
@@ -205,7 +205,7 @@ class BufferReader {
   /// The return value will be List<ByteData>.
   List<ByteData> getVector([Endian endian = Endian.little]) {
     final count = getVarInt();
-    List<ByteData> vector = [];
+    final List<ByteData> vector = [];
     for (int i = 0; i < count; i++) {
       vector.add(getVarSlice(endian));
     }
@@ -215,11 +215,6 @@ class BufferReader {
 
 /// Buffer Writer
 class BufferWriter {
-  ByteData buffer;
-  int offset;
-
-  get length => buffer.lengthInBytes;
-
   /// BufferWriter from ByteData
   BufferWriter(this.buffer, [this.offset = 0]);
 
@@ -239,8 +234,13 @@ class BufferWriter {
     return BufferWriter(ByteData(size));
   }
 
+  ByteData buffer;
+  int offset;
+
+  int get length => buffer.lengthInBytes;
+
   /// Set offset to zero
-  reset() {
+  void reset() {
     offset = 0;
   }
 
@@ -269,7 +269,7 @@ class BufferWriter {
   ///Writes byteLength bytes of value to buf at the current
   /// offset as [Endian]. Supports up to 48 bits of accuracy.
   void setUInt(int value, [int byteLength = 0, Endian endian = Endian.little]) {
-    num maxBytes = math.pow(2, 8 * byteLength) - 1;
+    final num maxBytes = math.pow(2, 8 * byteLength) - 1;
 
     if (value > maxBytes || value < 0) {
       throw RangeError('"value" argument is out of bounds');
@@ -411,7 +411,7 @@ class BufferWriter {
       throw RangeError('value out of range');
     }
 
-    ByteData bufferByteData = buffer.buffer.asByteData();
+    final ByteData bufferByteData = buffer.buffer.asByteData();
 
     // 8 bit
     if (i < 0xfd) {
@@ -456,7 +456,7 @@ class BufferWriter {
   /// Sets vector list
   void setVector(List<TypedData> vector) {
     setVarInt(vector.length);
-    for (var buf in vector) {
+    for (final buf in vector) {
       setVarSlice(buf);
     }
   }
@@ -484,7 +484,7 @@ class BufferWriter {
       case Int32List:
         return buffer.buffer.asInt32List() as T;
       default:
-        throw FormatException('Invalid Generic Type');
+        throw const FormatException('Invalid Generic Type');
     }
   }
 }
