@@ -23,6 +23,7 @@ _main.dart
 **/agent_dart-v*.tar.gz
 /platform-build/
 /target/
+/test/_dylib/
 
 # Specified to pub.dev
 /.github/

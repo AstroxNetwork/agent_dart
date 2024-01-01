@@ -13,11 +13,11 @@ final DynamicLibrary _dylib = () {
       final abi = Abi.current() == Abi.macosArm64
           ? 'aarch64-apple-darwin'
           : 'x86_64-apple-darwin';
-      return DynamicLibrary.open('macos/cli/$abi/lib$_lib.dylib');
+      return DynamicLibrary.open('test/_dylib/$abi/lib$_lib.dylib');
     } else if (Platform.isLinux) {
-      return DynamicLibrary.open('linux/lib$_lib.so');
+      return DynamicLibrary.open('test/_dylib/lib$_lib.so');
     } else if (Platform.isWindows) {
-      return DynamicLibrary.open('windows/$_lib.dll');
+      return DynamicLibrary.open('test/_dylib/$_lib.dll');
     }
     throw UnsupportedError(
       'unsupported testing operating system ${Platform.operatingSystem}',
