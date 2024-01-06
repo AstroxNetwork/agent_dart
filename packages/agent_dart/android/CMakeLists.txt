@@ -10,6 +10,10 @@ set(LibraryVersion "agent_dart-v0.0.0") # generated; do not edit
 # the plugin to fail to compile for some customers of the plugin.
 cmake_minimum_required(VERSION 3.10)
 
+# Project-level configuration.
+set(PROJECT_NAME "agent_dart") # Should match the name field in the pubspec.yaml.
+project(PROJECT_NAME)
+
 # Download the binaries if they are not already present.
 set(LibRoot "${CMAKE_CURRENT_SOURCE_DIR}/src/main/jniLibs")
 set(ArchivePath "${CMAKE_CURRENT_SOURCE_DIR}/${LibraryVersion}.tar.gz")
