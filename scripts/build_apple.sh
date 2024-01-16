@@ -25,6 +25,7 @@ done
 PLUGIN_NAME="AgentDartPlugin"
 FRAMEWORK="AgentDart.xcframework"
 LIB_NAME="libagent_dart.a"
+DYLIB_NAME="libagent_dart.dylib"
 
 mkdir ios-lipo ios-sim-lipo
 IOS_LIPO="ios-lipo/${LIB_NAME}"
@@ -40,25 +41,32 @@ xcodebuild -create-xcframework \
   -library $IOS_LIPO \
   -library $IOS_SIM_LIPO \
   -output $IOS_FRAMEWORK
-zip -r $IOS_FRAMEWORK.zip $IOS_FRAMEWORK
+
+mv $IOS_FRAMEWORK $FRAMEWORK
+zip -r $IOS_FRAMEWORK.zip $FRAMEWORK
 cp -f $IOS_FRAMEWORK.zip "../ios/Frameworks/${RELEASE_ARCHIVE_NAME}.zip"
-cp -r -f $IOS_FRAMEWORK ../ios/Frameworks
+cp -r -f $FRAMEWORK ../ios/Frameworks
+rm -rf $FRAMEWORK
 
 mkdir mac-lipo
 MAC_LIPO="mac-lipo/${LIB_NAME}"
 MAC_FRAMEWORK="macos_${FRAMEWORK}"
+
 lipo -create -output $MAC_LIPO \
   "${TARGET_DIR}/aarch64-apple-darwin/release/${LIB_NAME}" \
   "${TARGET_DIR}/x86_64-apple-darwin/release/${LIB_NAME}"
 xcodebuild -create-xcframework \
   -library $MAC_LIPO \
   -output $MAC_FRAMEWORK
-zip -r $MAC_FRAMEWORK.zip $IOS_FRAMEWORK
+
+mv $MAC_FRAMEWORK $FRAMEWORK
+zip -r $MAC_FRAMEWORK.zip $FRAMEWORK
 cp -f $MAC_FRAMEWORK.zip "../macos/Frameworks/${RELEASE_ARCHIVE_NAME}.zip"
-cp -r -f $MAC_FRAMEWORK ../macos/Frameworks
+cp -r -f $FRAMEWORK ../macos/Frameworks
+rm -rf $FRAMEWORK
 # Copy for flutter_test
-cp -f "${TARGET_DIR}/aarch64-apple-darwin/release/${LIB_NAME}" "../test/_dylib/aarch64-apple-darwin/"
-cp -f "${TARGET_DIR}/x86_64-apple-darwin/release/${LIB_NAME}" "../test/_dylib/x86_64-apple-darwin/"
+cp -f "${TARGET_DIR}/aarch64-apple-darwin/release/${DYLIB_NAME}" "../test/_dylib/aarch64-apple-darwin/"
+cp -f "${TARGET_DIR}/x86_64-apple-darwin/release/${DYLIB_NAME}" "../test/_dylib/x86_64-apple-darwin/"
 
 # Cleanup
 rm -rf ios-lipo ios-sim-lipo mac-lipo $IOS_FRAMEWORK $MAC_FRAMEWORK

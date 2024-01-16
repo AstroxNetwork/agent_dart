@@ -22,6 +22,7 @@ done
 # Create XCFramework zip
 FRAMEWORK="AgentDart.xcframework"
 LIB_NAME="libagent_dart.a"
+DYLIB_NAME="libagent_dart.dylib"
 
 mkdir mac-lipo
 MAC_LIPO="mac-lipo/${LIB_NAME}"
@@ -37,8 +38,8 @@ zip -r $FRAMEWORK.zip $FRAMEWORK
 cp -f $FRAMEWORK.zip "../macos/Frameworks/${RELEASE_ARCHIVE_NAME}.zip"
 cp -r -f $FRAMEWORK ../macos/Frameworks
 # Copy for flutter_test
-cp -f "${TARGET_DIR}/aarch64-apple-darwin/release/${LIB_NAME}" "../test/_dylib/aarch64-apple-darwin/"
-cp -f "${TARGET_DIR}/x86_64-apple-darwin/release/${LIB_NAME}" "../test/_dylib/x86_64-apple-darwin/"
+cp -f "${TARGET_DIR}/aarch64-apple-darwin/release/${DYLIB_NAME}" "../test/_dylib/aarch64-apple-darwin/"
+cp -f "${TARGET_DIR}/x86_64-apple-darwin/release/${DYLIB_NAME}" "../test/_dylib/x86_64-apple-darwin/"
 
 # Cleanup
 rm -rf mac-lipo $FRAMEWORK
