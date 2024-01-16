@@ -1,7 +1,3 @@
-#import <Flutter/Flutter.h>
-
-@interface AgentDartPlugin : NSObject<FlutterPlugin>
-@end
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
