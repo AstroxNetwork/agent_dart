@@ -42,7 +42,6 @@ win_build() {
 LINUX_LIB_NAME=libagent_dart.so
 zig_build aarch64-unknown-linux-gnu linux-arm64 $LINUX_LIB_NAME
 zig_build x86_64-unknown-linux-gnu linux-x64 $LINUX_LIB_NAME
-cp -f linux-x64/$LINUX_LIB_NAME "../linux/$LINUX_LIB_NAME"
 # Copy for flutter_test
 cp -f linux-x64/$LINUX_LIB_NAME "../test/_dylib/$LINUX_LIB_NAME"
 LINUX_ARCHIVE_NAME="linux.tar.gz"
@@ -52,7 +51,6 @@ cp -f $LINUX_ARCHIVE_NAME "../linux/${LINUX_RELEASE_ARCHIVE_NAME}.tar.gz"
 WINDOWS_LIB_NAME=agent_dart.dll
 win_build aarch64-pc-windows-msvc windows-arm64 $WINDOWS_LIB_NAME
 win_build x86_64-pc-windows-msvc windows-x64 $WINDOWS_LIB_NAME
-cp -f windows-x64/$WINDOWS_LIB_NAME "../windows/$WINDOWS_LIB_NAME"
 # Copy for flutter_test
 cp -f windows-x64/$WINDOWS_LIB_NAME "../test/_dylib/$WINDOWS_LIB_NAME"
 WIN_ARCHIVE_NAME="windows.tar.gz"
