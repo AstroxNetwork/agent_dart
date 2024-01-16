@@ -21,9 +21,4 @@ else
   fi
 fi
 
-flutter_rust_bridge_codegen \
-  --rust-input rust/agent_dart/src/api.rs \
-  --c-output rust/headers/bridge_generated.h \
-  --dart-output rust/bridge/ffi/bridge_generated.dart
-
-cp rust/bridge/ffi/bridge_generated.dart lib/bridge/ffi/ffi_bridge.dart
+flutter_rust_bridge_codegen
