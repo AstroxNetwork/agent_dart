@@ -16,7 +16,7 @@ for TARGET in \
   x86_64-apple-ios aarch64-apple-ios-sim \
   x86_64-apple-darwin aarch64-apple-darwin; do
   rustup target add $TARGET
-  cargo build -r --target=$TARGET --target-dir=$TARGET_DIR
+  cargo build -r --target=$TARGET --target-dir=$TARGET_DIR --package=${PACKAGE_NAME}
   mkdir -p ./dylib/$TARGET
   cp "${TARGET_DIR}/${TARGET}/release/lib${PACKAGE_NAME}.dylib" "./dylib/${TARGET}/lib${PACKAGE_NAME}.dylib"
 done
@@ -62,17 +62,3 @@ cp -f "${TARGET_DIR}/x86_64-apple-darwin/release/${LIB_NAME}" "../test/_dylib/x8
 
 # Cleanup
 rm -rf ios-lipo ios-sim-lipo mac-lipo $IOS_FRAMEWORK $MAC_FRAMEWORK
-
-# Copy headers
-cd -
-BRIDGE_HEADER_CONTENT=$(cat "rust/headers/bridge_generated.h")
-echo -e "#import <Flutter/Flutter.h>
-
-@interface AgentDartPlugin : NSObject<FlutterPlugin>
-@end
-$BRIDGE_HEADER_CONTENT" >"ios/Classes/$PLUGIN_NAME.h"
-echo -e "#import <FlutterMacOS/FlutterMacOS.h>
-
-@interface AgentDartPlugin : NSObject<FlutterPlugin>
-@end
-$BRIDGE_HEADER_CONTENT" >"macos/Classes/$PLUGIN_NAME.h"
