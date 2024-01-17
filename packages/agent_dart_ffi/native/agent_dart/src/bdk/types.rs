@@ -372,6 +372,7 @@ pub enum AddressType {
     P2WSH,
     ///P2TR
     P2TR,
+    P2PKHTR,
     ///
     Unknown,
 }
@@ -398,6 +399,7 @@ impl From<String> for AddressType {
             "p2wpkh" => AddressType::P2WPKH,
             "p2wsh" => AddressType::P2WSH,
             "p2tr" => AddressType::P2TR,
+            "p2pkhtr" => AddressType::P2PKHTR,
             _ => AddressType::Unknown,
         }
     }
@@ -411,6 +413,7 @@ impl AddressType {
             AddressType::P2WPKH => Ok("p2wpkh".to_string()),
             AddressType::P2WSH => Ok("p2wsh".to_string()),
             AddressType::P2TR => Ok("p2tr".to_string()),
+            AddressType::P2PKHTR => Ok("p2pkhtr".to_string()),
             AddressType::Unknown => Err(BdkError::Generic("Unknown address type".to_string())),
         }
     }
