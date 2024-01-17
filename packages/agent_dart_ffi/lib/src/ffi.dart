@@ -11,5 +11,10 @@ class AgentDartFFI {
   static final AgentDartFFI _instance = AgentDartFFI._();
 
   static AgentDartImpl get impl => _instance._impl;
-  late final AgentDartImpl _impl = createAgentDartImpl();
+
+  static void setImpl(AgentDartImpl impl) {
+    _instance._impl = impl;
+  }
+
+  late AgentDartImpl _impl = createAgentDartImpl();
 }

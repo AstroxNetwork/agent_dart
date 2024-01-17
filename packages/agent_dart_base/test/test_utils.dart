@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:agent_dart_ffi/agent_dart_ffi.dart';
 import 'package:test/test.dart';
 
 // import 'package:p4d_rust_binding/utils/utils.dart';
@@ -69,5 +70,5 @@ void matchFFI() {
       throw 'Unsupported OS: $os';
   }
   print(lib);
-  // AgentDartFFI.dylib = lib;
+  AgentDartFFI.setImpl(AgentDartImpl(DynamicLibrary.open(lib)));
 }
