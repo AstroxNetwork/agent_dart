@@ -234,7 +234,7 @@ Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
 }) async {
   final mnemonicObj = await Mnemonic.fromString(mnemonic);
   final descriptorSecretKey = await DescriptorSecretKey.create(
-    network: Network.Bitcoin,
+    network: network,
     mnemonic: mnemonicObj,
   );
   final descriptors = <KeychainKind, BTCDescriptor>{};
