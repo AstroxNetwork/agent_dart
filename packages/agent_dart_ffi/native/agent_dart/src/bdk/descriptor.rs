@@ -10,7 +10,7 @@ use bdk_lite::keys::{
 // use bdk::miniscript::DefiniteDescriptorKey;
 use crate::api::AddressType;
 use crate::bdk::types::AddressInfo;
-use bdk_lite::miniscript::{Error};
+use bdk_lite::miniscript::Error;
 use bdk_lite::template::{
     Bip44, Bip44Public, Bip44TR, Bip44TRPublic, Bip49, Bip49Public, Bip84, Bip84Public, Bip86,
     Bip86Public, DescriptorTemplate, P2Pkh, P2Wpkh, P2Wpkh_P2Sh, P2TR,
@@ -57,6 +57,10 @@ impl BdkDescriptor {
             AddressType::P2TR => P2TR(prvkey)
                 .build(network)
                 .expect("Cannot build P2TR template"),
+            AddressType::P2PKHTR => P2TR(prvkey)
+                .build(network)
+                .expect("Cannot build P2PKHTR template"),
+
             AddressType::Unknown => panic!("{}", "Unknown Address".to_string()),
         };
 
@@ -130,6 +134,7 @@ impl BdkDescriptor {
                 let (extended_descriptor, key_map, _) = Bip44TR(derivable_key, keychain_kind)
                     .build(network)
                     .unwrap();
+
                 Self {
                     extended_descriptor,
                     key_map,

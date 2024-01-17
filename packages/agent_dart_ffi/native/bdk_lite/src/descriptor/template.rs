@@ -513,13 +513,14 @@ macro_rules! expand_make_bipxx {
             ) -> Result<impl IntoDescriptorKey<$ctx>, DescriptorError> {
                 let mut derivation_path = Vec::with_capacity(4);
                 derivation_path.push(bip32::ChildNumber::from_hardened_idx(bip)?);
-
                 match network {
                     Network::Bitcoin => {
                         derivation_path.push(bip32::ChildNumber::from_hardened_idx(0)?);
                     }
                     _ => {
-                        derivation_path.push(bip32::ChildNumber::from_hardened_idx(1)?);
+                        // if we have derived path first, here should be same as mainnet
+                        // TODO: added new method to override this
+                        derivation_path.push(bip32::ChildNumber::from_hardened_idx(0)?);
                     }
                 }
                 derivation_path.push(bip32::ChildNumber::from_hardened_idx(0)?);
@@ -553,7 +554,9 @@ macro_rules! expand_make_bipxx {
                     bip32::ChildNumber::from_hardened_idx(bip)?,
                     match network {
                         Network::Bitcoin => bip32::ChildNumber::from_hardened_idx(0)?,
-                        _ => bip32::ChildNumber::from_hardened_idx(1)?,
+                        // if we have derived path first, here should be same as mainnet
+                        // TODO: added new method to override this
+                        _ => bip32::ChildNumber::from_hardened_idx(0)?,
                     },
                     bip32::ChildNumber::from_hardened_idx(0)?,
                 ]);
