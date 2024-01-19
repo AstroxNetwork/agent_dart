@@ -333,25 +333,25 @@ class BitcoinWallet {
     required this.wallet,
     required this.addressType,
     required this.descriptor,
+    this.network = Network.Bitcoin,
     this.ordService,
-  });
+    this.blockStreamApi,
+    WalletType walletType = WalletType.HD,
+  }) : _walletType = walletType;
 
   final Wallet wallet;
-
   final AddressType addressType;
   final BTCDescriptor descriptor;
-  late AddressInfo _selectedSigner;
 
   // late Blockchain blockchain;
-
-  Network network = Network.Bitcoin;
-
+  Network network;
+  WalletType _walletType;
   OrdService? ordService;
   BlockStreamApi? blockStreamApi;
 
+  late AddressInfo _selectedSigner;
   String? _publicKey;
   int? _index;
-  WalletType _walletType = WalletType.HD;
 
   String? getPublicKey() => _publicKey;
 
@@ -414,9 +414,11 @@ class BitcoinWallet {
     Network network = Network.Bitcoin,
     AddressType addressType = AddressType.P2TR,
   }) async {
-    // final wallet = await BitcoinWallet.fromPhrase();
-    final descriptors = await getDescriptors(phrase,
-        network: network, addressType: addressType);
+    final descriptors = await getDescriptors(
+      phrase,
+      network: network,
+      addressType: addressType,
+    );
     final descriptor = descriptors[KeychainKind.External]!;
     final res = await Wallet.create(
       descriptor: descriptor.descriptor,
@@ -428,9 +430,9 @@ class BitcoinWallet {
       wallet: res,
       addressType: descriptor.addressType,
       descriptor: descriptor,
+      network: network,
+      walletType: WalletType.HD,
     );
-    wallet.setNetwork(network);
-    wallet.setWalletType(WalletType.HD);
     // await wallet.blockchainInit(network: network);
     return wallet;
   }
@@ -439,20 +441,16 @@ class BitcoinWallet {
     String wifOrHex, {
     Network network = Network.Bitcoin,
     AddressType addressType = AddressType.P2TR,
+    WalletType walletType = WalletType.HD,
   }) async {
-    // final wallet = await BitcoinWallet.fromPhrase();
-    WIF wif;
-    var mayBeWif;
+    final WIF wif;
+    final String mayBeWif;
     if (isHex(wifOrHex)) {
-      wif = WIF.fromHex(wifOrHex.toU8a());
+      wif = WIF.fromHex(wifOrHex.toU8a(), network: network);
       mayBeWif = wifEncoder.convert(wif);
     } else {
-      try {
-        wif = wifDecoder.convert(wifOrHex);
-        mayBeWif = wifEncoder.convert(wif);
-      } catch (e) {
-        rethrow;
-      }
+      wif = wifDecoder.convert(wifOrHex);
+      mayBeWif = wifEncoder.convert(wif);
     }
 
     final descriptor = await importSingleWif(
@@ -470,9 +468,9 @@ class BitcoinWallet {
       wallet: res,
       addressType: descriptor.addressType,
       descriptor: descriptor,
+      network: network,
+      walletType: WalletType.Single,
     );
-    wallet.setNetwork(network);
-    wallet.setWalletType(WalletType.Single);
     // await wallet.blockchainInit(network: network);
     return wallet;
   }
