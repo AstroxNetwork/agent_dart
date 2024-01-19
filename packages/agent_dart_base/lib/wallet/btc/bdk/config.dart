@@ -1,4 +1,16 @@
+import 'package:agent_dart_ffi/agent_dart_ffi.dart';
+
 import './bdk_exception.dart';
+
+const defaultSignOptions = SignOptions(
+  trustWitnessUtxo: true,
+  allowAllSighashes: true,
+  removePartialSigs: false,
+  tryFinalize: true,
+  allowGrinding: true,
+  signWithTapInternalKey: true,
+  finalizeMineOnly: true,
+);
 
 BdkException configException(String e) {
   if (e.contains('Generic')) {
