@@ -1831,8 +1831,13 @@ class Wallet {
   Future<String> signToTxHex({
     required TxBuilderResult tbr,
     SignOptions? signOptions,
+    void Function(Object?)? logPrint = print,
   }) async {
-    final tx = await signToTx(tbr: tbr, signOptions: signOptions);
+    final tx = await signToTx(
+      tbr: tbr,
+      signOptions: signOptions,
+      logPrint: logPrint,
+    );
     return Uint8List.fromList(await tx.serialize()).toHex();
   }
 
