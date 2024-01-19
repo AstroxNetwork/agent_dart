@@ -1657,7 +1657,7 @@ class BitcoinWallet {
     try {
       const options = SignOptions(
         trustWitnessUtxo: true,
-        allowAllSighashes: false,
+        allowAllSighashes: true,
         removePartialSigs: false,
         tryFinalize: true,
         allowGrinding: true,
