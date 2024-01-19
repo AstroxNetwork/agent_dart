@@ -1906,22 +1906,19 @@ class Wallet {
     return sha256Hash(buf.buffer);
   }
 
-  Future<String> signPsbt(String psbtHex) async {
-    const options = SignOptions(
-      trustWitnessUtxo: true,
-      allowAllSighashes: false,
-      removePartialSigs: false,
-      tryFinalize: true,
-      allowGrinding: true,
-      signWithTapInternalKey: true,
-      finalizeMineOnly: true,
-    );
-    final psbt = PartiallySignedTransaction(
-      psbtBase64: isHex(psbtHex) ? base64Encode(psbtHex.toU8a()) : psbtHex,
-    );
-
-    final res = await sign(psbt: psbt, signOptions: options);
-    return base64Decode(res.psbtBase64).toHex();
+  Future<String> signPsbt(
+    String psbtHex, {
+    SignOptions options = defaultSignOptions,
+  }) async {
+    try {
+      final psbt = PartiallySignedTransaction(
+        psbtBase64: isHex(psbtHex) ? base64Encode(psbtHex.toU8a()) : psbtHex,
+      );
+      final res = await sign(psbt: psbt, signOptions: options);
+      return base64Decode(res.psbtBase64).toHex();
+    } on FfiException catch (e) {
+      throw e.message;
+    }
   }
 
   Future<String> psbtToTxHex(String psbtHex) async {

@@ -9,6 +9,8 @@ import 'package:agent_dart_base/wallet/btc/bdk/wif.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
+import 'btc/bdk/config.dart';
+
 typedef PsbtSignature = Uint8List;
 
 enum BitcoinNetwork {
@@ -1653,26 +1655,11 @@ class BitcoinWallet {
     }
   }
 
-  Future<String> signPsbt(String psbtHex) async {
-    try {
-      const options = SignOptions(
-        trustWitnessUtxo: true,
-        allowAllSighashes: true,
-        removePartialSigs: false,
-        tryFinalize: true,
-        allowGrinding: true,
-        signWithTapInternalKey: true,
-        finalizeMineOnly: true,
-      );
-      final psbt = PartiallySignedTransaction(
-        psbtBase64: isHex(psbtHex) ? base64Encode(psbtHex.toU8a()) : psbtHex,
-      );
-
-      final res = await wallet.sign(psbt: psbt, signOptions: options);
-      return base64Decode(res.psbtBase64).toHex();
-    } on FfiException catch (e) {
-      throw e.message;
-    }
+  Future<String> signPsbt(
+    String psbtHex, {
+    SignOptions options = defaultSignOptions,
+  }) {
+    return wallet.signPsbt(psbtHex, options: options);
   }
 
   Future<String> pushPsbt(String psbtHex) async {
