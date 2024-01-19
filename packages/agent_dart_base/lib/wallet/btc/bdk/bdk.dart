@@ -1544,7 +1544,9 @@ class TxBuilderResult {
     );
   }
 
-  Future<void> dumpTx() async {
+  Future<void> dumpTx({
+    void Function(Object?) logPrint = print,
+  }) async {
     final tx = await psbt.extractTx();
     final size = Uint8List.fromList(await tx.serialize()).length;
     final feePaid = await psbt.feeAmount();
@@ -1583,7 +1585,7 @@ class TxBuilderResult {
       (previousValue, element) => previousValue + element.value,
     );
 
-    print('''
+    logPrint('''
 ==============================================================================================
 
 Transaction Detail
