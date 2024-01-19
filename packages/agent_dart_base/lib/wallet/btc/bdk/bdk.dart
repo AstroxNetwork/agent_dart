@@ -1545,7 +1545,7 @@ class TxBuilderResult {
   }
 
   Future<void> dumpTx({
-    void Function(Object?) logPrint = print,
+    void Function(Object?)? logPrint = print,
   }) async {
     final tx = await psbt.extractTx();
     final size = Uint8List.fromList(await tx.serialize()).length;
@@ -1585,7 +1585,7 @@ class TxBuilderResult {
       (previousValue, element) => previousValue + element.value,
     );
 
-    logPrint('''
+    logPrint?.call('''
 ==============================================================================================
 
 Transaction Detail
@@ -1799,8 +1799,9 @@ class Wallet {
   Future<Transaction> signToTx({
     required TxBuilderResult tbr,
     SignOptions? signOptions,
+    void Function(Object?)? logPrint = print,
   }) async {
-    await tbr.dumpTx();
+    await tbr.dumpTx(logPrint: logPrint);
     final res = await sign(psbt: tbr.psbt, signOptions: signOptions);
     final sbt = PartiallySignedTransaction(psbtBase64: res.psbtBase64);
     final signed = TxBuilderResult(
@@ -1814,8 +1815,9 @@ class Wallet {
   Future<TxBuilderResult> signTBR({
     required TxBuilderResult tbr,
     SignOptions? signOptions,
+    void Function(Object?)? logPrint = print,
   }) async {
-    await tbr.dumpTx();
+    await tbr.dumpTx(logPrint: logPrint);
     final res = await sign(psbt: tbr.psbt, signOptions: signOptions);
     final sbt = PartiallySignedTransaction(psbtBase64: res.psbtBase64);
     final signed = TxBuilderResult(
