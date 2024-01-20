@@ -918,7 +918,6 @@ class BitcoinWallet {
 
     // build finish
     final res = await builder.finish(wallet);
-    res.addInputs(tempAddInputs);
     return res;
   }
 
@@ -1066,7 +1065,6 @@ class BitcoinWallet {
 
     // build finish
     final res = await builder.finish(wallet);
-    res.addInputs(tempAddInputs);
     return res;
   }
 
@@ -1255,8 +1253,6 @@ class BitcoinWallet {
 
     // finish the build and get ready to dump Data
     final res = await builder.finish(wallet);
-    res.addInputs(tempInputs);
-
     return res;
   }
 
@@ -1445,8 +1441,6 @@ class BitcoinWallet {
 
     // finish the build and get ready to dump Data
     final res = await builder.finish(wallet);
-    res.addInputs(tempInputs);
-
     return res;
   }
 
@@ -1620,8 +1614,6 @@ class BitcoinWallet {
 
     // finish the build and get ready to dump Data
     final res = await builder.finish(wallet);
-    res.addInputs(tempInputs);
-
     return res;
   }
 

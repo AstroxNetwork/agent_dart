@@ -1430,6 +1430,8 @@ class TxBuilder {
         psbt: psbt,
         txDetails: res.field1,
         builder: this,
+        txInputs: _txInputs,
+        txOutputs: _txOutputs,
       );
     } on FfiException catch (e) {
       throw configException(e.message);
@@ -1506,7 +1508,10 @@ class TxBuilderResult {
     this.builder,
     this.bumpFeeBuilder,
     this.signed,
-  });
+    List<OutPointExt>? txInputs,
+    List<OutPointExt>? txOutputs,
+  })  : _txInputs = List.from(txInputs ?? []),
+        _txOutputs = List.from(txOutputs ?? []);
 
   final PartiallySignedTransaction psbt;
 
@@ -1516,29 +1521,20 @@ class TxBuilderResult {
 
   final TxBuilder? builder;
   final BumpFeeTxBuilder? bumpFeeBuilder;
+  final List<OutPointExt> _txInputs;
+  final List<OutPointExt> _txOutputs;
 
   bool? signed;
-  List<OutPointExt> txInputs = <OutPointExt>[];
-  List<OutPointExt> txOutputs = <OutPointExt>[];
-
-  void addInputs(List<OutPointExt> ins) {
-    for (final i in ins) {
-      if (!txInputs.contains(i)) {
-        txInputs.add(i);
-      }
-    }
-  }
-
-  void addOutputs(List<OutPointExt> outs) {
-    for (final i in outs) {
-      if (!txOutputs.contains(i)) {
-        txOutputs.add(i);
-      }
-    }
-  }
 
   int getTotalInput() {
-    return txInputs.fold(
+    return _txInputs.fold(
+      0,
+      (pre, cur) => pre + cur.value,
+    );
+  }
+
+  int getTotalOutput() {
+    return _txOutputs.fold(
       0,
       (pre, cur) => pre + cur.value,
     );
@@ -1556,8 +1552,8 @@ class TxBuilderResult {
 
     final inputStrings = <String>[];
     var totalInput = 0;
-    for (var i = 0; i < txInputs.length; i += 1) {
-      final input = txInputs[i];
+    for (int i = 0; i < _txInputs.length; i += 1) {
+      final input = _txInputs[i];
       final found = inputs.firstWhereOrNull((e) {
         // print(e.previousOutput.txid);
         return e.previousOutput.txid == input.txid;
@@ -1573,7 +1569,7 @@ class TxBuilderResult {
     }
 
     final outputString = <String>[];
-    for (var i = 0; i < outputs.length; i += 1) {
+    for (int i = 0; i < outputs.length; i += 1) {
       final output = outputs[i];
       outputString.add('''
   #${i} ${output.scriptPubkey.internal.toHex()} ${output.value}
@@ -1587,41 +1583,27 @@ class TxBuilderResult {
 
     logPrint?.call('''
 ==============================================================================================
-
 Transaction Detail
-
   txid:     ${await tx.txid()}
   Size:     ${size}
   Fee Paid: ${feePaid}
   Fee Rate: ${feeRate} sat/B
   Detail:   ${inputs.length} Inputs, ${outputs.length} Outputs
-  
 ----------------------------------------------------------------------------------------------
-
 Inputs in Sats
-
 ${inputStrings.join('\n')}
   total: ${totalInput}          
-
 ----------------------------------------------------------------------------------------------
-
 Outputs in Sats
-
 ${outputString.join("\n")}
   total:  ${totalOutput}
-
 ----------------------------------------------------------------------------------------------
-
 Summary in Sats
-
   Inputs:   + ${totalInput}
   Outputs:  - ${totalOutput}
   fee:      - ${feePaid!}
-  
   Remain:   ${totalOutput - feePaid}
-
 ==============================================================================================
-
     ''');
   }
 }
