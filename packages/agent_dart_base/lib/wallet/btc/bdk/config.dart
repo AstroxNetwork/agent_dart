@@ -12,6 +12,30 @@ const defaultSignOptions = SignOptions(
   finalizeMineOnly: true,
 );
 
+extension SignOptionsExtension on SignOptions {
+  SignOptions copyWith({
+    bool? trustWitnessUtxo,
+    int? assumeHeight,
+    bool? allowAllSighashes,
+    bool? removePartialSigs,
+    bool? tryFinalize,
+    bool? finalizeMineOnly,
+    bool? signWithTapInternalKey,
+    bool? allowGrinding,
+  }) {
+    return SignOptions(
+      trustWitnessUtxo: trustWitnessUtxo ?? this.trustWitnessUtxo,
+      assumeHeight: assumeHeight ?? this.assumeHeight,
+      allowAllSighashes: allowAllSighashes ?? this.allowAllSighashes,
+      removePartialSigs: removePartialSigs ?? this.removePartialSigs,
+      tryFinalize: tryFinalize ?? this.tryFinalize,
+      finalizeMineOnly: finalizeMineOnly ?? this.finalizeMineOnly,
+      signWithTapInternalKey: signWithTapInternalKey ?? this.signWithTapInternalKey,
+      allowGrinding: allowGrinding ?? this.allowGrinding,
+    );
+  }
+}
+
 BdkException configException(String e) {
   if (e.contains('Generic')) {
     final message = e.split('Generic');
