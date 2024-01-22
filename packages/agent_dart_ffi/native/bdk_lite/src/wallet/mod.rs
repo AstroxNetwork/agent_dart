@@ -1400,7 +1400,7 @@ where
         if sign_options.try_finalize {
             self.finalize_psbt(psbt, sign_options)
         } else {
-            Ok(false)
+            Ok(true)
         }
     }
 
