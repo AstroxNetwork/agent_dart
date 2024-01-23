@@ -1911,12 +1911,13 @@ class Wallet {
     return Uint8List.fromList(await tx.serialize()).toHex();
   }
 
-  Future<List<String>> signPsbts(List<String> psbtHexs) async {
-    final signedPsbtHexs = <String>[];
-    for (int i = 0; i < psbtHexs.length; i++) {
-      signedPsbtHexs.add(await signPsbt(psbtHexs[i]));
-    }
-    return signedPsbtHexs;
+  Future<List<String>> signPsbts(
+    List<String> psbtHexs, {
+    SignOptions options = defaultSignOptions,
+  }) {
+    return Future.wait(
+      psbtHexs.map((hex) => signPsbt(hex, options: options)),
+    );
   }
 
   Future<PSBTDetail> dumpPsbt(

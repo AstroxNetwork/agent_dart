@@ -1668,13 +1668,14 @@ class BitcoinWallet {
     }
   }
 
-  Future<List<String>> signPsbts(List<String> psbtHexs) async {
+  Future<List<String>> signPsbts(
+    List<String> psbtHexs, {
+    SignOptions options = defaultSignOptions,
+  }) async {
     try {
-      final signedPsbtHexs = <String>[];
-      for (var i = 0; i < psbtHexs.length; i++) {
-        signedPsbtHexs.add(await signPsbt(psbtHexs[i]));
-      }
-      return signedPsbtHexs;
+      return await Future.wait(
+        psbtHexs.map((hex) => signPsbt(hex, options: options)),
+      );
     } on FfiException catch (e) {
       throw e.message;
     }
