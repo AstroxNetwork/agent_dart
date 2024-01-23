@@ -1780,6 +1780,24 @@ class Wallet {
     return PartiallySignedTransaction(psbtBase64: sbt);
   }
 
+  Future<PartiallySignedTransaction> signWithHex({
+    required String psbtHex,
+    SignOptions? signOptions,
+  }) async {
+    final psbt = PartiallySignedTransaction(
+      psbtBase64: isHex(psbtHex) ? base64Encode(psbtHex.toU8a()) : psbtHex,
+    );
+    final sbt = await AgentDartFFI.impl.signStaticMethodApi(
+      signOptions: signOptions,
+      psbtStr: psbt.psbtBase64,
+      wallet: _wallet,
+    );
+    if (sbt == null) {
+      throw const BdkException.unExpected('Unable to sign transaction');
+    }
+    return PartiallySignedTransaction(psbtBase64: sbt);
+  }
+
   Future<Transaction> signToTx({
     required TxBuilderResult tbr,
     SignOptions? signOptions,
