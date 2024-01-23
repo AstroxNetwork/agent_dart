@@ -25,8 +25,8 @@ class Address {
           .createAddressStaticMethodApi(address: address);
       final addressType = await getAddressType(res);
       return Address._(res, addressType);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -41,8 +41,8 @@ class Address {
           .addressFromScriptStaticMethodApi(script: script, network: network);
       final addressType = await getAddressType(res);
       return Address._(res, addressType);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -51,8 +51,8 @@ class Address {
       final res = await AgentDartFFI.impl
           .getAddressTypeStaticMethodApi(address: address);
       return AddressType.fromRaw(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -63,8 +63,8 @@ class Address {
       final res =
           await AgentDartFFI.impl.payloadStaticMethodApi(address: address);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -73,8 +73,8 @@ class Address {
       final res = await AgentDartFFI.impl
           .addressNetworkStaticMethodApi(address: address);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -84,8 +84,8 @@ class Address {
       final res = await AgentDartFFI.impl
           .addressToScriptPubkeyStaticMethodApi(address: address);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -107,8 +107,8 @@ class Blockchain {
       final res = await AgentDartFFI.impl
           .createBlockchainStaticMethodApi(config: config);
       return Blockchain._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -120,8 +120,8 @@ class Blockchain {
         blockchain: _blockchain,
       );
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -131,8 +131,8 @@ class Blockchain {
       final res = await AgentDartFFI.impl
           .getHeightStaticMethodApi(blockchain: _blockchain);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -142,8 +142,8 @@ class Blockchain {
       final res = await AgentDartFFI.impl
           .estimateFeeStaticMethodApi(blockchain: _blockchain, target: target);
       return FeeRate._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -153,8 +153,8 @@ class Blockchain {
       final txid = await AgentDartFFI.impl
           .broadcastStaticMethodApi(blockchain: _blockchain, tx: tx._tx!);
       return txid;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -164,8 +164,8 @@ class Blockchain {
       final txTring = await AgentDartFFI.impl
           .getTxStaticMethodApi(blockchain: _blockchain, tx: txId);
       return txTring;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 }
@@ -232,8 +232,8 @@ class BumpFeeTxBuilder {
         txDetails: res.field1,
         bumpFeeBuilder: this,
       );
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 }
@@ -250,8 +250,8 @@ class DerivationPath {
       final res = await AgentDartFFI.impl
           .createDerivationPathStaticMethodApi(path: path);
       return DerivationPath._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -279,8 +279,8 @@ class Descriptor {
         network: network,
       );
       return Descriptor._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -297,8 +297,8 @@ class Descriptor {
         network: network,
       );
       return Descriptor._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -321,8 +321,8 @@ class Descriptor {
       final r = Descriptor._(res);
       r.descriptorSecretKey = secretKey;
       return r;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -345,8 +345,8 @@ class Descriptor {
         fingerprint: fingerPrint,
       );
       return Descriptor._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -366,8 +366,8 @@ class Descriptor {
       final r = Descriptor._(res);
       r.descriptorSecretKey = secretKey;
       return r;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -390,8 +390,8 @@ class Descriptor {
         fingerprint: fingerPrint,
       );
       return Descriptor._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -414,8 +414,8 @@ class Descriptor {
       final r = Descriptor._(res);
       r.descriptorSecretKey = secretKey;
       return r;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -438,8 +438,8 @@ class Descriptor {
         fingerprint: fingerPrint,
       );
       return Descriptor._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -462,8 +462,8 @@ class Descriptor {
       final r = Descriptor._(res);
       r.descriptorSecretKey = secretKey;
       return r;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -486,8 +486,8 @@ class Descriptor {
         fingerprint: fingerPrint,
       );
       return Descriptor._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -510,8 +510,8 @@ class Descriptor {
       final r = Descriptor._(res);
       r.descriptorSecretKey = secretKey;
       return r;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -534,8 +534,8 @@ class Descriptor {
         fingerprint: fingerPrint,
       );
       return Descriptor._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -545,8 +545,8 @@ class Descriptor {
       final res = await AgentDartFFI.impl
           .asStringPrivateStaticMethodApi(descriptor: _descriptorInstance!);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -556,8 +556,8 @@ class Descriptor {
       final res = await AgentDartFFI.impl
           .asStringStaticMethodApi(descriptor: _descriptorInstance!);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -569,8 +569,8 @@ class Descriptor {
         network: network,
       );
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 }
@@ -593,8 +593,8 @@ class DescriptorPublicKey {
         xpub: _descriptorPublicKey!,
       );
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -607,8 +607,8 @@ class DescriptorPublicKey {
         derive: true,
       );
       return DescriptorPublicKey._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -621,8 +621,8 @@ class DescriptorPublicKey {
         derive: false,
       );
       return DescriptorPublicKey._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -632,8 +632,8 @@ class DescriptorPublicKey {
       final res = await AgentDartFFI.impl
           .descriptorPublicFromStringStaticMethodApi(publicKey: publicKey);
       return DescriptorPublicKey._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -659,8 +659,8 @@ class DescriptorSecretKey {
       final xpub = await AgentDartFFI.impl
           .asPublicStaticMethodApi(secret: _descriptorSecretKey);
       return DescriptorPublicKey._(xpub);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -682,16 +682,17 @@ class DescriptorSecretKey {
         password: password,
       );
       return DescriptorSecretKey._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
-  // static Future<DescriptorSecretKey> createDerivedKey(
-  //     {required Network network,
-  //     required String path,
-  //     required Mnemonic mnemonic,
-  //     String? password}) async {
+  // static Future<DescriptorSecretKey> createDerivedKey({
+  //   required Network network,
+  //   required String path,
+  //   required Mnemonic mnemonic,
+  //   String? password,
+  // }) async {
   //   try {
   //     final res = await AgentDartFFI.impl
   //         .createDerivedDescriptorSecretStaticMethodApi(
@@ -701,16 +702,17 @@ class DescriptorSecretKey {
   //             password: password);
   //     print(res);
   //     return DescriptorSecretKey._(res);
-  //   } on FfiException catch (e) {
-  //     throw configException(e.message);
+  //   } on FfiException catch (e, s) {
+  //     Error.throwWithStackTrace(configException(e.message), s);
   //   }
   // }
 
   /// Derived the `XPrv` using the derivation path
   Future<DescriptorSecretKey> deriveIndex(int index) async {
     try {
-      derivationPath =
-          await DerivationPath.create(path: '${derivedPathPrefix!}/$index');
+      derivationPath = await DerivationPath.create(
+        path: '${derivedPathPrefix!}/$index',
+      );
       final res = await AgentDartFFI.impl.deriveDescriptorSecretStaticMethodApi(
         secret: _descriptorSecretKey,
         path: derivationPath!.path.toString(),
@@ -718,8 +720,8 @@ class DescriptorSecretKey {
       final r = DescriptorSecretKey._(res);
       r.derivationPath = derivationPath;
       return r;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -733,8 +735,8 @@ class DescriptorSecretKey {
       final r = DescriptorSecretKey._(res);
       r.derivationPath = derivationPath;
       return r;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -748,8 +750,8 @@ class DescriptorSecretKey {
       final r = DescriptorSecretKey._(res);
       r.derivationPath = derivationPath;
       return r;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -759,8 +761,8 @@ class DescriptorSecretKey {
       final res = await AgentDartFFI.impl
           .descriptorSecretFromStringStaticMethodApi(secret: secretKey);
       return DescriptorSecretKey._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -770,8 +772,8 @@ class DescriptorSecretKey {
       final res = await AgentDartFFI.impl
           .asSecretBytesStaticMethodApi(secret: _descriptorSecretKey);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -781,8 +783,8 @@ class DescriptorSecretKey {
       final res = await AgentDartFFI.impl
           .getPubFromSecretBytesStaticMethodApi(bytes: bytes);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -817,8 +819,8 @@ class Mnemonic {
       final res = await AgentDartFFI.impl
           .generateSeedFromWordCountStaticMethodApi(wordCount: wordCount);
       return Mnemonic._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -836,8 +838,8 @@ class Mnemonic {
       final res = await AgentDartFFI.impl
           .generateSeedFromEntropyStaticMethodApi(entropy: entropy);
       return Mnemonic._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -849,8 +851,8 @@ class Mnemonic {
       final res = await AgentDartFFI.impl
           .generateSeedFromStringStaticMethodApi(mnemonic: mnemonic);
       return Mnemonic._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -878,8 +880,8 @@ class PartiallySignedTransaction {
         other: other.psbtBase64,
       );
       return PartiallySignedTransaction(psbtBase64: res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -889,8 +891,8 @@ class PartiallySignedTransaction {
       final res =
           await AgentDartFFI.impl.extractTxStaticMethodApi(psbtStr: psbtBase64);
       return Transaction._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -900,8 +902,8 @@ class PartiallySignedTransaction {
       final res = await AgentDartFFI.impl
           .psbtFeeAmountStaticMethodApi(psbtStr: psbtBase64);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -912,8 +914,8 @@ class PartiallySignedTransaction {
           .psbtFeeRateStaticMethodApi(psbtStr: psbtBase64);
       if (res == null) return null;
       return FeeRate._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -923,8 +925,8 @@ class PartiallySignedTransaction {
       final res = await AgentDartFFI.impl
           .serializePsbtStaticMethodApi(psbtStr: psbtBase64);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -933,8 +935,8 @@ class PartiallySignedTransaction {
       final res =
           await AgentDartFFI.impl.getInputsStaticMethodApi(psbtStr: psbtBase64);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -943,8 +945,8 @@ class PartiallySignedTransaction {
       final res = await AgentDartFFI.impl
           .jsonSerializeStaticMethodApi(psbtStr: psbtBase64);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -959,8 +961,8 @@ class PartiallySignedTransaction {
       final res =
           await AgentDartFFI.impl.psbtTxidStaticMethodApi(psbtStr: psbtBase64);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 }
@@ -981,8 +983,8 @@ class Script extends bridge.Script {
       final res = await AgentDartFFI.impl
           .createScriptStaticMethodApi(rawOutputScript: rawOutputScript);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 }
@@ -1002,8 +1004,8 @@ class Transaction {
       final res =
           await AgentDartFFI.impl.createTransactionStaticMethodApi(tx: tx);
       return Transaction._(res);
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1012,8 +1014,8 @@ class Transaction {
     try {
       final res = await AgentDartFFI.impl.serializeTxStaticMethodApi(tx: _tx!);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1021,8 +1023,8 @@ class Transaction {
     try {
       final res = await AgentDartFFI.impl.txTxidStaticMethodApi(tx: _tx!);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1030,8 +1032,8 @@ class Transaction {
     try {
       final res = await AgentDartFFI.impl.weightStaticMethodApi(tx: _tx!);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1039,8 +1041,8 @@ class Transaction {
     try {
       final res = await AgentDartFFI.impl.sizeStaticMethodApi(tx: _tx!);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1048,8 +1050,8 @@ class Transaction {
     try {
       final res = await AgentDartFFI.impl.vsizeStaticMethodApi(tx: _tx!);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1057,8 +1059,8 @@ class Transaction {
     try {
       final res = await AgentDartFFI.impl.isCoinBaseStaticMethodApi(tx: _tx!);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1067,8 +1069,8 @@ class Transaction {
       final res =
           await AgentDartFFI.impl.isExplicitlyRbfStaticMethodApi(tx: _tx!);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1077,8 +1079,8 @@ class Transaction {
       final res =
           await AgentDartFFI.impl.isLockTimeEnabledStaticMethodApi(tx: _tx!);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1086,8 +1088,8 @@ class Transaction {
     try {
       final res = await AgentDartFFI.impl.versionStaticMethodApi(tx: _tx!);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1095,8 +1097,8 @@ class Transaction {
     try {
       final res = await AgentDartFFI.impl.lockTimeStaticMethodApi(tx: _tx!);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1104,8 +1106,8 @@ class Transaction {
     try {
       final res = await AgentDartFFI.impl.inputStaticMethodApi(tx: _tx!);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1113,8 +1115,8 @@ class Transaction {
     try {
       final res = await AgentDartFFI.impl.outputStaticMethodApi(tx: _tx!);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1433,8 +1435,8 @@ class TxBuilder {
         txInputs: _txInputs,
         txOutputs: _txOutputs,
       );
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 }
@@ -1652,8 +1654,8 @@ class Wallet {
         changeDescriptor: changeDescriptor,
         network: network,
       );
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1672,8 +1674,8 @@ class Wallet {
         addressIndex: addressIndex,
       );
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1693,8 +1695,8 @@ class Wallet {
         addressIndex: addressIndex,
       );
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1706,8 +1708,8 @@ class Wallet {
       final res =
           await AgentDartFFI.impl.getBalanceStaticMethodApi(wallet: _wallet);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1717,8 +1719,8 @@ class Wallet {
   //     final res =
   //         await AgentDartFFI.impl.walletNetworkStaticMethodApi(wallet: _wallet);
   //     return res;
-  //   } on FfiException catch (e) {
-  //     throw configException(e.message);
+  //   } on FfiException catch (e, s) {
+  //     Error.throwWithStackTrace(configException(e.message), s);
   //   }
   // }
 
@@ -1730,8 +1732,8 @@ class Wallet {
       final res = await AgentDartFFI.impl
           .listUnspentOutputsStaticMethodApi(wallet: _wallet);
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1742,8 +1744,8 @@ class Wallet {
         wallet: _wallet,
         blockchain: blockchain._blockchain,
       );
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1755,8 +1757,8 @@ class Wallet {
         includeRaw: includeRaw,
       );
       return res;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
@@ -1898,12 +1900,12 @@ class Wallet {
       );
       final res = await sign(psbt: psbt, signOptions: options);
       return base64Decode(res.psbtBase64).toHex();
-    } on FfiException catch (e) {
-      throw e.message;
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
-  Future<String> psbtToTxHex(String psbtHex) async {
+  static Future<String> psbtToTxHex(String psbtHex) async {
     final psbt = PartiallySignedTransaction(
       psbtBase64: base64Encode(isHex(psbtHex) ? psbtHex.toU8a() : psbtHex),
     );
@@ -2007,8 +2009,8 @@ class Wallet {
       final ins = await AgentDartFFI.impl
           .cacheAddressStaticMethodApi(wallet: _wallet, cacheSize: cacheSize);
       return ins;
-    } on FfiException catch (e) {
-      throw configException(e.message);
+    } on FfiException catch (e, s) {
+      Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 }
