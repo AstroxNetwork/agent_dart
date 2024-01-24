@@ -1452,7 +1452,7 @@ class InscriptionValue {
 }
 
 class OutPointExt implements OutPoint {
-  OutPointExt({
+  const OutPointExt({
     required this.txid,
     required this.vout,
     required this.value,
