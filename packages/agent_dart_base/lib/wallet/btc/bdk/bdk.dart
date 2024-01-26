@@ -1442,7 +1442,7 @@ class TxBuilder {
 }
 
 class InscriptionValue {
-  InscriptionValue({
+  const InscriptionValue({
     required this.inscriptionId,
     required this.outputValue,
   });
@@ -1451,42 +1451,31 @@ class InscriptionValue {
   final int outputValue;
 }
 
-class OutPointExt implements OutPoint {
+class OutPointExt extends OutPoint {
   const OutPointExt({
-    required this.txid,
-    required this.vout,
+    required super.txid,
+    required super.vout,
     required this.value,
     required this.scriptPk,
   });
 
-  /// The referenced transaction's txid.
-  final String txid;
-
-  /// The index of the referenced output in its transaction's vout.
-  final int vout;
   final int value;
   final String scriptPk;
+
+  String get uniqueKey => '$txid:$vout';
 }
 
-class OutPointWithInscription implements OutPointExt {
-  OutPointWithInscription({
+class OutPointWithInscription extends OutPointExt {
+  const OutPointWithInscription({
     this.inscriptions,
-    required this.txid,
-    required this.vout,
-    required this.value,
-    required this.scriptPk,
+    required super.txid,
+    required super.vout,
+    required super.value,
+    required super.scriptPk,
   });
 
   /// The referenced transaction's txid.
-  List<InscriptionValue>? inscriptions;
-
-  /// The referenced transaction's txid.
-  final String txid;
-
-  /// The index of the referenced output in its transaction's vout.
-  final int vout;
-  final int value;
-  final String scriptPk;
+  final List<InscriptionValue>? inscriptions;
 
   Map<String, dynamic> toJson() => {
         'txid': txid,
@@ -1621,7 +1610,7 @@ Summary in Sats
 ///     3. Signers that can contribute signatures to addresses instantiated from the descriptors.
 ///
 class Wallet {
-  Wallet._(
+  const Wallet._(
     this._wallet, {
     required this.descriptor,
     this.changeDescriptor,
