@@ -22,7 +22,7 @@ class ActorCallError extends AgentFetchError {
       'Call failed:',
       '  Canister: ${canisterId.toText()}',
       '  Method: $methodName ($type)',
-      ...(props.entries).map((n) => "  '${n.key}': ${jsonEncode(props[n])}"),
+      ...props.entries.map((n) => "  '${n.key}': ${jsonEncode(props[n])}"),
     ].join('\n');
     throw e;
   }

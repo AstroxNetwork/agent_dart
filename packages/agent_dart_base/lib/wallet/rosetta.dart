@@ -131,7 +131,7 @@ class RosettaApi {
 
   Future<void> getNetworkIdentifier() async {
     final networkList = await networksList();
-    networkIdentifier = (networkList.networkIdentifiers).singleWhere(
+    networkIdentifier = networkList.networkIdentifiers.singleWhere(
       (rosetta.NetworkIdentifier id) => id.blockchain == 'Internet Computer',
       orElse: () => throw StateError('No identifier found.'),
     );
