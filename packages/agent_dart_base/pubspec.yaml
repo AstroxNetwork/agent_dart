@@ -4,6 +4,7 @@ version: 1.0.0
 homepage: https://github.com/AstroxNetwork
 repository: https://github.com/AstroxNetwork/agent_dart
 issue_tracker: https://github.com/AstroxNetwork/agent_dart/issues
+publish_to: none
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
