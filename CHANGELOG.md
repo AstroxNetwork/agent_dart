@@ -4,6 +4,12 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.21
+
+- Upgrade FRB to 1.82.6.
+- Improve the FFI helper when finding dynamic libraries.
+- Improve how CMake bundle libraries on Windows and Linux.
+
 ## 1.0.0-dev.20
 
 - Fix Darwin frameworks fetching during `pod install`.
