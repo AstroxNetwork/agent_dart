@@ -28,8 +28,6 @@ Pod::Spec.new do |spec|
   spec.source_files        = 'Classes/**/*'
   spec.public_header_files = 'Classes/**/*.h'
   spec.vendored_frameworks = "Frameworks/#{framework_name}"
-  spec.dependency 'Flutter'
 
-  spec.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   spec.ios.deployment_target = '11.0'
 end
