@@ -48,16 +48,15 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.astrox.agent_dart
-        pluginClass: AgentDartPlugin
+        ffiPlugin: true
       ios:
-        pluginClass: AgentDartPlugin
+        ffiPlugin: true
       linux:
-        pluginClass: AgentDartPlugin
+        ffiPlugin: true
       macos:
-        pluginClass: AgentDartPlugin
+        ffiPlugin: true
       windows:
-        pluginClass: AgentDartPlugin
+        ffiPlugin: true
 
 false_secrets:
   - /rust/ed_compact/src/pem.rs
