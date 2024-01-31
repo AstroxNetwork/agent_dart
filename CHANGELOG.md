@@ -4,6 +4,11 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.22
+
+- Correct invalid plugin references by marking FFI plugins.
+- Remove duplicate `ios_AgentDart.framework`.
+
 ## 1.0.0-dev.21
 
 - Upgrade FRB to 1.82.6.
