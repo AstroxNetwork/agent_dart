@@ -34,6 +34,13 @@ android {
     defaultConfig {
         minSdkVersion 23
     }
+
+    // Trigger the binary download/update over in CMakeLists.txt
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
 }
 
 dependencies {
