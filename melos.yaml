@@ -50,9 +50,17 @@ scripts:
     run: bash scripts/build-android.sh
     description: Build the .tar.gz for Android.
 
+  build:android:win:
+    run: .\scripts\build-android.bat
+    description: Build the .tar.gz for Android on Windows.
+
   build:other:
     run: bash scripts/build-other.sh
     description: Build the .tar.gz for all other platforms.
+
+  build:win:
+    run: .\scripts\build-windows.bat
+    description: Build the .tar.gz for Windows.
 
   test:
     run: melos run test:dart --no-select && melos run test:flutter --no-select
