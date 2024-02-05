@@ -7,7 +7,8 @@ import 'package:agent_dart_base/agent/ord/utxo.dart';
 import 'client.dart';
 
 class DataResponse {
-  DataResponse(this.data, this.isList);
+  const DataResponse(this.data, this.isList);
+
   final dynamic data;
   final bool isList;
 }
@@ -25,6 +26,7 @@ class OrdService {
           },
         );
   }
+
   late OrdClient _client;
   late OverrideOptions _override;
 
@@ -36,16 +38,7 @@ class OrdService {
     _override = override;
   }
 
-  DataResponse _decodeReponse(SubmitResponse response) {
-    final body = response.toJson()['body'];
-    final data = jsonDecode(body)['data'];
-    return DataResponse(
-      data,
-      data is List,
-    );
-  }
-
-  DataResponse _decodeGetReponse(SubmitResponse response) {
+  DataResponse _decodeGetResponse(SubmitResponse response) {
     final body = response.toJson()['body'];
     final data = jsonDecode(body)['result'];
     return DataResponse(
@@ -78,7 +71,7 @@ class OrdService {
       _override,
     );
 
-    final res = _decodeGetReponse(response);
+    final res = _decodeGetResponse(response);
     if (!res.isList) {
       throw 'Can not get utxo';
     } else {
@@ -99,7 +92,7 @@ class OrdService {
       _override,
     );
 
-    final res = _decodeGetReponse(response);
+    final res = _decodeGetResponse(response);
     if (!res.isList) {
       throw 'Can not get utxo';
     } else {
