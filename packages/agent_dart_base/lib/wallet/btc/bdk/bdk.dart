@@ -1463,6 +1463,11 @@ class OutPointExt extends OutPoint {
     required this.scriptPk,
   });
 
+  const OutPointExt.o({
+    required this.value,
+    required this.scriptPk,
+  }) : super(txid: '', vout: 0);
+
   final int value;
   final String scriptPk;
 
