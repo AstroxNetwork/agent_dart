@@ -1403,10 +1403,14 @@ class TxBuilder {
   ///Finish building the transaction.
   ///
   /// Returns a [TxBuilderResult].
-
   Future<TxBuilderResult> finish(Wallet wallet) async {
     if (_recipients.isEmpty && _drainTo == null) {
-      throw const BdkException.unExpected('No Recipients Added');
+      throw const BdkException.noRecipients();
+    }
+    if (_txInputs.isNotEmpty && _txs.isEmpty) {
+      throw const BdkException.generic(
+        'No TX found while inputs is not empty.',
+      );
     }
     try {
       final res = await AgentDartFFI.impl.txBuilderFinishStaticMethodApi(
