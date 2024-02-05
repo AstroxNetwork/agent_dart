@@ -1338,7 +1338,7 @@ class TxBuilder {
     return this;
   }
 
-  ///Only spend change outputs
+  /// Only spend change outputs
   ///
   /// This effectively adds all the non-change outputs to the “unspendable” list.
   TxBuilder onlySpendChange() {
@@ -1347,7 +1347,7 @@ class TxBuilder {
   }
 
   Future<int?> calNetworkFee(Wallet wallet) async {
-    final res = await _finish(wallet);
+    final res = await finish(wallet);
     return res.psbt.feeAmount();
   }
 
@@ -1391,13 +1391,9 @@ class TxBuilder {
     return getTotalInput() - getTotalOutput();
   }
 
-  Future<Transaction> _getTx(Wallet wallet) async {
-    final res = await _finish(wallet);
+  Future<Transaction> getTx(Wallet wallet) async {
+    final res = await finish(wallet);
     return res.psbt.extractTx();
-  }
-
-  Future<TxBuilderResult> _finish(Wallet wallet) async {
-    return finish(wallet);
   }
 
   ///Finish building the transaction.
