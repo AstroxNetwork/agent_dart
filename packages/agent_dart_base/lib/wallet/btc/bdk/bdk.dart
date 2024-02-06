@@ -1470,6 +1470,24 @@ class OutPointExt extends OutPoint {
   String get uniqueKey => '$txid:$vout';
 }
 
+class OutPointExtWithScript extends OutPointExt {
+  const OutPointExtWithScript({
+    required super.txid,
+    required super.vout,
+    required super.value,
+    required super.scriptPk,
+    required this.script,
+  });
+
+  const OutPointExtWithScript.o({
+    required super.value,
+    required super.scriptPk,
+    required this.script,
+  }) : super(txid: '', vout: 0);
+
+  final bridge.Script script;
+}
+
 class OutPointWithInscription extends OutPointExt {
   const OutPointWithInscription({
     this.inscriptions,
