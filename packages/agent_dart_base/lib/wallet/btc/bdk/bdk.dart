@@ -11,7 +11,7 @@ import 'buffer.dart';
 
 ///A Bitcoin address.
 class Address {
-  Address._(this.address, this.addressType);
+  const Address._(this.address, this.addressType);
 
   final String address;
   final AddressType addressType;
@@ -97,7 +97,7 @@ class Address {
 
 /// Blockchain backends  module provides the implementation of a few commonly-used backends like Electrum, and Esplora.
 class Blockchain {
-  Blockchain._(this._blockchain);
+  const Blockchain._(this._blockchain);
 
   final BlockchainInstance _blockchain;
 
@@ -240,7 +240,7 @@ class BumpFeeTxBuilder {
 
 ///A `BIP-32` derivation path
 class DerivationPath {
-  DerivationPath._(this.path);
+  const DerivationPath._(this.path);
 
   final String path;
 
@@ -577,7 +577,7 @@ class Descriptor {
 
 ///An extended public key.
 class DescriptorPublicKey {
-  DescriptorPublicKey._(this._descriptorPublicKey);
+  const DescriptorPublicKey._(this._descriptorPublicKey);
 
   final String? _descriptorPublicKey;
 
@@ -767,7 +767,7 @@ class DescriptorSecretKey {
   }
 
   /// Get the private key as bytes.
-  Future<List<int>> secretBytes() async {
+  Future<Uint8List> secretBytes() async {
     try {
       final res = await AgentDartFFI.impl
           .asSecretBytesStaticMethodApi(secret: _descriptorSecretKey);
@@ -795,7 +795,7 @@ class DescriptorSecretKey {
 }
 
 class FeeRate {
-  FeeRate._(this._feeRate);
+  const FeeRate._(this._feeRate);
 
   final double _feeRate;
 
@@ -807,7 +807,7 @@ class FeeRate {
 /// Mnemonic phrases are a human-readable version of the private keys.
 /// Supported number of words are 12, 18, and 24.
 class Mnemonic {
-  Mnemonic._(this._mnemonic);
+  const Mnemonic._(this._mnemonic);
 
   final String? _mnemonic;
 
@@ -864,7 +864,7 @@ class Mnemonic {
 
 ///A Partially Signed Transaction
 class PartiallySignedTransaction {
-  PartiallySignedTransaction({required this.psbtBase64});
+  const PartiallySignedTransaction({required this.psbtBase64});
 
   final String psbtBase64;
 
@@ -973,7 +973,7 @@ class PartiallySignedTransaction {
 ///
 /// See [Bitcoin Wiki: Script](https://en.bitcoin.it/wiki/Script) for more information.
 class Script extends bridge.Script {
-  Script._({required super.internal});
+  const Script._({required super.internal});
 
   /// [Script] constructor
   static Future<bridge.Script> create(
@@ -991,18 +991,17 @@ class Script extends bridge.Script {
 
 ///A bitcoin transaction.
 class Transaction {
-  Transaction._(this._tx);
+  const Transaction._(this._tx);
 
   final String? _tx;
 
   ///  [Transaction] constructor
   static Future<Transaction> create({
-    required List<int> transactionBytes,
+    required Uint8List transactionBytes,
   }) async {
     try {
-      final tx = Uint8List.fromList(transactionBytes);
-      final res =
-          await AgentDartFFI.impl.createTransactionStaticMethodApi(tx: tx);
+      final res = await AgentDartFFI.impl
+          .createTransactionStaticMethodApi(tx: transactionBytes);
       return Transaction._(res);
     } on FfiException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
@@ -1010,7 +1009,7 @@ class Transaction {
   }
 
   ///Return the transaction bytes, bitcoin consensus encoded.
-  Future<List<int>> serialize() async {
+  Future<Uint8List> serialize() async {
     try {
       final res = await AgentDartFFI.impl.serializeTxStaticMethodApi(tx: _tx!);
       return res;
@@ -1150,7 +1149,7 @@ class TxBuilder {
   typed_data.Uint8List _data = typed_data.Uint8List.fromList([]);
 
   ///Add data as an output, using OP_RETURN
-  TxBuilder addData({required List<int> data}) {
+  TxBuilder addData({required Uint8List data}) {
     if (data.isEmpty) {
       throw const BdkException.unExpected('List must not be empty');
     }
@@ -1230,9 +1229,7 @@ class TxBuilder {
   ///If an error occurs while adding any of the UTXOs then none of them are added and the error is returned.
   ///
   /// These have priority over the “unspendable” utxos, meaning that if a utxo is present both in the “utxos” and the “unspendable” list, it will be spent.
-  TxBuilder addUtxos(
-    List<OutPoint> outpoints,
-  ) {
+  TxBuilder addUtxos(List<OutPoint> outpoints) {
     for (final e in outpoints) {
       _utxos.add(e);
     }
