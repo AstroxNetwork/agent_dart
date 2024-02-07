@@ -72,30 +72,26 @@ class WIFEncoder extends Converter<WIF, String> {
 
 /// WIF
 class WIF {
-  WIF({
+  const WIF({
     required this.version,
     required this.privateKey,
     this.compressed = false,
   });
 
-  /// Version
-  int version;
-
-  /// Private Key
-  Uint8List privateKey;
-
-  /// Is Compressed WIF ?
-  bool compressed;
-
-  static WIF fromHex(
-    Uint8List u8a, {
-    Network network = Network.Bitcoin,
-  }) {
+  factory WIF.fromHex(Uint8List u8a, {Network network = Network.Bitcoin}) {
     final version = network == Network.Bitcoin ? 0x80 : 0xef;
     return WIF(version: version, privateKey: u8a);
   }
 
-  /// equal operator
+  /// Version
+  final int version;
+
+  /// Private Key
+  final Uint8List privateKey;
+
+  /// Is Compressed WIF ?
+  final bool compressed;
+
   @override
   bool operator ==(covariant WIF other) {
     return version == other.version &&
@@ -104,11 +100,9 @@ class WIF {
         compressed == other.compressed;
   }
 
-  /// Hash code
   @override
   int get hashCode => Object.hashAll([version, privateKey, compressed]);
 
-  /// To String
   @override
   String toString() {
     final str = [

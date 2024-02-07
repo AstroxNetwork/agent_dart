@@ -19,10 +19,12 @@ class BufferReader {
   /// BufferReader from hex string
   factory BufferReader.fromHex(String data, [offset = 0]) {
     return BufferReader.fromTypedData(
-        Uint8List.fromList(hex.decode(data)), offset);
+      Uint8List.fromList(hex.decode(data)),
+      offset,
+    );
   }
 
-  ByteData buffer;
+  final ByteData buffer;
   int offset;
 
   int get length => buffer.lengthInBytes;
