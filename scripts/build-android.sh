@@ -22,7 +22,7 @@ rustup target add \
 
 # Build the android libraries in the jniLibs directory
 cargo ndk -o $JNI_DIR \
-        --manifest-path "../packages/agent_dart_ffi/native/agent_dart/Cargo.toml "\
+        --manifest-path "../packages/agent_dart_ffi/native/agent_dart/Cargo.toml" \
         -t armeabi-v7a \
         -t arm64-v8a \
         -t x86 \
