@@ -49,8 +49,12 @@ void btc_wallet() {
   }
 
   test('get address by seedphrase and index', () async {
-    final seedphrase = (await Mnemonic.create(WordCount.Words12)).asString();
-    final address = await getAddressInfo(phrase: seedphrase, index: 0);
+    final phrase = (await Mnemonic.create(WordCount.Words12)).asString();
+    final address = await getAddressInfo(
+      phrase: phrase,
+      index: 0,
+      passcode: '123',
+    );
     print(address.address);
   }, skip: true);
   test('get psbt address', () async {
@@ -64,8 +68,6 @@ void btc_wallet() {
       // wallet.connect(service: ord, api: blockstream);
       // wallet.useExternalApi(true);
       print(wallet.currentSigner().address);
-
-
 
       // final us = await wallet.listUnspent();
       // us.forEach((e) => print(e.toJson()));
