@@ -38,7 +38,8 @@ void btc_wallet() {
     final wallet = await BitcoinWallet.fromPhrase(
       (await Mnemonic.create(WordCount.Words12)).asString(),
       addressType: AddressType.P2PKHTR,
-        network: Network.Testnet
+      network: Network.Testnet,
+      passcode: '123456',
     );
 
     await wallet.selectSigner(0);
@@ -63,6 +64,8 @@ void btc_wallet() {
       // wallet.connect(service: ord, api: blockstream);
       // wallet.useExternalApi(true);
       print(wallet.currentSigner().address);
+
+
 
       // final us = await wallet.listUnspent();
       // us.forEach((e) => print(e.toJson()));

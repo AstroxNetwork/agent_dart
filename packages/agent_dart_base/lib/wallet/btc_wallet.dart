@@ -233,11 +233,13 @@ Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
   String mnemonic, {
   AddressType addressType = AddressType.P2TR,
   Network network = Network.Bitcoin,
+    String? passcode 
 }) async {
   final mnemonicObj = await Mnemonic.fromString(mnemonic);
   final descriptorSecretKey = await DescriptorSecretKey.create(
     network: network,
     mnemonic: mnemonicObj,
+    password: passcode
   );
   final descriptors = <KeychainKind, BTCDescriptor>{};
   try {
@@ -415,11 +417,13 @@ class BitcoinWallet {
     String phrase, {
     Network network = Network.Bitcoin,
     AddressType addressType = AddressType.P2TR,
+      String? passcode
   }) async {
     final descriptors = await getDescriptors(
       phrase,
       network: network,
       addressType: addressType,
+      passcode: passcode
     );
     final descriptor = descriptors[KeychainKind.External]!;
     final res = await Wallet.create(
