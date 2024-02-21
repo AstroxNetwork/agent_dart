@@ -83,6 +83,11 @@ class WIF {
     return WIF(version: version, privateKey: u8a);
   }
 
+  factory WIF.fromString(String wif, {Network network = Network.Bitcoin}) {
+    final version = network == Network.Bitcoin ? 0x80 : 0xef;
+    return wifDecoder.convert(wif, version);
+  }
+
   /// Version
   final int version;
 
