@@ -231,6 +231,19 @@ Future<AddressInfo> getAddressInfo({
   return descriptor.descriptor.deriveAddressAt(index, network);
 }
 
+Future<AddressInfo> getAddressInfoFromWIF({
+  required String wif,
+  Network network = Network.Bitcoin,
+  AddressType addressType = AddressType.P2TR,
+}) async {
+  final descriptor = await importSingleWif(
+    wif,
+    addressType: addressType,
+    network: network,
+  );
+  return descriptor.descriptor.deriveAddressAt(0, network);
+}
+
 Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
   String mnemonic, {
   AddressType addressType = AddressType.P2TR,
@@ -243,56 +256,23 @@ Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
     mnemonic: mnemonicObj,
     password: passcode,
   );
+  descriptorSecretKey.derivationPath = await DerivationPath.create(
+    path: addressType.derivedPath,
+  );
   final descriptors = <KeychainKind, BTCDescriptor>{};
   for (final e in KeychainKind.values) {
-    final Descriptor descriptor;
-    switch (addressType) {
-      case AddressType.P2TR:
-        descriptorSecretKey.derivationPath =
-            await DerivationPath.create(path: addressType.derivedPath);
-        descriptor = await Descriptor.newBip86(
-          secretKey: descriptorSecretKey,
-          network: network,
-          keychain: e,
-        );
-        break;
-      case AddressType.P2WPKH:
-        descriptorSecretKey.derivationPath =
-            await DerivationPath.create(path: addressType.derivedPath);
-        descriptor = await Descriptor.newBip84(
-          secretKey: descriptorSecretKey,
-          network: network,
-          keychain: e,
-        );
-        break;
-      case AddressType.P2SH_P2WPKH:
-        descriptorSecretKey.derivationPath =
-            await DerivationPath.create(path: addressType.derivedPath);
-        descriptor = await Descriptor.newBip49(
-          secretKey: descriptorSecretKey,
-          network: network,
-          keychain: e,
-        );
-        break;
-      case AddressType.P2PKH:
-        descriptorSecretKey.derivationPath =
-            await DerivationPath.create(path: addressType.derivedPath);
-        descriptor = await Descriptor.newBip44(
-          secretKey: descriptorSecretKey,
-          network: network,
-          keychain: e,
-        );
-        break;
-      case AddressType.P2PKHTR:
-        descriptorSecretKey.derivationPath =
-            await DerivationPath.create(path: addressType.derivedPath);
-        descriptor = await Descriptor.newBip44TR(
-          secretKey: descriptorSecretKey,
-          network: network,
-          keychain: e,
-        );
-        break;
-    }
+    final create = switch (addressType) {
+      AddressType.P2TR => Descriptor.newBip86,
+      AddressType.P2WPKH => Descriptor.newBip84,
+      AddressType.P2SH_P2WPKH => Descriptor.newBip49,
+      AddressType.P2PKH => Descriptor.newBip44,
+      AddressType.P2PKHTR => Descriptor.newBip44TR,
+    };
+    final descriptor = await create(
+      secretKey: descriptorSecretKey,
+      network: network,
+      keychain: e,
+    );
     descriptors[e] = BTCDescriptor(
       addressType: addressType,
       descriptor: descriptor,
