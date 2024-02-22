@@ -1669,7 +1669,12 @@ class Wallet {
   }
 
   Future<String> getPublicKey(int index) async {
-    final k = await descriptor.descriptorSecretKey!.deriveIndex(index);
+    final DescriptorSecretKey k;
+    if (descriptor.descriptorSecretKey?.derivedPathPrefix != null) {
+      k = await descriptor.descriptorSecretKey!.deriveIndex(index);
+    } else {
+      k = descriptor.descriptorSecretKey!;
+    }
     final kBytes = Uint8List.fromList(await k.secretBytes());
     return k.getPubFromBytes(kBytes);
   }
