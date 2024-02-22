@@ -395,7 +395,7 @@ impl From<String> for AddressType {
         match address_type_string.to_lowercase().as_str() {
             "p2pkh" => AddressType::P2PKH,
             "p2sh" => AddressType::P2SH,
-            "p2Sh_p2wpkh" => AddressType::P2SH,
+            "p2sh_p2wpkh" => AddressType::P2SH,
             "p2wpkh" => AddressType::P2WPKH,
             "p2wsh" => AddressType::P2WSH,
             "p2tr" => AddressType::P2TR,
