@@ -293,7 +293,7 @@ class Descriptor {
     try {
       final res = await AgentDartFFI.impl.importSingleWifStaticMethodApi(
         wif: wif,
-        addressType: addressType.name,
+        addressType: addressType.raw,
         network: network,
       );
       return Descriptor._(res);
