@@ -2061,11 +2061,31 @@ abstract class AddressTypeString {
 }
 
 enum AddressType {
-  P2TR('p2tr', 'Taproot', "m/86'/0'/0'/0/0"),
-  P2WPKH('p2wpkh', 'Native Segwit', "m/84'/0'/0'/0/0"),
-  P2SH_P2WPKH('p2sh', 'Nested Segwit', "m/49'/0'/0'/0/0"),
-  P2PKH('p2pkh', 'Legacy', "m/44'/0'/0'/0/0"),
-  P2PKHTR('p2pkhtr', 'Legacy Taproot', "m/44'/0'/0'/0/0"),
+  P2PKHTR(
+    'p2pkhtr',
+    'Legacy & Taproot (P2TR)',
+    "m/44'/0'/0'/0/0",
+  ),
+  P2TR(
+    'p2tr',
+    'Taproot (P2TR)',
+    "m/86'/0'/0'/0/0",
+  ),
+  P2SH_P2WPKH(
+    'p2sh',
+    'Nested Segwit (P2SH-P2WPKH)',
+    "m/49'/0'/0'/0/0",
+  ),
+  P2WPKH(
+    'p2wpkh',
+    'Native Segwit (P2WPKH)',
+    "m/84'/0'/0'/0/0",
+  ),
+  P2PKH(
+    'p2pkh',
+    'Legacy (P2PKH)',
+    "m/44'/0'/0'/0/0",
+  ),
   ;
 
   const AddressType(this.raw, this.display, this.derivedPath);
