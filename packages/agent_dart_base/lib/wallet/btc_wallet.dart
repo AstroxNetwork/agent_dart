@@ -262,11 +262,11 @@ Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
   final descriptors = <KeychainKind, BTCDescriptor>{};
   for (final e in KeychainKind.values) {
     final create = switch (addressType) {
-      AddressType.P2TR => Descriptor.newBip86,
-      AddressType.P2WPKH => Descriptor.newBip84,
-      AddressType.P2SH_P2WPKH => Descriptor.newBip49,
-      AddressType.P2PKH => Descriptor.newBip44,
       AddressType.P2PKHTR => Descriptor.newBip44TR,
+      AddressType.P2TR => Descriptor.newBip86,
+      AddressType.P2SH_P2WPKH => Descriptor.newBip49,
+      AddressType.P2WPKH => Descriptor.newBip84,
+      AddressType.P2PKH => Descriptor.newBip44,
     };
     final descriptor = await create(
       secretKey: descriptorSecretKey,
