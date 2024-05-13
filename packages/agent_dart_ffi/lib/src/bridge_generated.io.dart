@@ -462,7 +462,7 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
   }
 
   void _api_fill_to_wire_address_index(AddressIndex apiObj, wire_AddressIndex wireObj) {
-    if (apiObj is AddressIndex_New) {
+    if (apiObj is AddressIndex_NewIndex) {
       wireObj.tag = 0;
       return;
     }

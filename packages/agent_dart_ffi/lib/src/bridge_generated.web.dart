@@ -40,7 +40,7 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> with Flutte
 
   @protected
   List<dynamic> api2wire_address_index(AddressIndex raw) {
-    if (raw is AddressIndex_New) {
+    if (raw is AddressIndex_NewIndex) {
       return [
         0
       ];

@@ -81,7 +81,7 @@ fn main() -> Result<(), bdk::Error> {
 //! ```
 //! use bdk::{Wallet};
 //! use bdk::database::MemoryDatabase;
-//! use bdk::wallet::AddressIndex::New;
+//! use bdk::wallet::AddressIndex::NewIndex;
 //!
 //! fn main() -> Result<(), bdk::Error> {
 //! let wallet = Wallet::new(
@@ -110,7 +110,7 @@ use bdk::blockchain::ElectrumBlockchain;
 use bdk::electrum_client::Client;
 
 use bitcoin::consensus::serialize;
-use bdk::wallet::AddressIndex::New;
+use bdk::wallet::AddressIndex::NewIndex;
 
 fn main() -> Result<(), bdk::Error> {
     let client = Client::new("ssl://electrum.blockstream.info:60002")?;

@@ -1274,7 +1274,7 @@ impl Wire2Api<RustOpaque<WalletInstance>> for wire_WalletInstance {
 impl Wire2Api<AddressIndex> for wire_AddressIndex {
     fn wire2api(self) -> AddressIndex {
         match self.tag {
-            0 => AddressIndex::New,
+            0 => AddressIndex::NewIndex,
             1 => AddressIndex::LastUnused,
             2 => unsafe {
                 let ans = support::box_from_leak_ptr(self.kind);
@@ -2326,7 +2326,7 @@ pub struct wire_AddressIndex {
 
 #[repr(C)]
 pub union AddressIndexKind {
-    New: *mut wire_AddressIndex_New,
+    NewIndex: *mut wire_AddressIndex_NewIndex,
     LastUnused: *mut wire_AddressIndex_LastUnused,
     Peek: *mut wire_AddressIndex_Peek,
     Reset: *mut wire_AddressIndex_Reset,
@@ -2334,7 +2334,7 @@ pub union AddressIndexKind {
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_AddressIndex_New {}
+pub struct wire_AddressIndex_NewIndex {}
 
 #[repr(C)]
 #[derive(Clone)]
