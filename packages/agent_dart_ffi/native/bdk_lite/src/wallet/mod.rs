@@ -108,9 +108,9 @@ pub struct Wallet<D> {
 #[derive(Debug)]
 pub enum AddressIndex {
     /// Return a new address after incrementing the current descriptor index.
-    New,
+    NewIndex,
     /// Return the address for the current descriptor index if it has not been used in a received
-    /// transaction. Otherwise return a new address as with [`AddressIndex::New`].
+    /// transaction. Otherwise, return a new address as with [`AddressIndex::NewIndex`].
     ///
     /// Use with caution, if the wallet has not yet detected an address has been used it could
     /// return an already used address. This function is primarily meant for situations where the
@@ -118,16 +118,16 @@ pub enum AddressIndex {
     /// web page.
     LastUnused,
     /// Return the address for a specific descriptor index. Does not change the current descriptor
-    /// index used by `AddressIndex::New` and `AddressIndex::LastUsed`.
+    /// index used by `AddressIndex::NewIndex` and `AddressIndex::LastUsed`.
     ///
     /// Use with caution, if an index is given that is less than the current descriptor index
     /// then the returned address may have already been used.
     Peek(u32),
     /// Return the address for a specific descriptor index and reset the current descriptor index
-    /// used by `AddressIndex::New` and `AddressIndex::LastUsed` to this value.
+    /// used by `AddressIndex::NewIndex` and `AddressIndex::LastUsed` to this value.
     ///
     /// Use with caution, if an index is given that is less than the current descriptor index
-    /// then the returned address and subsequent addresses returned by calls to `AddressIndex::New`
+    /// then the returned address and subsequent addresses returned by calls to `AddressIndex::NewIndex`
     /// and `AddressIndex::LastUsed` may have already been used. Also if the index is reset to a
     /// value earlier than the [`crate::blockchain::Blockchain`] stop_gap (default is 20) then a
     /// larger stop_gap should be used to monitor for all possibly used addresses.
@@ -355,7 +355,7 @@ where
         keychain: KeychainKind,
     ) -> Result<AddressInfo, Error> {
         match address_index {
-            AddressIndex::New => self.get_new_address(keychain),
+            AddressIndex::NewIndex => self.get_new_address(keychain),
             AddressIndex::LastUnused => self.get_unused_address(keychain),
             AddressIndex::Peek(index) => self.peek_address(index, keychain),
             AddressIndex::Reset(index) => self.reset_address(index, keychain),
@@ -1081,7 +1081,7 @@ where
         let drain_script = match params.drain_to {
             Some(ref drain_recipient) => drain_recipient.clone(),
             None => self
-                .get_internal_address(AddressIndex::New)?
+                .get_internal_address(AddressIndex::NewIndex)?
                 .address
                 .script_pubkey(),
         };
@@ -4953,7 +4953,7 @@ pub(crate) mod test {
         .unwrap();
 
         assert_eq!(
-            wallet.get_address(AddressIndex::New).unwrap(),
+            wallet.get_address(AddressIndex::NewIndex).unwrap(),
             AddressInfo {
                 index: 0,
                 address: Address::from_str("bcrt1qrhgaqu0zvf5q2d0gwwz04w0dh0cuehhqvzpp4w").unwrap(),
@@ -4962,7 +4962,7 @@ pub(crate) mod test {
         );
 
         assert_eq!(
-            wallet.get_internal_address(AddressIndex::New).unwrap(),
+            wallet.get_internal_address(AddressIndex::NewIndex).unwrap(),
             AddressInfo {
                 index: 0,
                 address: Address::from_str("bcrt1q0ue3s5y935tw7v3gmnh36c5zzsaw4n9c9smq79").unwrap(),
@@ -4979,7 +4979,7 @@ pub(crate) mod test {
         .unwrap();
 
         assert_eq!(
-            wallet.get_internal_address(AddressIndex::New).unwrap(),
+            wallet.get_internal_address(AddressIndex::NewIndex).unwrap(),
             AddressInfo {
                 index: 0,
                 address: Address::from_str("bcrt1qrhgaqu0zvf5q2d0gwwz04w0dh0cuehhqvzpp4w").unwrap(),
@@ -5006,11 +5006,11 @@ pub(crate) mod test {
         let mut used_set = HashSet::new();
 
         (0..3).for_each(|_| {
-            let external_addr = wallet.get_address(AddressIndex::New).unwrap().address;
+            let external_addr = wallet.get_address(AddressIndex::NewIndex).unwrap().address;
             assert!(used_set.insert(external_addr));
 
             let internal_addr = wallet
-                .get_internal_address(AddressIndex::New)
+                .get_internal_address(AddressIndex::NewIndex)
                 .unwrap()
                 .address;
             assert!(used_set.insert(internal_addr));
@@ -5020,7 +5020,7 @@ pub(crate) mod test {
     #[test]
     fn test_taproot_psbt_populate_tap_key_origins() {
         let (wallet, _, _) = get_funded_wallet(get_test_tr_single_sig_xprv());
-        let addr = wallet.get_address(AddressIndex::New).unwrap();
+        let addr = wallet.get_address(AddressIndex::NewIndex).unwrap();
 
         let mut builder = wallet.build_tx();
         builder.add_recipient(addr.script_pubkey(), 25_000);
@@ -5055,7 +5055,7 @@ pub(crate) mod test {
     #[test]
     fn test_taproot_psbt_populate_tap_key_origins_repeated_key() {
         let (wallet, _, _) = get_funded_wallet(get_test_tr_repeated_key());
-        let addr = wallet.get_address(AddressIndex::New).unwrap();
+        let addr = wallet.get_address(AddressIndex::NewIndex).unwrap();
 
         let path = vec![("e5mmg3xh".to_string(), vec![0])]
             .into_iter()
@@ -5269,7 +5269,7 @@ pub(crate) mod test {
     // }
 
     fn test_spend_from_wallet(wallet: Wallet<AnyDatabase>) {
-        let addr = wallet.get_address(AddressIndex::New).unwrap();
+        let addr = wallet.get_address(AddressIndex::NewIndex).unwrap();
 
         let mut builder = wallet.build_tx();
         builder.add_recipient(addr.script_pubkey(), 25_000);
@@ -5293,7 +5293,7 @@ pub(crate) mod test {
     #[test]
     fn test_taproot_no_key_spend() {
         let (wallet, _, _) = get_funded_wallet(get_test_tr_with_taptree_both_priv());
-        let addr = wallet.get_address(AddressIndex::New).unwrap();
+        let addr = wallet.get_address(AddressIndex::NewIndex).unwrap();
 
         let mut builder = wallet.build_tx();
         builder.add_recipient(addr.script_pubkey(), 25_000);
@@ -5328,7 +5328,7 @@ pub(crate) mod test {
     fn test_taproot_script_spend_sign_all_leaves() {
         use crate::signer::TapLeavesOptions;
         let (wallet, _, _) = get_funded_wallet(get_test_tr_with_taptree_both_priv());
-        let addr = wallet.get_address(AddressIndex::New).unwrap();
+        let addr = wallet.get_address(AddressIndex::NewIndex).unwrap();
 
         let mut builder = wallet.build_tx();
         builder.add_recipient(addr.script_pubkey(), 25_000);
@@ -5359,7 +5359,7 @@ pub(crate) mod test {
         use bitcoin::util::taproot::TapLeafHash;
 
         let (wallet, _, _) = get_funded_wallet(get_test_tr_with_taptree_both_priv());
-        let addr = wallet.get_address(AddressIndex::New).unwrap();
+        let addr = wallet.get_address(AddressIndex::NewIndex).unwrap();
 
         let mut builder = wallet.build_tx();
         builder.add_recipient(addr.script_pubkey(), 25_000);
@@ -5401,7 +5401,7 @@ pub(crate) mod test {
         use bitcoin::util::taproot::TapLeafHash;
 
         let (wallet, _, _) = get_funded_wallet(get_test_tr_with_taptree_both_priv());
-        let addr = wallet.get_address(AddressIndex::New).unwrap();
+        let addr = wallet.get_address(AddressIndex::NewIndex).unwrap();
 
         let mut builder = wallet.build_tx();
         builder.add_recipient(addr.script_pubkey(), 25_000);
@@ -5441,7 +5441,7 @@ pub(crate) mod test {
     fn test_taproot_script_spend_sign_no_leaves() {
         use crate::signer::TapLeavesOptions;
         let (wallet, _, _) = get_funded_wallet(get_test_tr_with_taptree_both_priv());
-        let addr = wallet.get_address(AddressIndex::New).unwrap();
+        let addr = wallet.get_address(AddressIndex::NewIndex).unwrap();
 
         let mut builder = wallet.build_tx();
         builder.add_recipient(addr.script_pubkey(), 25_000);
@@ -5464,7 +5464,7 @@ pub(crate) mod test {
     fn test_taproot_sign_derive_index_from_psbt() {
         let (wallet, _, _) = get_funded_wallet(get_test_tr_single_sig_xprv());
 
-        let addr = wallet.get_address(AddressIndex::New).unwrap();
+        let addr = wallet.get_address(AddressIndex::NewIndex).unwrap();
 
         let mut builder = wallet.build_tx();
         builder.add_recipient(addr.script_pubkey(), 25_000);

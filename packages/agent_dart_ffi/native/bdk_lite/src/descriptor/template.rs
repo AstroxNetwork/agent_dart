@@ -74,7 +74,7 @@ impl<T: DescriptorTemplate> IntoWalletDescriptor for T {
 /// ```
 /// # use bdk::bitcoin::{PrivateKey, Network};
 /// # use bdk::Wallet;
-/// # use bdk::wallet::AddressIndex::New;
+/// # use bdk::wallet::AddressIndex::NewIndex;
 /// use bdk::template::P2Pkh;
 ///
 /// let key =
@@ -110,7 +110,7 @@ impl<K: IntoDescriptorKey<Legacy>> DescriptorTemplate for P2Pkh<K> {
 /// let mut wallet = Wallet::new_no_persist(P2Wpkh_P2Sh(key), None, Network::Testnet)?;
 ///
 /// assert_eq!(
-///     wallet.get_address(AddressIndex::New).to_string(),
+///     wallet.get_address(AddressIndex::NewIndex).to_string(),
 ///     "2NB4ox5VDRw1ecUv6SnT3VQHPXveYztRqk5"
 /// );
 /// # Ok::<_, Box<dyn std::error::Error>>(())
@@ -132,7 +132,7 @@ impl<K: IntoDescriptorKey<Segwitv0>> DescriptorTemplate for P2Wpkh_P2Sh<K> {
 /// # use bdk::bitcoin::{PrivateKey, Network};
 /// # use bdk::{Wallet};
 /// use bdk::template::P2Wpkh;
-/// use bdk::wallet::AddressIndex::New;
+/// use bdk::wallet::AddressIndex::NewIndex;
 ///
 /// let key =
 ///     bitcoin::PrivateKey::from_wif("cTc4vURSzdx6QE6KVynWGomDbLaA75dNALMNyfjh3p8DRRar84Um")?;
@@ -159,7 +159,7 @@ impl<K: IntoDescriptorKey<Segwitv0>> DescriptorTemplate for P2Wpkh<K> {
 /// ```
 /// # use bdk::bitcoin::{PrivateKey, Network};
 /// # use bdk::Wallet;
-/// # use bdk::wallet::AddressIndex::New;
+/// # use bdk::wallet::AddressIndex::NewIndex;
 /// use bdk::template::P2TR;
 ///
 /// let key =
@@ -192,7 +192,7 @@ impl<K: IntoDescriptorKey<Tap>> DescriptorTemplate for P2TR<K> {
 /// # use std::str::FromStr;
 /// # use bdk::bitcoin::{PrivateKey, Network};
 /// # use bdk::{Wallet,  KeychainKind};
-/// # use bdk::wallet::AddressIndex::New;
+/// # use bdk::wallet::AddressIndex::NewIndex;
 /// use bdk::template::Bip44;
 ///
 /// let key = bitcoin::util::bip32::ExtendedPrivKey::from_str("tprv8ZgxMBicQKsPeZRHk4rTG6orPS2CRNFX3njhUXx5vj9qGog5ZMH4uGReDWN5kCkY3jmWEtWause41CDvBRXD1shKknAMKxT99o9qUTRVC6m")?;
@@ -229,7 +229,7 @@ impl<K: DerivableKey<Legacy>> DescriptorTemplate for Bip44<K> {
 /// # use std::str::FromStr;
 /// # use bdk::bitcoin::{PrivateKey, Network};
 /// # use bdk::{Wallet,  KeychainKind};
-/// # use bdk::wallet::AddressIndex::New;
+/// # use bdk::wallet::AddressIndex::NewIndex;
 /// use bdk::template::Bip44Public;
 ///
 /// let key = bitcoin::util::bip32::ExtendedPubKey::from_str("tpubDDDzQ31JkZB7VxUr9bjvBivDdqoFLrDPyLWtLapArAi51ftfmCb2DPxwLQzX65iNcXz1DGaVvyvo6JQ6rTU73r2gqdEo8uov9QKRb7nKCSU")?;
@@ -267,7 +267,7 @@ impl<K: DerivableKey<Legacy>> DescriptorTemplate for Bip44Public<K> {
 /// # use std::str::FromStr;
 /// # use bdk::bitcoin::{PrivateKey, Network};
 /// # use bdk::{Wallet,  KeychainKind};
-/// # use bdk::wallet::AddressIndex::New;
+/// # use bdk::wallet::AddressIndex::NewIndex;
 /// use bdk::template::Bip49;
 ///
 /// let key = bitcoin::util::bip32::ExtendedPrivKey::from_str("tprv8ZgxMBicQKsPeZRHk4rTG6orPS2CRNFX3njhUXx5vj9qGog5ZMH4uGReDWN5kCkY3jmWEtWause41CDvBRXD1shKknAMKxT99o9qUTRVC6m")?;
@@ -304,7 +304,7 @@ impl<K: DerivableKey<Segwitv0>> DescriptorTemplate for Bip49<K> {
 /// # use std::str::FromStr;
 /// # use bdk::bitcoin::{PrivateKey, Network};
 /// # use bdk::{Wallet,  KeychainKind};
-/// # use bdk::wallet::AddressIndex::New;
+/// # use bdk::wallet::AddressIndex::NewIndex;
 /// use bdk::template::Bip49Public;
 ///
 /// let key = bitcoin::util::bip32::ExtendedPubKey::from_str("tpubDC49r947KGK52X5rBWS4BLs5m9SRY3pYHnvRrm7HcybZ3BfdEsGFyzCMzayi1u58eT82ZeyFZwH7DD6Q83E3fM9CpfMtmnTygnLfP59jL9L")?;
@@ -342,7 +342,7 @@ impl<K: DerivableKey<Segwitv0>> DescriptorTemplate for Bip49Public<K> {
 /// # use std::str::FromStr;
 /// # use bdk::bitcoin::{PrivateKey, Network};
 /// # use bdk::{Wallet,  KeychainKind};
-/// # use bdk::wallet::AddressIndex::New;
+/// # use bdk::wallet::AddressIndex::NewIndex;
 /// use bdk::template::Bip84;
 ///
 /// let key = bitcoin::util::bip32::ExtendedPrivKey::from_str("tprv8ZgxMBicQKsPeZRHk4rTG6orPS2CRNFX3njhUXx5vj9qGog5ZMH4uGReDWN5kCkY3jmWEtWause41CDvBRXD1shKknAMKxT99o9qUTRVC6m")?;
@@ -379,7 +379,7 @@ impl<K: DerivableKey<Segwitv0>> DescriptorTemplate for Bip84<K> {
 /// # use std::str::FromStr;
 /// # use bdk::bitcoin::{PrivateKey, Network};
 /// # use bdk::{Wallet,  KeychainKind};
-/// # use bdk::wallet::AddressIndex::New;
+/// # use bdk::wallet::AddressIndex::NewIndex;
 /// use bdk::template::Bip84Public;
 ///
 /// let key = bitcoin::util::bip32::ExtendedPubKey::from_str("tpubDC2Qwo2TFsaNC4ju8nrUJ9mqVT3eSgdmy1yPqhgkjwmke3PRXutNGRYAUo6RCHTcVQaDR3ohNU9we59brGHuEKPvH1ags2nevW5opEE9Z5Q")?;
@@ -417,7 +417,7 @@ impl<K: DerivableKey<Segwitv0>> DescriptorTemplate for Bip84Public<K> {
 /// # use std::str::FromStr;
 /// # use bdk::bitcoin::{PrivateKey, Network};
 /// # use bdk::{Wallet,  KeychainKind};
-/// # use bdk::wallet::AddressIndex::New;
+/// # use bdk::wallet::AddressIndex::NewIndex;
 /// use bdk::template::Bip86;
 ///
 /// let key = bitcoin::util::bip32::ExtendedPrivKey::from_str("tprv8ZgxMBicQKsPeZRHk4rTG6orPS2CRNFX3njhUXx5vj9qGog5ZMH4uGReDWN5kCkY3jmWEtWause41CDvBRXD1shKknAMKxT99o9qUTRVC6m")?;
@@ -454,7 +454,7 @@ impl<K: DerivableKey<Tap>> DescriptorTemplate for Bip86<K> {
 /// # use std::str::FromStr;
 /// # use bdk::bitcoin::{PrivateKey, Network};
 /// # use bdk::{Wallet,  KeychainKind};
-/// # use bdk::wallet::AddressIndex::New;
+/// # use bdk::wallet::AddressIndex::NewIndex;
 /// use bdk::template::Bip86Public;
 ///
 /// let key = bitcoin::util::bip32::ExtendedPubKey::from_str("tpubDC2Qwo2TFsaNC4ju8nrUJ9mqVT3eSgdmy1yPqhgkjwmke3PRXutNGRYAUo6RCHTcVQaDR3ohNU9we59brGHuEKPvH1ags2nevW5opEE9Z5Q")?;

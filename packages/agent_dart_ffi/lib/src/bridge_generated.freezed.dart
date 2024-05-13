@@ -12,29 +12,29 @@ part of 'bridge_generated.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$AddressIndex {
   @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function() $default, {
+  TResult when<TResult extends Object?>({
+    required TResult Function() newIndex,
     required TResult Function() lastUnused,
     required TResult Function(int index) peek,
     required TResult Function(int index) reset,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function()? $default, {
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? newIndex,
     TResult? Function()? lastUnused,
     TResult? Function(int index)? peek,
     TResult? Function(int index)? reset,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function()? $default, {
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? newIndex,
     TResult Function()? lastUnused,
     TResult Function(int index)? peek,
     TResult Function(int index)? reset,
@@ -42,24 +42,24 @@ mixin _$AddressIndex {
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(AddressIndex_New value) $default, {
+  TResult map<TResult extends Object?>({
+    required TResult Function(AddressIndex_NewIndex value) newIndex,
     required TResult Function(AddressIndex_LastUnused value) lastUnused,
     required TResult Function(AddressIndex_Peek value) peek,
     required TResult Function(AddressIndex_Reset value) reset,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(AddressIndex_New value)? $default, {
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(AddressIndex_NewIndex value)? newIndex,
     TResult? Function(AddressIndex_LastUnused value)? lastUnused,
     TResult? Function(AddressIndex_Peek value)? peek,
     TResult? Function(AddressIndex_Reset value)? reset,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(AddressIndex_New value)? $default, {
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(AddressIndex_NewIndex value)? newIndex,
     TResult Function(AddressIndex_LastUnused value)? lastUnused,
     TResult Function(AddressIndex_Peek value)? peek,
     TResult Function(AddressIndex_Reset value)? reset,
@@ -87,35 +87,37 @@ class _$AddressIndexCopyWithImpl<$Res, $Val extends AddressIndex>
 }
 
 /// @nodoc
-abstract class _$$AddressIndex_NewImplCopyWith<$Res> {
-  factory _$$AddressIndex_NewImplCopyWith(_$AddressIndex_NewImpl value,
-          $Res Function(_$AddressIndex_NewImpl) then) =
-      __$$AddressIndex_NewImplCopyWithImpl<$Res>;
+abstract class _$$AddressIndex_NewIndexImplCopyWith<$Res> {
+  factory _$$AddressIndex_NewIndexImplCopyWith(
+          _$AddressIndex_NewIndexImpl value,
+          $Res Function(_$AddressIndex_NewIndexImpl) then) =
+      __$$AddressIndex_NewIndexImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$AddressIndex_NewImplCopyWithImpl<$Res>
-    extends _$AddressIndexCopyWithImpl<$Res, _$AddressIndex_NewImpl>
-    implements _$$AddressIndex_NewImplCopyWith<$Res> {
-  __$$AddressIndex_NewImplCopyWithImpl(_$AddressIndex_NewImpl _value,
-      $Res Function(_$AddressIndex_NewImpl) _then)
+class __$$AddressIndex_NewIndexImplCopyWithImpl<$Res>
+    extends _$AddressIndexCopyWithImpl<$Res, _$AddressIndex_NewIndexImpl>
+    implements _$$AddressIndex_NewIndexImplCopyWith<$Res> {
+  __$$AddressIndex_NewIndexImplCopyWithImpl(_$AddressIndex_NewIndexImpl _value,
+      $Res Function(_$AddressIndex_NewIndexImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$AddressIndex_NewImpl implements AddressIndex_New {
-  const _$AddressIndex_NewImpl();
+class _$AddressIndex_NewIndexImpl implements AddressIndex_NewIndex {
+  const _$AddressIndex_NewIndexImpl();
 
   @override
   String toString() {
-    return 'AddressIndex()';
+    return 'AddressIndex.newIndex()';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$AddressIndex_NewImpl);
+        (other.runtimeType == runtimeType &&
+            other is _$AddressIndex_NewIndexImpl);
   }
 
   @override
@@ -123,81 +125,81 @@ class _$AddressIndex_NewImpl implements AddressIndex_New {
 
   @override
   @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function() $default, {
+  TResult when<TResult extends Object?>({
+    required TResult Function() newIndex,
     required TResult Function() lastUnused,
     required TResult Function(int index) peek,
     required TResult Function(int index) reset,
   }) {
-    return $default();
+    return newIndex();
   }
 
   @override
   @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function()? $default, {
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? newIndex,
     TResult? Function()? lastUnused,
     TResult? Function(int index)? peek,
     TResult? Function(int index)? reset,
   }) {
-    return $default?.call();
+    return newIndex?.call();
   }
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function()? $default, {
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? newIndex,
     TResult Function()? lastUnused,
     TResult Function(int index)? peek,
     TResult Function(int index)? reset,
     required TResult orElse(),
   }) {
-    if ($default != null) {
-      return $default();
+    if (newIndex != null) {
+      return newIndex();
     }
     return orElse();
   }
 
   @override
   @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(AddressIndex_New value) $default, {
+  TResult map<TResult extends Object?>({
+    required TResult Function(AddressIndex_NewIndex value) newIndex,
     required TResult Function(AddressIndex_LastUnused value) lastUnused,
     required TResult Function(AddressIndex_Peek value) peek,
     required TResult Function(AddressIndex_Reset value) reset,
   }) {
-    return $default(this);
+    return newIndex(this);
   }
 
   @override
   @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(AddressIndex_New value)? $default, {
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(AddressIndex_NewIndex value)? newIndex,
     TResult? Function(AddressIndex_LastUnused value)? lastUnused,
     TResult? Function(AddressIndex_Peek value)? peek,
     TResult? Function(AddressIndex_Reset value)? reset,
   }) {
-    return $default?.call(this);
+    return newIndex?.call(this);
   }
 
   @override
   @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(AddressIndex_New value)? $default, {
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(AddressIndex_NewIndex value)? newIndex,
     TResult Function(AddressIndex_LastUnused value)? lastUnused,
     TResult Function(AddressIndex_Peek value)? peek,
     TResult Function(AddressIndex_Reset value)? reset,
     required TResult orElse(),
   }) {
-    if ($default != null) {
-      return $default(this);
+    if (newIndex != null) {
+      return newIndex(this);
     }
     return orElse();
   }
 }
 
-abstract class AddressIndex_New implements AddressIndex {
-  const factory AddressIndex_New() = _$AddressIndex_NewImpl;
+abstract class AddressIndex_NewIndex implements AddressIndex {
+  const factory AddressIndex_NewIndex() = _$AddressIndex_NewIndexImpl;
 }
 
 /// @nodoc
@@ -240,8 +242,8 @@ class _$AddressIndex_LastUnusedImpl implements AddressIndex_LastUnused {
 
   @override
   @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function() $default, {
+  TResult when<TResult extends Object?>({
+    required TResult Function() newIndex,
     required TResult Function() lastUnused,
     required TResult Function(int index) peek,
     required TResult Function(int index) reset,
@@ -251,8 +253,8 @@ class _$AddressIndex_LastUnusedImpl implements AddressIndex_LastUnused {
 
   @override
   @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function()? $default, {
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? newIndex,
     TResult? Function()? lastUnused,
     TResult? Function(int index)? peek,
     TResult? Function(int index)? reset,
@@ -262,8 +264,8 @@ class _$AddressIndex_LastUnusedImpl implements AddressIndex_LastUnused {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function()? $default, {
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? newIndex,
     TResult Function()? lastUnused,
     TResult Function(int index)? peek,
     TResult Function(int index)? reset,
@@ -277,8 +279,8 @@ class _$AddressIndex_LastUnusedImpl implements AddressIndex_LastUnused {
 
   @override
   @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(AddressIndex_New value) $default, {
+  TResult map<TResult extends Object?>({
+    required TResult Function(AddressIndex_NewIndex value) newIndex,
     required TResult Function(AddressIndex_LastUnused value) lastUnused,
     required TResult Function(AddressIndex_Peek value) peek,
     required TResult Function(AddressIndex_Reset value) reset,
@@ -288,8 +290,8 @@ class _$AddressIndex_LastUnusedImpl implements AddressIndex_LastUnused {
 
   @override
   @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(AddressIndex_New value)? $default, {
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(AddressIndex_NewIndex value)? newIndex,
     TResult? Function(AddressIndex_LastUnused value)? lastUnused,
     TResult? Function(AddressIndex_Peek value)? peek,
     TResult? Function(AddressIndex_Reset value)? reset,
@@ -299,8 +301,8 @@ class _$AddressIndex_LastUnusedImpl implements AddressIndex_LastUnused {
 
   @override
   @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(AddressIndex_New value)? $default, {
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(AddressIndex_NewIndex value)? newIndex,
     TResult Function(AddressIndex_LastUnused value)? lastUnused,
     TResult Function(AddressIndex_Peek value)? peek,
     TResult Function(AddressIndex_Reset value)? reset,
@@ -381,8 +383,8 @@ class _$AddressIndex_PeekImpl implements AddressIndex_Peek {
 
   @override
   @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function() $default, {
+  TResult when<TResult extends Object?>({
+    required TResult Function() newIndex,
     required TResult Function() lastUnused,
     required TResult Function(int index) peek,
     required TResult Function(int index) reset,
@@ -392,8 +394,8 @@ class _$AddressIndex_PeekImpl implements AddressIndex_Peek {
 
   @override
   @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function()? $default, {
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? newIndex,
     TResult? Function()? lastUnused,
     TResult? Function(int index)? peek,
     TResult? Function(int index)? reset,
@@ -403,8 +405,8 @@ class _$AddressIndex_PeekImpl implements AddressIndex_Peek {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function()? $default, {
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? newIndex,
     TResult Function()? lastUnused,
     TResult Function(int index)? peek,
     TResult Function(int index)? reset,
@@ -418,8 +420,8 @@ class _$AddressIndex_PeekImpl implements AddressIndex_Peek {
 
   @override
   @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(AddressIndex_New value) $default, {
+  TResult map<TResult extends Object?>({
+    required TResult Function(AddressIndex_NewIndex value) newIndex,
     required TResult Function(AddressIndex_LastUnused value) lastUnused,
     required TResult Function(AddressIndex_Peek value) peek,
     required TResult Function(AddressIndex_Reset value) reset,
@@ -429,8 +431,8 @@ class _$AddressIndex_PeekImpl implements AddressIndex_Peek {
 
   @override
   @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(AddressIndex_New value)? $default, {
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(AddressIndex_NewIndex value)? newIndex,
     TResult? Function(AddressIndex_LastUnused value)? lastUnused,
     TResult? Function(AddressIndex_Peek value)? peek,
     TResult? Function(AddressIndex_Reset value)? reset,
@@ -440,8 +442,8 @@ class _$AddressIndex_PeekImpl implements AddressIndex_Peek {
 
   @override
   @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(AddressIndex_New value)? $default, {
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(AddressIndex_NewIndex value)? newIndex,
     TResult Function(AddressIndex_LastUnused value)? lastUnused,
     TResult Function(AddressIndex_Peek value)? peek,
     TResult Function(AddressIndex_Reset value)? reset,
@@ -528,8 +530,8 @@ class _$AddressIndex_ResetImpl implements AddressIndex_Reset {
 
   @override
   @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function() $default, {
+  TResult when<TResult extends Object?>({
+    required TResult Function() newIndex,
     required TResult Function() lastUnused,
     required TResult Function(int index) peek,
     required TResult Function(int index) reset,
@@ -539,8 +541,8 @@ class _$AddressIndex_ResetImpl implements AddressIndex_Reset {
 
   @override
   @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function()? $default, {
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? newIndex,
     TResult? Function()? lastUnused,
     TResult? Function(int index)? peek,
     TResult? Function(int index)? reset,
@@ -550,8 +552,8 @@ class _$AddressIndex_ResetImpl implements AddressIndex_Reset {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function()? $default, {
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? newIndex,
     TResult Function()? lastUnused,
     TResult Function(int index)? peek,
     TResult Function(int index)? reset,
@@ -565,8 +567,8 @@ class _$AddressIndex_ResetImpl implements AddressIndex_Reset {
 
   @override
   @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(AddressIndex_New value) $default, {
+  TResult map<TResult extends Object?>({
+    required TResult Function(AddressIndex_NewIndex value) newIndex,
     required TResult Function(AddressIndex_LastUnused value) lastUnused,
     required TResult Function(AddressIndex_Peek value) peek,
     required TResult Function(AddressIndex_Reset value) reset,
@@ -576,8 +578,8 @@ class _$AddressIndex_ResetImpl implements AddressIndex_Reset {
 
   @override
   @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(AddressIndex_New value)? $default, {
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(AddressIndex_NewIndex value)? newIndex,
     TResult? Function(AddressIndex_LastUnused value)? lastUnused,
     TResult? Function(AddressIndex_Peek value)? peek,
     TResult? Function(AddressIndex_Reset value)? reset,
@@ -587,8 +589,8 @@ class _$AddressIndex_ResetImpl implements AddressIndex_Reset {
 
   @override
   @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(AddressIndex_New value)? $default, {
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(AddressIndex_NewIndex value)? newIndex,
     TResult Function(AddressIndex_LastUnused value)? lastUnused,
     TResult Function(AddressIndex_Peek value)? peek,
     TResult Function(AddressIndex_Reset value)? reset,

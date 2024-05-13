@@ -506,9 +506,9 @@ typedef struct wire_DatabaseConfig {
   union DatabaseConfigKind *kind;
 } wire_DatabaseConfig;
 
-typedef struct wire_AddressIndex_New {
+typedef struct wire_AddressIndex_NewIndex {
 
-} wire_AddressIndex_New;
+} wire_AddressIndex_NewIndex;
 
 typedef struct wire_AddressIndex_LastUnused {
 
@@ -523,7 +523,7 @@ typedef struct wire_AddressIndex_Reset {
 } wire_AddressIndex_Reset;
 
 typedef union AddressIndexKind {
-  struct wire_AddressIndex_New *New;
+  struct wire_AddressIndex_NewIndex *NewIndex;
   struct wire_AddressIndex_LastUnused *LastUnused;
   struct wire_AddressIndex_Peek *Peek;
   struct wire_AddressIndex_Reset *Reset;

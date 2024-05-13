@@ -346,19 +346,19 @@ mod test {
 
         // new index still 0
         assert_eq!(
-            wallet.get_address(AddressIndex::New).unwrap().address,
+            wallet.get_address(AddressIndex::NewIndex).unwrap().address,
             "bcrt1qqjn9gky9mkrm3c28e5e87t5akd3twg6xezp0tv"
         );
 
         // new index now 1
         assert_eq!(
-            wallet.get_address(AddressIndex::New).unwrap().address,
+            wallet.get_address(AddressIndex::NewIndex).unwrap().address,
             "bcrt1q0xs7dau8af22rspp4klya4f7lhggcnqfun2y3a"
         );
 
         // new index now 2
         assert_eq!(
-            wallet.get_address(AddressIndex::New).unwrap().address,
+            wallet.get_address(AddressIndex::NewIndex).unwrap().address,
             "bcrt1q5g0mq6dkmwzvxscqwgc932jhgcxuqqkjv09tkj"
         );
 
@@ -382,7 +382,7 @@ mod test {
 
         // new index 1 again
         assert_eq!(
-            wallet.get_address(AddressIndex::New).unwrap().address,
+            wallet.get_address(AddressIndex::NewIndex).unwrap().address,
             "bcrt1q0xs7dau8af22rspp4klya4f7lhggcnqfun2y3a"
         );
     }
@@ -408,12 +408,12 @@ mod test {
         .unwrap();
 
         assert_eq!(
-            wallet.get_address(AddressIndex::New).unwrap().address,
+            wallet.get_address(AddressIndex::NewIndex).unwrap().address,
             "bcrt1qqjn9gky9mkrm3c28e5e87t5akd3twg6xezp0tv"
         );
 
         assert_eq!(
-            wallet.get_address(AddressIndex::New).unwrap().address,
+            wallet.get_address(AddressIndex::NewIndex).unwrap().address,
             "bcrt1q0xs7dau8af22rspp4klya4f7lhggcnqfun2y3a"
         );
 
@@ -427,7 +427,7 @@ mod test {
 
         assert_eq!(
             wallet
-                .get_internal_address(AddressIndex::New)
+                .get_internal_address(AddressIndex::NewIndex)
                 .unwrap()
                 .address,
             "bcrt1qpmz73cyx00r4a5dea469j40ax6d6kqyd67nnpj"
@@ -435,7 +435,7 @@ mod test {
 
         assert_eq!(
             wallet
-                .get_internal_address(AddressIndex::New)
+                .get_internal_address(AddressIndex::NewIndex)
                 .unwrap()
                 .address,
             "bcrt1qaux734vuhykww9632v8cmdnk7z2mw5lsf74v6k"

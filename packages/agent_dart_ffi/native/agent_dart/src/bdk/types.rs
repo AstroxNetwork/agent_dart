@@ -172,10 +172,14 @@ impl From<BdkBalance> for Balance {
 /// The address index selection strategy to use to derived an address from the wallet's external
 /// descriptor.
 pub enum AddressIndex {
-    ///Return a new address after incrementing the current descriptor index.
-    New,
-    ///Return the address for the current descriptor index if it has not been used in a received transaction. Otherwise return a new address as with AddressIndex.New.
-    ///Use with caution, if the wallet has not yet detected an address has been used it could return an already used address. This function is primarily meant for situations where the caller is untrusted; for example when deriving donation addresses on-demand for a public web page.
+    /// Return a new address after incrementing the current descriptor index.
+    NewIndex,
+    /// Return the address for the current descriptor index if it has not been used
+    /// in a received transaction. Otherwise, return a new address as with AddressIndex.NewIndex.
+    /// Use with caution, if the wallet has not yet detected an address has been used
+    /// it could return an already used address. This function is primarily meant for situations
+    /// where the caller is untrusted; for example when deriving donation addresses on-demand
+    /// for a public web page.
     LastUnused,
     /// Return the address for a specific descriptor index. Does not change the current descriptor
     /// index used by `AddressIndex` and `AddressIndex.LastUsed`.
@@ -194,7 +198,7 @@ pub enum AddressIndex {
 impl From<AddressIndex> for bdk_lite::wallet::AddressIndex {
     fn from(x: AddressIndex) -> bdk_lite::wallet::AddressIndex {
         match x {
-            AddressIndex::New => bdk_lite::wallet::AddressIndex::New,
+            AddressIndex::NewIndex => bdk_lite::wallet::AddressIndex::NewIndex,
             AddressIndex::LastUnused => bdk_lite::wallet::AddressIndex::LastUnused,
             AddressIndex::Peek { index } => bdk_lite::wallet::AddressIndex::Peek(index),
             AddressIndex::Reset { index } => bdk_lite::wallet::AddressIndex::Reset(index),

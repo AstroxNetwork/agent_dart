@@ -769,11 +769,15 @@ class WalletInstance extends FrbOpaque {
 
 @freezed
 sealed class AddressIndex with _$AddressIndex {
-  ///Return a new address after incrementing the current descriptor index.
-  const factory AddressIndex.new() = AddressIndex_New;
+  /// Return a new address after incrementing the current descriptor index.
+  const factory AddressIndex.newIndex() = AddressIndex_NewIndex;
 
-  ///Return the address for the current descriptor index if it has not been used in a received transaction. Otherwise return a new address as with AddressIndex.New.
-  ///Use with caution, if the wallet has not yet detected an address has been used it could return an already used address. This function is primarily meant for situations where the caller is untrusted; for example when deriving donation addresses on-demand for a public web page.
+  /// Return the address for the current descriptor index if it has not been used
+  /// in a received transaction. Otherwise, return a new address as with AddressIndex.NewIndex.
+  /// Use with caution, if the wallet has not yet detected an address has been used
+  /// it could return an already used address. This function is primarily meant for situations
+  /// where the caller is untrusted; for example when deriving donation addresses on-demand
+  /// for a public web page.
   const factory AddressIndex.lastUnused() = AddressIndex_LastUnused;
 
   /// Return the address for a specific descriptor index. Does not change the current descriptor
@@ -5156,7 +5160,7 @@ class AgentDartPlatform extends FlutterRustBridgeBase<AgentDartWire> {
 
   void _api_fill_to_wire_address_index(
       AddressIndex apiObj, wire_AddressIndex wireObj) {
-    if (apiObj is AddressIndex_New) {
+    if (apiObj is AddressIndex_NewIndex) {
       wireObj.tag = 0;
       return;
     }
@@ -7873,9 +7877,9 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _wire_get_balance__static_method__ApiPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              wire_WalletInstance)>>('wire_get_balance__static_method__Api');
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Int64, wire_WalletInstance)>>(
+      'wire_get_balance__static_method__Api');
   late final _wire_get_balance__static_method__Api =
       _wire_get_balance__static_method__ApiPtr
           .asFunction<void Function(int, wire_WalletInstance)>();
@@ -7891,8 +7895,8 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _wire_list_unspent_outputs__static_method__ApiPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(ffi.Int64, wire_WalletInstance)>>(
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Int64, wire_WalletInstance)>>(
       'wire_list_unspent_outputs__static_method__Api');
   late final _wire_list_unspent_outputs__static_method__Api =
       _wire_list_unspent_outputs__static_method__ApiPtr
@@ -7955,9 +7959,9 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _wire_wallet_network__static_method__ApiPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              wire_WalletInstance)>>('wire_wallet_network__static_method__Api');
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Int64, wire_WalletInstance)>>(
+      'wire_wallet_network__static_method__Api');
   late final _wire_wallet_network__static_method__Api =
       _wire_wallet_network__static_method__ApiPtr
           .asFunction<void Function(int, wire_WalletInstance)>();
@@ -7973,9 +7977,9 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _wire_list_unspent__static_method__ApiPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              wire_WalletInstance)>>('wire_list_unspent__static_method__Api');
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Int64, wire_WalletInstance)>>(
+      'wire_list_unspent__static_method__Api');
   late final _wire_list_unspent__static_method__Api =
       _wire_list_unspent__static_method__ApiPtr
           .asFunction<void Function(int, wire_WalletInstance)>();
@@ -8405,9 +8409,9 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _new_box_autoadd_schnorr_sign_with_seed_req_0Ptr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<wire_SchnorrSignWithSeedReq>
-              Function()>>('new_box_autoadd_schnorr_sign_with_seed_req_0');
+          ffi
+          .NativeFunction<ffi.Pointer<wire_SchnorrSignWithSeedReq> Function()>>(
+      'new_box_autoadd_schnorr_sign_with_seed_req_0');
   late final _new_box_autoadd_schnorr_sign_with_seed_req_0 =
       _new_box_autoadd_schnorr_sign_with_seed_req_0Ptr
           .asFunction<ffi.Pointer<wire_SchnorrSignWithSeedReq> Function()>();
@@ -8450,9 +8454,9 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _new_box_autoadd_secp_256_k_1_from_seed_req_0Ptr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<wire_Secp256k1FromSeedReq>
-              Function()>>('new_box_autoadd_secp_256_k_1_from_seed_req_0');
+          ffi
+          .NativeFunction<ffi.Pointer<wire_Secp256k1FromSeedReq> Function()>>(
+      'new_box_autoadd_secp_256_k_1_from_seed_req_0');
   late final _new_box_autoadd_secp_256_k_1_from_seed_req_0 =
       _new_box_autoadd_secp_256_k_1_from_seed_req_0Ptr
           .asFunction<ffi.Pointer<wire_Secp256k1FromSeedReq> Function()>();
@@ -8560,9 +8564,9 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _new_box_autoadd_sqlite_db_configuration_0Ptr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<wire_SqliteDbConfiguration>
-              Function()>>('new_box_autoadd_sqlite_db_configuration_0');
+          ffi
+          .NativeFunction<ffi.Pointer<wire_SqliteDbConfiguration> Function()>>(
+      'new_box_autoadd_sqlite_db_configuration_0');
   late final _new_box_autoadd_sqlite_db_configuration_0 =
       _new_box_autoadd_sqlite_db_configuration_0Ptr
           .asFunction<ffi.Pointer<wire_SqliteDbConfiguration> Function()>();
@@ -8673,9 +8677,9 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _new_list_tx_bytes_0Ptr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<wire_list_tx_bytes> Function(
-              ffi.Int32)>>('new_list_tx_bytes_0');
+          ffi
+          .NativeFunction<ffi.Pointer<wire_list_tx_bytes> Function(ffi.Int32)>>(
+      'new_list_tx_bytes_0');
   late final _new_list_tx_bytes_0 = _new_list_tx_bytes_0Ptr
       .asFunction<ffi.Pointer<wire_list_tx_bytes> Function(int)>();
 
@@ -8688,9 +8692,9 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
   }
 
   late final _new_uint_8_list_0Ptr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<wire_uint_8_list> Function(
-              ffi.Int32)>>('new_uint_8_list_0');
+          ffi
+          .NativeFunction<ffi.Pointer<wire_uint_8_list> Function(ffi.Int32)>>(
+      'new_uint_8_list_0');
   late final _new_uint_8_list_0 = _new_uint_8_list_0Ptr
       .asFunction<ffi.Pointer<wire_uint_8_list> Function(int)>();
 
@@ -9273,7 +9277,7 @@ final class wire_DatabaseConfig extends ffi.Struct {
   external ffi.Pointer<DatabaseConfigKind> kind;
 }
 
-final class wire_AddressIndex_New extends ffi.Opaque {}
+final class wire_AddressIndex_NewIndex extends ffi.Opaque {}
 
 final class wire_AddressIndex_LastUnused extends ffi.Opaque {}
 
@@ -9288,7 +9292,7 @@ final class wire_AddressIndex_Reset extends ffi.Struct {
 }
 
 final class AddressIndexKind extends ffi.Union {
-  external ffi.Pointer<wire_AddressIndex_New> New;
+  external ffi.Pointer<wire_AddressIndex_NewIndex> NewIndex;
 
   external ffi.Pointer<wire_AddressIndex_LastUnused> LastUnused;
 
