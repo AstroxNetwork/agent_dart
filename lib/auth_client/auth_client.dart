@@ -278,7 +278,7 @@ class AuthClient {
         'sessionPublicKey': key != null
             ? (key as SignIdentity).getPublicKey().toDer().toHex()
             : null,
-        'canisterId': options?.canisterId
+        'canisterId': options?.canisterId,
       },
     );
     return AuthPayload(identityProviderUrl.toString(), scheme);
