@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.23
+
+- Fix encoder with deps and format files.
+
 ## 1.0.0-dev.22
 
 - Correct invalid plugin references by marking FFI plugins.
