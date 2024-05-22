@@ -269,9 +269,9 @@ void idlTest() {
     );
     expect(
       () => IDL.encode([
-        IDL.Tuple([IDL.Int, IDL.Text])
+        IDL.Tuple([IDL.Int, IDL.Text]),
       ], [
-        [0]
+        [0],
       ]),
       throwsA(isError<ArgumentError>()),
     );
@@ -302,7 +302,7 @@ void idlTest() {
         BigInt.from(0),
         BigInt.from(1),
         BigInt.from(1) << 60,
-        BigInt.from(13)
+        BigInt.from(13),
       ],
       '4449444c016d780100040000000000000000010000000000000000000000000000100d00000000000000',
       'Array of Nat64s',
@@ -329,9 +329,9 @@ void idlTest() {
     );
     expect(
       () => IDL.encode([
-        IDL.Vec(IDL.Int)
+        IDL.Vec(IDL.Int),
       ], [
-        ['fail']
+        ['fail'],
       ]),
       throwsA(isError<ArgumentError>()),
     );
@@ -342,7 +342,7 @@ void idlTest() {
     testArg(
       IDL.Vec(IDL.Tuple([IDL.Int, IDL.Text])),
       [
-        [BigInt.from(42), 'text']
+        [BigInt.from(42), 'text'],
       ],
       '4449444c026c02007c01716d000101012a0474657874',
       'Arr of Tuple',
@@ -353,14 +353,14 @@ void idlTest() {
       IDL.Tuple([
         IDL.Tuple([
           IDL.Tuple([
-            IDL.Tuple([IDL.Null])
-          ])
-        ])
+            IDL.Tuple([IDL.Null]),
+          ]),
+        ]),
       ]),
       [
         [
           [
-            [null]
+            [null],
           ]
         ]
       ],
@@ -374,9 +374,9 @@ void idlTest() {
     testArg(IDL.Record({}), {}, '4449444c016c000100', 'Empty record');
     expect(
       () => IDL.encode([
-        IDL.Record({'a': IDL.Text})
+        IDL.Record({'a': IDL.Text}),
       ], [
-        {'b': 'b'}
+        {'b': 'b'},
       ]),
       throwsA(isError<StateError>("Record is missing the key 'a'.")),
     );
@@ -400,13 +400,13 @@ void idlTest() {
 
     final foobar = FooBar.fromJson({'foo': '💩', 'bar': BigInt.from(42)});
     final encode = IDL.encode([
-      IDL.Opt(IDL.Record({'foo': IDL.Text, 'bar': IDL.Int}))
+      IDL.Opt(IDL.Record({'foo': IDL.Text, 'bar': IDL.Int})),
     ], [
-      [foobar]
+      [foobar],
     ]);
     final decode = IDL.decode(
       [
-        IDL.Opt(IDL.Record({'foo': IDL.Text, 'bar': IDL.Int}))
+        IDL.Opt(IDL.Record({'foo': IDL.Text, 'bar': IDL.Int})),
       ],
       encode,
     );
@@ -434,7 +434,7 @@ void idlTest() {
         'foo': IDL.Int32,
         'bar': recordType,
         'baz': recordType,
-        'bib': recordType
+        'bib': recordType,
       }),
       {'foo': 42, 'bar': recordValue, 'baz': recordValue, 'bib': recordValue},
       '4449444c026c02d3e3aa027e868eb702756c04d3e3aa0200dbe3aa0200bbf1aa0200868eb702750101012a000000012a000000012a0000002a000000',
@@ -442,10 +442,10 @@ void idlTest() {
     );
     testDecode(
       IDL.Record({
-        'baz': IDL.Record({'foo': IDL.Int32})
+        'baz': IDL.Record({'foo': IDL.Int32}),
       }),
       {
-        'baz': {'foo': 42}
+        'baz': {'foo': 42},
       },
       '4449444c026c02d3e3aa027e868eb702756c04d3e3aa0200dbe3aa0200bbf1aa0200868eb702750101012a000000012a000000012a0000002a000000',
       'skip nested fields',
@@ -470,11 +470,11 @@ void idlTest() {
     testArg(
       IDL.Tuple([
         IDL.Tuple([IDL.Int8, IDL.Bool]),
-        IDL.Record({'_0_': IDL.Int8, '_1_': IDL.Bool})
+        IDL.Record({'_0_': IDL.Int8, '_1_': IDL.Bool}),
       ]),
       [
         [42, true],
-        {'_0_': 42, '_1_': true}
+        {'_0_': 42, '_1_': true},
       ],
       '4449444c026c020077017e6c020000010001012a012a01',
       'Tuple and Record',
@@ -551,7 +551,7 @@ void idlTest() {
     // Service
     testArg(
       IDL.Service({
-        'foo': IDL.Func([IDL.Text], [IDL.Nat], [])
+        'foo': IDL.Func([IDL.Text], [IDL.Nat], []),
       }),
       Principal.fromText('w7x7r-cok77-xa'),
       '4449444c026a0171017d00690103666f6f0001010103caffee',
@@ -559,7 +559,7 @@ void idlTest() {
     );
     testArg(
       IDL.Service({
-        'foo': IDL.Func([IDL.Text], [IDL.Nat], ['query'])
+        'foo': IDL.Func([IDL.Text], [IDL.Nat], ['query']),
       }),
       Principal.fromText('w7x7r-cok77-xa'),
       '4449444c026a0171017d0101690103666f6f0001010103caffee',
@@ -576,7 +576,7 @@ void idlTest() {
     );
     testArg(
       IDL.Service({
-        'foo': IDL.Func([IDL.Text], [IDL.Nat], ['composite_query'])
+        'foo': IDL.Func([IDL.Text], [IDL.Nat], ['composite_query']),
       }),
       Principal.fromText('w7x7r-cok77-xa'),
       '4449444c026a0171017d0103690103666f6f0001010103caffee',
@@ -606,9 +606,9 @@ void idlTest() {
     );
     expect(
       () => IDL.encode([
-        result
+        result,
       ], [
-        {'ok': 'ok', 'err': 'err'}
+        {'ok': 'ok', 'err': 'err'},
       ]),
       throwsA(isError<ArgumentError>()),
     );
@@ -630,9 +630,9 @@ void idlTest() {
     );
     expect(
       () => IDL.encode([
-        IDL.Variant({'ok': IDL.Text, 'err': IDL.Empty})
+        IDL.Variant({'ok': IDL.Text, 'err': IDL.Empty}),
       ], [
-        {'err': 'uhoh'}
+        {'err': 'uhoh'},
       ]),
       throwsA(isError<ArgumentError>()),
     );
@@ -648,7 +648,7 @@ void idlTest() {
     testArg(
       IDL.Opt(IDL.Opt(IDL.Nat)),
       [
-        [BigInt.from(1)]
+        [BigInt.from(1)],
       ],
       '4449444c026e7d6e000101010101',
       'Nested option',
@@ -656,7 +656,7 @@ void idlTest() {
     testArg(
       IDL.Opt(IDL.Opt(IDL.Null)),
       [
-        [null]
+        [null],
       ],
       '4449444c026e7f6e0001010101',
       'Null option',
@@ -668,7 +668,7 @@ void idlTest() {
         IDL.Vec(IDL.Int),
         IDL.Vec(IDL.Nat),
         IDL.Vec(IDL.Int),
-        IDL.Vec(IDL.Nat)
+        IDL.Vec(IDL.Nat),
       ]),
       [[], [], [], []],
       '4449444c036d7c6d7d6c040000010102000301010200000000',
@@ -697,8 +697,8 @@ void idlTest() {
         {
           'head': BigInt.from(1),
           'tail': [
-            {'head': BigInt.from(2), 'tail': []}
-          ]
+            {'head': BigInt.from(2), 'tail': []},
+          ],
         }
       ],
       '4449444c026e016c02a0d2aca8047c90eddae7040001000101010200',
@@ -724,8 +724,8 @@ void idlTest() {
         {
           'head': BigInt.from(1),
           'tail': [
-            {'head': BigInt.from(2), 'tail': []}
-          ]
+            {'head': BigInt.from(2), 'tail': []},
+          ],
         }
       ],
       '4449444c026e016c02a0d2aca8047c90eddae7040001000101010200',
@@ -741,7 +741,7 @@ void idlTest() {
       [
         BigInt.from(42),
         ['test'],
-        {'ok': 'good'}
+        {'ok': 'good'},
       ],
       '4449444c026e716b029cc20171e58eb40271037d00012a0104746573740004676f6f64',
       'Multiple arguments',
