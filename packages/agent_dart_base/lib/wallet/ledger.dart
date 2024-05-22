@@ -272,7 +272,7 @@ class SendArgs {
       'memo': memo,
       'from_subaccount': fromSubAccount != null ? [fromSubAccount] : [],
       'created_at_time': createdAtTime != null ? [createdAtTime!.toJson()] : [],
-      'amount': amount.toJson()
+      'amount': amount.toJson(),
     }..removeWhere((key, value) => value == null);
   }
 }
@@ -363,7 +363,7 @@ class TransferArgs {
       'memo': memo,
       'from_subaccount': fromSubAccount != null ? [fromSubAccount] : [],
       'created_at_time': createdAtTime != null ? [createdAtTime!.toJson()] : [],
-      'amount': amount.toJson()
+      'amount': amount.toJson(),
     }..removeWhere((key, value) => value == null);
   }
 }
@@ -412,7 +412,7 @@ class TransferError {
       'BadFee': badFee,
       'TxDuplicate': txDuplicate,
       'InsufficientFunds': insufficientFunds,
-      'TxCreatedInFuture': txCreatedInFuture
+      'TxCreatedInFuture': txCreatedInFuture,
     }..removeWhere((key, value) => value == null || value == false);
     if (res['TxCreatedInFuture'] != null && res['TxCreatedInFuture'] == true) {
       res.update('TxCreatedInFuture', (value) => null);
@@ -597,7 +597,7 @@ class Ledger {
           ? null
           : {
               'timestamp_nanos':
-                  sendOpts?.createAtTime?.millisecondsSinceEpoch.toBn()
+                  sendOpts?.createAtTime?.millisecondsSinceEpoch.toBn(),
             },
     };
     final res = await ledgerInstance.agent.actor!.getFunc(

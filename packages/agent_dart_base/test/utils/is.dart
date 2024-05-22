@@ -30,7 +30,7 @@ void main() {
   test('isJsonObject', () {
     const jsonObject = {
       'Test': '1234',
-      'NestedTest': {'Test': '5678'}
+      'NestedTest': {'Test': '5678'},
     };
     expect(isJsonObject('{}'), true); // true
     expect(isJsonObject(jsonEncode(jsonObject)), true); // true

@@ -69,7 +69,7 @@ class Cert {
     return {
       'tree': tree,
       'signature': signature,
-      'delegation': delegation?.toJson() ?? {}
+      'delegation': delegation?.toJson() ?? {},
     };
   }
 }

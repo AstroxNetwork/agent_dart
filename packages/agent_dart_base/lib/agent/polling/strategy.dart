@@ -19,7 +19,7 @@ PollStrategy defaultStrategy() {
   return chain([
     conditionalDelay(once(), 1000),
     backoff(1000, 1.2),
-    timeout(5 * 60 * 1000)
+    timeout(5 * 60 * 1000),
   ]);
 }
 

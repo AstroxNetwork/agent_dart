@@ -22,9 +22,8 @@ class CreateUrlOptions {
   final PublicKey publicKey;
 
   /// The scope of the delegation. This must contain at least one key and
-  /// a maximum of four. This is validated in
-  /// createAuthenticationRequestUrl but also will be validated as part
-  /// of the identity provider.
+  /// a maximum of four. This is validated in [createAuthenticationRequestUrl]
+  /// but also will be validated as part of the identity provider.
   final List<dynamic> scope;
 
   /// The URI to redirect to, after authentication. By default,
@@ -66,7 +65,7 @@ Uri createAuthenticationRequestUrl(CreateUrlOptions options) {
           .map((p) => p.toString())
           .join(' '),
     ),
-    const MapEntry('state', '')
+    const MapEntry('state', ''),
   ]);
 
   return url;

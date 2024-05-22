@@ -169,8 +169,8 @@ abstract class Agent {
   ///     endpoint.
   Future<Map> status();
 
-  /// Send a query call to a canister. See the interface spec
-  /// https://sdk.dfinity.org/docs/interface-spec/#http-query.
+  /// Send a query call to a canister. See
+  /// [the interface spec](https://sdk.dfinity.org/docs/interface-spec/#http-query).
   /// @param canisterId The Principal of the Canister to send the query to. Sending a query to
   ///     the management canister is not supported (as it has no meaning from an agent).
   /// @param options Options to use to create and send the query.
