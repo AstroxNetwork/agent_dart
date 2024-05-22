@@ -98,7 +98,7 @@ class AnonymousIdentity implements Identity {
   Future<Map<String, dynamic>> transformRequest(HttpAgentRequest request) {
     return Future.value({
       ...request.toJson(),
-      'body': {'content': request.body.toJson()}
+      'body': {'content': request.body.toJson()},
     });
   }
 }

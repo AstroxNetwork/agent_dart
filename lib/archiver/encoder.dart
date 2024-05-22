@@ -50,7 +50,7 @@ class SigningBlockEncoder extends ZipEncoder {
               messages: [message],
               signatures: [signature],
               publicKeys: [publicKey],
-            )
+            ),
           ],
         );
 

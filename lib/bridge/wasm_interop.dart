@@ -594,7 +594,7 @@ const _importExportKindMap = {
   'function': ImportExportKind.function,
   'global': ImportExportKind.global,
   'memory': ImportExportKind.memory,
-  'table': ImportExportKind.table
+  'table': ImportExportKind.table,
 };
 
 @JS()
