@@ -296,7 +296,7 @@ const List<String> charset = [
   'u',
   'a',
   '7',
-  'l'
+  'l',
 ];
 // @formatter:on
 
@@ -306,7 +306,7 @@ const List<int> generator = [
   0x26508e6d,
   0x1ea119fa,
   0x3d4233dd,
-  0x2a1462b3
+  0x2a1462b3,
 ];
 // @formatter:on
 

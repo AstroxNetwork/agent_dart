@@ -240,7 +240,7 @@ class HttpResponseBody extends ResponseBody {
       'status': status,
       'statusText': statusText,
       'body': body,
-      'arrayBuffer': arrayBuffer
+      'arrayBuffer': arrayBuffer,
     };
   }
 }
@@ -320,7 +320,7 @@ class QueryResponseWithStatus extends QueryResponse {
         'arg': reply?.arg,
       },
       'rejected_code': rejectCode,
-      'rejected_message': rejectMessage
+      'rejected_message': rejectMessage,
     };
   }
 }

@@ -12,17 +12,17 @@ Service managementIDL() {
       [
         IDL.Record(
           {'amount': IDL.Opt(IDL.Nat), 'settings': IDL.Opt(canisterSettings)},
-        )
+        ),
       ],
       [
-        IDL.Record({'canister_id': canisterId})
+        IDL.Record({'canister_id': canisterId}),
       ],
       [],
     ),
     'create_canister': IDL.Func(
       [],
       [
-        IDL.Record({'canister_id': canisterId})
+        IDL.Record({'canister_id': canisterId}),
       ],
       [],
     ),
@@ -32,7 +32,7 @@ Service managementIDL() {
           'mode': IDL.Variant({
             'install': IDL.Null,
             'reinstall': IDL.Null,
-            'upgrade': IDL.Null
+            'upgrade': IDL.Null,
           }),
           'canister_id': canisterId,
           'wasm_module': wasmModule,
@@ -46,7 +46,7 @@ Service managementIDL() {
       [
         IDL.Record(
           {'canister_id': canisterId, 'new_controller': IDL.Principal},
-        )
+        ),
       ],
       [],
       [],

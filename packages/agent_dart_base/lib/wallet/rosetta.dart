@@ -329,7 +329,7 @@ class RosettaApi {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier.');
     final result = await request('/account/balance', {
       'network_identifier': networkIdentifier,
-      'account_identifier': {'address': accountAddress}
+      'account_identifier': {'address': accountAddress},
     });
     return rosetta.AccountBalanceResponse.fromJson(result);
   }
@@ -343,7 +343,7 @@ class RosettaApi {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier.');
     final result = await request('/block', {
       'network_identifier': networkIdentifier,
-      'block_identifier': {'index': blockIndex}
+      'block_identifier': {'index': blockIndex},
     });
     return rosetta.BlockResponse.fromJson(result);
   }
@@ -359,7 +359,7 @@ class RosettaApi {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier.');
     final result = await request('/search/transactions', {
       'network_identifier': networkIdentifier,
-      'account_identifier': {'address': accountAddress}
+      'account_identifier': {'address': accountAddress},
     });
     return rosetta.SearchTransactionsResponse.fromJson(result);
   }
@@ -374,7 +374,7 @@ class RosettaApi {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier.');
     final result = await request('/search/transactions', {
       'network_identifier': networkIdentifier,
-      'transaction_identifier': {'hash': transactionHash}
+      'transaction_identifier': {'hash': transactionHash},
     });
     return rosetta.SearchTransactionsResponse.fromJson(result);
   }

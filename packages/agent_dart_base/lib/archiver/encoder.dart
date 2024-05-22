@@ -50,7 +50,7 @@ class SigningBlockEncoder extends ZipEncoder {
               messages: [message],
               signatures: [signature],
               publicKeys: [publicKey],
-            )
+            ),
           ],
         );
 
@@ -161,6 +161,6 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
   Future<void> close() async {
     _encoder.writeBlock(_output);
     _encoder.endEncode();
-    _output.close();
+    await _output.close();
   }
 }

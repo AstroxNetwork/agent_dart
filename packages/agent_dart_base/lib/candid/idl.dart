@@ -750,7 +750,7 @@ class VecClass<T> extends ConstructType<List<T>> {
     final len = lebEncode(x.length);
     return u8aConcat([
       len,
-      ...x.map((dynamic d) => tryToJson(_type, d) ?? _type.encodeValue(d))
+      ...x.map((dynamic d) => tryToJson(_type, d) ?? _type.encodeValue(d)),
     ]);
   }
 
@@ -816,7 +816,7 @@ class OptClass<T> extends ConstructType<List> {
     final val = x[0];
     return u8aConcat([
       Uint8List.fromList([1]),
-      tryToJson(_type, val) ?? _type.encodeValue(val)
+      tryToJson(_type, val) ?? _type.encodeValue(val),
     ]);
   }
 
@@ -931,7 +931,7 @@ class RecordClass extends ConstructType<Map> {
     final fields = _fields.map(
       (entry) => u8aConcat([
         lebEncode(idlLabelToId(entry.key)),
-        entry.value.encodeType(typeTable)
+        entry.value.encodeType(typeTable),
       ]),
     );
     typeTable.add(this, u8aConcat([opCode, len, u8aConcat(fields.toList())]));
@@ -1051,7 +1051,7 @@ class TupleClass<T extends List> extends ConstructType<List> {
     final fields = _fields.map(
       (entry) => u8aConcat([
         lebEncode(idlLabelToId(entry.key)),
-        entry.value.encodeType(typeTable)
+        entry.value.encodeType(typeTable),
       ]),
     );
     typeTable.add(this, u8aConcat([opCode, len, u8aConcat(fields.toList())]));
@@ -1171,7 +1171,7 @@ class VariantClass extends ConstructType<Map<String, dynamic>> {
     final fields = _fields.map(
       (entry) => u8aConcat([
         lebEncode(idlLabelToId(entry.key)),
-        entry.value.encodeType(typeTable)
+        entry.value.encodeType(typeTable),
       ]),
     );
     typeTable.add(this, u8aConcat([opCode, len, ...fields]));
@@ -1353,7 +1353,7 @@ class PrincipalClass extends PrimitiveType<PrincipalId> {
     return u8aConcat([
       Uint8List.fromList([1]),
       len,
-      buf
+      buf,
     ]);
   }
 

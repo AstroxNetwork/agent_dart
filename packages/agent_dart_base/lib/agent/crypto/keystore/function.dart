@@ -322,7 +322,7 @@ Future<EncryptMessageResponse> encryptMessage({
   return EncryptMessageResponse(
     content: '$encryptedMessage?iv=$ivBase64',
     tags: [
-      ['p', theirPublicKey.toRaw().toHex()]
+      ['p', theirPublicKey.toRaw().toHex()],
     ],
     kind: 4,
     createdAt: (DateTime.now().millisecondsSinceEpoch / 1000).floor(),
@@ -441,7 +441,7 @@ class EncryptMessageResponse {
         'tags': tags,
         'kind': kind,
         'created_at': createdAt,
-        'pubkey': pubKey
+        'pubkey': pubKey,
       };
 }
 
