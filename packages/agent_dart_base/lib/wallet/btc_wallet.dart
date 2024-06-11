@@ -1777,7 +1777,7 @@ class BitcoinWallet {
     }
   }
 
-  Future<SignIdentity> getIdentity() async {
+  Future<Secp256k1KeyIdentity> getIdentity() async {
     final k = getWalletType() == WalletType.HD
         ? await descriptor.descriptor.descriptorSecretKey!
             .deriveIndex(currentIndex() ?? 0)
@@ -1785,6 +1785,6 @@ class BitcoinWallet {
 
     final kBytes = Uint8List.fromList(await k.secretBytes());
     _signIdentity = await Secp256k1KeyIdentity.fromSecretKey(kBytes);
-    return _signIdentity!;
+    return _signIdentity as Secp256k1KeyIdentity;
   }
 }

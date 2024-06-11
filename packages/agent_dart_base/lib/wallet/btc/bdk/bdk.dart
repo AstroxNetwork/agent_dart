@@ -2023,7 +2023,7 @@ class Wallet {
     );
   }
 
-  Future<SignIdentity> getIdentity({
+  Future<Secp256k1KeyIdentity> getIdentity({
     WalletType walletType = WalletType.HD,
     int? index,
   }) async {
