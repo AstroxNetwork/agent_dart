@@ -282,7 +282,7 @@ SelfDescribeEncoder initCborSerializerNoHead() {
     ..addEncoder(byteBufferEncoder);
 }
 
-BinaryBlob cborEncode(dynamic value, {SelfDescribeEncoder? withSerializer}) {
+Uint8List cborEncode(dynamic value, {SelfDescribeEncoder? withSerializer}) {
   final serializer = withSerializer ?? initCborSerializer();
   serializer.serialize(value);
   return Uint8List.fromList(serializer._out.getData());
