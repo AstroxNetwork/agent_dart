@@ -12,6 +12,11 @@ pub extern "C" fn wire_mnemonic_seed_to_key(port_: i64, req: *mut wire_SeedToKey
 }
 
 #[no_mangle]
+pub extern "C" fn wire_hex_bytes_to_wif(port_: i64, hex: *mut wire_uint_8_list, network: i32) {
+    wire_hex_bytes_to_wif_impl(port_, hex, network)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_bls_init(port_: i64) {
     wire_bls_init_impl(port_)
 }

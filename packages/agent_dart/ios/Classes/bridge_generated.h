@@ -573,6 +573,8 @@ void wire_mnemonic_phrase_to_seed(int64_t port_, struct wire_PhraseToSeedReq *re
 
 void wire_mnemonic_seed_to_key(int64_t port_, struct wire_SeedToKeyReq *req);
 
+void wire_hex_bytes_to_wif(int64_t port_, struct wire_uint_8_list *hex, int32_t network);
+
 void wire_bls_init(int64_t port_);
 
 void wire_bls_verify(int64_t port_, struct wire_BLSVerifyReq *req);
@@ -1062,6 +1064,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
     dummy_var ^= ((int64_t) (void*) wire_mnemonic_phrase_to_seed);
     dummy_var ^= ((int64_t) (void*) wire_mnemonic_seed_to_key);
+    dummy_var ^= ((int64_t) (void*) wire_hex_bytes_to_wif);
     dummy_var ^= ((int64_t) (void*) wire_bls_init);
     dummy_var ^= ((int64_t) (void*) wire_bls_verify);
     dummy_var ^= ((int64_t) (void*) wire_ed25519_from_seed);

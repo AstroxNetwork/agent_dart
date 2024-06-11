@@ -116,6 +116,24 @@ fn wire_mnemonic_seed_to_key_impl(
         },
     )
 }
+fn wire_hex_bytes_to_wif_impl(
+    port_: MessagePort,
+    hex: impl Wire2Api<String> + UnwindSafe,
+    network: impl Wire2Api<Network> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, String, _>(
+        WrapInfo {
+            debug_name: "hex_bytes_to_wif",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_hex = hex.wire2api();
+            let api_network = network.wire2api();
+            move |task_callback| hex_bytes_to_wif(api_hex, api_network)
+        },
+    )
+}
 fn wire_bls_init_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, bool, _>(
         WrapInfo {
