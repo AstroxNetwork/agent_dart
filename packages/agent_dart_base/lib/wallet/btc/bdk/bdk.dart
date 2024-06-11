@@ -866,6 +866,12 @@ class Mnemonic {
 class PartiallySignedTransaction {
   const PartiallySignedTransaction({required this.psbtBase64});
 
+  factory PartiallySignedTransaction.parse(String input) {
+    return PartiallySignedTransaction(
+      psbtBase64: isHex(input) ? base64Encode(input.toU8a()) : input,
+    );
+  }
+
   final String psbtBase64;
 
   /// Combines this [PartiallySignedTransaction] with other PSBT as described by BIP 174.
