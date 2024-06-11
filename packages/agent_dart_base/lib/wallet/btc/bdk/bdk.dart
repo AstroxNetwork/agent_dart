@@ -1674,13 +1674,18 @@ class Wallet {
     }
   }
 
-  Future<String> getPublicKey(int index) async {
+  Future<DescriptorSecretKey> getDescriptorSecretKey(int? index) async {
     final DescriptorSecretKey k;
     if (descriptor.descriptorSecretKey?.derivedPathPrefix != null) {
-      k = await descriptor.descriptorSecretKey!.deriveIndex(index);
+      k = await descriptor.descriptorSecretKey!.deriveIndex(index!);
     } else {
       k = descriptor.descriptorSecretKey!;
     }
+    return k;
+  }
+
+  Future<String> getPublicKey(int index) async {
+    final k = await getDescriptorSecretKey(index);
     final kBytes = Uint8List.fromList(await k.secretBytes());
     return k.getPubFromBytes(kBytes);
   }
@@ -1871,10 +1876,7 @@ class Wallet {
     int? index,
     required AddressType addressType,
   }) async {
-    final k = walletType == WalletType.HD
-        ? await descriptor.descriptorSecretKey!.deriveIndex(index!)
-        : descriptor.descriptorSecretKey!;
-
+    final k = await getDescriptorSecretKey(index);
     final kBytes = Uint8List.fromList(await k.secretBytes());
 
     if (!useBip322) {
@@ -2033,10 +2035,7 @@ class Wallet {
     WalletType walletType = WalletType.HD,
     int? index,
   }) async {
-    final k = walletType == WalletType.HD
-        ? await descriptor.descriptorSecretKey!.deriveIndex(index!)
-        : descriptor.descriptorSecretKey!;
-
+    final k = await getDescriptorSecretKey(index);
     final kBytes = Uint8List.fromList(await k.secretBytes());
     return Secp256k1KeyIdentity.fromSecretKey(kBytes);
   }
