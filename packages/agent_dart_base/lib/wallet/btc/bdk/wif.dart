@@ -97,6 +97,13 @@ class WIF {
   /// Is Compressed WIF ?
   final bool compressed;
 
+  static Future<String> hexToWif(
+    String hex, {
+    Network network = Network.Bitcoin,
+  }) {
+    return AgentDartFFI.impl.hexBytesToWif(hex: hex, network: network);
+  }
+
   @override
   bool operator ==(covariant WIF other) {
     return version == other.version &&

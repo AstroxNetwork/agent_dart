@@ -31,6 +31,15 @@ abstract class AgentDart {
   FlutterRustBridgeTaskConstMeta get kMnemonicSeedToKeyConstMeta;
 
   /// --------------------
+  /// WIF
+  /// --------------------
+  /// hex_bytes_to_wif
+  Future<String> hexBytesToWif(
+      {required String hex, required Network network, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kHexBytesToWifConstMeta;
+
+  /// --------------------
   /// bls
   /// --------------------
   /// bls_init
@@ -1766,6 +1775,27 @@ class AgentDartImpl implements AgentDart {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "mnemonic_seed_to_key",
         argNames: ["req"],
+      );
+
+  Future<String> hexBytesToWif(
+      {required String hex, required Network network, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(hex);
+    var arg1 = api2wire_network(network);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_hex_bytes_to_wif(port_, arg0, arg1),
+      parseSuccessData: _wire2api_String,
+      parseErrorData: _wire2api_FrbAnyhowException,
+      constMeta: kHexBytesToWifConstMeta,
+      argValues: [hex, network],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kHexBytesToWifConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "hex_bytes_to_wif",
+        argNames: ["hex", "network"],
       );
 
   Future<bool> blsInit({dynamic hint}) {
@@ -5819,6 +5849,25 @@ class AgentDartWire implements FlutterRustBridgeWireBase {
               ffi.Pointer<wire_SeedToKeyReq>)>>('wire_mnemonic_seed_to_key');
   late final _wire_mnemonic_seed_to_key = _wire_mnemonic_seed_to_keyPtr
       .asFunction<void Function(int, ffi.Pointer<wire_SeedToKeyReq>)>();
+
+  void wire_hex_bytes_to_wif(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> hex,
+    int network,
+  ) {
+    return _wire_hex_bytes_to_wif(
+      port_,
+      hex,
+      network,
+    );
+  }
+
+  late final _wire_hex_bytes_to_wifPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Int32)>>('wire_hex_bytes_to_wif');
+  late final _wire_hex_bytes_to_wif = _wire_hex_bytes_to_wifPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, int)>();
 
   void wire_bls_init(
     int port_,

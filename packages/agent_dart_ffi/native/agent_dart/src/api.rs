@@ -38,6 +38,7 @@ use flutter_rust_bridge::RustOpaque;
 
 use crate::bdk::bip322::{simple_signature_with_segwit, simple_signature_with_taproot};
 use bdk_lite::wallet::tx_builder::{ForeignUtxo as BdkForeignUtxo, TxOrdering};
+use bitcoin::hashes::hex::FromHex;
 use bitcoin::hashes::hex::ToHex;
 use std::ops::Deref;
 use std::str::FromStr;
@@ -50,6 +51,7 @@ lazy_static! {
 }
 
 pub struct Api {}
+
 impl Api {
     //========Blockchain==========
     pub fn create_blockchain(
@@ -310,7 +312,7 @@ impl Api {
                 Arc::new(PartiallySignedTransaction {
                     internal: Mutex::new(p.clone()),
                 })
-                .serialize(),
+                    .serialize(),
                 TransactionDetails::from(&d),
             )),
             Err(e) => anyhow::bail!("{:?}", e),
@@ -448,7 +450,7 @@ impl Api {
                 Arc::new(PartiallySignedTransaction {
                     internal: Mutex::new(p.clone()),
                 })
-                .serialize(),
+                    .serialize(),
                 TransactionDetails::from(&d),
             )),
             Err(e) => anyhow::bail!("{:?}", e),
@@ -1008,6 +1010,23 @@ pub fn mnemonic_phrase_to_seed(req: PhraseToSeedReq) -> Vec<u8> {
 
 pub fn mnemonic_seed_to_key(req: SeedToKeyReq) -> Vec<u8> {
     KeyRingFFI::seed_to_key(req)
+}
+
+/// --------------------
+/// WIF
+/// --------------------
+/// hex_bytes_to_wif
+
+pub fn hex_bytes_to_wif(hex: String, network: Network) -> anyhow::Result<String> {
+    let bytes = Vec::from_hex(hex.as_str()).map_err(|e| Error::Generic(e.to_string()))?;
+    let secret_key = bitcoin::secp256k1::SecretKey::from_slice(&bytes).map_err(|e| Error::Generic(e.to_string()))?;
+    let bitcoin_network = bitcoin::Network::from(network);
+    let private_key = bitcoin::PrivateKey {
+        compressed: true,
+        network: bitcoin_network,
+        inner: secret_key,
+    };
+    Ok(private_key.to_wif())
 }
 
 /// --------------------
