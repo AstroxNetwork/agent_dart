@@ -1,8 +1,10 @@
+import 'dart:convert' show base64;
 import 'dart:typed_data' as typed_data;
 
 import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:agent_dart_ffi/agent_dart_ffi.dart' as bridge;
 import 'package:collection/collection.dart';
+import 'package:convert/convert.dart' as convert show hex;
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
 import './bdk_exception.dart';
@@ -862,7 +864,7 @@ class Mnemonic {
   }
 }
 
-///A Partially Signed Transaction
+/// A Partially Signed Bitcoin Transaction.
 class PartiallySignedTransaction {
   const PartiallySignedTransaction({required this.psbtBase64});
 
@@ -873,6 +875,9 @@ class PartiallySignedTransaction {
   }
 
   final String psbtBase64;
+
+  /// Obtain the HEX format of the PSBT.
+  String get psbtHex => convert.hex.encode(base64.decode(psbtBase64));
 
   /// Combines this [PartiallySignedTransaction] with other PSBT as described by BIP 174.
   ///
