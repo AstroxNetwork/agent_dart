@@ -1611,13 +1611,12 @@ class BitcoinWallet {
     return builder.finish(wallet);
   }
 
-  ///Sign a transaction with all the wallet’s signers, in the order specified by every signer’s SignerOrdering
+  /// Sign a transaction with all the wallet’s signers, in the order specified by every signer’s SignerOrdering
   ///
   /// Note that it can’t be guaranteed that every signers will follow the options, but the “software signers” (WIF keys and xprv) defined in this library will.
   Future<TxBuilderResult> sign(TxBuilderResult buildResult) async {
     try {
-      final res = await wallet.sign(psbt: buildResult.psbt);
-      final sbt = PartiallySignedTransaction(psbtBase64: res.psbtBase64);
+      final sbt = await wallet.sign(psbt: buildResult.psbt);
       return TxBuilderResult(
         psbt: sbt,
         txDetails: buildResult.txDetails,
@@ -1637,9 +1636,7 @@ class BitcoinWallet {
 
   Future<String> pushPsbt(String psbtHex) async {
     try {
-      final psbt = PartiallySignedTransaction(
-        psbtBase64: base64Encode(isHex(psbtHex) ? psbtHex.toU8a() : psbtHex),
-      );
+      final psbt = PartiallySignedTransaction.parse(psbtHex);
       final tx = await psbt.extractTx();
 
       return await blockStreamApi!
@@ -1663,11 +1660,7 @@ class BitcoinWallet {
   }
 
   Future<PSBTDetail> dumpPsbt(String psbtHex) async {
-    final psbt = PartiallySignedTransaction(
-      psbtBase64: isHex(psbtHex)
-          ? base64Encode(psbtHex.toU8a())
-          : base64Encode(psbtHex),
-    );
+    final psbt = PartiallySignedTransaction.parse(psbtHex);
     final tx = await psbt.extractTx();
 
     final psbtInputs = await psbt.getPsbtInputs();
