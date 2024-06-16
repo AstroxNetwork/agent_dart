@@ -1814,9 +1814,7 @@ class Wallet {
     required String psbtHex,
     SignOptions? signOptions,
   }) async {
-    final psbt = PartiallySignedTransaction(
-      psbtBase64: isHex(psbtHex) ? base64Encode(psbtHex.toU8a()) : psbtHex,
-    );
+    final psbt = PartiallySignedTransaction.parse(psbtHex);
     final sbt = await AgentDartFFI.impl.signStaticMethodApi(
       signOptions: signOptions,
       psbtStr: psbt.psbtBase64,
@@ -1834,8 +1832,7 @@ class Wallet {
     void Function(Object?)? logPrint = print,
   }) async {
     await tbr.dumpTx(logPrint: logPrint);
-    final res = await sign(psbt: tbr.psbt, signOptions: signOptions);
-    final sbt = PartiallySignedTransaction(psbtBase64: res.psbtBase64);
+    final sbt = await sign(psbt: tbr.psbt, signOptions: signOptions);
     final signed = TxBuilderResult(
       psbt: sbt,
       txDetails: tbr.txDetails,
@@ -1850,8 +1847,7 @@ class Wallet {
     void Function(Object?)? logPrint = print,
   }) async {
     await tbr.dumpTx(logPrint: logPrint);
-    final res = await sign(psbt: tbr.psbt, signOptions: signOptions);
-    final sbt = PartiallySignedTransaction(psbtBase64: res.psbtBase64);
+    final sbt = await sign(psbt: tbr.psbt, signOptions: signOptions);
     final signed = TxBuilderResult(
       psbt: sbt,
       txDetails: tbr.txDetails,
@@ -1940,9 +1936,7 @@ class Wallet {
     SignOptions options = defaultSignOptions,
   }) async {
     try {
-      final psbt = PartiallySignedTransaction(
-        psbtBase64: isHex(psbtHex) ? base64Encode(psbtHex.toU8a()) : psbtHex,
-      );
+      final psbt = PartiallySignedTransaction.parse(psbtHex);
       final res = await sign(psbt: psbt, signOptions: options);
       return base64Decode(res.psbtBase64).toHex();
     } on FfiException catch (e, s) {
@@ -1951,9 +1945,7 @@ class Wallet {
   }
 
   static Future<String> psbtToTxHex(String psbtHex) async {
-    final psbt = PartiallySignedTransaction(
-      psbtBase64: base64Encode(isHex(psbtHex) ? psbtHex.toU8a() : psbtHex),
-    );
+    final psbt = PartiallySignedTransaction.parse(psbtHex);
     final tx = await psbt.extractTx();
     return Uint8List.fromList(await tx.serialize()).toHex();
   }
@@ -1971,11 +1963,7 @@ class Wallet {
     String psbtHex, {
     required String address,
   }) async {
-    final psbt = PartiallySignedTransaction(
-      psbtBase64: isHex(psbtHex)
-          ? base64Encode(psbtHex.toU8a())
-          : base64Encode(psbtHex),
-    );
+    final psbt = PartiallySignedTransaction.parse(psbtHex);
     final tx = await psbt.extractTx();
 
     final psbtInputs = await psbt.getPsbtInputs();
