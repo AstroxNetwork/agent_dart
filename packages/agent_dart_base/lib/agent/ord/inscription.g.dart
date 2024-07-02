@@ -6,15 +6,15 @@ part of 'inscription.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Inscription _$$_InscriptionFromJson(Map<String, dynamic> json) =>
-    _$_Inscription(
+_$InscriptionImpl _$$InscriptionImplFromJson(Map<String, dynamic> json) =>
+    _$InscriptionImpl(
       id: json['id'] as String,
-      offset: json['offset'] as int,
-      number: json['number'] as int?,
-      num: json['num'] as int?,
+      offset: (json['offset'] as num).toInt(),
+      number: (json['number'] as num?)?.toInt(),
+      num: (json['num'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$$_InscriptionToJson(_$_Inscription instance) =>
+Map<String, dynamic> _$$InscriptionImplToJson(_$InscriptionImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'offset': instance.offset,

@@ -366,7 +366,7 @@ mod test {
     use bdk_lite::descriptor::DescriptorError::Key;
     use bdk_lite::keys::KeyError::InvalidNetwork;
     use bdk_lite::KeychainKind;
-    use flutter_rust_bridge::RustOpaque;
+    use crate::frb_generated::RustOpaque;
     use std::sync::Arc;
 
     fn get_descriptor_secret_key() -> DescriptorSecretKey {

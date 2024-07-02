@@ -78,13 +78,13 @@ class WIF {
     this.compressed = false,
   });
 
-  factory WIF.fromHex(Uint8List u8a, {Network network = Network.Bitcoin}) {
-    final version = network == Network.Bitcoin ? 0x80 : 0xef;
+  factory WIF.fromHex(Uint8List u8a, {Network network = Network.bitcoin}) {
+    final version = network == Network.bitcoin ? 0x80 : 0xef;
     return WIF(version: version, privateKey: u8a);
   }
 
-  factory WIF.fromString(String wif, {Network network = Network.Bitcoin}) {
-    final version = network == Network.Bitcoin ? 0x80 : 0xef;
+  factory WIF.fromString(String wif, {Network network = Network.bitcoin}) {
+    final version = network == Network.bitcoin ? 0x80 : 0xef;
     return wifDecoder.convert(wif, version);
   }
 
@@ -99,9 +99,9 @@ class WIF {
 
   static Future<String> hexToWif(
     String hex, {
-    Network network = Network.Bitcoin,
+    Network network = Network.bitcoin,
   }) {
-    return AgentDartFFI.impl.hexBytesToWif(hex: hex, network: network);
+    return hexBytesToWif(hex: hex, network: network);
   }
 
   @override

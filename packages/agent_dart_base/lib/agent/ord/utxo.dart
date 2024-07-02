@@ -10,7 +10,7 @@ class Utxo with _$Utxo {
   factory Utxo({
     required String txId,
     required int outputIndex,
-    required int satoshis,
+    required BigInt satoshis,
     required String scriptPk,
     required int addressType,
     required List<Inscription> inscriptions,

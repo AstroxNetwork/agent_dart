@@ -180,7 +180,7 @@ Uint8List signSecp256k1(String message, BinaryBlob secretKey) {
 }
 
 Future<Uint8List> signSecp256k1Async(Uint8List blob, Uint8List seed) async {
-  final result = await AgentDartFFI.impl.secp256K1Sign(
+  final result = await secp256K1Sign(
     req: Secp256k1SignWithSeedReq(seed: seed, msg: blob),
   );
   return result.signature!;
@@ -190,14 +190,14 @@ Future<Uint8List> signSecp256k1Recoverable(
   Uint8List blob,
   Uint8List seed,
 ) async {
-  final result = await AgentDartFFI.impl.secp256K1SignRecoverable(
+  final result = await secp256K1SignRecoverable(
     req: Secp256k1SignWithSeedReq(seed: seed, msg: blob),
   );
   return result.signature!;
 }
 
 Future<Uint8List> signSecp256k1WithRNG(Uint8List blob, Uint8List bytes) async {
-  final result = await AgentDartFFI.impl.secp256K1SignWithRng(
+  final result = await secp256K1SignWithRng(
     req: Secp256k1SignWithRngReq(privateBytes: bytes, msg: blob),
   );
 
@@ -243,7 +243,7 @@ Future<Uint8List> recoverSecp256k1PubKey(
   Uint8List preHashedMessage,
   Uint8List signature,
 ) async {
-  final result = await AgentDartFFI.impl.secp256K1Recover(
+  final result = await secp256K1Recover(
     req: Secp256k1RecoverReq(
       messagePreHashed: preHashedMessage,
       signatureBytes: signature,
@@ -256,7 +256,7 @@ Future<Uint8List> getECShareSecret(
   Uint8List privateKey,
   Uint8List rawPublicKey,
 ) async {
-  final result = await AgentDartFFI.impl.secp256K1GetSharedSecret(
+  final result = await secp256K1GetSharedSecret(
     req: Secp256k1ShareSecretReq(
       seed: privateKey,
       publicKeyRawBytes: rawPublicKey,
@@ -269,7 +269,7 @@ Future<Uint8List> getP256ShareSecret(
   Uint8List privateKey,
   Uint8List rawPublicKey,
 ) async {
-  final result = await AgentDartFFI.impl.p256GetSharedSecret(
+  final result = await p256GetSharedSecret(
     req: P256ShareSecretReq(
       seed: privateKey,
       publicKeyRawBytes: rawPublicKey,

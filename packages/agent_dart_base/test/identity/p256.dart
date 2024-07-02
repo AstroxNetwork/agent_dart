@@ -3,7 +3,8 @@ import 'package:test/test.dart';
 import '../test_utils.dart';
 
 void main() {
-  matchFFI();
+  ffiInit();
+  // matchFFI();
   p256Test();
 }
 

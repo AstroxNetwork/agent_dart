@@ -1,5 +1,5 @@
-/// Moved from `https://github.com/dart-bitcoin-lib/dart-buffer`
-/// Buffer Reader and Buffer Writer
+// Moved from `https://github.com/dart-bitcoin-lib/dart-buffer`
+// Buffer Reader and Buffer Writer
 
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -39,8 +39,13 @@ class BufferReader {
   /// supporting up to 48 bits of accuracy.
   int getUInt([int byteLength = 0, Endian endian = Endian.little]) {
     if (offset + byteLength > length) {
-      throw IndexError(byteLength, buffer, 'IndexError',
-          'Cannot get UIntLE out of bounds', buffer.lengthInBytes);
+      throw IndexError(
+        byteLength,
+        buffer,
+        'IndexError',
+        'Cannot get UIntLE out of bounds',
+        buffer.lengthInBytes,
+      );
     }
     if (endian != Endian.little) {
       var val = buffer.buffer.asUint8List()[offset];
@@ -185,8 +190,13 @@ class BufferReader {
   /// The return value will be ByteData(n)
   ByteData getSlice(int n) {
     if (buffer.lengthInBytes < offset + n) {
-      throw IndexError(n, buffer, 'IndexError',
-          'Cannot get slice out of bounds', buffer.lengthInBytes);
+      throw IndexError(
+        n,
+        buffer,
+        'IndexError',
+        'Cannot get slice out of bounds',
+        buffer.lengthInBytes,
+      );
     }
     final result = buffer.buffer
         .asUint8List()
@@ -472,21 +482,20 @@ class BufferWriter {
 
   /// Convert [ByteData] to [T]
   T toTypeData<T extends List<int>>() {
-    switch (T) {
-      case Uint8List:
-        return buffer.buffer.asUint8List() as T;
-      case Int8List:
-        return buffer.buffer.asInt8List() as T;
-      case Uint16List:
-        return buffer.buffer.asUint16List() as T;
-      case Int16List:
-        return buffer.buffer.asInt16List() as T;
-      case Uint32List:
-        return buffer.buffer.asUint32List() as T;
-      case Int32List:
-        return buffer.buffer.asInt32List() as T;
-      default:
-        throw const FormatException('Invalid Generic Type');
+    if (T == Uint8List) {
+      return buffer.buffer.asUint8List() as T;
+    } else if (T == Uint16List) {
+      return buffer.buffer.asUint16List() as T;
+    } else if (T == Uint32List) {
+      return buffer.buffer.asUint32List() as T;
+    } else if (T == Int8List) {
+      return buffer.buffer.asInt8List() as T;
+    } else if (T == Int16List) {
+      return buffer.buffer.asInt16List() as T;
+    } else if (T == Int32List) {
+      return buffer.buffer.asInt32List() as T;
+    } else {
+      throw const FormatException('Invalid Generic Type');
     }
   }
 }

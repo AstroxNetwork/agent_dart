@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_ffi/agent_dart_ffi.dart';
-
 import 'bls.base.dart';
 
 class FFIBls implements BaseBLS {
@@ -9,7 +7,7 @@ class FFIBls implements BaseBLS {
 
   @override
   Future<bool> blsInit() async {
-    _isInit = await AgentDartFFI.impl.blsInit();
+    _isInit = await blsInit();
     return _isInit;
   }
 
@@ -19,9 +17,7 @@ class FFIBls implements BaseBLS {
     Uint8List sig,
     Uint8List msg,
   ) {
-    return AgentDartFFI.impl.blsVerify(
-      req: BLSVerifyReq(signature: sig, message: msg, publicKey: pk),
-    );
+    return blsVerify(pk, sig, msg);
   }
 
   @override

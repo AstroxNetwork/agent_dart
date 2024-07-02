@@ -9,7 +9,8 @@ import 'wallet/pem.dart' as pem;
 import 'wallet/signer.dart' as signer;
 
 void main() async {
-  matchFFI();
+  ffiInit();
+  // matchFFI();
   agent.main();
   auth.main();
   candid.main();

@@ -12,7 +12,7 @@ part of 'utxo.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Utxo _$UtxoFromJson(Map<String, dynamic> json) {
   return _Utxo.fromJson(json);
@@ -24,8 +24,8 @@ mixin _$Utxo {
   set txId(String value) => throw _privateConstructorUsedError;
   int get outputIndex => throw _privateConstructorUsedError;
   set outputIndex(int value) => throw _privateConstructorUsedError;
-  int get satoshis => throw _privateConstructorUsedError;
-  set satoshis(int value) => throw _privateConstructorUsedError;
+  BigInt get satoshis => throw _privateConstructorUsedError;
+  set satoshis(BigInt value) => throw _privateConstructorUsedError;
   String get scriptPk => throw _privateConstructorUsedError;
   set scriptPk(String value) => throw _privateConstructorUsedError;
   int get addressType => throw _privateConstructorUsedError;
@@ -47,7 +47,7 @@ abstract class $UtxoCopyWith<$Res> {
   $Res call(
       {String txId,
       int outputIndex,
-      int satoshis,
+      BigInt satoshis,
       String scriptPk,
       int addressType,
       List<Inscription> inscriptions});
@@ -85,7 +85,7 @@ class _$UtxoCopyWithImpl<$Res, $Val extends Utxo>
       satoshis: null == satoshis
           ? _value.satoshis
           : satoshis // ignore: cast_nullable_to_non_nullable
-              as int,
+              as BigInt,
       scriptPk: null == scriptPk
           ? _value.scriptPk
           : scriptPk // ignore: cast_nullable_to_non_nullable
@@ -103,24 +103,26 @@ class _$UtxoCopyWithImpl<$Res, $Val extends Utxo>
 }
 
 /// @nodoc
-abstract class _$$_UtxoCopyWith<$Res> implements $UtxoCopyWith<$Res> {
-  factory _$$_UtxoCopyWith(_$_Utxo value, $Res Function(_$_Utxo) then) =
-      __$$_UtxoCopyWithImpl<$Res>;
+abstract class _$$UtxoImplCopyWith<$Res> implements $UtxoCopyWith<$Res> {
+  factory _$$UtxoImplCopyWith(
+          _$UtxoImpl value, $Res Function(_$UtxoImpl) then) =
+      __$$UtxoImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
       {String txId,
       int outputIndex,
-      int satoshis,
+      BigInt satoshis,
       String scriptPk,
       int addressType,
       List<Inscription> inscriptions});
 }
 
 /// @nodoc
-class __$$_UtxoCopyWithImpl<$Res> extends _$UtxoCopyWithImpl<$Res, _$_Utxo>
-    implements _$$_UtxoCopyWith<$Res> {
-  __$$_UtxoCopyWithImpl(_$_Utxo _value, $Res Function(_$_Utxo) _then)
+class __$$UtxoImplCopyWithImpl<$Res>
+    extends _$UtxoCopyWithImpl<$Res, _$UtxoImpl>
+    implements _$$UtxoImplCopyWith<$Res> {
+  __$$UtxoImplCopyWithImpl(_$UtxoImpl _value, $Res Function(_$UtxoImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -133,7 +135,7 @@ class __$$_UtxoCopyWithImpl<$Res> extends _$UtxoCopyWithImpl<$Res, _$_Utxo>
     Object? addressType = null,
     Object? inscriptions = null,
   }) {
-    return _then(_$_Utxo(
+    return _then(_$UtxoImpl(
       txId: null == txId
           ? _value.txId
           : txId // ignore: cast_nullable_to_non_nullable
@@ -145,7 +147,7 @@ class __$$_UtxoCopyWithImpl<$Res> extends _$UtxoCopyWithImpl<$Res, _$_Utxo>
       satoshis: null == satoshis
           ? _value.satoshis
           : satoshis // ignore: cast_nullable_to_non_nullable
-              as int,
+              as BigInt,
       scriptPk: null == scriptPk
           ? _value.scriptPk
           : scriptPk // ignore: cast_nullable_to_non_nullable
@@ -164,8 +166,8 @@ class __$$_UtxoCopyWithImpl<$Res> extends _$UtxoCopyWithImpl<$Res, _$_Utxo>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Utxo implements _Utxo {
-  _$_Utxo(
+class _$UtxoImpl implements _Utxo {
+  _$UtxoImpl(
       {required this.txId,
       required this.outputIndex,
       required this.satoshis,
@@ -173,14 +175,15 @@ class _$_Utxo implements _Utxo {
       required this.addressType,
       required this.inscriptions});
 
-  factory _$_Utxo.fromJson(Map<String, dynamic> json) => _$$_UtxoFromJson(json);
+  factory _$UtxoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UtxoImplFromJson(json);
 
   @override
   String txId;
   @override
   int outputIndex;
   @override
-  int satoshis;
+  BigInt satoshis;
   @override
   String scriptPk;
   @override
@@ -196,12 +199,12 @@ class _$_Utxo implements _Utxo {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_UtxoCopyWith<_$_Utxo> get copyWith =>
-      __$$_UtxoCopyWithImpl<_$_Utxo>(this, _$identity);
+  _$$UtxoImplCopyWith<_$UtxoImpl> get copyWith =>
+      __$$UtxoImplCopyWithImpl<_$UtxoImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_UtxoToJson(
+    return _$$UtxoImplToJson(
       this,
     );
   }
@@ -211,12 +214,12 @@ abstract class _Utxo implements Utxo {
   factory _Utxo(
       {required String txId,
       required int outputIndex,
-      required int satoshis,
+      required BigInt satoshis,
       required String scriptPk,
       required int addressType,
-      required List<Inscription> inscriptions}) = _$_Utxo;
+      required List<Inscription> inscriptions}) = _$UtxoImpl;
 
-  factory _Utxo.fromJson(Map<String, dynamic> json) = _$_Utxo.fromJson;
+  factory _Utxo.fromJson(Map<String, dynamic> json) = _$UtxoImpl.fromJson;
 
   @override
   String get txId;
@@ -225,8 +228,8 @@ abstract class _Utxo implements Utxo {
   int get outputIndex;
   set outputIndex(int value);
   @override
-  int get satoshis;
-  set satoshis(int value);
+  BigInt get satoshis;
+  set satoshis(BigInt value);
   @override
   String get scriptPk;
   set scriptPk(String value);
@@ -238,5 +241,6 @@ abstract class _Utxo implements Utxo {
   set inscriptions(List<Inscription> value);
   @override
   @JsonKey(ignore: true)
-  _$$_UtxoCopyWith<_$_Utxo> get copyWith => throw _privateConstructorUsedError;
+  _$$UtxoImplCopyWith<_$UtxoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

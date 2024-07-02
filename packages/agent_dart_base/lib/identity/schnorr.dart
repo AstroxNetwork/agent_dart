@@ -151,7 +151,7 @@ Future<Uint8List> signSchnorrAsync(
   Uint8List seed, {
   Uint8List? auxRand,
 }) async {
-  final result = await AgentDartFFI.impl.schnorrSign(
+  final result = await schnorrSign(
     req: SchnorrSignWithSeedReq(seed: seed, msg: blob, auxRand: auxRand),
   );
   return result.signature!;
@@ -162,7 +162,7 @@ Future<bool> verifySchnorrAsync(
   Uint8List signature,
   SchnorrPublicKey publicKey,
 ) async {
-  final result = await AgentDartFFI.impl.schnorrVerify(
+  final result = await schnorrVerify(
     req: SchnorrVerifyReq(
       messageHash: blob,
       signatureBytes: signature,

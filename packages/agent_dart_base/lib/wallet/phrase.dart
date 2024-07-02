@@ -40,7 +40,7 @@ class Phrase {
   List<String> get list => _list;
 
   Future<Uint8List> toSeed({String passphrase = ''}) {
-    return AgentDartFFI.impl.mnemonicPhraseToSeed(
+    return mnemonicPhraseToSeed(
       req: PhraseToSeedReq(
         phrase: mnemonic,
         password: passphrase,
@@ -55,7 +55,7 @@ class Phrase {
   }) async {
     final basePath = getPathWithCoinType(coinType: coinType);
     final seed = await toSeed(passphrase: passphrase);
-    return AgentDartFFI.impl.mnemonicSeedToKey(
+    return mnemonicSeedToKey(
       req: SeedToKeyReq(
         seed: seed,
         path: '$basePath/0/$index',

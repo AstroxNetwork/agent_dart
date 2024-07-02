@@ -34,7 +34,7 @@ use bdk_lite::bitcoin::{
 };
 use bdk_lite::keys::DescriptorSecretKey as BdkDescriptorSecretKey;
 use bdk_lite::Error;
-use flutter_rust_bridge::RustOpaque;
+use crate::frb_generated::RustOpaque;
 
 use crate::bdk::bip322::{simple_signature_with_segwit, simple_signature_with_taproot};
 use bdk_lite::wallet::tx_builder::{ForeignUtxo as BdkForeignUtxo, TxOrdering};
@@ -890,24 +890,7 @@ impl Api {
             Err(e) => anyhow::bail!("{:?}", e),
         }
     }
-    pub fn sync_wallet(
-        wallet: RustOpaque<WalletInstance>,
-        blockchain: RustOpaque<BlockchainInstance>,
-    ) {
-        wallet.sync(blockchain.deref(), None);
-    }
-    pub fn sync_wallet_thread(
-        wallet: RustOpaque<WalletInstance>,
-        blockchain: RustOpaque<BlockchainInstance>,
-    ) {
-        let runtime = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        runtime.spawn(async move {
-            wallet.sync(blockchain.deref(), None);
-        });
-    }
+
     pub fn get_balance(wallet: RustOpaque<WalletInstance>) -> anyhow::Result<Balance> {
         match wallet.get_balance() {
             Ok(e) => Ok(e),

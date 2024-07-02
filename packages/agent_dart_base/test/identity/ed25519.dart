@@ -10,7 +10,8 @@ import '../test_utils.dart';
 // import 'package:agent_dart/utils/extension.dart';
 
 void main() {
-  matchFFI();
+  ffiInit();
+  // matchFFI();
   ed25519Test();
 }
 

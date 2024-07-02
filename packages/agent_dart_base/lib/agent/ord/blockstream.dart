@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:agent_dart_base/agent/agent.dart';
-import 'package:agent_dart_base/agent/ord/addressStats.dart';
-import 'package:agent_dart_base/agent/ord/addressUtxo.dart';
-import 'package:agent_dart_base/agent/ord/service.dart';
-import 'package:agent_dart_base/agent/ord/tx.dart';
 
+import 'address_stats.dart';
+import 'address_utxo.dart';
 import 'client.dart';
+import 'service.dart';
+import 'tx.dart';
 
 enum TxsFilter { All, Confirmed, Unconfirmed }
 
@@ -34,7 +34,7 @@ class BlockStreamApi {
     _override = override;
   }
 
-  DataResponse _decodeReponse(SubmitResponse response) {
+  DataResponse _decodeResponse(SubmitResponse response) {
     final body = response.toJson()['body'];
     final data = jsonDecode(body)['data'];
     return DataResponse(
@@ -43,7 +43,7 @@ class BlockStreamApi {
     );
   }
 
-  DataResponse _decodeGetReponse(SubmitResponse response) {
+  DataResponse _decodeGetResponse(SubmitResponse response) {
     final body = response.toJson()['body'];
     final data = jsonDecode(body);
 
@@ -55,29 +55,29 @@ class BlockStreamApi {
 
   Future<Tx> getTx(String txId) async {
     final response = await _client.httpGet(
-      '/tx/${txId}',
+      '/tx/$txId',
       {},
       _override,
     );
-    return Tx.fromJson(_decodeGetReponse(response).data);
+    return Tx.fromJson(_decodeGetResponse(response).data);
   }
 
   Future<AddressStats> getAddressStats(String address) async {
     final response = await _client.httpGet(
-      '/address/${address}',
+      '/address/$address',
       {},
       _override,
     );
-    return AddressStats.fromJson(_decodeGetReponse(response).data);
+    return AddressStats.fromJson(_decodeGetResponse(response).data);
   }
 
   Future<List<AddressUtxo>> getAddressUtxo(String address) async {
     final response = await _client.httpGet(
-      '/address/${address}/utxo',
+      '/address/$address/utxo',
       {},
       _override,
     );
-    return (_decodeGetReponse(response).data as List<dynamic>)
+    return (_decodeGetResponse(response).data as List<dynamic>)
         .map((e) => AddressUtxo.fromJson(e as Map<String, dynamic>))
         .toList();
   }
@@ -87,21 +87,21 @@ class BlockStreamApi {
     TxsFilter filter = TxsFilter.All,
     String? lastSeenTxId,
   }) async {
-    final prefix = '/address/${address}/txs';
-    var thePrefix;
+    final prefix = '/address/$address/txs';
+    String thePrefix;
     var id = '';
     if (lastSeenTxId != null) {
-      id = '/${lastSeenTxId}';
+      id = '/$lastSeenTxId';
     }
     switch (filter) {
       case TxsFilter.All:
         thePrefix = prefix;
         break;
       case TxsFilter.Confirmed:
-        thePrefix = prefix + '/chain';
+        thePrefix = '$prefix/chain';
         break;
       case TxsFilter.Unconfirmed:
-        thePrefix = prefix + '/mempool';
+        thePrefix = '$prefix/mempool';
         break;
     }
 
@@ -110,14 +110,14 @@ class BlockStreamApi {
       {},
       _override,
     );
-    return (_decodeGetReponse(response).data as List<dynamic>)
+    return (_decodeGetResponse(response).data as List<dynamic>)
         .map((e) => Tx.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 
   Future<String> getTxHex(String txId) async {
     final response = await _client.httpGet(
-      '/tx/${txId}/hex',
+      '/tx/$txId/hex',
       {},
       _override,
     );

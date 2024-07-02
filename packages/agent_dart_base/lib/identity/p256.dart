@@ -177,7 +177,7 @@ Future<Uint8List> signP256Async(
   Uint8List blob,
   Uint8List seed,
 ) async {
-  final result = await AgentDartFFI.impl.p256Sign(
+  final result = await p256Sign(
     req: P256SignWithSeedReq(seed: seed, msg: blob),
   );
   return result.signature!;
@@ -188,7 +188,7 @@ Future<bool> verifyP256Async(
   Uint8List signature,
   P256PublicKey publicKey,
 ) async {
-  final result = await AgentDartFFI.impl.p256Verify(
+  final result = await p256Verify(
     req: P256VerifyReq(
       messageHash: blob,
       signatureBytes: signature,

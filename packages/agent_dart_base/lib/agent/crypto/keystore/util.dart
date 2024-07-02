@@ -23,7 +23,7 @@ Future<Uint8List> _encryptPhraseAsync({
   required Uint8List iv,
   required String message,
 }) {
-  return AgentDartFFI.impl.aes128CtrEncrypt(
+  return aes128CtrEncrypt(
     req: AesEncryptReq(key: key, iv: iv, message: message.plainToU8a()),
   );
 }
@@ -33,7 +33,7 @@ Future<Uint8List> _encryptPhraseAsync256({
   required Uint8List iv,
   required String message,
 }) {
-  return AgentDartFFI.impl.aes256GcmEncrypt(
+  return aes256GcmEncrypt(
     req: AesEncryptReq(key: key, iv: iv, message: message.plainToU8a()),
   );
 }
@@ -43,7 +43,7 @@ Future<Uint8List> _decryptPhraseAsync({
   required Uint8List iv,
   required Uint8List cipherText,
 }) {
-  return AgentDartFFI.impl.aes128CtrDecrypt(
+  return aes128CtrDecrypt(
     req: AesDecryptReq(key: key, iv: iv, cipherText: cipherText),
   );
 }
@@ -53,7 +53,7 @@ Future<Uint8List> _decryptPhraseAsync256({
   required Uint8List iv,
   required Uint8List cipherText,
 }) {
-  return AgentDartFFI.impl.aes256GcmDecrypt(
+  return aes256GcmDecrypt(
     req: AesDecryptReq(key: key, iv: iv, cipherText: cipherText),
   );
 }
@@ -73,7 +73,7 @@ Future<NativeDeriveKeyResult> nativeDeriveKey({
   final Uint8List rightBits;
 
   if (kdf == 'scrypt') {
-    final scryptKey = await AgentDartFFI.impl.scryptDeriveKey(
+    final scryptKey = await scryptDeriveKey(
       req: ScriptDeriveReq(
         n: kdfParams['n'],
         p: kdfParams['p'],
@@ -89,7 +89,7 @@ Future<NativeDeriveKeyResult> nativeDeriveKey({
       [...scryptKey.leftBits, ...scryptKey.rightBits],
     );
   } else {
-    final scryptKey = await AgentDartFFI.impl.pbkdf2DeriveKey(
+    final scryptKey = await pbkdf2DeriveKey(
       req: PBKDFDeriveReq(
         c: 262144,
         password: passphrase.plainToU8a(),

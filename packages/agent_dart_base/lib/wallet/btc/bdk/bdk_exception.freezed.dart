@@ -12,7 +12,7 @@ part of 'bdk_exception.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$BdkException {
@@ -217,27 +217,27 @@ class _$BdkExceptionCopyWithImpl<$Res, $Val extends BdkException>
 }
 
 /// @nodoc
-abstract class _$$ScriptDoesntHaveAddressFormCopyWith<$Res> {
-  factory _$$ScriptDoesntHaveAddressFormCopyWith(
-          _$ScriptDoesntHaveAddressForm value,
-          $Res Function(_$ScriptDoesntHaveAddressForm) then) =
-      __$$ScriptDoesntHaveAddressFormCopyWithImpl<$Res>;
+abstract class _$$ScriptDoesntHaveAddressFormImplCopyWith<$Res> {
+  factory _$$ScriptDoesntHaveAddressFormImplCopyWith(
+          _$ScriptDoesntHaveAddressFormImpl value,
+          $Res Function(_$ScriptDoesntHaveAddressFormImpl) then) =
+      __$$ScriptDoesntHaveAddressFormImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$ScriptDoesntHaveAddressFormCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$ScriptDoesntHaveAddressForm>
-    implements _$$ScriptDoesntHaveAddressFormCopyWith<$Res> {
-  __$$ScriptDoesntHaveAddressFormCopyWithImpl(
-      _$ScriptDoesntHaveAddressForm _value,
-      $Res Function(_$ScriptDoesntHaveAddressForm) _then)
+class __$$ScriptDoesntHaveAddressFormImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$ScriptDoesntHaveAddressFormImpl>
+    implements _$$ScriptDoesntHaveAddressFormImplCopyWith<$Res> {
+  __$$ScriptDoesntHaveAddressFormImplCopyWithImpl(
+      _$ScriptDoesntHaveAddressFormImpl _value,
+      $Res Function(_$ScriptDoesntHaveAddressFormImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$ScriptDoesntHaveAddressForm implements ScriptDoesntHaveAddressForm {
-  const _$ScriptDoesntHaveAddressForm();
+class _$ScriptDoesntHaveAddressFormImpl implements ScriptDoesntHaveAddressForm {
+  const _$ScriptDoesntHaveAddressFormImpl();
 
   @override
   String toString() {
@@ -245,10 +245,10 @@ class _$ScriptDoesntHaveAddressForm implements ScriptDoesntHaveAddressForm {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ScriptDoesntHaveAddressForm);
+            other is _$ScriptDoesntHaveAddressFormImpl);
   }
 
   @override
@@ -460,29 +460,30 @@ class _$ScriptDoesntHaveAddressForm implements ScriptDoesntHaveAddressForm {
 }
 
 abstract class ScriptDoesntHaveAddressForm implements BdkException {
-  const factory ScriptDoesntHaveAddressForm() = _$ScriptDoesntHaveAddressForm;
+  const factory ScriptDoesntHaveAddressForm() =
+      _$ScriptDoesntHaveAddressFormImpl;
 }
 
 /// @nodoc
-abstract class _$$NoRecipientsCopyWith<$Res> {
-  factory _$$NoRecipientsCopyWith(
-          _$NoRecipients value, $Res Function(_$NoRecipients) then) =
-      __$$NoRecipientsCopyWithImpl<$Res>;
+abstract class _$$NoRecipientsImplCopyWith<$Res> {
+  factory _$$NoRecipientsImplCopyWith(
+          _$NoRecipientsImpl value, $Res Function(_$NoRecipientsImpl) then) =
+      __$$NoRecipientsImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$NoRecipientsCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$NoRecipients>
-    implements _$$NoRecipientsCopyWith<$Res> {
-  __$$NoRecipientsCopyWithImpl(
-      _$NoRecipients _value, $Res Function(_$NoRecipients) _then)
+class __$$NoRecipientsImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$NoRecipientsImpl>
+    implements _$$NoRecipientsImplCopyWith<$Res> {
+  __$$NoRecipientsImplCopyWithImpl(
+      _$NoRecipientsImpl _value, $Res Function(_$NoRecipientsImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$NoRecipients implements NoRecipients {
-  const _$NoRecipients();
+class _$NoRecipientsImpl implements NoRecipients {
+  const _$NoRecipientsImpl();
 
   @override
   String toString() {
@@ -490,9 +491,9 @@ class _$NoRecipients implements NoRecipients {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$NoRecipients);
+        (other.runtimeType == runtimeType && other is _$NoRecipientsImpl);
   }
 
   @override
@@ -704,22 +705,24 @@ class _$NoRecipients implements NoRecipients {
 }
 
 abstract class NoRecipients implements BdkException {
-  const factory NoRecipients() = _$NoRecipients;
+  const factory NoRecipients() = _$NoRecipientsImpl;
 }
 
 /// @nodoc
-abstract class _$$GenericCopyWith<$Res> {
-  factory _$$GenericCopyWith(_$Generic value, $Res Function(_$Generic) then) =
-      __$$GenericCopyWithImpl<$Res>;
+abstract class _$$GenericImplCopyWith<$Res> {
+  factory _$$GenericImplCopyWith(
+          _$GenericImpl value, $Res Function(_$GenericImpl) then) =
+      __$$GenericImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String e});
 }
 
 /// @nodoc
-class __$$GenericCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$Generic>
-    implements _$$GenericCopyWith<$Res> {
-  __$$GenericCopyWithImpl(_$Generic _value, $Res Function(_$Generic) _then)
+class __$$GenericImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$GenericImpl>
+    implements _$$GenericImplCopyWith<$Res> {
+  __$$GenericImplCopyWithImpl(
+      _$GenericImpl _value, $Res Function(_$GenericImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -727,7 +730,7 @@ class __$$GenericCopyWithImpl<$Res>
   $Res call({
     Object? e = null,
   }) {
-    return _then(_$Generic(
+    return _then(_$GenericImpl(
       null == e
           ? _value.e
           : e // ignore: cast_nullable_to_non_nullable
@@ -738,8 +741,8 @@ class __$$GenericCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$Generic implements Generic {
-  const _$Generic(this.e);
+class _$GenericImpl implements Generic {
+  const _$GenericImpl(this.e);
 
   @override
   final String e;
@@ -750,10 +753,10 @@ class _$Generic implements Generic {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Generic &&
+            other is _$GenericImpl &&
             (identical(other.e, e) || other.e == e));
   }
 
@@ -763,8 +766,8 @@ class _$Generic implements Generic {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$GenericCopyWith<_$Generic> get copyWith =>
-      __$$GenericCopyWithImpl<_$Generic>(this, _$identity);
+  _$$GenericImplCopyWith<_$GenericImpl> get copyWith =>
+      __$$GenericImplCopyWithImpl<_$GenericImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -972,34 +975,34 @@ class _$Generic implements Generic {
 }
 
 abstract class Generic implements BdkException {
-  const factory Generic(final String e) = _$Generic;
+  const factory Generic(final String e) = _$GenericImpl;
 
   String get e;
   @JsonKey(ignore: true)
-  _$$GenericCopyWith<_$Generic> get copyWith =>
+  _$$GenericImplCopyWith<_$GenericImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$NoUtxosSelectedCopyWith<$Res> {
-  factory _$$NoUtxosSelectedCopyWith(
-          _$NoUtxosSelected value, $Res Function(_$NoUtxosSelected) then) =
-      __$$NoUtxosSelectedCopyWithImpl<$Res>;
+abstract class _$$NoUtxosSelectedImplCopyWith<$Res> {
+  factory _$$NoUtxosSelectedImplCopyWith(_$NoUtxosSelectedImpl value,
+          $Res Function(_$NoUtxosSelectedImpl) then) =
+      __$$NoUtxosSelectedImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$NoUtxosSelectedCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$NoUtxosSelected>
-    implements _$$NoUtxosSelectedCopyWith<$Res> {
-  __$$NoUtxosSelectedCopyWithImpl(
-      _$NoUtxosSelected _value, $Res Function(_$NoUtxosSelected) _then)
+class __$$NoUtxosSelectedImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$NoUtxosSelectedImpl>
+    implements _$$NoUtxosSelectedImplCopyWith<$Res> {
+  __$$NoUtxosSelectedImplCopyWithImpl(
+      _$NoUtxosSelectedImpl _value, $Res Function(_$NoUtxosSelectedImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$NoUtxosSelected implements NoUtxosSelected {
-  const _$NoUtxosSelected();
+class _$NoUtxosSelectedImpl implements NoUtxosSelected {
+  const _$NoUtxosSelectedImpl();
 
   @override
   String toString() {
@@ -1007,9 +1010,9 @@ class _$NoUtxosSelected implements NoUtxosSelected {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$NoUtxosSelected);
+        (other.runtimeType == runtimeType && other is _$NoUtxosSelectedImpl);
   }
 
   @override
@@ -1221,29 +1224,29 @@ class _$NoUtxosSelected implements NoUtxosSelected {
 }
 
 abstract class NoUtxosSelected implements BdkException {
-  const factory NoUtxosSelected() = _$NoUtxosSelected;
+  const factory NoUtxosSelected() = _$NoUtxosSelectedImpl;
 }
 
 /// @nodoc
-abstract class _$$OutputBelowDustLimitCopyWith<$Res> {
-  factory _$$OutputBelowDustLimitCopyWith(_$OutputBelowDustLimit value,
-          $Res Function(_$OutputBelowDustLimit) then) =
-      __$$OutputBelowDustLimitCopyWithImpl<$Res>;
+abstract class _$$OutputBelowDustLimitImplCopyWith<$Res> {
+  factory _$$OutputBelowDustLimitImplCopyWith(_$OutputBelowDustLimitImpl value,
+          $Res Function(_$OutputBelowDustLimitImpl) then) =
+      __$$OutputBelowDustLimitImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$OutputBelowDustLimitCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$OutputBelowDustLimit>
-    implements _$$OutputBelowDustLimitCopyWith<$Res> {
-  __$$OutputBelowDustLimitCopyWithImpl(_$OutputBelowDustLimit _value,
-      $Res Function(_$OutputBelowDustLimit) _then)
+class __$$OutputBelowDustLimitImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$OutputBelowDustLimitImpl>
+    implements _$$OutputBelowDustLimitImplCopyWith<$Res> {
+  __$$OutputBelowDustLimitImplCopyWithImpl(_$OutputBelowDustLimitImpl _value,
+      $Res Function(_$OutputBelowDustLimitImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$OutputBelowDustLimit implements OutputBelowDustLimit {
-  const _$OutputBelowDustLimit();
+class _$OutputBelowDustLimitImpl implements OutputBelowDustLimit {
+  const _$OutputBelowDustLimitImpl();
 
   @override
   String toString() {
@@ -1251,9 +1254,10 @@ class _$OutputBelowDustLimit implements OutputBelowDustLimit {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$OutputBelowDustLimit);
+        (other.runtimeType == runtimeType &&
+            other is _$OutputBelowDustLimitImpl);
   }
 
   @override
@@ -1465,24 +1469,24 @@ class _$OutputBelowDustLimit implements OutputBelowDustLimit {
 }
 
 abstract class OutputBelowDustLimit implements BdkException {
-  const factory OutputBelowDustLimit() = _$OutputBelowDustLimit;
+  const factory OutputBelowDustLimit() = _$OutputBelowDustLimitImpl;
 }
 
 /// @nodoc
-abstract class _$$InsufficientFundsCopyWith<$Res> {
-  factory _$$InsufficientFundsCopyWith(
-          _$InsufficientFunds value, $Res Function(_$InsufficientFunds) then) =
-      __$$InsufficientFundsCopyWithImpl<$Res>;
+abstract class _$$InsufficientFundsImplCopyWith<$Res> {
+  factory _$$InsufficientFundsImplCopyWith(_$InsufficientFundsImpl value,
+          $Res Function(_$InsufficientFundsImpl) then) =
+      __$$InsufficientFundsImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String e});
 }
 
 /// @nodoc
-class __$$InsufficientFundsCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$InsufficientFunds>
-    implements _$$InsufficientFundsCopyWith<$Res> {
-  __$$InsufficientFundsCopyWithImpl(
-      _$InsufficientFunds _value, $Res Function(_$InsufficientFunds) _then)
+class __$$InsufficientFundsImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$InsufficientFundsImpl>
+    implements _$$InsufficientFundsImplCopyWith<$Res> {
+  __$$InsufficientFundsImplCopyWithImpl(_$InsufficientFundsImpl _value,
+      $Res Function(_$InsufficientFundsImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1490,7 +1494,7 @@ class __$$InsufficientFundsCopyWithImpl<$Res>
   $Res call({
     Object? e = null,
   }) {
-    return _then(_$InsufficientFunds(
+    return _then(_$InsufficientFundsImpl(
       null == e
           ? _value.e
           : e // ignore: cast_nullable_to_non_nullable
@@ -1501,8 +1505,8 @@ class __$$InsufficientFundsCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$InsufficientFunds implements InsufficientFunds {
-  const _$InsufficientFunds(this.e);
+class _$InsufficientFundsImpl implements InsufficientFunds {
+  const _$InsufficientFundsImpl(this.e);
 
   @override
   final String e;
@@ -1513,10 +1517,10 @@ class _$InsufficientFunds implements InsufficientFunds {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$InsufficientFunds &&
+            other is _$InsufficientFundsImpl &&
             (identical(other.e, e) || other.e == e));
   }
 
@@ -1526,8 +1530,9 @@ class _$InsufficientFunds implements InsufficientFunds {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$InsufficientFundsCopyWith<_$InsufficientFunds> get copyWith =>
-      __$$InsufficientFundsCopyWithImpl<_$InsufficientFunds>(this, _$identity);
+  _$$InsufficientFundsImplCopyWith<_$InsufficientFundsImpl> get copyWith =>
+      __$$InsufficientFundsImplCopyWithImpl<_$InsufficientFundsImpl>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1735,34 +1740,35 @@ class _$InsufficientFunds implements InsufficientFunds {
 }
 
 abstract class InsufficientFunds implements BdkException {
-  const factory InsufficientFunds(final String e) = _$InsufficientFunds;
+  const factory InsufficientFunds(final String e) = _$InsufficientFundsImpl;
 
   String get e;
   @JsonKey(ignore: true)
-  _$$InsufficientFundsCopyWith<_$InsufficientFunds> get copyWith =>
+  _$$InsufficientFundsImplCopyWith<_$InsufficientFundsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$BnBTotalTriesExceededCopyWith<$Res> {
-  factory _$$BnBTotalTriesExceededCopyWith(_$BnBTotalTriesExceeded value,
-          $Res Function(_$BnBTotalTriesExceeded) then) =
-      __$$BnBTotalTriesExceededCopyWithImpl<$Res>;
+abstract class _$$BnBTotalTriesExceededImplCopyWith<$Res> {
+  factory _$$BnBTotalTriesExceededImplCopyWith(
+          _$BnBTotalTriesExceededImpl value,
+          $Res Function(_$BnBTotalTriesExceededImpl) then) =
+      __$$BnBTotalTriesExceededImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$BnBTotalTriesExceededCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$BnBTotalTriesExceeded>
-    implements _$$BnBTotalTriesExceededCopyWith<$Res> {
-  __$$BnBTotalTriesExceededCopyWithImpl(_$BnBTotalTriesExceeded _value,
-      $Res Function(_$BnBTotalTriesExceeded) _then)
+class __$$BnBTotalTriesExceededImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$BnBTotalTriesExceededImpl>
+    implements _$$BnBTotalTriesExceededImplCopyWith<$Res> {
+  __$$BnBTotalTriesExceededImplCopyWithImpl(_$BnBTotalTriesExceededImpl _value,
+      $Res Function(_$BnBTotalTriesExceededImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$BnBTotalTriesExceeded implements BnBTotalTriesExceeded {
-  const _$BnBTotalTriesExceeded();
+class _$BnBTotalTriesExceededImpl implements BnBTotalTriesExceeded {
+  const _$BnBTotalTriesExceededImpl();
 
   @override
   String toString() {
@@ -1770,9 +1776,10 @@ class _$BnBTotalTriesExceeded implements BnBTotalTriesExceeded {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$BnBTotalTriesExceeded);
+        (other.runtimeType == runtimeType &&
+            other is _$BnBTotalTriesExceededImpl);
   }
 
   @override
@@ -1984,29 +1991,29 @@ class _$BnBTotalTriesExceeded implements BnBTotalTriesExceeded {
 }
 
 abstract class BnBTotalTriesExceeded implements BdkException {
-  const factory BnBTotalTriesExceeded() = _$BnBTotalTriesExceeded;
+  const factory BnBTotalTriesExceeded() = _$BnBTotalTriesExceededImpl;
 }
 
 /// @nodoc
-abstract class _$$BnBNoExactMatchCopyWith<$Res> {
-  factory _$$BnBNoExactMatchCopyWith(
-          _$BnBNoExactMatch value, $Res Function(_$BnBNoExactMatch) then) =
-      __$$BnBNoExactMatchCopyWithImpl<$Res>;
+abstract class _$$BnBNoExactMatchImplCopyWith<$Res> {
+  factory _$$BnBNoExactMatchImplCopyWith(_$BnBNoExactMatchImpl value,
+          $Res Function(_$BnBNoExactMatchImpl) then) =
+      __$$BnBNoExactMatchImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$BnBNoExactMatchCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$BnBNoExactMatch>
-    implements _$$BnBNoExactMatchCopyWith<$Res> {
-  __$$BnBNoExactMatchCopyWithImpl(
-      _$BnBNoExactMatch _value, $Res Function(_$BnBNoExactMatch) _then)
+class __$$BnBNoExactMatchImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$BnBNoExactMatchImpl>
+    implements _$$BnBNoExactMatchImplCopyWith<$Res> {
+  __$$BnBNoExactMatchImplCopyWithImpl(
+      _$BnBNoExactMatchImpl _value, $Res Function(_$BnBNoExactMatchImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$BnBNoExactMatch implements BnBNoExactMatch {
-  const _$BnBNoExactMatch();
+class _$BnBNoExactMatchImpl implements BnBNoExactMatch {
+  const _$BnBNoExactMatchImpl();
 
   @override
   String toString() {
@@ -2014,9 +2021,9 @@ class _$BnBNoExactMatch implements BnBNoExactMatch {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$BnBNoExactMatch);
+        (other.runtimeType == runtimeType && other is _$BnBNoExactMatchImpl);
   }
 
   @override
@@ -2228,29 +2235,29 @@ class _$BnBNoExactMatch implements BnBNoExactMatch {
 }
 
 abstract class BnBNoExactMatch implements BdkException {
-  const factory BnBNoExactMatch() = _$BnBNoExactMatch;
+  const factory BnBNoExactMatch() = _$BnBNoExactMatchImpl;
 }
 
 /// @nodoc
-abstract class _$$UnknownUtxoCopyWith<$Res> {
-  factory _$$UnknownUtxoCopyWith(
-          _$UnknownUtxo value, $Res Function(_$UnknownUtxo) then) =
-      __$$UnknownUtxoCopyWithImpl<$Res>;
+abstract class _$$UnknownUtxoImplCopyWith<$Res> {
+  factory _$$UnknownUtxoImplCopyWith(
+          _$UnknownUtxoImpl value, $Res Function(_$UnknownUtxoImpl) then) =
+      __$$UnknownUtxoImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$UnknownUtxoCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$UnknownUtxo>
-    implements _$$UnknownUtxoCopyWith<$Res> {
-  __$$UnknownUtxoCopyWithImpl(
-      _$UnknownUtxo _value, $Res Function(_$UnknownUtxo) _then)
+class __$$UnknownUtxoImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$UnknownUtxoImpl>
+    implements _$$UnknownUtxoImplCopyWith<$Res> {
+  __$$UnknownUtxoImplCopyWithImpl(
+      _$UnknownUtxoImpl _value, $Res Function(_$UnknownUtxoImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$UnknownUtxo implements UnknownUtxo {
-  const _$UnknownUtxo();
+class _$UnknownUtxoImpl implements UnknownUtxo {
+  const _$UnknownUtxoImpl();
 
   @override
   String toString() {
@@ -2258,9 +2265,9 @@ class _$UnknownUtxo implements UnknownUtxo {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$UnknownUtxo);
+        (other.runtimeType == runtimeType && other is _$UnknownUtxoImpl);
   }
 
   @override
@@ -2472,29 +2479,29 @@ class _$UnknownUtxo implements UnknownUtxo {
 }
 
 abstract class UnknownUtxo implements BdkException {
-  const factory UnknownUtxo() = _$UnknownUtxo;
+  const factory UnknownUtxo() = _$UnknownUtxoImpl;
 }
 
 /// @nodoc
-abstract class _$$TransactionNotFoundCopyWith<$Res> {
-  factory _$$TransactionNotFoundCopyWith(_$TransactionNotFound value,
-          $Res Function(_$TransactionNotFound) then) =
-      __$$TransactionNotFoundCopyWithImpl<$Res>;
+abstract class _$$TransactionNotFoundImplCopyWith<$Res> {
+  factory _$$TransactionNotFoundImplCopyWith(_$TransactionNotFoundImpl value,
+          $Res Function(_$TransactionNotFoundImpl) then) =
+      __$$TransactionNotFoundImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$TransactionNotFoundCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$TransactionNotFound>
-    implements _$$TransactionNotFoundCopyWith<$Res> {
-  __$$TransactionNotFoundCopyWithImpl(
-      _$TransactionNotFound _value, $Res Function(_$TransactionNotFound) _then)
+class __$$TransactionNotFoundImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$TransactionNotFoundImpl>
+    implements _$$TransactionNotFoundImplCopyWith<$Res> {
+  __$$TransactionNotFoundImplCopyWithImpl(_$TransactionNotFoundImpl _value,
+      $Res Function(_$TransactionNotFoundImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$TransactionNotFound implements TransactionNotFound {
-  const _$TransactionNotFound();
+class _$TransactionNotFoundImpl implements TransactionNotFound {
+  const _$TransactionNotFoundImpl();
 
   @override
   String toString() {
@@ -2502,9 +2509,10 @@ class _$TransactionNotFound implements TransactionNotFound {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$TransactionNotFound);
+        (other.runtimeType == runtimeType &&
+            other is _$TransactionNotFoundImpl);
   }
 
   @override
@@ -2716,29 +2724,29 @@ class _$TransactionNotFound implements TransactionNotFound {
 }
 
 abstract class TransactionNotFound implements BdkException {
-  const factory TransactionNotFound() = _$TransactionNotFound;
+  const factory TransactionNotFound() = _$TransactionNotFoundImpl;
 }
 
 /// @nodoc
-abstract class _$$TransactionConfirmedCopyWith<$Res> {
-  factory _$$TransactionConfirmedCopyWith(_$TransactionConfirmed value,
-          $Res Function(_$TransactionConfirmed) then) =
-      __$$TransactionConfirmedCopyWithImpl<$Res>;
+abstract class _$$TransactionConfirmedImplCopyWith<$Res> {
+  factory _$$TransactionConfirmedImplCopyWith(_$TransactionConfirmedImpl value,
+          $Res Function(_$TransactionConfirmedImpl) then) =
+      __$$TransactionConfirmedImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$TransactionConfirmedCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$TransactionConfirmed>
-    implements _$$TransactionConfirmedCopyWith<$Res> {
-  __$$TransactionConfirmedCopyWithImpl(_$TransactionConfirmed _value,
-      $Res Function(_$TransactionConfirmed) _then)
+class __$$TransactionConfirmedImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$TransactionConfirmedImpl>
+    implements _$$TransactionConfirmedImplCopyWith<$Res> {
+  __$$TransactionConfirmedImplCopyWithImpl(_$TransactionConfirmedImpl _value,
+      $Res Function(_$TransactionConfirmedImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$TransactionConfirmed implements TransactionConfirmed {
-  const _$TransactionConfirmed();
+class _$TransactionConfirmedImpl implements TransactionConfirmed {
+  const _$TransactionConfirmedImpl();
 
   @override
   String toString() {
@@ -2746,9 +2754,10 @@ class _$TransactionConfirmed implements TransactionConfirmed {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$TransactionConfirmed);
+        (other.runtimeType == runtimeType &&
+            other is _$TransactionConfirmedImpl);
   }
 
   @override
@@ -2960,24 +2969,24 @@ class _$TransactionConfirmed implements TransactionConfirmed {
 }
 
 abstract class TransactionConfirmed implements BdkException {
-  const factory TransactionConfirmed() = _$TransactionConfirmed;
+  const factory TransactionConfirmed() = _$TransactionConfirmedImpl;
 }
 
 /// @nodoc
-abstract class _$$FeeRateTooLowCopyWith<$Res> {
-  factory _$$FeeRateTooLowCopyWith(
-          _$FeeRateTooLow value, $Res Function(_$FeeRateTooLow) then) =
-      __$$FeeRateTooLowCopyWithImpl<$Res>;
+abstract class _$$FeeRateTooLowImplCopyWith<$Res> {
+  factory _$$FeeRateTooLowImplCopyWith(
+          _$FeeRateTooLowImpl value, $Res Function(_$FeeRateTooLowImpl) then) =
+      __$$FeeRateTooLowImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String e});
 }
 
 /// @nodoc
-class __$$FeeRateTooLowCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$FeeRateTooLow>
-    implements _$$FeeRateTooLowCopyWith<$Res> {
-  __$$FeeRateTooLowCopyWithImpl(
-      _$FeeRateTooLow _value, $Res Function(_$FeeRateTooLow) _then)
+class __$$FeeRateTooLowImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$FeeRateTooLowImpl>
+    implements _$$FeeRateTooLowImplCopyWith<$Res> {
+  __$$FeeRateTooLowImplCopyWithImpl(
+      _$FeeRateTooLowImpl _value, $Res Function(_$FeeRateTooLowImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -2985,7 +2994,7 @@ class __$$FeeRateTooLowCopyWithImpl<$Res>
   $Res call({
     Object? e = null,
   }) {
-    return _then(_$FeeRateTooLow(
+    return _then(_$FeeRateTooLowImpl(
       null == e
           ? _value.e
           : e // ignore: cast_nullable_to_non_nullable
@@ -2996,8 +3005,8 @@ class __$$FeeRateTooLowCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$FeeRateTooLow implements FeeRateTooLow {
-  const _$FeeRateTooLow(this.e);
+class _$FeeRateTooLowImpl implements FeeRateTooLow {
+  const _$FeeRateTooLowImpl(this.e);
 
   @override
   final String e;
@@ -3008,10 +3017,10 @@ class _$FeeRateTooLow implements FeeRateTooLow {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$FeeRateTooLow &&
+            other is _$FeeRateTooLowImpl &&
             (identical(other.e, e) || other.e == e));
   }
 
@@ -3021,8 +3030,8 @@ class _$FeeRateTooLow implements FeeRateTooLow {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$FeeRateTooLowCopyWith<_$FeeRateTooLow> get copyWith =>
-      __$$FeeRateTooLowCopyWithImpl<_$FeeRateTooLow>(this, _$identity);
+  _$$FeeRateTooLowImplCopyWith<_$FeeRateTooLowImpl> get copyWith =>
+      __$$FeeRateTooLowImplCopyWithImpl<_$FeeRateTooLowImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -3230,29 +3239,29 @@ class _$FeeRateTooLow implements FeeRateTooLow {
 }
 
 abstract class FeeRateTooLow implements BdkException {
-  const factory FeeRateTooLow(final String e) = _$FeeRateTooLow;
+  const factory FeeRateTooLow(final String e) = _$FeeRateTooLowImpl;
 
   String get e;
   @JsonKey(ignore: true)
-  _$$FeeRateTooLowCopyWith<_$FeeRateTooLow> get copyWith =>
+  _$$FeeRateTooLowImplCopyWith<_$FeeRateTooLowImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$FeeTooLowCopyWith<$Res> {
-  factory _$$FeeTooLowCopyWith(
-          _$FeeTooLow value, $Res Function(_$FeeTooLow) then) =
-      __$$FeeTooLowCopyWithImpl<$Res>;
+abstract class _$$FeeTooLowImplCopyWith<$Res> {
+  factory _$$FeeTooLowImplCopyWith(
+          _$FeeTooLowImpl value, $Res Function(_$FeeTooLowImpl) then) =
+      __$$FeeTooLowImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String e});
 }
 
 /// @nodoc
-class __$$FeeTooLowCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$FeeTooLow>
-    implements _$$FeeTooLowCopyWith<$Res> {
-  __$$FeeTooLowCopyWithImpl(
-      _$FeeTooLow _value, $Res Function(_$FeeTooLow) _then)
+class __$$FeeTooLowImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$FeeTooLowImpl>
+    implements _$$FeeTooLowImplCopyWith<$Res> {
+  __$$FeeTooLowImplCopyWithImpl(
+      _$FeeTooLowImpl _value, $Res Function(_$FeeTooLowImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -3260,7 +3269,7 @@ class __$$FeeTooLowCopyWithImpl<$Res>
   $Res call({
     Object? e = null,
   }) {
-    return _then(_$FeeTooLow(
+    return _then(_$FeeTooLowImpl(
       null == e
           ? _value.e
           : e // ignore: cast_nullable_to_non_nullable
@@ -3271,8 +3280,8 @@ class __$$FeeTooLowCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$FeeTooLow implements FeeTooLow {
-  const _$FeeTooLow(this.e);
+class _$FeeTooLowImpl implements FeeTooLow {
+  const _$FeeTooLowImpl(this.e);
 
   @override
   final String e;
@@ -3283,10 +3292,10 @@ class _$FeeTooLow implements FeeTooLow {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$FeeTooLow &&
+            other is _$FeeTooLowImpl &&
             (identical(other.e, e) || other.e == e));
   }
 
@@ -3296,8 +3305,8 @@ class _$FeeTooLow implements FeeTooLow {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$FeeTooLowCopyWith<_$FeeTooLow> get copyWith =>
-      __$$FeeTooLowCopyWithImpl<_$FeeTooLow>(this, _$identity);
+  _$$FeeTooLowImplCopyWith<_$FeeTooLowImpl> get copyWith =>
+      __$$FeeTooLowImplCopyWithImpl<_$FeeTooLowImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -3505,34 +3514,34 @@ class _$FeeTooLow implements FeeTooLow {
 }
 
 abstract class FeeTooLow implements BdkException {
-  const factory FeeTooLow(final String e) = _$FeeTooLow;
+  const factory FeeTooLow(final String e) = _$FeeTooLowImpl;
 
   String get e;
   @JsonKey(ignore: true)
-  _$$FeeTooLowCopyWith<_$FeeTooLow> get copyWith =>
+  _$$FeeTooLowImplCopyWith<_$FeeTooLowImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$FeeRateUnavailableCopyWith<$Res> {
-  factory _$$FeeRateUnavailableCopyWith(_$FeeRateUnavailable value,
-          $Res Function(_$FeeRateUnavailable) then) =
-      __$$FeeRateUnavailableCopyWithImpl<$Res>;
+abstract class _$$FeeRateUnavailableImplCopyWith<$Res> {
+  factory _$$FeeRateUnavailableImplCopyWith(_$FeeRateUnavailableImpl value,
+          $Res Function(_$FeeRateUnavailableImpl) then) =
+      __$$FeeRateUnavailableImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$FeeRateUnavailableCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$FeeRateUnavailable>
-    implements _$$FeeRateUnavailableCopyWith<$Res> {
-  __$$FeeRateUnavailableCopyWithImpl(
-      _$FeeRateUnavailable _value, $Res Function(_$FeeRateUnavailable) _then)
+class __$$FeeRateUnavailableImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$FeeRateUnavailableImpl>
+    implements _$$FeeRateUnavailableImplCopyWith<$Res> {
+  __$$FeeRateUnavailableImplCopyWithImpl(_$FeeRateUnavailableImpl _value,
+      $Res Function(_$FeeRateUnavailableImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$FeeRateUnavailable implements FeeRateUnavailable {
-  const _$FeeRateUnavailable();
+class _$FeeRateUnavailableImpl implements FeeRateUnavailable {
+  const _$FeeRateUnavailableImpl();
 
   @override
   String toString() {
@@ -3540,9 +3549,9 @@ class _$FeeRateUnavailable implements FeeRateUnavailable {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$FeeRateUnavailable);
+        (other.runtimeType == runtimeType && other is _$FeeRateUnavailableImpl);
   }
 
   @override
@@ -3754,29 +3763,29 @@ class _$FeeRateUnavailable implements FeeRateUnavailable {
 }
 
 abstract class FeeRateUnavailable implements BdkException {
-  const factory FeeRateUnavailable() = _$FeeRateUnavailable;
+  const factory FeeRateUnavailable() = _$FeeRateUnavailableImpl;
 }
 
 /// @nodoc
-abstract class _$$ChecksumMismatchCopyWith<$Res> {
-  factory _$$ChecksumMismatchCopyWith(
-          _$ChecksumMismatch value, $Res Function(_$ChecksumMismatch) then) =
-      __$$ChecksumMismatchCopyWithImpl<$Res>;
+abstract class _$$ChecksumMismatchImplCopyWith<$Res> {
+  factory _$$ChecksumMismatchImplCopyWith(_$ChecksumMismatchImpl value,
+          $Res Function(_$ChecksumMismatchImpl) then) =
+      __$$ChecksumMismatchImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$ChecksumMismatchCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$ChecksumMismatch>
-    implements _$$ChecksumMismatchCopyWith<$Res> {
-  __$$ChecksumMismatchCopyWithImpl(
-      _$ChecksumMismatch _value, $Res Function(_$ChecksumMismatch) _then)
+class __$$ChecksumMismatchImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$ChecksumMismatchImpl>
+    implements _$$ChecksumMismatchImplCopyWith<$Res> {
+  __$$ChecksumMismatchImplCopyWithImpl(_$ChecksumMismatchImpl _value,
+      $Res Function(_$ChecksumMismatchImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$ChecksumMismatch implements ChecksumMismatch {
-  const _$ChecksumMismatch();
+class _$ChecksumMismatchImpl implements ChecksumMismatch {
+  const _$ChecksumMismatchImpl();
 
   @override
   String toString() {
@@ -3784,9 +3793,9 @@ class _$ChecksumMismatch implements ChecksumMismatch {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$ChecksumMismatch);
+        (other.runtimeType == runtimeType && other is _$ChecksumMismatchImpl);
   }
 
   @override
@@ -3998,24 +4007,24 @@ class _$ChecksumMismatch implements ChecksumMismatch {
 }
 
 abstract class ChecksumMismatch implements BdkException {
-  const factory ChecksumMismatch() = _$ChecksumMismatch;
+  const factory ChecksumMismatch() = _$ChecksumMismatchImpl;
 }
 
 /// @nodoc
-abstract class _$$MiniscriptCopyWith<$Res> {
-  factory _$$MiniscriptCopyWith(
-          _$Miniscript value, $Res Function(_$Miniscript) then) =
-      __$$MiniscriptCopyWithImpl<$Res>;
+abstract class _$$MiniscriptImplCopyWith<$Res> {
+  factory _$$MiniscriptImplCopyWith(
+          _$MiniscriptImpl value, $Res Function(_$MiniscriptImpl) then) =
+      __$$MiniscriptImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String e});
 }
 
 /// @nodoc
-class __$$MiniscriptCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$Miniscript>
-    implements _$$MiniscriptCopyWith<$Res> {
-  __$$MiniscriptCopyWithImpl(
-      _$Miniscript _value, $Res Function(_$Miniscript) _then)
+class __$$MiniscriptImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$MiniscriptImpl>
+    implements _$$MiniscriptImplCopyWith<$Res> {
+  __$$MiniscriptImplCopyWithImpl(
+      _$MiniscriptImpl _value, $Res Function(_$MiniscriptImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -4023,7 +4032,7 @@ class __$$MiniscriptCopyWithImpl<$Res>
   $Res call({
     Object? e = null,
   }) {
-    return _then(_$Miniscript(
+    return _then(_$MiniscriptImpl(
       null == e
           ? _value.e
           : e // ignore: cast_nullable_to_non_nullable
@@ -4034,8 +4043,8 @@ class __$$MiniscriptCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$Miniscript implements Miniscript {
-  const _$Miniscript(this.e);
+class _$MiniscriptImpl implements Miniscript {
+  const _$MiniscriptImpl(this.e);
 
   @override
   final String e;
@@ -4046,10 +4055,10 @@ class _$Miniscript implements Miniscript {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Miniscript &&
+            other is _$MiniscriptImpl &&
             (identical(other.e, e) || other.e == e));
   }
 
@@ -4059,8 +4068,8 @@ class _$Miniscript implements Miniscript {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$MiniscriptCopyWith<_$Miniscript> get copyWith =>
-      __$$MiniscriptCopyWithImpl<_$Miniscript>(this, _$identity);
+  _$$MiniscriptImplCopyWith<_$MiniscriptImpl> get copyWith =>
+      __$$MiniscriptImplCopyWithImpl<_$MiniscriptImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -4268,27 +4277,29 @@ class _$Miniscript implements Miniscript {
 }
 
 abstract class Miniscript implements BdkException {
-  const factory Miniscript(final String e) = _$Miniscript;
+  const factory Miniscript(final String e) = _$MiniscriptImpl;
 
   String get e;
   @JsonKey(ignore: true)
-  _$$MiniscriptCopyWith<_$Miniscript> get copyWith =>
+  _$$MiniscriptImplCopyWith<_$MiniscriptImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$Bip32CopyWith<$Res> {
-  factory _$$Bip32CopyWith(_$Bip32 value, $Res Function(_$Bip32) then) =
-      __$$Bip32CopyWithImpl<$Res>;
+abstract class _$$Bip32ImplCopyWith<$Res> {
+  factory _$$Bip32ImplCopyWith(
+          _$Bip32Impl value, $Res Function(_$Bip32Impl) then) =
+      __$$Bip32ImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String e});
 }
 
 /// @nodoc
-class __$$Bip32CopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$Bip32>
-    implements _$$Bip32CopyWith<$Res> {
-  __$$Bip32CopyWithImpl(_$Bip32 _value, $Res Function(_$Bip32) _then)
+class __$$Bip32ImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$Bip32Impl>
+    implements _$$Bip32ImplCopyWith<$Res> {
+  __$$Bip32ImplCopyWithImpl(
+      _$Bip32Impl _value, $Res Function(_$Bip32Impl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -4296,7 +4307,7 @@ class __$$Bip32CopyWithImpl<$Res>
   $Res call({
     Object? e = null,
   }) {
-    return _then(_$Bip32(
+    return _then(_$Bip32Impl(
       null == e
           ? _value.e
           : e // ignore: cast_nullable_to_non_nullable
@@ -4307,8 +4318,8 @@ class __$$Bip32CopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$Bip32 implements Bip32 {
-  const _$Bip32(this.e);
+class _$Bip32Impl implements Bip32 {
+  const _$Bip32Impl(this.e);
 
   @override
   final String e;
@@ -4319,10 +4330,10 @@ class _$Bip32 implements Bip32 {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Bip32 &&
+            other is _$Bip32Impl &&
             (identical(other.e, e) || other.e == e));
   }
 
@@ -4332,8 +4343,8 @@ class _$Bip32 implements Bip32 {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$Bip32CopyWith<_$Bip32> get copyWith =>
-      __$$Bip32CopyWithImpl<_$Bip32>(this, _$identity);
+  _$$Bip32ImplCopyWith<_$Bip32Impl> get copyWith =>
+      __$$Bip32ImplCopyWithImpl<_$Bip32Impl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -4541,28 +4552,29 @@ class _$Bip32 implements Bip32 {
 }
 
 abstract class Bip32 implements BdkException {
-  const factory Bip32(final String e) = _$Bip32;
+  const factory Bip32(final String e) = _$Bip32Impl;
 
   String get e;
   @JsonKey(ignore: true)
-  _$$Bip32CopyWith<_$Bip32> get copyWith => throw _privateConstructorUsedError;
+  _$$Bip32ImplCopyWith<_$Bip32Impl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$Secp256k1CopyWith<$Res> {
-  factory _$$Secp256k1CopyWith(
-          _$Secp256k1 value, $Res Function(_$Secp256k1) then) =
-      __$$Secp256k1CopyWithImpl<$Res>;
+abstract class _$$Secp256k1ImplCopyWith<$Res> {
+  factory _$$Secp256k1ImplCopyWith(
+          _$Secp256k1Impl value, $Res Function(_$Secp256k1Impl) then) =
+      __$$Secp256k1ImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String e});
 }
 
 /// @nodoc
-class __$$Secp256k1CopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$Secp256k1>
-    implements _$$Secp256k1CopyWith<$Res> {
-  __$$Secp256k1CopyWithImpl(
-      _$Secp256k1 _value, $Res Function(_$Secp256k1) _then)
+class __$$Secp256k1ImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$Secp256k1Impl>
+    implements _$$Secp256k1ImplCopyWith<$Res> {
+  __$$Secp256k1ImplCopyWithImpl(
+      _$Secp256k1Impl _value, $Res Function(_$Secp256k1Impl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -4570,7 +4582,7 @@ class __$$Secp256k1CopyWithImpl<$Res>
   $Res call({
     Object? e = null,
   }) {
-    return _then(_$Secp256k1(
+    return _then(_$Secp256k1Impl(
       null == e
           ? _value.e
           : e // ignore: cast_nullable_to_non_nullable
@@ -4581,8 +4593,8 @@ class __$$Secp256k1CopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$Secp256k1 implements Secp256k1 {
-  const _$Secp256k1(this.e);
+class _$Secp256k1Impl implements Secp256k1 {
+  const _$Secp256k1Impl(this.e);
 
   @override
   final String e;
@@ -4593,10 +4605,10 @@ class _$Secp256k1 implements Secp256k1 {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Secp256k1 &&
+            other is _$Secp256k1Impl &&
             (identical(other.e, e) || other.e == e));
   }
 
@@ -4606,8 +4618,8 @@ class _$Secp256k1 implements Secp256k1 {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$Secp256k1CopyWith<_$Secp256k1> get copyWith =>
-      __$$Secp256k1CopyWithImpl<_$Secp256k1>(this, _$identity);
+  _$$Secp256k1ImplCopyWith<_$Secp256k1Impl> get copyWith =>
+      __$$Secp256k1ImplCopyWithImpl<_$Secp256k1Impl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -4815,34 +4827,34 @@ class _$Secp256k1 implements Secp256k1 {
 }
 
 abstract class Secp256k1 implements BdkException {
-  const factory Secp256k1(final String e) = _$Secp256k1;
+  const factory Secp256k1(final String e) = _$Secp256k1Impl;
 
   String get e;
   @JsonKey(ignore: true)
-  _$$Secp256k1CopyWith<_$Secp256k1> get copyWith =>
+  _$$Secp256k1ImplCopyWith<_$Secp256k1Impl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$MissingCachedScriptsCopyWith<$Res> {
-  factory _$$MissingCachedScriptsCopyWith(_$MissingCachedScripts value,
-          $Res Function(_$MissingCachedScripts) then) =
-      __$$MissingCachedScriptsCopyWithImpl<$Res>;
+abstract class _$$MissingCachedScriptsImplCopyWith<$Res> {
+  factory _$$MissingCachedScriptsImplCopyWith(_$MissingCachedScriptsImpl value,
+          $Res Function(_$MissingCachedScriptsImpl) then) =
+      __$$MissingCachedScriptsImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$MissingCachedScriptsCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$MissingCachedScripts>
-    implements _$$MissingCachedScriptsCopyWith<$Res> {
-  __$$MissingCachedScriptsCopyWithImpl(_$MissingCachedScripts _value,
-      $Res Function(_$MissingCachedScripts) _then)
+class __$$MissingCachedScriptsImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$MissingCachedScriptsImpl>
+    implements _$$MissingCachedScriptsImplCopyWith<$Res> {
+  __$$MissingCachedScriptsImplCopyWithImpl(_$MissingCachedScriptsImpl _value,
+      $Res Function(_$MissingCachedScriptsImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$MissingCachedScripts implements MissingCachedScripts {
-  const _$MissingCachedScripts();
+class _$MissingCachedScriptsImpl implements MissingCachedScripts {
+  const _$MissingCachedScriptsImpl();
 
   @override
   String toString() {
@@ -4850,9 +4862,10 @@ class _$MissingCachedScripts implements MissingCachedScripts {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$MissingCachedScripts);
+        (other.runtimeType == runtimeType &&
+            other is _$MissingCachedScriptsImpl);
   }
 
   @override
@@ -5064,23 +5077,24 @@ class _$MissingCachedScripts implements MissingCachedScripts {
 }
 
 abstract class MissingCachedScripts implements BdkException {
-  const factory MissingCachedScripts() = _$MissingCachedScripts;
+  const factory MissingCachedScripts() = _$MissingCachedScriptsImpl;
 }
 
 /// @nodoc
-abstract class _$$ElectrumCopyWith<$Res> {
-  factory _$$ElectrumCopyWith(
-          _$Electrum value, $Res Function(_$Electrum) then) =
-      __$$ElectrumCopyWithImpl<$Res>;
+abstract class _$$ElectrumImplCopyWith<$Res> {
+  factory _$$ElectrumImplCopyWith(
+          _$ElectrumImpl value, $Res Function(_$ElectrumImpl) then) =
+      __$$ElectrumImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String e});
 }
 
 /// @nodoc
-class __$$ElectrumCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$Electrum>
-    implements _$$ElectrumCopyWith<$Res> {
-  __$$ElectrumCopyWithImpl(_$Electrum _value, $Res Function(_$Electrum) _then)
+class __$$ElectrumImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$ElectrumImpl>
+    implements _$$ElectrumImplCopyWith<$Res> {
+  __$$ElectrumImplCopyWithImpl(
+      _$ElectrumImpl _value, $Res Function(_$ElectrumImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -5088,7 +5102,7 @@ class __$$ElectrumCopyWithImpl<$Res>
   $Res call({
     Object? e = null,
   }) {
-    return _then(_$Electrum(
+    return _then(_$ElectrumImpl(
       null == e
           ? _value.e
           : e // ignore: cast_nullable_to_non_nullable
@@ -5099,8 +5113,8 @@ class __$$ElectrumCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$Electrum implements Electrum {
-  const _$Electrum(this.e);
+class _$ElectrumImpl implements Electrum {
+  const _$ElectrumImpl(this.e);
 
   @override
   final String e;
@@ -5111,10 +5125,10 @@ class _$Electrum implements Electrum {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Electrum &&
+            other is _$ElectrumImpl &&
             (identical(other.e, e) || other.e == e));
   }
 
@@ -5124,8 +5138,8 @@ class _$Electrum implements Electrum {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ElectrumCopyWith<_$Electrum> get copyWith =>
-      __$$ElectrumCopyWithImpl<_$Electrum>(this, _$identity);
+  _$$ElectrumImplCopyWith<_$ElectrumImpl> get copyWith =>
+      __$$ElectrumImplCopyWithImpl<_$ElectrumImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -5333,27 +5347,29 @@ class _$Electrum implements Electrum {
 }
 
 abstract class Electrum implements BdkException {
-  const factory Electrum(final String e) = _$Electrum;
+  const factory Electrum(final String e) = _$ElectrumImpl;
 
   String get e;
   @JsonKey(ignore: true)
-  _$$ElectrumCopyWith<_$Electrum> get copyWith =>
+  _$$ElectrumImplCopyWith<_$ElectrumImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$EsploraCopyWith<$Res> {
-  factory _$$EsploraCopyWith(_$Esplora value, $Res Function(_$Esplora) then) =
-      __$$EsploraCopyWithImpl<$Res>;
+abstract class _$$EsploraImplCopyWith<$Res> {
+  factory _$$EsploraImplCopyWith(
+          _$EsploraImpl value, $Res Function(_$EsploraImpl) then) =
+      __$$EsploraImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String e});
 }
 
 /// @nodoc
-class __$$EsploraCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$Esplora>
-    implements _$$EsploraCopyWith<$Res> {
-  __$$EsploraCopyWithImpl(_$Esplora _value, $Res Function(_$Esplora) _then)
+class __$$EsploraImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$EsploraImpl>
+    implements _$$EsploraImplCopyWith<$Res> {
+  __$$EsploraImplCopyWithImpl(
+      _$EsploraImpl _value, $Res Function(_$EsploraImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -5361,7 +5377,7 @@ class __$$EsploraCopyWithImpl<$Res>
   $Res call({
     Object? e = null,
   }) {
-    return _then(_$Esplora(
+    return _then(_$EsploraImpl(
       null == e
           ? _value.e
           : e // ignore: cast_nullable_to_non_nullable
@@ -5372,8 +5388,8 @@ class __$$EsploraCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$Esplora implements Esplora {
-  const _$Esplora(this.e);
+class _$EsploraImpl implements Esplora {
+  const _$EsploraImpl(this.e);
 
   @override
   final String e;
@@ -5384,10 +5400,10 @@ class _$Esplora implements Esplora {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Esplora &&
+            other is _$EsploraImpl &&
             (identical(other.e, e) || other.e == e));
   }
 
@@ -5397,8 +5413,8 @@ class _$Esplora implements Esplora {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$EsploraCopyWith<_$Esplora> get copyWith =>
-      __$$EsploraCopyWithImpl<_$Esplora>(this, _$identity);
+  _$$EsploraImplCopyWith<_$EsploraImpl> get copyWith =>
+      __$$EsploraImplCopyWithImpl<_$EsploraImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -5606,27 +5622,28 @@ class _$Esplora implements Esplora {
 }
 
 abstract class Esplora implements BdkException {
-  const factory Esplora(final String e) = _$Esplora;
+  const factory Esplora(final String e) = _$EsploraImpl;
 
   String get e;
   @JsonKey(ignore: true)
-  _$$EsploraCopyWith<_$Esplora> get copyWith =>
+  _$$EsploraImplCopyWith<_$EsploraImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$SledCopyWith<$Res> {
-  factory _$$SledCopyWith(_$Sled value, $Res Function(_$Sled) then) =
-      __$$SledCopyWithImpl<$Res>;
+abstract class _$$SledImplCopyWith<$Res> {
+  factory _$$SledImplCopyWith(
+          _$SledImpl value, $Res Function(_$SledImpl) then) =
+      __$$SledImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String e});
 }
 
 /// @nodoc
-class __$$SledCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$Sled>
-    implements _$$SledCopyWith<$Res> {
-  __$$SledCopyWithImpl(_$Sled _value, $Res Function(_$Sled) _then)
+class __$$SledImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$SledImpl>
+    implements _$$SledImplCopyWith<$Res> {
+  __$$SledImplCopyWithImpl(_$SledImpl _value, $Res Function(_$SledImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -5634,7 +5651,7 @@ class __$$SledCopyWithImpl<$Res>
   $Res call({
     Object? e = null,
   }) {
-    return _then(_$Sled(
+    return _then(_$SledImpl(
       null == e
           ? _value.e
           : e // ignore: cast_nullable_to_non_nullable
@@ -5645,8 +5662,8 @@ class __$$SledCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$Sled implements Sled {
-  const _$Sled(this.e);
+class _$SledImpl implements Sled {
+  const _$SledImpl(this.e);
 
   @override
   final String e;
@@ -5657,10 +5674,10 @@ class _$Sled implements Sled {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Sled &&
+            other is _$SledImpl &&
             (identical(other.e, e) || other.e == e));
   }
 
@@ -5670,8 +5687,8 @@ class _$Sled implements Sled {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$SledCopyWith<_$Sled> get copyWith =>
-      __$$SledCopyWithImpl<_$Sled>(this, _$identity);
+  _$$SledImplCopyWith<_$SledImpl> get copyWith =>
+      __$$SledImplCopyWithImpl<_$SledImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -5879,25 +5896,27 @@ class _$Sled implements Sled {
 }
 
 abstract class Sled implements BdkException {
-  const factory Sled(final String e) = _$Sled;
+  const factory Sled(final String e) = _$SledImpl;
 
   String get e;
   @JsonKey(ignore: true)
-  _$$SledCopyWith<_$Sled> get copyWith => throw _privateConstructorUsedError;
+  _$$SledImplCopyWith<_$SledImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$RpcCopyWith<$Res> {
-  factory _$$RpcCopyWith(_$Rpc value, $Res Function(_$Rpc) then) =
-      __$$RpcCopyWithImpl<$Res>;
+abstract class _$$RpcImplCopyWith<$Res> {
+  factory _$$RpcImplCopyWith(_$RpcImpl value, $Res Function(_$RpcImpl) then) =
+      __$$RpcImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String e});
 }
 
 /// @nodoc
-class __$$RpcCopyWithImpl<$Res> extends _$BdkExceptionCopyWithImpl<$Res, _$Rpc>
-    implements _$$RpcCopyWith<$Res> {
-  __$$RpcCopyWithImpl(_$Rpc _value, $Res Function(_$Rpc) _then)
+class __$$RpcImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$RpcImpl>
+    implements _$$RpcImplCopyWith<$Res> {
+  __$$RpcImplCopyWithImpl(_$RpcImpl _value, $Res Function(_$RpcImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -5905,7 +5924,7 @@ class __$$RpcCopyWithImpl<$Res> extends _$BdkExceptionCopyWithImpl<$Res, _$Rpc>
   $Res call({
     Object? e = null,
   }) {
-    return _then(_$Rpc(
+    return _then(_$RpcImpl(
       null == e
           ? _value.e
           : e // ignore: cast_nullable_to_non_nullable
@@ -5916,8 +5935,8 @@ class __$$RpcCopyWithImpl<$Res> extends _$BdkExceptionCopyWithImpl<$Res, _$Rpc>
 
 /// @nodoc
 
-class _$Rpc implements Rpc {
-  const _$Rpc(this.e);
+class _$RpcImpl implements Rpc {
+  const _$RpcImpl(this.e);
 
   @override
   final String e;
@@ -5928,10 +5947,10 @@ class _$Rpc implements Rpc {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Rpc &&
+            other is _$RpcImpl &&
             (identical(other.e, e) || other.e == e));
   }
 
@@ -5941,8 +5960,8 @@ class _$Rpc implements Rpc {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$RpcCopyWith<_$Rpc> get copyWith =>
-      __$$RpcCopyWithImpl<_$Rpc>(this, _$identity);
+  _$$RpcImplCopyWith<_$RpcImpl> get copyWith =>
+      __$$RpcImplCopyWithImpl<_$RpcImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -6150,27 +6169,29 @@ class _$Rpc implements Rpc {
 }
 
 abstract class Rpc implements BdkException {
-  const factory Rpc(final String e) = _$Rpc;
+  const factory Rpc(final String e) = _$RpcImpl;
 
   String get e;
   @JsonKey(ignore: true)
-  _$$RpcCopyWith<_$Rpc> get copyWith => throw _privateConstructorUsedError;
+  _$$RpcImplCopyWith<_$RpcImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$RusqliteCopyWith<$Res> {
-  factory _$$RusqliteCopyWith(
-          _$Rusqlite value, $Res Function(_$Rusqlite) then) =
-      __$$RusqliteCopyWithImpl<$Res>;
+abstract class _$$RusqliteImplCopyWith<$Res> {
+  factory _$$RusqliteImplCopyWith(
+          _$RusqliteImpl value, $Res Function(_$RusqliteImpl) then) =
+      __$$RusqliteImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String e});
 }
 
 /// @nodoc
-class __$$RusqliteCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$Rusqlite>
-    implements _$$RusqliteCopyWith<$Res> {
-  __$$RusqliteCopyWithImpl(_$Rusqlite _value, $Res Function(_$Rusqlite) _then)
+class __$$RusqliteImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$RusqliteImpl>
+    implements _$$RusqliteImplCopyWith<$Res> {
+  __$$RusqliteImplCopyWithImpl(
+      _$RusqliteImpl _value, $Res Function(_$RusqliteImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -6178,7 +6199,7 @@ class __$$RusqliteCopyWithImpl<$Res>
   $Res call({
     Object? e = null,
   }) {
-    return _then(_$Rusqlite(
+    return _then(_$RusqliteImpl(
       null == e
           ? _value.e
           : e // ignore: cast_nullable_to_non_nullable
@@ -6189,8 +6210,8 @@ class __$$RusqliteCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$Rusqlite implements Rusqlite {
-  const _$Rusqlite(this.e);
+class _$RusqliteImpl implements Rusqlite {
+  const _$RusqliteImpl(this.e);
 
   @override
   final String e;
@@ -6201,10 +6222,10 @@ class _$Rusqlite implements Rusqlite {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Rusqlite &&
+            other is _$RusqliteImpl &&
             (identical(other.e, e) || other.e == e));
   }
 
@@ -6214,8 +6235,8 @@ class _$Rusqlite implements Rusqlite {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$RusqliteCopyWith<_$Rusqlite> get copyWith =>
-      __$$RusqliteCopyWithImpl<_$Rusqlite>(this, _$identity);
+  _$$RusqliteImplCopyWith<_$RusqliteImpl> get copyWith =>
+      __$$RusqliteImplCopyWithImpl<_$RusqliteImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -6423,29 +6444,29 @@ class _$Rusqlite implements Rusqlite {
 }
 
 abstract class Rusqlite implements BdkException {
-  const factory Rusqlite(final String e) = _$Rusqlite;
+  const factory Rusqlite(final String e) = _$RusqliteImpl;
 
   String get e;
   @JsonKey(ignore: true)
-  _$$RusqliteCopyWith<_$Rusqlite> get copyWith =>
+  _$$RusqliteImplCopyWith<_$RusqliteImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$UnExpectedCopyWith<$Res> {
-  factory _$$UnExpectedCopyWith(
-          _$UnExpected value, $Res Function(_$UnExpected) then) =
-      __$$UnExpectedCopyWithImpl<$Res>;
+abstract class _$$UnExpectedImplCopyWith<$Res> {
+  factory _$$UnExpectedImplCopyWith(
+          _$UnExpectedImpl value, $Res Function(_$UnExpectedImpl) then) =
+      __$$UnExpectedImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String e});
 }
 
 /// @nodoc
-class __$$UnExpectedCopyWithImpl<$Res>
-    extends _$BdkExceptionCopyWithImpl<$Res, _$UnExpected>
-    implements _$$UnExpectedCopyWith<$Res> {
-  __$$UnExpectedCopyWithImpl(
-      _$UnExpected _value, $Res Function(_$UnExpected) _then)
+class __$$UnExpectedImplCopyWithImpl<$Res>
+    extends _$BdkExceptionCopyWithImpl<$Res, _$UnExpectedImpl>
+    implements _$$UnExpectedImplCopyWith<$Res> {
+  __$$UnExpectedImplCopyWithImpl(
+      _$UnExpectedImpl _value, $Res Function(_$UnExpectedImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -6453,7 +6474,7 @@ class __$$UnExpectedCopyWithImpl<$Res>
   $Res call({
     Object? e = null,
   }) {
-    return _then(_$UnExpected(
+    return _then(_$UnExpectedImpl(
       null == e
           ? _value.e
           : e // ignore: cast_nullable_to_non_nullable
@@ -6464,8 +6485,8 @@ class __$$UnExpectedCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$UnExpected implements UnExpected {
-  const _$UnExpected(this.e);
+class _$UnExpectedImpl implements UnExpected {
+  const _$UnExpectedImpl(this.e);
 
   @override
   final String e;
@@ -6476,10 +6497,10 @@ class _$UnExpected implements UnExpected {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$UnExpected &&
+            other is _$UnExpectedImpl &&
             (identical(other.e, e) || other.e == e));
   }
 
@@ -6489,8 +6510,8 @@ class _$UnExpected implements UnExpected {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$UnExpectedCopyWith<_$UnExpected> get copyWith =>
-      __$$UnExpectedCopyWithImpl<_$UnExpected>(this, _$identity);
+  _$$UnExpectedImplCopyWith<_$UnExpectedImpl> get copyWith =>
+      __$$UnExpectedImplCopyWithImpl<_$UnExpectedImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -6698,10 +6719,10 @@ class _$UnExpected implements UnExpected {
 }
 
 abstract class UnExpected implements BdkException {
-  const factory UnExpected(final String e) = _$UnExpected;
+  const factory UnExpected(final String e) = _$UnExpectedImpl;
 
   String get e;
   @JsonKey(ignore: true)
-  _$$UnExpectedCopyWith<_$UnExpected> get copyWith =>
+  _$$UnExpectedImplCopyWith<_$UnExpectedImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
