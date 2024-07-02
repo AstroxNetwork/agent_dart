@@ -889,10 +889,10 @@ class PartiallySignedTransaction {
   }
 
   /// Return feeAmount
-  Future<BigInt?> feeAmount() async {
+  Future<int?> feeAmount() async {
     try {
       final res = await Api.psbtFeeAmount(psbtStr: psbtBase64);
-      return res;
+      return res?.toInt();
     } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
@@ -1140,8 +1140,8 @@ class TxBuilder {
   }
 
   ///Add a recipient to the internal list
-  TxBuilder addRecipient(bridge.Script script, BigInt amount) {
-    _recipients.add(ScriptAmount(script: script, amount: amount));
+  TxBuilder addRecipient(bridge.Script script, int amount) {
+    _recipients.add(ScriptAmount(script: script, amount: BigInt.from(amount)));
     return this;
   }
 
@@ -1189,7 +1189,7 @@ class TxBuilder {
       ForeignUtxo(
         outpoint: OutPoint(txid: ext.txid, vout: ext.vout),
         txout: TxOutForeign(
-          value: ext.value,
+          value: BigInt.from(ext.value),
           scriptPubkey: ext.scriptPk,
         ),
       ),
@@ -1325,12 +1325,12 @@ class TxBuilder {
     return this;
   }
 
-  Future<BigInt?> calNetworkFee(Wallet wallet) async {
+  Future<int?> calNetworkFee(Wallet wallet) async {
     final res = await finish(wallet);
     return res.psbt.feeAmount();
   }
 
-  Future<BigInt> calFee(Wallet wallet) async {
+  Future<int> calFee(Wallet wallet) async {
     final res = await Api.txCalFeeFinish(
       wallet: wallet._wallet,
       recipients: _recipients,
@@ -1347,26 +1347,26 @@ class TxBuilder {
       changePolicy: _changeSpendPolicy,
       shuffleUtxo: _shuffleUtxos,
     );
-    return res;
+    return res.toInt();
   }
 
-  BigInt getTotalOutput() {
-    BigInt total = BigInt.zero;
+  int getTotalOutput() {
+    int total = 0;
     for (final e in _txOutputs) {
       total += e.value;
     }
     return total;
   }
 
-  BigInt getTotalInput() {
-    BigInt total = BigInt.zero;
+  int getTotalInput() {
+    int total = 0;
     for (final e in _txInputs) {
       total += e.value;
     }
     return total;
   }
 
-  BigInt getUnspend() {
+  int getUnspend() {
     return getTotalInput() - getTotalOutput();
   }
 
@@ -1425,7 +1425,7 @@ class InscriptionValue {
   });
 
   final String inscriptionId;
-  final BigInt outputValue;
+  final int outputValue;
 }
 
 class OutPointExt extends OutPoint {
@@ -1441,7 +1441,7 @@ class OutPointExt extends OutPoint {
     required this.scriptPk,
   }) : super(txid: '', vout: 0);
 
-  final BigInt value;
+  final int value;
   final String scriptPk;
 
   String get uniqueKey => '$txid:$vout';
@@ -1517,12 +1517,12 @@ class TxBuilderResult {
 
   bool? signed;
 
-  BigInt getTotalInput() {
-    return _txInputs.fold(BigInt.zero, (p, v) => p + v.value);
+  int getTotalInput() {
+    return _txInputs.fold(0, (p, v) => p + v.value);
   }
 
-  BigInt getTotalOutput() {
-    return _txOutputs.fold(BigInt.zero, (p, v) => p + v.value);
+  int getTotalOutput() {
+    return _txOutputs.fold(0, (p, v) => p + v.value);
   }
 
   Future<void> dumpTx({
@@ -1530,13 +1530,13 @@ class TxBuilderResult {
   }) async {
     final tx = await psbt.extractTx();
     final size = Uint8List.fromList(await tx.serialize()).length;
-    final feePaid = await psbt.feeAmount();
+    final feePaid = BigInt.from((await psbt.feeAmount())!);
     final feeRate = (await psbt.feeRate())!.asSatPerVb();
     final inputs = await tx.input();
     final outputs = await tx.output();
 
     final inputStrings = <String>[];
-    BigInt totalInput = BigInt.zero;
+    int totalInput = 0;
     for (int i = 0; i < _txInputs.length; i += 1) {
       final input = _txInputs[i];
       final found = inputs.firstWhereOrNull((e) {
@@ -1583,7 +1583,7 @@ ${outputString.join("\n")}
 Summary in Sats
   Inputs:   + $totalInput
   Outputs:  - $totalOutput
-  fee:      - ${feePaid!}
+  fee:      - $feePaid
   Remain:   ${totalOutput - feePaid}
 ==============================================================================================
     ''');
@@ -1937,7 +1937,7 @@ class Wallet {
           txId: txId,
           index: i,
           address: addr,
-          value: element.value,
+          value: element.value.toInt(),
           isMine: addr.address == address,
           isChange: false,
         ),
@@ -1954,7 +1954,7 @@ class Wallet {
         TxOutExt(
           index: i,
           address: addr,
-          value: element.value,
+          value: element.value.toInt(),
           isMine: addr.address == address,
           isChange: i == outputs.length - 1 ? true : false,
         ),
@@ -1973,8 +1973,8 @@ class Wallet {
       fee: feePaid!,
       feeRate: feeRate,
       size: size,
-      totalInputValue: inputsExt.fold(BigInt.zero, (v, i) => i.value + v),
-      totalOutputValue: outputsExt.fold(BigInt.zero, (v, i) => i.value + v),
+      totalInputValue: inputsExt.fold(0, (v, i) => i.value + v),
+      totalOutputValue: outputsExt.fold(0, (v, i) => i.value + v),
       psbt: psbt,
     );
   }
