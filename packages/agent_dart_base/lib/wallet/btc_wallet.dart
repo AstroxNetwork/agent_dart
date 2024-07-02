@@ -26,7 +26,7 @@ class ReceiverItem {
   });
 
   final String address;
-  final BigInt amount;
+  final int amount;
 }
 
 class ReceiverItemWithAddress {
@@ -36,7 +36,7 @@ class ReceiverItemWithAddress {
   });
 
   final Address address;
-  final BigInt amount;
+  final int amount;
 }
 
 class BTCDescriptor {
@@ -67,11 +67,11 @@ class PSBTDetail {
   final String txId;
   final List<TxOutExt> inputs;
   final List<TxOutExt> outputs;
-  final BigInt fee;
+  final int fee;
   final double feeRate;
   final int size;
-  final BigInt totalInputValue;
-  final BigInt totalOutputValue;
+  final int totalInputValue;
+  final int totalOutputValue;
   final PartiallySignedTransaction psbt;
 
   Map<String, dynamic> toJson() => {
@@ -100,7 +100,7 @@ class TxOutExt {
   String? txId;
   final int index;
   final Address address;
-  final BigInt value;
+  final int value;
   final bool isChange;
   final bool isMine;
 
@@ -124,7 +124,7 @@ class UtxoHandlers {
 }
 
 // ignore: non_constant_identifier_names
-final UTXO_DUST = BigInt.from(546);
+const UTXO_DUST = 546;
 
 class UnconfirmedBalance {
   UnconfirmedBalance({
@@ -720,7 +720,7 @@ class BitcoinWallet {
               .map(
                 (e) => InscriptionValue(
                   inscriptionId: e.id,
-                  outputValue: BigInt.from(e.detail.outputValue),
+                  outputValue: e.detail.outputValue,
                 ),
               )
               .toList();
@@ -753,28 +753,24 @@ class BitcoinWallet {
     return completer.future;
   }
 
-  Future<BigInt> getSafeBalance({
-    String? address,
-  }) async {
+  Future<int> getSafeBalance({String? address}) async {
     final xos = await handleUtxo(address: address);
     final nonIns = xos.nonIns;
-    final res = nonIns.fold(BigInt.zero, (p, v) => p + v.value);
+    final res = nonIns.fold(0, (p, v) => p + v.value);
     return res;
   }
 
-  Future<BigInt> getOrdinalBalance({
-    String? address,
-  }) async {
+  Future<int> getOrdinalBalance({String? address}) async {
     final xos = await handleUtxo(address: address);
     final ins = xos.ins;
-    final res = ins.fold(BigInt.zero, (p, v) => p + v.value);
+    final res = ins.fold(0, (p, v) => p + v.value);
     return res;
   }
 
-  Future<BigInt?> getSendBTCFee({
+  Future<int?> getSendBTCFee({
     required String toAddress,
-    required BigInt amount,
-    required BigInt feeRate,
+    required int amount,
+    required int feeRate,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
@@ -792,8 +788,8 @@ class BitcoinWallet {
   /// ====== OrdTransaction ======
   Future<TxBuilderResult> createSendBTC({
     required String toAddress,
-    required BigInt amount,
-    required BigInt feeRate,
+    required int amount,
+    required int feeRate,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
@@ -840,14 +836,13 @@ class BitcoinWallet {
     );
     builder.addRecipient(await formattedAddress.scriptPubKey(), amount);
 
-    final outputAmount = builder.getTotalOutput() == BigInt.zero
-        ? amount
-        : builder.getTotalOutput();
+    final outputAmount =
+        builder.getTotalOutput() == 0 ? amount : builder.getTotalOutput();
 
     var tmpSum = builder.getTotalInput();
     final tempAddInputs = <OutPointWithInscription>[];
 
-    BigInt fee = BigInt.zero;
+    int fee = 0;
     for (int i = 0; i < nonIns.length; i++) {
       final nonOrdUtxo = nonIns[i];
       if (tmpSum < outputAmount) {
@@ -859,7 +854,7 @@ class BitcoinWallet {
         continue;
       }
 
-      fee = await builder.calFee(wallet) + amount;
+      fee = (await builder.calFee(wallet)).toInt() + amount;
 
       if (tmpSum < outputAmount + fee) {
         builder.addInput(nonOrdUtxo);
@@ -874,11 +869,11 @@ class BitcoinWallet {
 
     final unspent = builder.getUnspend();
 
-    if (unspent <= BigInt.zero) {
+    if (unspent <= 0) {
       throw Exception('Balance not enough to pay network fee.');
     }
 
-    final networkFee = (await builder.calNetworkFee(wallet))!;
+    final networkFee = (await builder.calNetworkFee(wallet))!.toInt();
 
     if (unspent < networkFee) {
       throw Exception(
@@ -887,7 +882,6 @@ class BitcoinWallet {
     }
 
     final leftAmount = unspent - networkFee;
-
     if (leftAmount >= UTXO_DUST) {
       // change dummy output to true output
       // add dummy output
@@ -896,7 +890,8 @@ class BitcoinWallet {
       // remove dummy output
       throw Exception('Output below Dust Limit of $UTXO_DUST Sats.');
     }
-    final lastFinalFee = amount + leftAmount + await builder.calFee(wallet);
+    final lastFinalFee =
+        amount + leftAmount + (await builder.calFee(wallet)).toInt();
     if (lastFinalFee > tmpSum) {
       throw Exception(
         'You need $lastFinalFee to finish the payment, '
@@ -909,9 +904,9 @@ class BitcoinWallet {
     return res;
   }
 
-  Future<BigInt?> getSendMultiBTCFee({
+  Future<int?> getSendMultiBTCFee({
     required List<ReceiverItem> toAddresses,
-    required BigInt feeRate,
+    required int feeRate,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
@@ -927,7 +922,7 @@ class BitcoinWallet {
 
   Future<TxBuilderResult> createSendMultiBTC({
     required List<ReceiverItem> toAddresses,
-    required BigInt feeRate,
+    required int feeRate,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
@@ -936,7 +931,7 @@ class BitcoinWallet {
     builder.manuallySelectedOnly();
     builder.feeRate(feeRate.toDouble());
 
-    BigInt amount = BigInt.zero;
+    int amount = 0;
     // formatted addresses
     final formattedAddresses = <ReceiverItemWithAddress>[];
     for (var i = 0; i < toAddresses.length; i++) {
@@ -992,14 +987,13 @@ class BitcoinWallet {
       amount += formattedAddress.amount;
     }
 
-    final outputAmount = builder.getTotalOutput() == BigInt.zero
-        ? amount
-        : builder.getTotalOutput();
+    final outputAmount =
+        builder.getTotalOutput() == 0 ? amount : builder.getTotalOutput();
 
     var tmpSum = builder.getTotalInput();
     final tempAddInputs = <OutPointWithInscription>[];
 
-    BigInt fee = BigInt.zero;
+    int fee = 0;
     for (int i = 0; i < nonIns.length; i++) {
       final nonOrdUtxo = nonIns[i];
       if (tmpSum < outputAmount) {
@@ -1026,7 +1020,7 @@ class BitcoinWallet {
 
     final unspent = builder.getUnspend();
 
-    if (unspent <= BigInt.zero) {
+    if (unspent <= 0) {
       throw Exception('Balance not enough to pay network fee.');
     }
 
@@ -1060,11 +1054,11 @@ class BitcoinWallet {
     return res;
   }
 
-  Future<BigInt?> getSendInscriptionFee({
+  Future<int?> getSendInscriptionFee({
     required String toAddress,
     required String insId,
-    required BigInt feeRate,
-    BigInt? outputValue,
+    required int feeRate,
+    int? outputValue,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
@@ -1083,8 +1077,8 @@ class BitcoinWallet {
   Future<TxBuilderResult> createSendInscription({
     required String toAddress,
     required String insId,
-    required BigInt feeRate,
-    BigInt? outputValue,
+    required int feeRate,
+    int? outputValue,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
@@ -1114,9 +1108,9 @@ class BitcoinWallet {
 
     // 3.1 select inscription and proctect those unspendables
     final tempInputs = <OutPointWithInscription>[];
-    BigInt satoshis = BigInt.zero;
-    var found = false;
-    BigInt ordLeft = BigInt.zero;
+    int satoshis = 0;
+    bool found = false;
+    int ordLeft = 0;
     for (final e in ins) {
       // try and find the inscription matches the inscription id
       final index = e.inscriptions!
@@ -1185,8 +1179,8 @@ class BitcoinWallet {
     final outputAmount = builder.getTotalOutput();
     // print('outputAmount: $outputAmount');
 
-    BigInt tmpSum = builder.getTotalInput();
-    BigInt fee = BigInt.zero;
+    int tmpSum = builder.getTotalInput();
+    int fee = 0;
     for (int i = 0; i < nonIns.length; i++) {
       final nonOrdUtxo = nonIns[i];
       if (tmpSum < outputAmount) {
@@ -1214,7 +1208,7 @@ class BitcoinWallet {
     }
 
     final unspent = builder.getUnspend();
-    if (unspent <= BigInt.zero) {
+    if (unspent <= 0) {
       throw Exception('Balance not enough to pay network fee.');
     }
 
@@ -1240,7 +1234,9 @@ class BitcoinWallet {
 
     if (lastFinalFee > tmpSum) {
       throw Exception(
-          'You need $lastFinalFee to finish the payment, but only $tmpSum avaliable.');
+        'You need $lastFinalFee to finish the payment, '
+        'but only $tmpSum available.',
+      );
     }
 
     // finish the build and get ready to dump Data
@@ -1248,11 +1244,11 @@ class BitcoinWallet {
     return res;
   }
 
-  Future<BigInt?> getSendMultiInscriptionsFee({
+  Future<int?> getSendMultiInscriptionsFee({
     required String toAddress,
     required List<String> insIds,
-    required BigInt feeRate,
-    BigInt? outputValue,
+    required int feeRate,
+    int? outputValue,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
@@ -1272,8 +1268,8 @@ class BitcoinWallet {
   Future<TxBuilderResult> createSendMultiInscriptions({
     required String toAddress,
     required List<String> insIds,
-    required BigInt feeRate,
-    BigInt? outputValue,
+    required int feeRate,
+    int? outputValue,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
@@ -1303,13 +1299,14 @@ class BitcoinWallet {
 
     // 3.1 select inscription and proctect those unspendables
     final tempInputs = <OutPointWithInscription>[];
-    BigInt satoshis = BigInt.zero;
-    var found = false;
-    BigInt ordLeft = BigInt.zero;
+    int satoshis = 0;
+    bool found = false;
+    int ordLeft = 0;
     for (final e in ins) {
       // try and find the inscription matches the inscription id
-      final index = e.inscriptions!
-          .indexWhere((element) => insIds.contains(element.inscriptionId));
+      final index = e.inscriptions!.indexWhere(
+        (element) => insIds.contains(element.inscriptionId),
+      );
       if (index > -1) {
         // add to input map
         builder.addInput(e);
@@ -1375,7 +1372,7 @@ class BitcoinWallet {
     // print('outputAmount: $outputAmount');
 
     var tmpSum = builder.getTotalInput();
-    BigInt fee = BigInt.zero;
+    int fee = 0;
     for (var i = 0; i < nonIns.length; i++) {
       final nonOrdUtxo = nonIns[i];
       if (tmpSum < outputAmount) {
@@ -1403,7 +1400,7 @@ class BitcoinWallet {
     }
 
     final unspent = builder.getUnspend();
-    if (unspent <= BigInt.zero) {
+    if (unspent <= 0) {
       throw Exception('Balance not enough to pay network fee.');
     }
 
@@ -1411,7 +1408,8 @@ class BitcoinWallet {
 
     if (unspent < networkFee!) {
       throw Exception(
-        'Balance not enough. Need $networkFee Sats as network fee, but only $unspent BTC.',
+        'Balance not enough. Need $networkFee Sats as network fee, '
+        'but only $unspent BTC.',
       );
     }
 
@@ -1441,8 +1439,8 @@ class BitcoinWallet {
   Future<TxBuilderResult> sendBTCFromInscription({
     required String toAddress,
     required String insId,
-    required BigInt feeRate,
-    required BigInt btcAmount,
+    required int feeRate,
+    required int btcAmount,
     bool bigAmountFirst = true,
   }) async {
     final builder = TxBuilder();
@@ -1474,9 +1472,9 @@ class BitcoinWallet {
 
     // 3.1 select inscription and proctect those unspendables
     final tempInputs = <OutPointWithInscription>[];
-    BigInt satoshis = BigInt.zero;
+    int satoshis = 0;
     var found = false;
-    BigInt ordLeft = BigInt.zero;
+    int ordLeft = 0;
     for (final e in ins) {
       // try and find the inscription matches the inscription id
       final index = e.inscriptions!
@@ -1548,7 +1546,7 @@ class BitcoinWallet {
 
     var tmpSum = builder.getTotalInput();
 
-    BigInt fee = BigInt.zero;
+    int fee = 0;
     for (int i = 0; i < nonIns.length; i++) {
       final nonOrdUtxo = nonIns[i];
       if (tmpSum < outputAmount) {
@@ -1576,7 +1574,7 @@ class BitcoinWallet {
     }
 
     final unspent = builder.getUnspend();
-    if (unspent <= BigInt.zero) {
+    if (unspent <= 0) {
       throw Exception('Balance not enough to pay network fee.');
     }
 
@@ -1584,7 +1582,8 @@ class BitcoinWallet {
 
     if (unspent < networkFee!) {
       throw Exception(
-        'Balance not enough. Need $networkFee Sats as network fee, but only $unspent BTC.',
+        'Balance not enough. Need $networkFee Sats as network fee, '
+        'but only $unspent BTC.',
       );
     }
 
@@ -1602,7 +1601,9 @@ class BitcoinWallet {
 
     if (lastFinalFee > tmpSum) {
       throw Exception(
-          'You need $lastFinalFee to finish the payment, but only $tmpSum avaliable.');
+        'You need $lastFinalFee to finish the payment, '
+        'but only $tmpSum available.',
+      );
     }
 
     // finish the build and get ready to dump Data
@@ -1691,7 +1692,7 @@ class BitcoinWallet {
           txId: txId,
           index: i,
           address: addr,
-          value: element.value,
+          value: element.value.toInt(),
           isMine: addr.address == currentSigner().address,
           isChange: false,
         ),
@@ -1708,7 +1709,7 @@ class BitcoinWallet {
         TxOutExt(
           index: i,
           address: addr,
-          value: element.value,
+          value: element.value.toInt(),
           isMine: addr.address == currentSigner().address,
           isChange: i == outputs.length - 1 ? true : false,
         ),
@@ -1727,8 +1728,8 @@ class BitcoinWallet {
       fee: feePaid!,
       feeRate: feeRate,
       size: size,
-      totalInputValue: inputsExt.fold(BigInt.zero, (v, i) => i.value + v),
-      totalOutputValue: outputsExt.fold(BigInt.zero, (v, i) => i.value + v),
+      totalInputValue: inputsExt.fold(0, (v, i) => i.value + v),
+      totalOutputValue: outputsExt.fold(0, (v, i) => i.value + v),
       psbt: psbt,
     );
   }
