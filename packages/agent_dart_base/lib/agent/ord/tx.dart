@@ -14,7 +14,7 @@
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'addressUtxo.dart';
+import 'address_utxo.dart';
 
 part 'tx.freezed.dart';
 part 'tx.g.dart';
@@ -38,15 +38,15 @@ class Tx with _$Tx {
 
 @unfreezed
 class Vin with _$Vin {
-  factory Vin({
-    required String txid,
-    required int vout,
-    required Vout prevout,
-    required String scriptsig,
-    required String scriptsig_asm,
-    required List<String> witness,
-    required bool is_coinbase,
-    required int sequence,
+  const factory Vin({
+    @JsonKey(name: 'txid') required String txid,
+    @JsonKey(name: 'vout') required int vout,
+    @JsonKey(name: 'prevout') required Vout prevout,
+    @JsonKey(name: 'scriptsig') required String scriptSig,
+    @JsonKey(name: 'scriptsig_asm') required String scriptsigAsm,
+    @JsonKey(name: 'witness') required List<String> witness,
+    @JsonKey(name: 'is_coinbase') required bool isCoinbase,
+    @JsonKey(name: 'sequence') required int sequence,
   }) = _Vin;
 
   factory Vin.fromJson(Map<String, dynamic> json) => _$VinFromJson(json);
@@ -55,11 +55,11 @@ class Vin with _$Vin {
 @freezed
 class Vout with _$Vout {
   factory Vout({
-    required String scriptpubkey,
-    required String scriptpubkey_asm,
-    required String scriptpubkey_type,
-    required String scriptpubkey_address,
-    required int value,
+    @JsonKey(name: 'scriptpubkey') required String scriptPubkey,
+    @JsonKey(name: 'scriptpubkey_asm') required String scriptpubkeyAsm,
+    @JsonKey(name: 'scriptpubkey_type') required String scriptpubkeyType,
+    @JsonKey(name: 'scriptpubkey_address') required String scriptpubkeyAddress,
+    @JsonKey(name: 'value') required int value,
   }) = _Vout;
 
   factory Vout.fromJson(Map<String, dynamic> json) => _$VoutFromJson(json);

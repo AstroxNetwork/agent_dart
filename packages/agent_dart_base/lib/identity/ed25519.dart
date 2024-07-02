@@ -140,7 +140,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
 
     final Uint8List publicKey;
     final Uint8List secretKey; // Seed itself.
-    final kp = await AgentDartFFI.impl.ed25519FromSeed(
+    final kp = await ed25519FromSeed(
       req: ED25519FromSeedReq(seed: seed ?? getRandomValues()),
     );
     publicKey = kp.publicKey;
@@ -187,13 +187,13 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     final blob = challenge is BinaryBlob
         ? challenge
         : blobFromBuffer(challenge as ByteBuffer);
-    return AgentDartFFI.impl.ed25519Sign(
+    return ed25519Sign(
       req: ED25519SignReq(seed: _seed, message: blob),
     );
   }
 
   Future<bool> verify(Uint8List signature, Uint8List message) {
-    return AgentDartFFI.impl.ed25519Verify(
+    return ed25519Verify(
       req: ED25519VerifyReq(
         message: message,
         sig: signature,
@@ -243,7 +243,7 @@ Future<Ed25519KeyIdentity> fromMnemonicWithoutValidation(
   int offset = hardened,
 }) async {
   derivationPath ??= [];
-  final seed = await AgentDartFFI.impl.mnemonicPhraseToSeed(
+  final seed = await mnemonicPhraseToSeed(
     req: PhraseToSeedReq(phrase: mnemonic, password: ''),
   );
   return fromSeedWithSlip0010(seed, derivationPath, offset: offset);

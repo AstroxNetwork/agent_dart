@@ -12,7 +12,7 @@ part of 'inscription.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Inscription _$InscriptionFromJson(Map<String, dynamic> json) {
   return _Inscription.fromJson(json);
@@ -80,22 +80,22 @@ class _$InscriptionCopyWithImpl<$Res, $Val extends Inscription>
 }
 
 /// @nodoc
-abstract class _$$_InscriptionCopyWith<$Res>
+abstract class _$$InscriptionImplCopyWith<$Res>
     implements $InscriptionCopyWith<$Res> {
-  factory _$$_InscriptionCopyWith(
-          _$_Inscription value, $Res Function(_$_Inscription) then) =
-      __$$_InscriptionCopyWithImpl<$Res>;
+  factory _$$InscriptionImplCopyWith(
+          _$InscriptionImpl value, $Res Function(_$InscriptionImpl) then) =
+      __$$InscriptionImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String id, int offset, int? number, int? num});
 }
 
 /// @nodoc
-class __$$_InscriptionCopyWithImpl<$Res>
-    extends _$InscriptionCopyWithImpl<$Res, _$_Inscription>
-    implements _$$_InscriptionCopyWith<$Res> {
-  __$$_InscriptionCopyWithImpl(
-      _$_Inscription _value, $Res Function(_$_Inscription) _then)
+class __$$InscriptionImplCopyWithImpl<$Res>
+    extends _$InscriptionCopyWithImpl<$Res, _$InscriptionImpl>
+    implements _$$InscriptionImplCopyWith<$Res> {
+  __$$InscriptionImplCopyWithImpl(
+      _$InscriptionImpl _value, $Res Function(_$InscriptionImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -106,7 +106,7 @@ class __$$_InscriptionCopyWithImpl<$Res>
     Object? number = freezed,
     Object? num = freezed,
   }) {
-    return _then(_$_Inscription(
+    return _then(_$InscriptionImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -129,12 +129,12 @@ class __$$_InscriptionCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Inscription implements _Inscription {
-  _$_Inscription(
+class _$InscriptionImpl implements _Inscription {
+  _$InscriptionImpl(
       {required this.id, required this.offset, this.number, this.num});
 
-  factory _$_Inscription.fromJson(Map<String, dynamic> json) =>
-      _$$_InscriptionFromJson(json);
+  factory _$InscriptionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$InscriptionImplFromJson(json);
 
   @override
   final String id;
@@ -151,10 +151,10 @@ class _$_Inscription implements _Inscription {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Inscription &&
+            other is _$InscriptionImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.offset, offset) || other.offset == offset) &&
             (identical(other.number, number) || other.number == number) &&
@@ -168,12 +168,12 @@ class _$_Inscription implements _Inscription {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_InscriptionCopyWith<_$_Inscription> get copyWith =>
-      __$$_InscriptionCopyWithImpl<_$_Inscription>(this, _$identity);
+  _$$InscriptionImplCopyWith<_$InscriptionImpl> get copyWith =>
+      __$$InscriptionImplCopyWithImpl<_$InscriptionImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_InscriptionToJson(
+    return _$$InscriptionImplToJson(
       this,
     );
   }
@@ -184,10 +184,10 @@ abstract class _Inscription implements Inscription {
       {required final String id,
       required final int offset,
       final int? number,
-      final int? num}) = _$_Inscription;
+      final int? num}) = _$InscriptionImpl;
 
   factory _Inscription.fromJson(Map<String, dynamic> json) =
-      _$_Inscription.fromJson;
+      _$InscriptionImpl.fromJson;
 
   @override
   String get id;
@@ -199,6 +199,6 @@ abstract class _Inscription implements Inscription {
   int? get num;
   @override
   @JsonKey(ignore: true)
-  _$$_InscriptionCopyWith<_$_Inscription> get copyWith =>
+  _$$InscriptionImplCopyWith<_$InscriptionImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

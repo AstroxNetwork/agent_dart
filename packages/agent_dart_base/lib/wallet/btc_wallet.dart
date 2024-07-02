@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:agent_dart_base/agent/ord/blockstream.dart';
-import 'package:agent_dart_base/agent/ord/inscriptionItem.dart';
+import 'package:agent_dart_base/agent/ord/inscription_item.dart';
 import 'package:agent_dart_base/agent/ord/service.dart';
 import 'package:agent_dart_base/agent/ord/utxo.dart';
 import 'package:agent_dart_base/agent_dart_base.dart';
@@ -19,27 +20,27 @@ enum BitcoinNetwork {
 }
 
 class ReceiverItem {
-  ReceiverItem({
+  const ReceiverItem({
     required this.address,
     required this.amount,
   });
 
   final String address;
-  final int amount;
+  final BigInt amount;
 }
 
 class ReceiverItemWithAddress {
-  ReceiverItemWithAddress({
+  const ReceiverItemWithAddress({
     required this.address,
     required this.amount,
   });
 
   final Address address;
-  final int amount;
+  final BigInt amount;
 }
 
 class BTCDescriptor {
-  BTCDescriptor({
+  const BTCDescriptor({
     required this.addressType,
     required this.descriptor,
     required this.network,
@@ -51,7 +52,7 @@ class BTCDescriptor {
 }
 
 class PSBTDetail {
-  PSBTDetail({
+  const PSBTDetail({
     required this.inputs,
     required this.outputs,
     required this.fee,
@@ -66,11 +67,11 @@ class PSBTDetail {
   final String txId;
   final List<TxOutExt> inputs;
   final List<TxOutExt> outputs;
-  final int fee;
+  final BigInt fee;
   final double feeRate;
   final int size;
-  final int totalInputValue;
-  final int totalOutputValue;
+  final BigInt totalInputValue;
+  final BigInt totalOutputValue;
   final PartiallySignedTransaction psbt;
 
   Map<String, dynamic> toJson() => {
@@ -99,7 +100,7 @@ class TxOutExt {
   String? txId;
   final int index;
   final Address address;
-  final int value;
+  final BigInt value;
   final bool isChange;
   final bool isMine;
 
@@ -114,14 +115,16 @@ class TxOutExt {
 }
 
 class UtxoHandlers {
-  UtxoHandlers({required this.ins, required this.nonIns, required this.txs});
+  const UtxoHandlers(
+      {required this.ins, required this.nonIns, required this.txs});
 
   final List<OutPointWithInscription> ins;
   final List<OutPointWithInscription> nonIns;
   final List<dynamic> txs;
 }
 
-const UTXO_DUST = 546;
+// ignore: non_constant_identifier_names
+final UTXO_DUST = BigInt.from(546);
 
 class UnconfirmedBalance {
   UnconfirmedBalance({
@@ -130,8 +133,8 @@ class UnconfirmedBalance {
     required this.tooManyUnconfirmed,
   });
 
-  int mempoolSpendTxValue = 0;
-  int mempoolReceiveTxValue = 0;
+  BigInt mempoolSpendTxValue = BigInt.zero;
+  BigInt mempoolReceiveTxValue = BigInt.zero;
   bool tooManyUnconfirmed = false;
 
   Map<String, dynamic> toJson() => {
@@ -166,16 +169,16 @@ class BitcoinBalance {
 
   final Balance balance;
   final UnconfirmedBalance _unconfirmedBalance = UnconfirmedBalance(
-    mempoolReceiveTxValue: 0,
-    mempoolSpendTxValue: 0,
+    mempoolReceiveTxValue: BigInt.zero,
+    mempoolSpendTxValue: BigInt.zero,
     tooManyUnconfirmed: false,
   );
 
-  void setMempoolSpendTxValue(int value) {
+  void setMempoolSpendTxValue(BigInt value) {
     _unconfirmedBalance.mempoolSpendTxValue = value;
   }
 
-  void setMempoolReceiveTxValue(int value) {
+  void setMempoolReceiveTxValue(BigInt value) {
     _unconfirmedBalance.mempoolReceiveTxValue = value;
   }
 
@@ -199,17 +202,17 @@ class BitcoinBalance {
         'total': balance.total,
       };
 
-  int get total => balance.total;
+  BigInt get total => balance.total;
 
-  int get spendable => balance.spendable;
+  BigInt get spendable => balance.spendable;
 
-  int get confirmed => balance.confirmed;
+  BigInt get confirmed => balance.confirmed;
 
-  int get untrustedPending => balance.untrustedPending;
+  BigInt get untrustedPending => balance.untrustedPending;
 
-  int get trustedPending => balance.trustedPending;
+  BigInt get trustedPending => balance.trustedPending;
 
-  int get immature => balance.immature;
+  BigInt get immature => balance.immature;
 
   UnconfirmedBalance get unconfirmed => _unconfirmedBalance;
 }
@@ -217,7 +220,7 @@ class BitcoinBalance {
 Future<AddressInfo> getAddressInfo({
   required String phrase,
   required int index,
-  Network network = Network.Bitcoin,
+  Network network = Network.bitcoin,
   AddressType addressType = AddressType.P2TR,
   String? passcode,
 }) async {
@@ -227,13 +230,13 @@ Future<AddressInfo> getAddressInfo({
     addressType: addressType,
     passcode: passcode,
   );
-  final descriptor = descriptors[KeychainKind.External]!;
+  final descriptor = descriptors[KeychainKind.extern]!;
   return descriptor.descriptor.deriveAddressAt(index, network);
 }
 
 Future<AddressInfo> getAddressInfoFromWIF({
   required String wif,
-  Network network = Network.Bitcoin,
+  Network network = Network.bitcoin,
   AddressType addressType = AddressType.P2TR,
 }) async {
   final descriptor = await importSingleWif(
@@ -247,7 +250,7 @@ Future<AddressInfo> getAddressInfoFromWIF({
 Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
   String mnemonic, {
   AddressType addressType = AddressType.P2TR,
-  Network network = Network.Bitcoin,
+  Network network = Network.bitcoin,
   String? passcode,
 }) async {
   final mnemonicObj = await Mnemonic.fromString(mnemonic);
@@ -285,7 +288,7 @@ Future<Map<KeychainKind, BTCDescriptor>> getDescriptors(
 Future<BTCDescriptor> importSingleWif(
   String wif, {
   AddressType addressType = AddressType.P2TR,
-  Network network = Network.Bitcoin,
+  Network network = Network.bitcoin,
 }) async {
   final descriptor = await Descriptor.importSingleWif(
     wif: wif,
@@ -304,17 +307,14 @@ Future<BTCDescriptor> importSingleWif(
   );
 }
 
-enum WalletType {
-  HD,
-  Single,
-}
+enum WalletType { HD, Single }
 
 class BitcoinWallet {
   BitcoinWallet({
     required this.wallet,
     required this.addressType,
     required this.descriptor,
-    this.network = Network.Bitcoin,
+    this.network = Network.bitcoin,
     this.ordService,
     this.blockStreamApi,
     WalletType walletType = WalletType.HD,
@@ -340,7 +340,7 @@ class BitcoinWallet {
 
   SignIdentity? _signIdentity;
 
-  final int COINBASE_MATURITY = 100;
+  final int coinbaseMaturity = 100;
 
   void connect({OrdService? service, BlockStreamApi? api}) {
     ordService ??= service;
@@ -364,7 +364,7 @@ class BitcoinWallet {
   }
 
   // Future<void> blockchainInit({
-  //   Network network = Network.Bitcoin,
+  //   Network network = Network.bitcoin,
   //   BlockchainConfig? blockchainConfig,
   // }) async {
   //   blockchain = await Blockchain.create(
@@ -375,7 +375,7 @@ class BitcoinWallet {
   //             timeout: 5,
   //             retry: 5,
   //             url:
-  //                 'ssl://electrum.blockstream.info:${network == Network.Bitcoin ? 50002 : 60002}',
+  //                 'ssl://electrum.blockstream.info:${network == Network.bitcoin ? 50002 : 60002}',
   //             validateDomain: false,
   //           ),
   //         ),
@@ -384,7 +384,7 @@ class BitcoinWallet {
   //   //     config: BlockchainConfig.esplora(
   //   //         config: EsploraConfig(
   //   //   baseUrl:
-  //   //       'https://mempool.space/${(net ?? network) == Network.Bitcoin ? '' : 'testnet/'}api', // https://mempool.space/api',
+  //   //       'https://mempool.space/${(net ?? network) == Network.bitcoin ? '' : 'testnet/'}api', // https://mempool.space/api',
   //   //   concurrency: 4,
   //   //   stopGap: 10,
   //   // )));
@@ -392,7 +392,7 @@ class BitcoinWallet {
 
   static Future<BitcoinWallet> fromPhrase(
     String phrase, {
-    Network network = Network.Bitcoin,
+    Network network = Network.bitcoin,
     AddressType addressType = AddressType.P2TR,
     String? passcode,
   }) async {
@@ -402,7 +402,7 @@ class BitcoinWallet {
       addressType: addressType,
       passcode: passcode,
     );
-    final descriptor = descriptors[KeychainKind.External]!;
+    final descriptor = descriptors[KeychainKind.extern]!;
     final res = await Wallet.create(
       descriptor: descriptor.descriptor,
       changeDescriptor: descriptor.descriptor,
@@ -422,7 +422,7 @@ class BitcoinWallet {
 
   static Future<BitcoinWallet> fromWif(
     String wifOrHex, {
-    Network network = Network.Bitcoin,
+    Network network = Network.bitcoin,
     AddressType addressType = AddressType.P2TR,
     WalletType walletType = WalletType.HD,
   }) async {
@@ -458,12 +458,19 @@ class BitcoinWallet {
     return wallet;
   }
 
+  Future<DescriptorSecretKey> getDescriptorSecretKey(int? index) async {
+    final DescriptorSecretKey k;
+    if (descriptor.descriptor.descriptorSecretKey?.derivedPathPrefix != null) {
+      k = await descriptor.descriptor.descriptorSecretKey!.deriveIndex(index!);
+    } else {
+      k = descriptor.descriptor.descriptorSecretKey!;
+    }
+    return k;
+  }
+
   // ====== Signer ======
   Future<AddressInfo> getSigner(int index) async {
-    final k = getWalletType() == WalletType.HD
-        ? await descriptor.descriptor.descriptorSecretKey!.deriveIndex(index)
-        : descriptor.descriptor.descriptorSecretKey!;
-
+    final k = await getDescriptorSecretKey(index);
     final kBytes = Uint8List.fromList(await k.secretBytes());
     _publicKey = await k.getPubFromBytes(kBytes);
     return wallet.getAddress(
@@ -510,29 +517,30 @@ class BitcoinWallet {
         throw Exception('blockStreamApi should be initialized first');
       }
       address ??= _selectedSigner.address;
-      var immature = 0;
-      const trustedPending = 0; // we don't use internal key to receive
-      var untrustedPending = 0;
-      var confirmed = 0;
-      var mempoolSpendTxValue = 0;
-      var mempoolReceiveTxValue = 0;
-      var tooManyUnconfirmed = false;
+      BigInt immature = BigInt.zero;
+      final trustedPending =
+          BigInt.zero; // we don't use internal key to receive
+      BigInt untrustedPending = BigInt.zero;
+      BigInt confirmed = BigInt.zero;
+      BigInt mempoolSpendTxValue = BigInt.zero;
+      BigInt mempoolReceiveTxValue = BigInt.zero;
+      bool tooManyUnconfirmed = false;
 
       final utxos = await blockStreamApi!.getAddressUtxo(address);
       final blockHeight = await getHeight();
-      for (var i = 0; i < utxos.length; i++) {
+      for (int i = 0; i < utxos.length; i++) {
         final u = utxos[i];
 
         if (u.status.confirmed) {
           final tx = await getTxFromTxId(u.txid);
           if (await tx.isCoinBase() &&
-              (blockHeight - u.status.block_height!) < COINBASE_MATURITY) {
-            immature += u.value;
+              (blockHeight - u.status.blockHeight!) < coinbaseMaturity) {
+            immature += BigInt.from(u.value);
           } else {
-            confirmed += u.value;
+            confirmed += BigInt.from(u.value);
           }
         } else {
-          untrustedPending += u.value;
+          untrustedPending += BigInt.from(u.value);
         }
       }
       final spendable = confirmed + trustedPending;
@@ -540,11 +548,11 @@ class BitcoinWallet {
 
       if (includeUnconfirmed) {
         final txCount = (await blockStreamApi!.getAddressStats(address))
-            .mempool_stats
-            .tx_count;
+            .mempoolStats
+            .txCount;
         if (txCount <= 0) {
-          mempoolSpendTxValue = 0;
-          mempoolReceiveTxValue = 0;
+          mempoolSpendTxValue = BigInt.zero;
+          mempoolReceiveTxValue = BigInt.zero;
         } else {
           if (txCount > 50) {
             tooManyUnconfirmed = true;
@@ -558,14 +566,16 @@ class BitcoinWallet {
               continue;
             }
             mempoolSpendTxValue += tx.vin
-                .where((e) => e.prevout.scriptpubkey_address == address)
-                .fold(0, (prev, e) => prev + e.prevout.value);
+                .where((e) => e.prevout.scriptpubkeyAddress == address)
+                .fold(
+                  BigInt.zero,
+                  (prev, e) => prev + BigInt.from(e.prevout.value),
+                );
             mempoolReceiveTxValue += tx.vout
-                .where((e) => e.scriptpubkey_address == address)
-                .fold(0, (prev, e) => prev + e.value);
+                .where((e) => e.scriptpubkeyAddress == address)
+                .fold(BigInt.zero, (prev, e) => prev + BigInt.from(e.value));
           }
         }
-
         total = total + mempoolReceiveTxValue + mempoolSpendTxValue;
       }
 
@@ -587,7 +597,7 @@ class BitcoinWallet {
         ));
       }
       return finalBalance;
-    } on FfiException catch (e) {
+    } on AnyhowException catch (e) {
       throw e.message;
     }
   }
@@ -603,7 +613,7 @@ class BitcoinWallet {
       final utxos =
           await ordService!.getUtxoGet(address ?? _selectedSigner.address);
       return utxos;
-    } on FfiException catch (e) {
+    } on AnyhowException catch (e) {
       throw e.message;
     }
   }
@@ -616,7 +626,7 @@ class BitcoinWallet {
       final ins =
           await ordService!.getInscriptions(address ?? _selectedSigner.address);
       return ins;
-    } on FfiException catch (e) {
+    } on AnyhowException catch (e) {
       throw e.message;
     }
   }
@@ -627,7 +637,7 @@ class BitcoinWallet {
   //     final res = await AgentDartFFI.impl
   //         .psbtWalletGetTxs(wallet: _selectedSigner.getWalletReq());
   //     return res;
-  //   } on FfiException catch (e) {
+  //   } on AnyhowException catch (e) {
   //     throw (e.message);
   //   }
   // }
@@ -636,7 +646,7 @@ class BitcoinWallet {
     try {
       final res = await blockStreamApi!.getBlockHeight();
       return res;
-    } on FfiException catch (e) {
+    } on AnyhowException catch (e) {
       throw e.message;
     }
   }
@@ -645,7 +655,7 @@ class BitcoinWallet {
   //   try {
   //     final res = await blockchain.getTx(txid);
   //     return await Transaction.create(transactionBytes: res.toU8a());
-  //   } on FfiException catch (e) {
+  //   } on AnyhowException catch (e) {
   //     throw e.message;
   //   }
   // }
@@ -654,7 +664,7 @@ class BitcoinWallet {
     try {
       final res = await blockStreamApi!.getTxHex(txid);
       return await Transaction.create(transactionBytes: res.toU8a());
-    } on FfiException catch (e) {
+    } on AnyhowException catch (e) {
       throw e.message;
     }
   }
@@ -664,7 +674,7 @@ class BitcoinWallet {
       final theTx = await tx.psbt.extractTx();
       return await blockStreamApi!
           .broadcastTx(Uint8List.fromList(await theTx.serialize()).toHex());
-    } on FfiException catch (e) {
+    } on AnyhowException catch (e) {
       throw e.message;
     }
   }
@@ -710,7 +720,7 @@ class BitcoinWallet {
               .map(
                 (e) => InscriptionValue(
                   inscriptionId: e.id,
-                  outputValue: e.detail.output_value,
+                  outputValue: BigInt.from(e.detail.outputValue),
                 ),
               )
               .toList();
@@ -743,43 +753,38 @@ class BitcoinWallet {
     return completer.future;
   }
 
-  Future<int> getSafeBalance({
+  Future<BigInt> getSafeBalance({
     String? address,
   }) async {
     final xos = await handleUtxo(address: address);
     final nonIns = xos.nonIns;
-    final res = nonIns.fold(
-      0,
-      (previousValue, element) => previousValue + element.value,
-    );
+    final res = nonIns.fold(BigInt.zero, (p, v) => p + v.value);
     return res;
   }
 
-  Future<int> getOrdinalBalance({
+  Future<BigInt> getOrdinalBalance({
     String? address,
   }) async {
     final xos = await handleUtxo(address: address);
     final ins = xos.ins;
-    final res = ins.fold(
-      0,
-      (previousValue, element) => previousValue + element.value,
-    );
+    final res = ins.fold(BigInt.zero, (p, v) => p + v.value);
     return res;
   }
 
-  Future<int?> getSendBTCFee({
+  Future<BigInt?> getSendBTCFee({
     required String toAddress,
-    required int amount,
-    required int feeRate,
+    required BigInt amount,
+    required BigInt feeRate,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
     final txr = await createSendBTC(
-        toAddress: toAddress,
-        amount: amount,
-        feeRate: feeRate,
-        useUTXOCache: useUTXOCache,
-        bigAmountFirst: bigAmountFirst);
+      toAddress: toAddress,
+      amount: amount,
+      feeRate: feeRate,
+      useUTXOCache: useUTXOCache,
+      bigAmountFirst: bigAmountFirst,
+    );
     final signed = await sign(txr);
     return signed.psbt.feeAmount();
   }
@@ -787,8 +792,8 @@ class BitcoinWallet {
   /// ====== OrdTransaction ======
   Future<TxBuilderResult> createSendBTC({
     required String toAddress,
-    required int amount,
-    required int feeRate,
+    required BigInt amount,
+    required BigInt feeRate,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
@@ -835,14 +840,15 @@ class BitcoinWallet {
     );
     builder.addRecipient(await formattedAddress.scriptPubKey(), amount);
 
-    final outputAmount =
-        builder.getTotalOutput() == 0 ? amount : builder.getTotalOutput();
+    final outputAmount = builder.getTotalOutput() == BigInt.zero
+        ? amount
+        : builder.getTotalOutput();
 
     var tmpSum = builder.getTotalInput();
     final tempAddInputs = <OutPointWithInscription>[];
 
-    var fee = 0;
-    for (var i = 0; i < nonIns.length; i++) {
+    BigInt fee = BigInt.zero;
+    for (int i = 0; i < nonIns.length; i++) {
       final nonOrdUtxo = nonIns[i];
       if (tmpSum < outputAmount) {
         builder.addInput(nonOrdUtxo);
@@ -868,7 +874,7 @@ class BitcoinWallet {
 
     final unspent = builder.getUnspend();
 
-    if (unspent <= 0) {
+    if (unspent <= BigInt.zero) {
       throw Exception('Balance not enough to pay network fee.');
     }
 
@@ -893,7 +899,8 @@ class BitcoinWallet {
     final lastFinalFee = amount + leftAmount + await builder.calFee(wallet);
     if (lastFinalFee > tmpSum) {
       throw Exception(
-        'You need $lastFinalFee to finish the payment, but only $tmpSum avaliable.',
+        'You need $lastFinalFee to finish the payment, '
+        'but only $tmpSum available.',
       );
     }
 
@@ -902,9 +909,9 @@ class BitcoinWallet {
     return res;
   }
 
-  Future<int?> getSendMultiBTCFee({
+  Future<BigInt?> getSendMultiBTCFee({
     required List<ReceiverItem> toAddresses,
-    required int feeRate,
+    required BigInt feeRate,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
@@ -920,7 +927,7 @@ class BitcoinWallet {
 
   Future<TxBuilderResult> createSendMultiBTC({
     required List<ReceiverItem> toAddresses,
-    required int feeRate,
+    required BigInt feeRate,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
@@ -929,13 +936,16 @@ class BitcoinWallet {
     builder.manuallySelectedOnly();
     builder.feeRate(feeRate.toDouble());
 
-    int amount = 0;
+    BigInt amount = BigInt.zero;
     // formatted addresses
     final formattedAddresses = <ReceiverItemWithAddress>[];
     for (var i = 0; i < toAddresses.length; i++) {
-      formattedAddresses.add(ReceiverItemWithAddress(
+      formattedAddresses.add(
+        ReceiverItemWithAddress(
           address: await Address.create(address: toAddresses[i].address),
-          amount: toAddresses[i].amount));
+          amount: toAddresses[i].amount,
+        ),
+      );
     }
 
     final changeAddress =
@@ -982,14 +992,15 @@ class BitcoinWallet {
       amount += formattedAddress.amount;
     }
 
-    final outputAmount =
-        builder.getTotalOutput() == 0 ? amount : builder.getTotalOutput();
+    final outputAmount = builder.getTotalOutput() == BigInt.zero
+        ? amount
+        : builder.getTotalOutput();
 
     var tmpSum = builder.getTotalInput();
     final tempAddInputs = <OutPointWithInscription>[];
 
-    var fee = 0;
-    for (var i = 0; i < nonIns.length; i++) {
+    BigInt fee = BigInt.zero;
+    for (int i = 0; i < nonIns.length; i++) {
       final nonOrdUtxo = nonIns[i];
       if (tmpSum < outputAmount) {
         builder.addInput(nonOrdUtxo);
@@ -1015,7 +1026,7 @@ class BitcoinWallet {
 
     final unspent = builder.getUnspend();
 
-    if (unspent <= 0) {
+    if (unspent <= BigInt.zero) {
       throw Exception('Balance not enough to pay network fee.');
     }
 
@@ -1049,11 +1060,11 @@ class BitcoinWallet {
     return res;
   }
 
-  Future<int?> getSendInscriptionFee({
+  Future<BigInt?> getSendInscriptionFee({
     required String toAddress,
     required String insId,
-    required int feeRate,
-    int? outputValue,
+    required BigInt feeRate,
+    BigInt? outputValue,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
@@ -1072,8 +1083,8 @@ class BitcoinWallet {
   Future<TxBuilderResult> createSendInscription({
     required String toAddress,
     required String insId,
-    required int feeRate,
-    int? outputValue,
+    required BigInt feeRate,
+    BigInt? outputValue,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
@@ -1103,9 +1114,9 @@ class BitcoinWallet {
 
     // 3.1 select inscription and proctect those unspendables
     final tempInputs = <OutPointWithInscription>[];
-    var satoshis = 0;
+    BigInt satoshis = BigInt.zero;
     var found = false;
-    var ordLeft = 0;
+    BigInt ordLeft = BigInt.zero;
     for (final e in ins) {
       // try and find the inscription matches the inscription id
       final index = e.inscriptions!
@@ -1174,9 +1185,9 @@ class BitcoinWallet {
     final outputAmount = builder.getTotalOutput();
     // print('outputAmount: $outputAmount');
 
-    var tmpSum = builder.getTotalInput();
-    var fee = 0;
-    for (var i = 0; i < nonIns.length; i++) {
+    BigInt tmpSum = builder.getTotalInput();
+    BigInt fee = BigInt.zero;
+    for (int i = 0; i < nonIns.length; i++) {
       final nonOrdUtxo = nonIns[i];
       if (tmpSum < outputAmount) {
         // manually add input to inputs
@@ -1203,7 +1214,7 @@ class BitcoinWallet {
     }
 
     final unspent = builder.getUnspend();
-    if (unspent <= 0) {
+    if (unspent <= BigInt.zero) {
       throw Exception('Balance not enough to pay network fee.');
     }
 
@@ -1237,21 +1248,22 @@ class BitcoinWallet {
     return res;
   }
 
-  Future<int?> getSendMultiInscriptionsFee({
+  Future<BigInt?> getSendMultiInscriptionsFee({
     required String toAddress,
     required List<String> insIds,
-    required int feeRate,
-    int? outputValue,
+    required BigInt feeRate,
+    BigInt? outputValue,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
     final txr = await createSendMultiInscriptions(
-        toAddress: toAddress,
-        insIds: insIds,
-        feeRate: feeRate,
-        outputValue: outputValue,
-        useUTXOCache: useUTXOCache,
-        bigAmountFirst: bigAmountFirst);
+      toAddress: toAddress,
+      insIds: insIds,
+      feeRate: feeRate,
+      outputValue: outputValue,
+      useUTXOCache: useUTXOCache,
+      bigAmountFirst: bigAmountFirst,
+    );
     final signed = await sign(txr);
     return signed.psbt.feeAmount();
   }
@@ -1260,8 +1272,8 @@ class BitcoinWallet {
   Future<TxBuilderResult> createSendMultiInscriptions({
     required String toAddress,
     required List<String> insIds,
-    required int feeRate,
-    int? outputValue,
+    required BigInt feeRate,
+    BigInt? outputValue,
     bool useUTXOCache = false,
     bool bigAmountFirst = true,
   }) async {
@@ -1291,9 +1303,9 @@ class BitcoinWallet {
 
     // 3.1 select inscription and proctect those unspendables
     final tempInputs = <OutPointWithInscription>[];
-    var satoshis = 0;
+    BigInt satoshis = BigInt.zero;
     var found = false;
-    var ordLeft = 0;
+    BigInt ordLeft = BigInt.zero;
     for (final e in ins) {
       // try and find the inscription matches the inscription id
       final index = e.inscriptions!
@@ -1363,7 +1375,7 @@ class BitcoinWallet {
     // print('outputAmount: $outputAmount');
 
     var tmpSum = builder.getTotalInput();
-    var fee = 0;
+    BigInt fee = BigInt.zero;
     for (var i = 0; i < nonIns.length; i++) {
       final nonOrdUtxo = nonIns[i];
       if (tmpSum < outputAmount) {
@@ -1391,7 +1403,7 @@ class BitcoinWallet {
     }
 
     final unspent = builder.getUnspend();
-    if (unspent <= 0) {
+    if (unspent <= BigInt.zero) {
       throw Exception('Balance not enough to pay network fee.');
     }
 
@@ -1429,8 +1441,8 @@ class BitcoinWallet {
   Future<TxBuilderResult> sendBTCFromInscription({
     required String toAddress,
     required String insId,
-    required int feeRate,
-    required int btcAmount,
+    required BigInt feeRate,
+    required BigInt btcAmount,
     bool bigAmountFirst = true,
   }) async {
     final builder = TxBuilder();
@@ -1462,9 +1474,9 @@ class BitcoinWallet {
 
     // 3.1 select inscription and proctect those unspendables
     final tempInputs = <OutPointWithInscription>[];
-    var satoshis = 0;
+    BigInt satoshis = BigInt.zero;
     var found = false;
-    var ordLeft = 0;
+    BigInt ordLeft = BigInt.zero;
     for (final e in ins) {
       // try and find the inscription matches the inscription id
       final index = e.inscriptions!
@@ -1536,8 +1548,8 @@ class BitcoinWallet {
 
     var tmpSum = builder.getTotalInput();
 
-    var fee = 0;
-    for (var i = 0; i < nonIns.length; i++) {
+    BigInt fee = BigInt.zero;
+    for (int i = 0; i < nonIns.length; i++) {
       final nonOrdUtxo = nonIns[i];
       if (tmpSum < outputAmount) {
         // manually add input to inputs
@@ -1564,7 +1576,7 @@ class BitcoinWallet {
     }
 
     final unspent = builder.getUnspend();
-    if (unspent <= 0) {
+    if (unspent <= BigInt.zero) {
       throw Exception('Balance not enough to pay network fee.');
     }
 
@@ -1622,7 +1634,7 @@ class BitcoinWallet {
         txDetails: buildResult.txDetails,
         signed: true,
       );
-    } on FfiException catch (e) {
+    } on AnyhowException catch (e) {
       throw e.message;
     }
   }
@@ -1641,7 +1653,7 @@ class BitcoinWallet {
 
       return await blockStreamApi!
           .broadcastTx(Uint8List.fromList(await tx.serialize()).toHex());
-    } on FfiException catch (e) {
+    } on AnyhowException catch (e) {
       throw e.message;
     }
   }
@@ -1654,7 +1666,7 @@ class BitcoinWallet {
       return await Future.wait(
         psbtHexs.map((hex) => signPsbt(hex, options: options)),
       );
-    } on FfiException catch (e) {
+    } on AnyhowException catch (e) {
       throw e.message;
     }
   }
@@ -1680,7 +1692,7 @@ class BitcoinWallet {
           index: i,
           address: addr,
           value: element.value,
-          isMine: addr == currentSigner().address ? true : false,
+          isMine: addr.address == currentSigner().address,
           isChange: false,
         ),
       );
@@ -1697,7 +1709,7 @@ class BitcoinWallet {
           index: i,
           address: addr,
           value: element.value,
-          isMine: addr == currentSigner().address ? true : false,
+          isMine: addr.address == currentSigner().address,
           isChange: i == outputs.length - 1 ? true : false,
         ),
       );
@@ -1715,8 +1727,8 @@ class BitcoinWallet {
       fee: feePaid!,
       feeRate: feeRate,
       size: size,
-      totalInputValue: inputsExt.fold(0, (v, i) => i.value + v),
-      totalOutputValue: outputsExt.fold(0, (v, i) => i.value + v),
+      totalInputValue: inputsExt.fold(BigInt.zero, (v, i) => i.value + v),
+      totalOutputValue: outputsExt.fold(BigInt.zero, (v, i) => i.value + v),
       psbt: psbt,
     );
   }
@@ -1727,16 +1739,14 @@ class BitcoinWallet {
     bool useBip322 = false,
   }) async {
     try {
-      final k = getWalletType() == WalletType.HD
-          ? await descriptor.descriptor.descriptorSecretKey!
-              .deriveIndex(currentIndex() ?? 0)
-          : descriptor.descriptor.descriptorSecretKey!;
-
+      final k = await getDescriptorSecretKey(currentIndex());
       final kBytes = Uint8List.fromList(await k.secretBytes());
 
       if (!useBip322) {
-        final res =
-            await signSecp256k1WithRNG(wallet.messageHandler(message), kBytes);
+        final res = await signSecp256k1WithRNG(
+          wallet.messageHandler(message),
+          kBytes,
+        );
 
         /// move v to the top, and plus 27
         final v = res.sublist(64, 65);
@@ -1752,30 +1762,23 @@ class BitcoinWallet {
       } else {
         String? res;
         if (addressType == AddressType.P2TR) {
-          res = await AgentDartFFI.impl.bip322SignTaprootStaticMethodApi(
-              secret: kBytes, message: message);
+          res = await Api.bip322SignTaproot(secret: kBytes, message: message);
         } else {
-          res = await AgentDartFFI.impl.bip322SignSegwitStaticMethodApi(
-              secret: kBytes, message: message);
+          res = await Api.bip322SignSegwit(secret: kBytes, message: message);
         }
-
         if (toBase64) {
           return res;
         } else {
           return base64Decode(res).toHex();
         }
       }
-    } on FfiException catch (e) {
+    } on AnyhowException catch (e) {
       throw e.message;
     }
   }
 
   Future<Secp256k1KeyIdentity> getIdentity() async {
-    final k = getWalletType() == WalletType.HD
-        ? await descriptor.descriptor.descriptorSecretKey!
-            .deriveIndex(currentIndex() ?? 0)
-        : descriptor.descriptor.descriptorSecretKey!;
-
+    final k = await getDescriptorSecretKey(currentIndex());
     final kBytes = Uint8List.fromList(await k.secretBytes());
     _signIdentity = await Secp256k1KeyIdentity.fromSecretKey(kBytes);
     return _signIdentity as Secp256k1KeyIdentity;

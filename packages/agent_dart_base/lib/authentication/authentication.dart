@@ -6,7 +6,7 @@ import 'package:agent_dart_base/principal/principal.dart';
 import 'package:agent_dart_base/utils/extension.dart';
 import 'package:agent_dart_base/utils/is.dart';
 
-/// Options for {@link createAuthenticationRequestUrl}.
+/// Options for createAuthenticationRequestUrl.
 /// All these options may be limited further by the identity provider,
 /// or an error can happen.
 class CreateUrlOptions {
@@ -23,7 +23,7 @@ class CreateUrlOptions {
 
   /// The scope of the delegation. This must contain at least one key and
   /// a maximum of four. This is validated in
-  /// {@link createAuthenticationRequestUrl} but also will be validated as part
+  /// createAuthenticationRequestUrl but also will be validated as part
   /// of the identity provider.
   final List<dynamic> scope;
 

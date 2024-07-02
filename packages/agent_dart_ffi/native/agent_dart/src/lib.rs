@@ -1,21 +1,22 @@
-mod bridge_generated; /* AUTO INJECTED BY flutter_rust_bridge. This line may not be accurate, and you can change it according to your needs. */
+mod frb_generated; /* AUTO INJECTED BY flutter_rust_bridge. This line may not be accurate, and you can change it according to your needs. */
+
 #[allow(clippy::all)]
 #[allow(dead_code)]
 mod api;
 mod bls_ffi;
+mod ed25519;
 mod errors;
 mod keyring;
+mod keystore;
+mod p256;
+mod schnorr;
+mod secp256k1;
 mod types;
 
 mod bdk;
 #[allow(clippy::all)]
 #[allow(dead_code)]
 mod bls;
-mod ed25519;
-mod keystore;
-mod p256;
-mod schnorr;
-mod secp256k1;
 
 #[cfg(test)]
 mod tests {

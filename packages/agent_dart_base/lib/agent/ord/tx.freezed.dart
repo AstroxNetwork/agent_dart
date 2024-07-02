@@ -12,7 +12,7 @@ part of 'tx.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Tx _$TxFromJson(Map<String, dynamic> json) {
   return _Tx.fromJson(json);
@@ -135,9 +135,9 @@ class _$TxCopyWithImpl<$Res, $Val extends Tx> implements $TxCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$$_TxCopyWith<$Res> implements $TxCopyWith<$Res> {
-  factory _$$_TxCopyWith(_$_Tx value, $Res Function(_$_Tx) then) =
-      __$$_TxCopyWithImpl<$Res>;
+abstract class _$$TxImplCopyWith<$Res> implements $TxCopyWith<$Res> {
+  factory _$$TxImplCopyWith(_$TxImpl value, $Res Function(_$TxImpl) then) =
+      __$$TxImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -156,9 +156,9 @@ abstract class _$$_TxCopyWith<$Res> implements $TxCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_TxCopyWithImpl<$Res> extends _$TxCopyWithImpl<$Res, _$_Tx>
-    implements _$$_TxCopyWith<$Res> {
-  __$$_TxCopyWithImpl(_$_Tx _value, $Res Function(_$_Tx) _then)
+class __$$TxImplCopyWithImpl<$Res> extends _$TxCopyWithImpl<$Res, _$TxImpl>
+    implements _$$TxImplCopyWith<$Res> {
+  __$$TxImplCopyWithImpl(_$TxImpl _value, $Res Function(_$TxImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -174,7 +174,7 @@ class __$$_TxCopyWithImpl<$Res> extends _$TxCopyWithImpl<$Res, _$_Tx>
     Object? fee = null,
     Object? status = null,
   }) {
-    return _then(_$_Tx(
+    return _then(_$TxImpl(
       txid: null == txid
           ? _value.txid
           : txid // ignore: cast_nullable_to_non_nullable
@@ -217,8 +217,8 @@ class __$$_TxCopyWithImpl<$Res> extends _$TxCopyWithImpl<$Res, _$_Tx>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Tx implements _Tx {
-  _$_Tx(
+class _$TxImpl implements _Tx {
+  _$TxImpl(
       {required this.txid,
       required this.version,
       required this.locktime,
@@ -229,7 +229,8 @@ class _$_Tx implements _Tx {
       required this.fee,
       required this.status});
 
-  factory _$_Tx.fromJson(Map<String, dynamic> json) => _$$_TxFromJson(json);
+  factory _$TxImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TxImplFromJson(json);
 
   @override
   String txid;
@@ -258,12 +259,12 @@ class _$_Tx implements _Tx {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_TxCopyWith<_$_Tx> get copyWith =>
-      __$$_TxCopyWithImpl<_$_Tx>(this, _$identity);
+  _$$TxImplCopyWith<_$TxImpl> get copyWith =>
+      __$$TxImplCopyWithImpl<_$TxImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_TxToJson(
+    return _$$TxImplToJson(
       this,
     );
   }
@@ -279,9 +280,9 @@ abstract class _Tx implements Tx {
       required int size,
       required int weight,
       required int fee,
-      required TxStatus status}) = _$_Tx;
+      required TxStatus status}) = _$TxImpl;
 
-  factory _Tx.fromJson(Map<String, dynamic> json) = _$_Tx.fromJson;
+  factory _Tx.fromJson(Map<String, dynamic> json) = _$TxImpl.fromJson;
 
   @override
   String get txid;
@@ -312,7 +313,8 @@ abstract class _Tx implements Tx {
   set status(TxStatus value);
   @override
   @JsonKey(ignore: true)
-  _$$_TxCopyWith<_$_Tx> get copyWith => throw _privateConstructorUsedError;
+  _$$TxImplCopyWith<_$TxImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 Vin _$VinFromJson(Map<String, dynamic> json) {
@@ -321,21 +323,37 @@ Vin _$VinFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Vin {
+  @JsonKey(name: 'txid')
   String get txid => throw _privateConstructorUsedError;
+  @JsonKey(name: 'txid')
   set txid(String value) => throw _privateConstructorUsedError;
+  @JsonKey(name: 'vout')
   int get vout => throw _privateConstructorUsedError;
+  @JsonKey(name: 'vout')
   set vout(int value) => throw _privateConstructorUsedError;
+  @JsonKey(name: 'prevout')
   Vout get prevout => throw _privateConstructorUsedError;
+  @JsonKey(name: 'prevout')
   set prevout(Vout value) => throw _privateConstructorUsedError;
-  String get scriptsig => throw _privateConstructorUsedError;
-  set scriptsig(String value) => throw _privateConstructorUsedError;
-  String get scriptsig_asm => throw _privateConstructorUsedError;
-  set scriptsig_asm(String value) => throw _privateConstructorUsedError;
+  @JsonKey(name: 'scriptsig')
+  String get scriptSig => throw _privateConstructorUsedError;
+  @JsonKey(name: 'scriptsig')
+  set scriptSig(String value) => throw _privateConstructorUsedError;
+  @JsonKey(name: 'scriptsig_asm')
+  String get scriptsigAsm => throw _privateConstructorUsedError;
+  @JsonKey(name: 'scriptsig_asm')
+  set scriptsigAsm(String value) => throw _privateConstructorUsedError;
+  @JsonKey(name: 'witness')
   List<String> get witness => throw _privateConstructorUsedError;
+  @JsonKey(name: 'witness')
   set witness(List<String> value) => throw _privateConstructorUsedError;
-  bool get is_coinbase => throw _privateConstructorUsedError;
-  set is_coinbase(bool value) => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_coinbase')
+  bool get isCoinbase => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_coinbase')
+  set isCoinbase(bool value) => throw _privateConstructorUsedError;
+  @JsonKey(name: 'sequence')
   int get sequence => throw _privateConstructorUsedError;
+  @JsonKey(name: 'sequence')
   set sequence(int value) => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -349,14 +367,14 @@ abstract class $VinCopyWith<$Res> {
       _$VinCopyWithImpl<$Res, Vin>;
   @useResult
   $Res call(
-      {String txid,
-      int vout,
-      Vout prevout,
-      String scriptsig,
-      String scriptsig_asm,
-      List<String> witness,
-      bool is_coinbase,
-      int sequence});
+      {@JsonKey(name: 'txid') String txid,
+      @JsonKey(name: 'vout') int vout,
+      @JsonKey(name: 'prevout') Vout prevout,
+      @JsonKey(name: 'scriptsig') String scriptSig,
+      @JsonKey(name: 'scriptsig_asm') String scriptsigAsm,
+      @JsonKey(name: 'witness') List<String> witness,
+      @JsonKey(name: 'is_coinbase') bool isCoinbase,
+      @JsonKey(name: 'sequence') int sequence});
 
   $VoutCopyWith<$Res> get prevout;
 }
@@ -376,10 +394,10 @@ class _$VinCopyWithImpl<$Res, $Val extends Vin> implements $VinCopyWith<$Res> {
     Object? txid = null,
     Object? vout = null,
     Object? prevout = null,
-    Object? scriptsig = null,
-    Object? scriptsig_asm = null,
+    Object? scriptSig = null,
+    Object? scriptsigAsm = null,
     Object? witness = null,
-    Object? is_coinbase = null,
+    Object? isCoinbase = null,
     Object? sequence = null,
   }) {
     return _then(_value.copyWith(
@@ -395,21 +413,21 @@ class _$VinCopyWithImpl<$Res, $Val extends Vin> implements $VinCopyWith<$Res> {
           ? _value.prevout
           : prevout // ignore: cast_nullable_to_non_nullable
               as Vout,
-      scriptsig: null == scriptsig
-          ? _value.scriptsig
-          : scriptsig // ignore: cast_nullable_to_non_nullable
+      scriptSig: null == scriptSig
+          ? _value.scriptSig
+          : scriptSig // ignore: cast_nullable_to_non_nullable
               as String,
-      scriptsig_asm: null == scriptsig_asm
-          ? _value.scriptsig_asm
-          : scriptsig_asm // ignore: cast_nullable_to_non_nullable
+      scriptsigAsm: null == scriptsigAsm
+          ? _value.scriptsigAsm
+          : scriptsigAsm // ignore: cast_nullable_to_non_nullable
               as String,
       witness: null == witness
           ? _value.witness
           : witness // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      is_coinbase: null == is_coinbase
-          ? _value.is_coinbase
-          : is_coinbase // ignore: cast_nullable_to_non_nullable
+      isCoinbase: null == isCoinbase
+          ? _value.isCoinbase
+          : isCoinbase // ignore: cast_nullable_to_non_nullable
               as bool,
       sequence: null == sequence
           ? _value.sequence
@@ -428,29 +446,29 @@ class _$VinCopyWithImpl<$Res, $Val extends Vin> implements $VinCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$$_VinCopyWith<$Res> implements $VinCopyWith<$Res> {
-  factory _$$_VinCopyWith(_$_Vin value, $Res Function(_$_Vin) then) =
-      __$$_VinCopyWithImpl<$Res>;
+abstract class _$$VinImplCopyWith<$Res> implements $VinCopyWith<$Res> {
+  factory _$$VinImplCopyWith(_$VinImpl value, $Res Function(_$VinImpl) then) =
+      __$$VinImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
-      {String txid,
-      int vout,
-      Vout prevout,
-      String scriptsig,
-      String scriptsig_asm,
-      List<String> witness,
-      bool is_coinbase,
-      int sequence});
+      {@JsonKey(name: 'txid') String txid,
+      @JsonKey(name: 'vout') int vout,
+      @JsonKey(name: 'prevout') Vout prevout,
+      @JsonKey(name: 'scriptsig') String scriptSig,
+      @JsonKey(name: 'scriptsig_asm') String scriptsigAsm,
+      @JsonKey(name: 'witness') List<String> witness,
+      @JsonKey(name: 'is_coinbase') bool isCoinbase,
+      @JsonKey(name: 'sequence') int sequence});
 
   @override
   $VoutCopyWith<$Res> get prevout;
 }
 
 /// @nodoc
-class __$$_VinCopyWithImpl<$Res> extends _$VinCopyWithImpl<$Res, _$_Vin>
-    implements _$$_VinCopyWith<$Res> {
-  __$$_VinCopyWithImpl(_$_Vin _value, $Res Function(_$_Vin) _then)
+class __$$VinImplCopyWithImpl<$Res> extends _$VinCopyWithImpl<$Res, _$VinImpl>
+    implements _$$VinImplCopyWith<$Res> {
+  __$$VinImplCopyWithImpl(_$VinImpl _value, $Res Function(_$VinImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -459,13 +477,13 @@ class __$$_VinCopyWithImpl<$Res> extends _$VinCopyWithImpl<$Res, _$_Vin>
     Object? txid = null,
     Object? vout = null,
     Object? prevout = null,
-    Object? scriptsig = null,
-    Object? scriptsig_asm = null,
+    Object? scriptSig = null,
+    Object? scriptsigAsm = null,
     Object? witness = null,
-    Object? is_coinbase = null,
+    Object? isCoinbase = null,
     Object? sequence = null,
   }) {
-    return _then(_$_Vin(
+    return _then(_$VinImpl(
       txid: null == txid
           ? _value.txid
           : txid // ignore: cast_nullable_to_non_nullable
@@ -478,21 +496,21 @@ class __$$_VinCopyWithImpl<$Res> extends _$VinCopyWithImpl<$Res, _$_Vin>
           ? _value.prevout
           : prevout // ignore: cast_nullable_to_non_nullable
               as Vout,
-      scriptsig: null == scriptsig
-          ? _value.scriptsig
-          : scriptsig // ignore: cast_nullable_to_non_nullable
+      scriptSig: null == scriptSig
+          ? _value.scriptSig
+          : scriptSig // ignore: cast_nullable_to_non_nullable
               as String,
-      scriptsig_asm: null == scriptsig_asm
-          ? _value.scriptsig_asm
-          : scriptsig_asm // ignore: cast_nullable_to_non_nullable
+      scriptsigAsm: null == scriptsigAsm
+          ? _value.scriptsigAsm
+          : scriptsigAsm // ignore: cast_nullable_to_non_nullable
               as String,
       witness: null == witness
           ? _value.witness
           : witness // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      is_coinbase: null == is_coinbase
-          ? _value.is_coinbase
-          : is_coinbase // ignore: cast_nullable_to_non_nullable
+      isCoinbase: null == isCoinbase
+          ? _value.isCoinbase
+          : isCoinbase // ignore: cast_nullable_to_non_nullable
               as bool,
       sequence: null == sequence
           ? _value.sequence
@@ -504,95 +522,121 @@ class __$$_VinCopyWithImpl<$Res> extends _$VinCopyWithImpl<$Res, _$_Vin>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Vin implements _Vin {
-  _$_Vin(
-      {required this.txid,
-      required this.vout,
-      required this.prevout,
-      required this.scriptsig,
-      required this.scriptsig_asm,
-      required this.witness,
-      required this.is_coinbase,
-      required this.sequence});
+class _$VinImpl implements _Vin {
+  const _$VinImpl(
+      {@JsonKey(name: 'txid') required this.txid,
+      @JsonKey(name: 'vout') required this.vout,
+      @JsonKey(name: 'prevout') required this.prevout,
+      @JsonKey(name: 'scriptsig') required this.scriptSig,
+      @JsonKey(name: 'scriptsig_asm') required this.scriptsigAsm,
+      @JsonKey(name: 'witness') required this.witness,
+      @JsonKey(name: 'is_coinbase') required this.isCoinbase,
+      @JsonKey(name: 'sequence') required this.sequence});
 
-  factory _$_Vin.fromJson(Map<String, dynamic> json) => _$$_VinFromJson(json);
+  factory _$VinImpl.fromJson(Map<String, dynamic> json) =>
+      _$$VinImplFromJson(json);
 
   @override
+  @JsonKey(name: 'txid')
   String txid;
   @override
+  @JsonKey(name: 'vout')
   int vout;
   @override
+  @JsonKey(name: 'prevout')
   Vout prevout;
   @override
-  String scriptsig;
+  @JsonKey(name: 'scriptsig')
+  String scriptSig;
   @override
-  String scriptsig_asm;
+  @JsonKey(name: 'scriptsig_asm')
+  String scriptsigAsm;
   @override
+  @JsonKey(name: 'witness')
   List<String> witness;
   @override
-  bool is_coinbase;
+  @JsonKey(name: 'is_coinbase')
+  bool isCoinbase;
   @override
+  @JsonKey(name: 'sequence')
   int sequence;
 
   @override
   String toString() {
-    return 'Vin(txid: $txid, vout: $vout, prevout: $prevout, scriptsig: $scriptsig, scriptsig_asm: $scriptsig_asm, witness: $witness, is_coinbase: $is_coinbase, sequence: $sequence)';
+    return 'Vin(txid: $txid, vout: $vout, prevout: $prevout, scriptSig: $scriptSig, scriptsigAsm: $scriptsigAsm, witness: $witness, isCoinbase: $isCoinbase, sequence: $sequence)';
   }
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_VinCopyWith<_$_Vin> get copyWith =>
-      __$$_VinCopyWithImpl<_$_Vin>(this, _$identity);
+  _$$VinImplCopyWith<_$VinImpl> get copyWith =>
+      __$$VinImplCopyWithImpl<_$VinImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_VinToJson(
+    return _$$VinImplToJson(
       this,
     );
   }
 }
 
 abstract class _Vin implements Vin {
-  factory _Vin(
-      {required String txid,
-      required int vout,
-      required Vout prevout,
-      required String scriptsig,
-      required String scriptsig_asm,
-      required List<String> witness,
-      required bool is_coinbase,
-      required int sequence}) = _$_Vin;
+  const factory _Vin(
+      {@JsonKey(name: 'txid') required String txid,
+      @JsonKey(name: 'vout') required int vout,
+      @JsonKey(name: 'prevout') required Vout prevout,
+      @JsonKey(name: 'scriptsig') required String scriptSig,
+      @JsonKey(name: 'scriptsig_asm') required String scriptsigAsm,
+      @JsonKey(name: 'witness') required List<String> witness,
+      @JsonKey(name: 'is_coinbase') required bool isCoinbase,
+      @JsonKey(name: 'sequence') required int sequence}) = _$VinImpl;
 
-  factory _Vin.fromJson(Map<String, dynamic> json) = _$_Vin.fromJson;
+  factory _Vin.fromJson(Map<String, dynamic> json) = _$VinImpl.fromJson;
 
   @override
+  @JsonKey(name: 'txid')
   String get txid;
+  @JsonKey(name: 'txid')
   set txid(String value);
   @override
+  @JsonKey(name: 'vout')
   int get vout;
+  @JsonKey(name: 'vout')
   set vout(int value);
   @override
+  @JsonKey(name: 'prevout')
   Vout get prevout;
+  @JsonKey(name: 'prevout')
   set prevout(Vout value);
   @override
-  String get scriptsig;
-  set scriptsig(String value);
+  @JsonKey(name: 'scriptsig')
+  String get scriptSig;
+  @JsonKey(name: 'scriptsig')
+  set scriptSig(String value);
   @override
-  String get scriptsig_asm;
-  set scriptsig_asm(String value);
+  @JsonKey(name: 'scriptsig_asm')
+  String get scriptsigAsm;
+  @JsonKey(name: 'scriptsig_asm')
+  set scriptsigAsm(String value);
   @override
+  @JsonKey(name: 'witness')
   List<String> get witness;
+  @JsonKey(name: 'witness')
   set witness(List<String> value);
   @override
-  bool get is_coinbase;
-  set is_coinbase(bool value);
+  @JsonKey(name: 'is_coinbase')
+  bool get isCoinbase;
+  @JsonKey(name: 'is_coinbase')
+  set isCoinbase(bool value);
   @override
+  @JsonKey(name: 'sequence')
   int get sequence;
+  @JsonKey(name: 'sequence')
   set sequence(int value);
   @override
   @JsonKey(ignore: true)
-  _$$_VinCopyWith<_$_Vin> get copyWith => throw _privateConstructorUsedError;
+  _$$VinImplCopyWith<_$VinImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 Vout _$VoutFromJson(Map<String, dynamic> json) {
@@ -601,10 +645,15 @@ Vout _$VoutFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Vout {
-  String get scriptpubkey => throw _privateConstructorUsedError;
-  String get scriptpubkey_asm => throw _privateConstructorUsedError;
-  String get scriptpubkey_type => throw _privateConstructorUsedError;
-  String get scriptpubkey_address => throw _privateConstructorUsedError;
+  @JsonKey(name: 'scriptpubkey')
+  String get scriptPubkey => throw _privateConstructorUsedError;
+  @JsonKey(name: 'scriptpubkey_asm')
+  String get scriptpubkeyAsm => throw _privateConstructorUsedError;
+  @JsonKey(name: 'scriptpubkey_type')
+  String get scriptpubkeyType => throw _privateConstructorUsedError;
+  @JsonKey(name: 'scriptpubkey_address')
+  String get scriptpubkeyAddress => throw _privateConstructorUsedError;
+  @JsonKey(name: 'value')
   int get value => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -618,11 +667,11 @@ abstract class $VoutCopyWith<$Res> {
       _$VoutCopyWithImpl<$Res, Vout>;
   @useResult
   $Res call(
-      {String scriptpubkey,
-      String scriptpubkey_asm,
-      String scriptpubkey_type,
-      String scriptpubkey_address,
-      int value});
+      {@JsonKey(name: 'scriptpubkey') String scriptPubkey,
+      @JsonKey(name: 'scriptpubkey_asm') String scriptpubkeyAsm,
+      @JsonKey(name: 'scriptpubkey_type') String scriptpubkeyType,
+      @JsonKey(name: 'scriptpubkey_address') String scriptpubkeyAddress,
+      @JsonKey(name: 'value') int value});
 }
 
 /// @nodoc
@@ -638,28 +687,28 @@ class _$VoutCopyWithImpl<$Res, $Val extends Vout>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? scriptpubkey = null,
-    Object? scriptpubkey_asm = null,
-    Object? scriptpubkey_type = null,
-    Object? scriptpubkey_address = null,
+    Object? scriptPubkey = null,
+    Object? scriptpubkeyAsm = null,
+    Object? scriptpubkeyType = null,
+    Object? scriptpubkeyAddress = null,
     Object? value = null,
   }) {
     return _then(_value.copyWith(
-      scriptpubkey: null == scriptpubkey
-          ? _value.scriptpubkey
-          : scriptpubkey // ignore: cast_nullable_to_non_nullable
+      scriptPubkey: null == scriptPubkey
+          ? _value.scriptPubkey
+          : scriptPubkey // ignore: cast_nullable_to_non_nullable
               as String,
-      scriptpubkey_asm: null == scriptpubkey_asm
-          ? _value.scriptpubkey_asm
-          : scriptpubkey_asm // ignore: cast_nullable_to_non_nullable
+      scriptpubkeyAsm: null == scriptpubkeyAsm
+          ? _value.scriptpubkeyAsm
+          : scriptpubkeyAsm // ignore: cast_nullable_to_non_nullable
               as String,
-      scriptpubkey_type: null == scriptpubkey_type
-          ? _value.scriptpubkey_type
-          : scriptpubkey_type // ignore: cast_nullable_to_non_nullable
+      scriptpubkeyType: null == scriptpubkeyType
+          ? _value.scriptpubkeyType
+          : scriptpubkeyType // ignore: cast_nullable_to_non_nullable
               as String,
-      scriptpubkey_address: null == scriptpubkey_address
-          ? _value.scriptpubkey_address
-          : scriptpubkey_address // ignore: cast_nullable_to_non_nullable
+      scriptpubkeyAddress: null == scriptpubkeyAddress
+          ? _value.scriptpubkeyAddress
+          : scriptpubkeyAddress // ignore: cast_nullable_to_non_nullable
               as String,
       value: null == value
           ? _value.value
@@ -670,50 +719,52 @@ class _$VoutCopyWithImpl<$Res, $Val extends Vout>
 }
 
 /// @nodoc
-abstract class _$$_VoutCopyWith<$Res> implements $VoutCopyWith<$Res> {
-  factory _$$_VoutCopyWith(_$_Vout value, $Res Function(_$_Vout) then) =
-      __$$_VoutCopyWithImpl<$Res>;
+abstract class _$$VoutImplCopyWith<$Res> implements $VoutCopyWith<$Res> {
+  factory _$$VoutImplCopyWith(
+          _$VoutImpl value, $Res Function(_$VoutImpl) then) =
+      __$$VoutImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
-      {String scriptpubkey,
-      String scriptpubkey_asm,
-      String scriptpubkey_type,
-      String scriptpubkey_address,
-      int value});
+      {@JsonKey(name: 'scriptpubkey') String scriptPubkey,
+      @JsonKey(name: 'scriptpubkey_asm') String scriptpubkeyAsm,
+      @JsonKey(name: 'scriptpubkey_type') String scriptpubkeyType,
+      @JsonKey(name: 'scriptpubkey_address') String scriptpubkeyAddress,
+      @JsonKey(name: 'value') int value});
 }
 
 /// @nodoc
-class __$$_VoutCopyWithImpl<$Res> extends _$VoutCopyWithImpl<$Res, _$_Vout>
-    implements _$$_VoutCopyWith<$Res> {
-  __$$_VoutCopyWithImpl(_$_Vout _value, $Res Function(_$_Vout) _then)
+class __$$VoutImplCopyWithImpl<$Res>
+    extends _$VoutCopyWithImpl<$Res, _$VoutImpl>
+    implements _$$VoutImplCopyWith<$Res> {
+  __$$VoutImplCopyWithImpl(_$VoutImpl _value, $Res Function(_$VoutImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? scriptpubkey = null,
-    Object? scriptpubkey_asm = null,
-    Object? scriptpubkey_type = null,
-    Object? scriptpubkey_address = null,
+    Object? scriptPubkey = null,
+    Object? scriptpubkeyAsm = null,
+    Object? scriptpubkeyType = null,
+    Object? scriptpubkeyAddress = null,
     Object? value = null,
   }) {
-    return _then(_$_Vout(
-      scriptpubkey: null == scriptpubkey
-          ? _value.scriptpubkey
-          : scriptpubkey // ignore: cast_nullable_to_non_nullable
+    return _then(_$VoutImpl(
+      scriptPubkey: null == scriptPubkey
+          ? _value.scriptPubkey
+          : scriptPubkey // ignore: cast_nullable_to_non_nullable
               as String,
-      scriptpubkey_asm: null == scriptpubkey_asm
-          ? _value.scriptpubkey_asm
-          : scriptpubkey_asm // ignore: cast_nullable_to_non_nullable
+      scriptpubkeyAsm: null == scriptpubkeyAsm
+          ? _value.scriptpubkeyAsm
+          : scriptpubkeyAsm // ignore: cast_nullable_to_non_nullable
               as String,
-      scriptpubkey_type: null == scriptpubkey_type
-          ? _value.scriptpubkey_type
-          : scriptpubkey_type // ignore: cast_nullable_to_non_nullable
+      scriptpubkeyType: null == scriptpubkeyType
+          ? _value.scriptpubkeyType
+          : scriptpubkeyType // ignore: cast_nullable_to_non_nullable
               as String,
-      scriptpubkey_address: null == scriptpubkey_address
-          ? _value.scriptpubkey_address
-          : scriptpubkey_address // ignore: cast_nullable_to_non_nullable
+      scriptpubkeyAddress: null == scriptpubkeyAddress
+          ? _value.scriptpubkeyAddress
+          : scriptpubkeyAddress // ignore: cast_nullable_to_non_nullable
               as String,
       value: null == value
           ? _value.value
@@ -725,62 +776,68 @@ class __$$_VoutCopyWithImpl<$Res> extends _$VoutCopyWithImpl<$Res, _$_Vout>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Vout implements _Vout {
-  _$_Vout(
-      {required this.scriptpubkey,
-      required this.scriptpubkey_asm,
-      required this.scriptpubkey_type,
-      required this.scriptpubkey_address,
-      required this.value});
+class _$VoutImpl implements _Vout {
+  _$VoutImpl(
+      {@JsonKey(name: 'scriptpubkey') required this.scriptPubkey,
+      @JsonKey(name: 'scriptpubkey_asm') required this.scriptpubkeyAsm,
+      @JsonKey(name: 'scriptpubkey_type') required this.scriptpubkeyType,
+      @JsonKey(name: 'scriptpubkey_address') required this.scriptpubkeyAddress,
+      @JsonKey(name: 'value') required this.value});
 
-  factory _$_Vout.fromJson(Map<String, dynamic> json) => _$$_VoutFromJson(json);
+  factory _$VoutImpl.fromJson(Map<String, dynamic> json) =>
+      _$$VoutImplFromJson(json);
 
   @override
-  final String scriptpubkey;
+  @JsonKey(name: 'scriptpubkey')
+  final String scriptPubkey;
   @override
-  final String scriptpubkey_asm;
+  @JsonKey(name: 'scriptpubkey_asm')
+  final String scriptpubkeyAsm;
   @override
-  final String scriptpubkey_type;
+  @JsonKey(name: 'scriptpubkey_type')
+  final String scriptpubkeyType;
   @override
-  final String scriptpubkey_address;
+  @JsonKey(name: 'scriptpubkey_address')
+  final String scriptpubkeyAddress;
   @override
+  @JsonKey(name: 'value')
   final int value;
 
   @override
   String toString() {
-    return 'Vout(scriptpubkey: $scriptpubkey, scriptpubkey_asm: $scriptpubkey_asm, scriptpubkey_type: $scriptpubkey_type, scriptpubkey_address: $scriptpubkey_address, value: $value)';
+    return 'Vout(scriptPubkey: $scriptPubkey, scriptpubkeyAsm: $scriptpubkeyAsm, scriptpubkeyType: $scriptpubkeyType, scriptpubkeyAddress: $scriptpubkeyAddress, value: $value)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Vout &&
-            (identical(other.scriptpubkey, scriptpubkey) ||
-                other.scriptpubkey == scriptpubkey) &&
-            (identical(other.scriptpubkey_asm, scriptpubkey_asm) ||
-                other.scriptpubkey_asm == scriptpubkey_asm) &&
-            (identical(other.scriptpubkey_type, scriptpubkey_type) ||
-                other.scriptpubkey_type == scriptpubkey_type) &&
-            (identical(other.scriptpubkey_address, scriptpubkey_address) ||
-                other.scriptpubkey_address == scriptpubkey_address) &&
+            other is _$VoutImpl &&
+            (identical(other.scriptPubkey, scriptPubkey) ||
+                other.scriptPubkey == scriptPubkey) &&
+            (identical(other.scriptpubkeyAsm, scriptpubkeyAsm) ||
+                other.scriptpubkeyAsm == scriptpubkeyAsm) &&
+            (identical(other.scriptpubkeyType, scriptpubkeyType) ||
+                other.scriptpubkeyType == scriptpubkeyType) &&
+            (identical(other.scriptpubkeyAddress, scriptpubkeyAddress) ||
+                other.scriptpubkeyAddress == scriptpubkeyAddress) &&
             (identical(other.value, value) || other.value == value));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, scriptpubkey, scriptpubkey_asm,
-      scriptpubkey_type, scriptpubkey_address, value);
+  int get hashCode => Object.hash(runtimeType, scriptPubkey, scriptpubkeyAsm,
+      scriptpubkeyType, scriptpubkeyAddress, value);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_VoutCopyWith<_$_Vout> get copyWith =>
-      __$$_VoutCopyWithImpl<_$_Vout>(this, _$identity);
+  _$$VoutImplCopyWith<_$VoutImpl> get copyWith =>
+      __$$VoutImplCopyWithImpl<_$VoutImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_VoutToJson(
+    return _$$VoutImplToJson(
       this,
     );
   }
@@ -788,25 +845,33 @@ class _$_Vout implements _Vout {
 
 abstract class _Vout implements Vout {
   factory _Vout(
-      {required final String scriptpubkey,
-      required final String scriptpubkey_asm,
-      required final String scriptpubkey_type,
-      required final String scriptpubkey_address,
-      required final int value}) = _$_Vout;
+      {@JsonKey(name: 'scriptpubkey') required final String scriptPubkey,
+      @JsonKey(name: 'scriptpubkey_asm') required final String scriptpubkeyAsm,
+      @JsonKey(name: 'scriptpubkey_type')
+      required final String scriptpubkeyType,
+      @JsonKey(name: 'scriptpubkey_address')
+      required final String scriptpubkeyAddress,
+      @JsonKey(name: 'value') required final int value}) = _$VoutImpl;
 
-  factory _Vout.fromJson(Map<String, dynamic> json) = _$_Vout.fromJson;
+  factory _Vout.fromJson(Map<String, dynamic> json) = _$VoutImpl.fromJson;
 
   @override
-  String get scriptpubkey;
+  @JsonKey(name: 'scriptpubkey')
+  String get scriptPubkey;
   @override
-  String get scriptpubkey_asm;
+  @JsonKey(name: 'scriptpubkey_asm')
+  String get scriptpubkeyAsm;
   @override
-  String get scriptpubkey_type;
+  @JsonKey(name: 'scriptpubkey_type')
+  String get scriptpubkeyType;
   @override
-  String get scriptpubkey_address;
+  @JsonKey(name: 'scriptpubkey_address')
+  String get scriptpubkeyAddress;
   @override
+  @JsonKey(name: 'value')
   int get value;
   @override
   @JsonKey(ignore: true)
-  _$$_VoutCopyWith<_$_Vout> get copyWith => throw _privateConstructorUsedError;
+  _$$VoutImplCopyWith<_$VoutImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

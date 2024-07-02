@@ -274,7 +274,7 @@ class HttpAgent implements Agent {
       throw AgentFetchError(
         statusCode: response['statusCode'],
         statusText: response['statusText'],
-        body: response[body],
+        body: response['body'],
       );
     }
 
@@ -345,7 +345,7 @@ class HttpAgent implements Agent {
       throw AgentFetchError(
         statusCode: response['statusCode'],
         statusText: response['statusText'],
-        body: response[body],
+        body: response['body'],
       );
     }
 
@@ -399,7 +399,7 @@ class HttpAgent implements Agent {
       throw AgentFetchError(
         statusCode: response['statusCode'],
         statusText: response['statusText'],
-        body: response[body],
+        body: response['body'],
       );
     }
 

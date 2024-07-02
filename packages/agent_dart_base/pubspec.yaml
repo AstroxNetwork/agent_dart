@@ -7,7 +7,7 @@ issue_tracker: https://github.com/AstroxNetwork/agent_dart/issues
 publish_to: none
 
 environment:
-  sdk: ^3.3.0
+  sdk: ^3.4.0
 
 dependencies:
   agent_dart_ffi:
@@ -29,7 +29,7 @@ dependencies:
   crypto: ^3.0.2
   ffi: ^2.0.1
   fixnum: ^1.0.1
-  flutter_rust_bridge: 1.82.6
+  flutter_rust_bridge: '>=2.0.0 <2.1.0'
   http: ^1.0.0
   js: '>=0.6.4 <0.8.0'
   meta: ^1.7.0
@@ -47,7 +47,11 @@ dependencies:
   freezed: ^2.0.3+1
 
 dev_dependencies:
-  ffigen: '>=8.0.0 <10.0.0'
+  lints: # transparent
+  ffigen: ^11.0.0
   test: ^1.24.0
   build_runner: ^2.4.5
   json_serializable: ^6.7.0
+
+false_secrets:
+  - test/fixture/*.pem

@@ -1,0 +1,3 @@
+rust_input: crate::api
+rust_root: native/agent_dart
+dart_output: lib/src

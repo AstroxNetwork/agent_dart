@@ -1,10 +1,11 @@
-import 'dart:ffi';
+// import 'dart:ffi';
 
 import 'package:agent_dart_ffi/agent_dart_ffi.dart';
 import 'package:test/test.dart';
 
 // import 'package:p4d_rust_binding/utils/utils.dart';
 const isAssertionError = TypeMatcher<AssertionError>();
+
 Matcher assertionThrowsContains(String str) {
   return isAssertionError.having((e) => e.toString(), 'message', contains(str));
 }
@@ -26,49 +27,53 @@ class ErrorMessageMatcher<T extends Error> extends TypeMatcher<T> {
       item is T && (_message == null || (item as dynamic).message == _message);
 }
 
-void matchFFI() {
-  final architech = Abi.current().toString();
-  final arr = architech.split('_');
-  final os = arr[0];
-  final arc = arr[1];
-  const dyLib = 'libagent_dart.dylib';
-  const dySo = 'libagent_dart.so';
-  const dyDll = 'agent_dart.dll';
-  final String lib;
-  switch (os) {
-    case 'macos':
-      {
-        if (arc == 'arm64') {
-          lib = '../../platform-build/dylib/aarch64-apple-darwin/$dyLib';
-          break;
-        } else {
-          lib = '../../platform-build/dylib/x86_64-apple-darwin/$dyLib';
-          break;
-        }
-      }
-    case 'linux':
-      {
-        if (arc == 'arm64') {
-          lib = '../../platform-build/dylib/aarch64-unknown-linux-gnu/$dyLib';
-          break;
-        } else {
-          lib = '../../platform-build/dylib/x86_64-unknown-linux-gnu/$dySo';
-          break;
-        }
-      }
-    case 'windows':
-      {
-        if (arc == 'arm64') {
-          lib = '../../platform-build/dylib/aarch64-pc-windows-msvc/$dyDll';
-          break;
-        } else {
-          lib = '../../platform-build/dylib/x86_64-pc-windows-msvc/$dyDll';
-          break;
-        }
-      }
-    default:
-      throw 'Unsupported OS: $os';
-  }
-  print(lib);
-  AgentDartFFI.setImpl(AgentDartImpl(DynamicLibrary.open(lib)));
+Future<void> ffiInit() {
+  return RustLib.init();
 }
+
+// void matchFFI() {
+//   final architech = Abi.current().toString();
+//   final arr = architech.split('_');
+//   final os = arr[0];
+//   final arc = arr[1];
+//   const dyLib = 'libagent_dart.dylib';
+//   const dySo = 'libagent_dart.so';
+//   const dyDll = 'agent_dart.dll';
+//   final String lib;
+//   switch (os) {
+//     case 'macos':
+//       {
+//         if (arc == 'arm64') {
+//           lib = '../../platform-build/dylib/aarch64-apple-darwin/$dyLib';
+//           break;
+//         } else {
+//           lib = '../../platform-build/dylib/x86_64-apple-darwin/$dyLib';
+//           break;
+//         }
+//       }
+//     case 'linux':
+//       {
+//         if (arc == 'arm64') {
+//           lib = '../../platform-build/dylib/aarch64-unknown-linux-gnu/$dyLib';
+//           break;
+//         } else {
+//           lib = '../../platform-build/dylib/x86_64-unknown-linux-gnu/$dySo';
+//           break;
+//         }
+//       }
+//     case 'windows':
+//       {
+//         if (arc == 'arm64') {
+//           lib = '../../platform-build/dylib/aarch64-pc-windows-msvc/$dyDll';
+//           break;
+//         } else {
+//           lib = '../../platform-build/dylib/x86_64-pc-windows-msvc/$dyDll';
+//           break;
+//         }
+//       }
+//     default:
+//       throw 'Unsupported OS: $os';
+//   }
+//   print(lib);
+//   AgentDartFFI.setImpl(AgentDartImpl(DynamicLibrary.open(lib)));
+// }

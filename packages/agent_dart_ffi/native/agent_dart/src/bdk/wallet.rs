@@ -1,24 +1,14 @@
-use crate::bdk::blockchain::BlockchainInstance;
 use crate::bdk::descriptor::BdkDescriptor;
 use crate::bdk::psbt::PartiallySignedTransaction;
 use bdk_lite::database::{AnyDatabase, AnyDatabaseConfig, ConfigurableDatabase};
-// use bdk_lite::descriptor::{Descriptor, IntoWalletDescriptor};
-use bdk_lite::{Error as BdkError, Error, SyncOptions};
+use bdk_lite::{Error as BdkError, Error};
 use bdk_lite::{SignOptions as BdkSignOptions, Wallet as BdkWallet};
-// use bitcoin::hashes::hex::ToHex;
-// use bdk_lite::descriptor::Descriptor;
-// use bdk_lite::miniscript::descriptor::ConversionError;
-// use bdk_lite::miniscript::TranslatePk;
-// use bdk_lite::signer::SignerId;
-// use bitcoin::PublicKey;
-// use bdk_lite::miniscript::DefiniteDescriptorKey;
-use flutter_rust_bridge::RustOpaque;
+use crate::frb_generated::RustOpaque;
 use std::ops::Deref;
 use std::sync::{Arc, Mutex, MutexGuard};
 
 use crate::bdk::types::{
-    AddressIndex, AddressInfo, Balance, KeychainKind, OutPoint, Progress, ProgressHolder,
-    TransactionDetails, TxOut,
+    AddressIndex, AddressInfo, Balance, KeychainKind, OutPoint, TransactionDetails, TxOut,
 };
 
 /// A Bitcoin wallet.
@@ -39,7 +29,7 @@ impl WalletInstance {
     pub fn new(
         descriptor: Arc<RustOpaque<BdkDescriptor>>,
         change_descriptor: Option<Arc<RustOpaque<BdkDescriptor>>>,
-        network: bdk_lite::bitcoin::Network,
+        network: bitcoin::Network,
         database_config: DatabaseConfig,
     ) -> Result<Self, BdkError> {
         let database = AnyDatabase::from_config(&database_config.into()).unwrap();
@@ -69,20 +59,6 @@ impl WalletInstance {
         self.wallet_mutex.lock().expect("wallet")
     }
 
-    pub fn sync(&self, blockchain: &BlockchainInstance, progress: Option<Box<dyn Progress>>) {
-        let bdk_sync_option: SyncOptions = if let Some(p) = progress {
-            SyncOptions {
-                progress: Some(Box::new(ProgressHolder { progress: p })
-                    as Box<(dyn bdk_lite::blockchain::Progress + 'static)>),
-            }
-        } else {
-            SyncOptions { progress: None }
-        };
-        let blockchain = blockchain.get_blockchain();
-        self.get_wallet()
-            .sync(blockchain.deref(), bdk_sync_option)
-            .unwrap()
-    }
     /// Return the balance, meaning the sum of this wallet’s unspent outputs’ values. Note that this method only operates
     /// on the internal database, which first needs to be Wallet.sync manually.
     pub fn get_balance(&self) -> Result<Balance, BdkError> {
@@ -300,11 +276,10 @@ impl From<DatabaseConfig> for AnyDatabaseConfig {
 
 #[cfg(test)]
 mod test {
-
     use crate::bdk::descriptor::BdkDescriptor;
     use crate::bdk::wallet::{AddressIndex, DatabaseConfig, WalletInstance};
     use bdk_lite::bitcoin::Network;
-    use flutter_rust_bridge::RustOpaque;
+    use crate::frb_generated::RustOpaque;
     use std::sync::Arc;
 
     #[test]
@@ -317,7 +292,7 @@ mod test {
                 test_wpkh.to_string().replace("/0/*", "/1/*"),
                 Network::Regtest,
             )
-            .unwrap(),
+                .unwrap(),
         );
 
         let wallet = WalletInstance::new(
@@ -326,7 +301,7 @@ mod test {
             Network::Regtest,
             DatabaseConfig::Memory,
         )
-        .unwrap();
+            .unwrap();
 
         assert_eq!(
             wallet
@@ -396,7 +371,7 @@ mod test {
                 test_wpkh.to_string().replace("/0/*", "/1/*"),
                 Network::Regtest,
             )
-            .unwrap(),
+                .unwrap(),
         );
 
         let wallet = WalletInstance::new(
@@ -405,7 +380,7 @@ mod test {
             Network::Regtest,
             DatabaseConfig::Memory,
         )
-        .unwrap();
+            .unwrap();
 
         assert_eq!(
             wallet.get_address(AddressIndex::NewIndex).unwrap().address,

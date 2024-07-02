@@ -209,12 +209,12 @@ typedef HttpAgentRequestTransformFnCall = Future<HttpAgentRequest?> Function(
 
 class HttpResponseBody extends ResponseBody {
   const HttpResponseBody({
-    bool? ok,
-    int? status,
-    String? statusText,
+    super.ok,
+    super.status,
+    super.statusText,
     this.body,
     this.arrayBuffer,
-  }) : super(ok: ok, status: status, statusText: statusText);
+  });
 
   factory HttpResponseBody.fromJson(Map<String, dynamic> map) {
     return HttpResponseBody(

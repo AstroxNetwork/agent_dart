@@ -9,11 +9,12 @@ import 'package:test/test.dart';
 import '../test_utils.dart';
 
 void main() {
-  matchFFI();
-  btc_wallet();
+  ffiInit();
+  // matchFFI();
+  btcWalletTests();
 }
 
-void btc_wallet() {
+void btcWalletTests() {
   final ord = OrdService(
     host: 'unisat.io/api',
     override: const OverrideOptions(
@@ -36,9 +37,9 @@ void btc_wallet() {
 
   Future<BitcoinWallet> getWallet() async {
     final wallet = await BitcoinWallet.fromPhrase(
-      (await Mnemonic.create(WordCount.Words12)).asString(),
+      (await Mnemonic.create(WordCount.words12)).asString(),
       addressType: AddressType.P2PKHTR,
-      network: Network.Testnet,
+      network: Network.testnet,
       passcode: '123456',
     );
 
@@ -49,7 +50,7 @@ void btc_wallet() {
   }
 
   test('get address by seedphrase and index', () async {
-    final phrase = (await Mnemonic.create(WordCount.Words12)).asString();
+    final phrase = (await Mnemonic.create(WordCount.words12)).asString();
     final address = await getAddressInfo(
       phrase: phrase,
       index: 0,
