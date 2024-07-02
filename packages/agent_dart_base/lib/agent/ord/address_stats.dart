@@ -21,9 +21,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'address_stats.freezed.dart';
 part 'address_stats.g.dart';
 
-@unfreezed
+@freezed
 class AddressStats with _$AddressStats {
-  factory AddressStats({
+  const factory AddressStats({
     required String address,
     @JsonKey(name: 'chain_stats') required StatsItem chainStats,
     @JsonKey(name: 'mempool_stats') required StatsItem mempoolStats,
@@ -35,7 +35,7 @@ class AddressStats with _$AddressStats {
 
 @freezed
 class StatsItem with _$StatsItem {
-  factory StatsItem({
+  const factory StatsItem({
     @JsonKey(name: 'funded_utxo_count') required int fundedUtxoCount,
     @JsonKey(name: 'funded_utxo_sum') required int fundedUtxoSum,
     @JsonKey(name: 'spent_utxo_count') required int spentUtxoCount,

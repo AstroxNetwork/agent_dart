@@ -130,8 +130,11 @@ class __$$InscriptionImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$InscriptionImpl implements _Inscription {
-  _$InscriptionImpl(
-      {required this.id, required this.offset, this.number, this.num});
+  const _$InscriptionImpl(
+      {required this.id,
+      required this.offset,
+      required this.number,
+      required this.num});
 
   factory _$InscriptionImpl.fromJson(Map<String, dynamic> json) =>
       _$$InscriptionImplFromJson(json);
@@ -180,11 +183,11 @@ class _$InscriptionImpl implements _Inscription {
 }
 
 abstract class _Inscription implements Inscription {
-  factory _Inscription(
+  const factory _Inscription(
       {required final String id,
       required final int offset,
-      final int? number,
-      final int? num}) = _$InscriptionImpl;
+      required final int? number,
+      required final int? num}) = _$InscriptionImpl;
 
   factory _Inscription.fromJson(Map<String, dynamic> json) =
       _$InscriptionImpl.fromJson;

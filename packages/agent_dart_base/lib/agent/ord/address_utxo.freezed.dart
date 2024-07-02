@@ -143,7 +143,7 @@ class __$$AddressUtxoImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$AddressUtxoImpl implements _AddressUtxo {
-  _$AddressUtxoImpl(
+  const _$AddressUtxoImpl(
       {required this.txid,
       required this.vout,
       required this.value,
@@ -196,7 +196,7 @@ class _$AddressUtxoImpl implements _AddressUtxo {
 }
 
 abstract class _AddressUtxo implements AddressUtxo {
-  factory _AddressUtxo(
+  const factory _AddressUtxo(
       {required final String txid,
       required final int vout,
       required final int value,
@@ -226,19 +226,12 @@ TxStatus _$TxStatusFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$TxStatus {
   bool get confirmed => throw _privateConstructorUsedError;
-  set confirmed(bool value) => throw _privateConstructorUsedError;
   @JsonKey(name: 'block_height')
   int? get blockHeight => throw _privateConstructorUsedError;
-  @JsonKey(name: 'block_height')
-  set blockHeight(int? value) => throw _privateConstructorUsedError;
   @JsonKey(name: 'block_hash')
   String? get blockHash => throw _privateConstructorUsedError;
-  @JsonKey(name: 'block_hash')
-  set blockHash(String? value) => throw _privateConstructorUsedError;
   @JsonKey(name: 'block_time')
   int? get blockTime => throw _privateConstructorUsedError;
-  @JsonKey(name: 'block_time')
-  set blockTime(int? value) => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -354,29 +347,49 @@ class __$$TxStatusImplCopyWithImpl<$Res>
 class _$TxStatusImpl implements _TxStatus {
   const _$TxStatusImpl(
       {required this.confirmed,
-      @JsonKey(name: 'block_height') this.blockHeight,
-      @JsonKey(name: 'block_hash') this.blockHash,
-      @JsonKey(name: 'block_time') this.blockTime});
+      @JsonKey(name: 'block_height') required this.blockHeight,
+      @JsonKey(name: 'block_hash') required this.blockHash,
+      @JsonKey(name: 'block_time') required this.blockTime});
 
   factory _$TxStatusImpl.fromJson(Map<String, dynamic> json) =>
       _$$TxStatusImplFromJson(json);
 
   @override
-  bool confirmed;
+  final bool confirmed;
   @override
   @JsonKey(name: 'block_height')
-  int? blockHeight;
+  final int? blockHeight;
   @override
   @JsonKey(name: 'block_hash')
-  String? blockHash;
+  final String? blockHash;
   @override
   @JsonKey(name: 'block_time')
-  int? blockTime;
+  final int? blockTime;
 
   @override
   String toString() {
     return 'TxStatus(confirmed: $confirmed, blockHeight: $blockHeight, blockHash: $blockHash, blockTime: $blockTime)';
   }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TxStatusImpl &&
+            (identical(other.confirmed, confirmed) ||
+                other.confirmed == confirmed) &&
+            (identical(other.blockHeight, blockHeight) ||
+                other.blockHeight == blockHeight) &&
+            (identical(other.blockHash, blockHash) ||
+                other.blockHash == blockHash) &&
+            (identical(other.blockTime, blockTime) ||
+                other.blockTime == blockTime));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, confirmed, blockHeight, blockHash, blockTime);
 
   @JsonKey(ignore: true)
   @override
@@ -394,32 +407,26 @@ class _$TxStatusImpl implements _TxStatus {
 
 abstract class _TxStatus implements TxStatus {
   const factory _TxStatus(
-      {required bool confirmed,
-      @JsonKey(name: 'block_height') int? blockHeight,
-      @JsonKey(name: 'block_hash') String? blockHash,
-      @JsonKey(name: 'block_time') int? blockTime}) = _$TxStatusImpl;
+          {required final bool confirmed,
+          @JsonKey(name: 'block_height') required final int? blockHeight,
+          @JsonKey(name: 'block_hash') required final String? blockHash,
+          @JsonKey(name: 'block_time') required final int? blockTime}) =
+      _$TxStatusImpl;
 
   factory _TxStatus.fromJson(Map<String, dynamic> json) =
       _$TxStatusImpl.fromJson;
 
   @override
   bool get confirmed;
-  set confirmed(bool value);
   @override
   @JsonKey(name: 'block_height')
   int? get blockHeight;
-  @JsonKey(name: 'block_height')
-  set blockHeight(int? value);
   @override
   @JsonKey(name: 'block_hash')
   String? get blockHash;
-  @JsonKey(name: 'block_hash')
-  set blockHash(String? value);
   @override
   @JsonKey(name: 'block_time')
   int? get blockTime;
-  @JsonKey(name: 'block_time')
-  set blockTime(int? value);
   @override
   @JsonKey(ignore: true)
   _$$TxStatusImplCopyWith<_$TxStatusImpl> get copyWith =>

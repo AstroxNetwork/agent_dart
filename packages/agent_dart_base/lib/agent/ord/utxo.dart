@@ -5,12 +5,12 @@ import 'inscription.dart';
 part 'utxo.freezed.dart';
 part 'utxo.g.dart';
 
-@unfreezed
+@freezed
 class Utxo with _$Utxo {
-  factory Utxo({
+  const factory Utxo({
     required String txId,
     required int outputIndex,
-    required BigInt satoshis,
+    required int satoshis,
     required String scriptPk,
     required int addressType,
     required List<Inscription> inscriptions,

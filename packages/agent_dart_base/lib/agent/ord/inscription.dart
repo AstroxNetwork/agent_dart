@@ -5,11 +5,11 @@ part 'inscription.g.dart';
 
 @freezed
 class Inscription with _$Inscription {
-  factory Inscription({
+  const factory Inscription({
     required String id,
     required int offset,
-    int? number,
-    int? num,
+    required int? number,
+    required int? num,
   }) = _Inscription;
 
   factory Inscription.fromJson(Map<String, dynamic> json) =>

@@ -9,7 +9,7 @@ part of 'utxo.dart';
 _$UtxoImpl _$$UtxoImplFromJson(Map<String, dynamic> json) => _$UtxoImpl(
       txId: json['txId'] as String,
       outputIndex: (json['outputIndex'] as num).toInt(),
-      satoshis: BigInt.parse(json['satoshis'] as String),
+      satoshis: (json['satoshis'] as num).toInt(),
       scriptPk: json['scriptPk'] as String,
       addressType: (json['addressType'] as num).toInt(),
       inscriptions: (json['inscriptions'] as List<dynamic>)
@@ -21,7 +21,7 @@ Map<String, dynamic> _$$UtxoImplToJson(_$UtxoImpl instance) =>
     <String, dynamic>{
       'txId': instance.txId,
       'outputIndex': instance.outputIndex,
-      'satoshis': instance.satoshis.toString(),
+      'satoshis': instance.satoshis,
       'scriptPk': instance.scriptPk,
       'addressType': instance.addressType,
       'inscriptions': instance.inscriptions,
