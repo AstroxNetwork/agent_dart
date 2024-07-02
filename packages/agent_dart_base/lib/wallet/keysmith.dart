@@ -104,20 +104,20 @@ Future<ECKeys> getECKeysAsync(
   int coinType = CoinType.icp,
 }) async {
   final basePath = getPathWithCoinType(coinType: coinType);
-  final seed = await AgentDartFFI.impl.mnemonicPhraseToSeed(
+  final seed = await mnemonicPhraseToSeed(
     req: PhraseToSeedReq(phrase: phrase, password: passphrase),
   );
 
-  final prv = await AgentDartFFI.impl.mnemonicSeedToKey(
+  final prv = await mnemonicSeedToKey(
     req: SeedToKeyReq(seed: seed, path: '$basePath/0/$index'),
   );
-  final kp = await AgentDartFFI.impl.secp256K1FromSeed(
+  final kp = await secp256K1FromSeed(
     req: Secp256k1FromSeedReq(seed: prv),
   );
-  final kpSchnorr = await AgentDartFFI.impl.schnorrFromSeed(
+  final kpSchnorr = await schnorrFromSeed(
     req: SchnorrFromSeedReq(seed: prv),
   );
-  final kpP256 = await AgentDartFFI.impl.p256FromSeed(
+  final kpP256 = await p256FromSeed(
     req: P256FromSeedReq(seed: prv),
   );
   return ECKeys(
@@ -130,13 +130,13 @@ Future<ECKeys> getECKeysAsync(
 }
 
 Future<ECKeys> getECkeyFromPrivateKey(Uint8List prv) async {
-  final kp = await AgentDartFFI.impl.secp256K1FromSeed(
+  final kp = await secp256K1FromSeed(
     req: Secp256k1FromSeedReq(seed: prv),
   );
-  final kpSchnorr = await AgentDartFFI.impl.schnorrFromSeed(
+  final kpSchnorr = await schnorrFromSeed(
     req: SchnorrFromSeedReq(seed: prv),
   );
-  final kpP256 = await AgentDartFFI.impl.p256FromSeed(
+  final kpP256 = await p256FromSeed(
     req: P256FromSeedReq(seed: prv),
   );
 
@@ -194,21 +194,21 @@ Uint8List? getPublicFromPrivateKeyBigInt(
 }
 
 Future<Uint8List> getDerFromFFI(Uint8List seed) async {
-  final ffiIdentity = await AgentDartFFI.impl.secp256K1FromSeed(
+  final ffiIdentity = await secp256K1FromSeed(
     req: Secp256k1FromSeedReq(seed: seed),
   );
   return ffiIdentity.derEncodedPublicKey;
 }
 
 Future<Uint8List> getSchnorrPubFromFFI(Uint8List seed) async {
-  final ffiIdentity = await AgentDartFFI.impl.schnorrFromSeed(
+  final ffiIdentity = await schnorrFromSeed(
     req: SchnorrFromSeedReq(seed: seed),
   );
   return ffiIdentity.publicKeyHash;
 }
 
 Future<Uint8List> getP256DerPubFromFFI(Uint8List seed) async {
-  final ffiIdentity = await AgentDartFFI.impl.p256FromSeed(
+  final ffiIdentity = await p256FromSeed(
     req: P256FromSeedReq(seed: seed),
   );
   return ffiIdentity.derEncodedPublicKey;

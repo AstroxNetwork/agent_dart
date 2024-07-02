@@ -18,7 +18,8 @@ Future<SignIdentity> createIdentity(int seed) {
 //   return blobFromHex(text.codeUnits.);
 // }
 void main() {
-  matchFFI();
+  ffiInit();
+  // matchFFI();
   delegationTest();
 }
 

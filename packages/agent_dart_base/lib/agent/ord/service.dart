@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:agent_dart_base/agent/agent.dart';
-import 'package:agent_dart_base/agent/ord/inscriptionItem.dart';
+import 'package:agent_dart_base/agent/ord/inscription_item.dart';
 import 'package:agent_dart_base/agent/ord/utxo.dart';
 
 import 'client.dart';

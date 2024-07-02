@@ -1,5 +1,6 @@
 import 'dart:convert' show base64;
 import 'dart:typed_data' as typed_data;
+import 'dart:typed_data';
 
 import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:agent_dart_ffi/agent_dart_ffi.dart' as bridge;
@@ -23,11 +24,10 @@ class Address {
   /// Throws a [BdkException] if the address is not valid
   static Future<Address> create({required String address}) async {
     try {
-      final res = await AgentDartFFI.impl
-          .createAddressStaticMethodApi(address: address);
+      final res = await Api.createAddress(address: address);
       final addressType = await getAddressType(res);
       return Address._(res, addressType);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -39,21 +39,19 @@ class Address {
     Network network,
   ) async {
     try {
-      final res = await AgentDartFFI.impl
-          .addressFromScriptStaticMethodApi(script: script, network: network);
+      final res = await Api.addressFromScript(script: script, network: network);
       final addressType = await getAddressType(res);
       return Address._(res, addressType);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   static Future<AddressType> getAddressType(String address) async {
     try {
-      final res = await AgentDartFFI.impl
-          .getAddressTypeStaticMethodApi(address: address);
+      final res = await Api.getAddressType(address: address);
       return AddressType.fromRaw(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -62,20 +60,18 @@ class Address {
   ///
   Future<Payload> payload() async {
     try {
-      final res =
-          await AgentDartFFI.impl.payloadStaticMethodApi(address: address);
+      final res = await Api.payload(address: address);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   Future<Network> network() async {
     try {
-      final res = await AgentDartFFI.impl
-          .addressNetworkStaticMethodApi(address: address);
+      final res = await Api.addressNetwork(address: address);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -83,10 +79,9 @@ class Address {
   /// Returns the script pub key of the [Address] object
   Future<bridge.Script> scriptPubKey() async {
     try {
-      final res = await AgentDartFFI.impl
-          .addressToScriptPubkeyStaticMethodApi(address: address);
+      final res = await Api.addressToScriptPubkey(address: address);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -106,10 +101,9 @@ class Blockchain {
   ///  [Blockchain] constructor
   static Future<Blockchain> create({required BlockchainConfig config}) async {
     try {
-      final res = await AgentDartFFI.impl
-          .createBlockchainStaticMethodApi(config: config);
+      final res = await Api.createBlockchain(config: config);
       return Blockchain._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -117,12 +111,12 @@ class Blockchain {
   /// The function for getting block hash by block height
   Future<String> getBlockHash(int height) async {
     try {
-      final res = await AgentDartFFI.impl.getBlockchainHashStaticMethodApi(
+      final res = await Api.getBlockchainHash(
         blockchainHeight: height,
         blockchain: _blockchain,
       );
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -130,21 +124,22 @@ class Blockchain {
   /// The function for getting the current height of the blockchain.
   Future<int> getHeight() async {
     try {
-      final res = await AgentDartFFI.impl
-          .getHeightStaticMethodApi(blockchain: _blockchain);
+      final res = await Api.getHeight(blockchain: _blockchain);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   /// Estimate the fee rate required to confirm a transaction in a given target of blocks
-  Future<FeeRate> estimateFee(int target) async {
+  Future<FeeRate> estimateFee(BigInt target) async {
     try {
-      final res = await AgentDartFFI.impl
-          .estimateFeeStaticMethodApi(blockchain: _blockchain, target: target);
+      final res = await Api.estimateFee(
+        blockchain: _blockchain,
+        target: target,
+      );
       return FeeRate._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -152,10 +147,9 @@ class Blockchain {
   /// The function for broadcasting a transaction
   Future<String> broadcast(Transaction tx) async {
     try {
-      final txid = await AgentDartFFI.impl
-          .broadcastStaticMethodApi(blockchain: _blockchain, tx: tx._tx!);
+      final txid = await Api.broadcast(blockchain: _blockchain, tx: tx._tx!);
       return txid;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -163,10 +157,9 @@ class Blockchain {
   /// The function for getting a transaction
   Future<String> getTx(String txId) async {
     try {
-      final txTring = await AgentDartFFI.impl
-          .getTxStaticMethodApi(blockchain: _blockchain, tx: txId);
+      final txTring = await Api.getTx(blockchain: _blockchain, tx: txId);
       return txTring;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -201,8 +194,8 @@ class BumpFeeTxBuilder {
     return this;
   }
 
-  BumpFeeTxBuilder keepChange(bool _keep) {
-    _keepChange = _keep;
+  BumpFeeTxBuilder keepChange(bool value) {
+    _keepChange = value;
     return this;
   }
 
@@ -220,7 +213,7 @@ class BumpFeeTxBuilder {
   /// Finish building the transaction. Returns the  [TxBuilderResult].
   Future<TxBuilderResult> finish(Wallet wallet) async {
     try {
-      final res = await AgentDartFFI.impl.bumpFeeTxBuilderFinishStaticMethodApi(
+      final res = await Api.bumpFeeTxBuilderFinish(
         txid: txid.toString(),
         enableRbf: _enableRbf,
         feeRate: feeRate,
@@ -234,7 +227,7 @@ class BumpFeeTxBuilder {
         txDetails: res.field1,
         bumpFeeBuilder: this,
       );
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -249,10 +242,9 @@ class DerivationPath {
   ///  [DerivationPath] constructor
   static Future<DerivationPath> create({required String path}) async {
     try {
-      final res = await AgentDartFFI.impl
-          .createDerivationPathStaticMethodApi(path: path);
+      final res = await Api.createDerivationPath(path: path);
       return DerivationPath._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -276,12 +268,12 @@ class Descriptor {
     required Network network,
   }) async {
     try {
-      final res = await AgentDartFFI.impl.createDescriptorStaticMethodApi(
+      final res = await Api.createDescriptor(
         descriptor: descriptor,
         network: network,
       );
       return Descriptor._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -293,13 +285,13 @@ class Descriptor {
     required Network network,
   }) async {
     try {
-      final res = await AgentDartFFI.impl.importSingleWifStaticMethodApi(
+      final res = await Api.importSingleWif(
         wif: wif,
         addressType: addressType.raw,
         network: network,
       );
       return Descriptor._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -315,7 +307,7 @@ class Descriptor {
     try {
       secretKey.derivedPathPrefix = "m/44'/0'/0'/0";
       secretKey.derivedIndex = 0;
-      final res = await AgentDartFFI.impl.newBip44DescriptorStaticMethodApi(
+      final res = await Api.newBip44Descriptor(
         secretKey: secretKey.asString(),
         network: network,
         keyChainKind: keychain,
@@ -323,7 +315,7 @@ class Descriptor {
       final r = Descriptor._(res);
       r.descriptorSecretKey = secretKey;
       return r;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -340,14 +332,14 @@ class Descriptor {
     required KeychainKind keychain,
   }) async {
     try {
-      final res = await AgentDartFFI.impl.newBip44PublicStaticMethodApi(
+      final res = await Api.newBip44Public(
         keyChainKind: keychain,
         publicKey: publicKey.asString(),
         network: network,
         fingerprint: fingerPrint,
       );
       return Descriptor._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -360,7 +352,7 @@ class Descriptor {
     try {
       secretKey.derivedPathPrefix = "m/44'/0'/0'/0";
       secretKey.derivedIndex = 0;
-      final res = await AgentDartFFI.impl.newBip44TrDescriptorStaticMethodApi(
+      final res = await Api.newBip44TrDescriptor(
         secretKey: secretKey.asString(),
         network: network,
         keyChainKind: keychain,
@@ -368,7 +360,7 @@ class Descriptor {
       final r = Descriptor._(res);
       r.descriptorSecretKey = secretKey;
       return r;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -385,14 +377,14 @@ class Descriptor {
     required KeychainKind keychain,
   }) async {
     try {
-      final res = await AgentDartFFI.impl.newBip44TrPublicStaticMethodApi(
+      final res = await Api.newBip44TrPublic(
         keyChainKind: keychain,
         publicKey: publicKey.asString(),
         network: network,
         fingerprint: fingerPrint,
       );
       return Descriptor._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -408,7 +400,7 @@ class Descriptor {
     try {
       secretKey.derivedPathPrefix = "m/49'/0'/0'/0";
       secretKey.derivedIndex = 0;
-      final res = await AgentDartFFI.impl.newBip49DescriptorStaticMethodApi(
+      final res = await Api.newBip49Descriptor(
         secretKey: secretKey.asString(),
         network: network,
         keyChainKind: keychain,
@@ -416,7 +408,7 @@ class Descriptor {
       final r = Descriptor._(res);
       r.descriptorSecretKey = secretKey;
       return r;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -433,14 +425,14 @@ class Descriptor {
     required KeychainKind keychain,
   }) async {
     try {
-      final res = await AgentDartFFI.impl.newBip49PublicStaticMethodApi(
+      final res = await Api.newBip49Public(
         keyChainKind: keychain,
         publicKey: publicKey.asString(),
         network: network,
         fingerprint: fingerPrint,
       );
       return Descriptor._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -456,7 +448,7 @@ class Descriptor {
     try {
       secretKey.derivedPathPrefix = "m/84'/0'/0'/0";
       secretKey.derivedIndex = 0;
-      final res = await AgentDartFFI.impl.newBip84DescriptorStaticMethodApi(
+      final res = await Api.newBip84Descriptor(
         secretKey: secretKey.asString(),
         network: network,
         keyChainKind: keychain,
@@ -464,7 +456,7 @@ class Descriptor {
       final r = Descriptor._(res);
       r.descriptorSecretKey = secretKey;
       return r;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -481,14 +473,14 @@ class Descriptor {
     required KeychainKind keychain,
   }) async {
     try {
-      final res = await AgentDartFFI.impl.newBip84PublicStaticMethodApi(
+      final res = await Api.newBip84Public(
         keyChainKind: keychain,
         publicKey: publicKey.asString(),
         network: network,
         fingerprint: fingerPrint,
       );
       return Descriptor._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -504,7 +496,7 @@ class Descriptor {
     try {
       secretKey.derivedPathPrefix = "m/86'/0'/0'/0";
       secretKey.derivedIndex = 0;
-      final res = await AgentDartFFI.impl.newBip86DescriptorStaticMethodApi(
+      final res = await Api.newBip86Descriptor(
         secretKey: secretKey.asString(),
         network: network,
         keyChainKind: keychain,
@@ -512,7 +504,7 @@ class Descriptor {
       final r = Descriptor._(res);
       r.descriptorSecretKey = secretKey;
       return r;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -529,14 +521,14 @@ class Descriptor {
     required KeychainKind keychain,
   }) async {
     try {
-      final res = await AgentDartFFI.impl.newBip86PublicStaticMethodApi(
+      final res = await Api.newBip86Public(
         keyChainKind: keychain,
         publicKey: publicKey.asString(),
         network: network,
         fingerprint: fingerPrint,
       );
       return Descriptor._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -544,10 +536,9 @@ class Descriptor {
   ///Return the private version of the output descriptor if available, otherwise return the public version.
   Future<String> asStringPrivate() async {
     try {
-      final res = await AgentDartFFI.impl
-          .asStringPrivateStaticMethodApi(descriptor: _descriptorInstance!);
+      final res = await Api.asStringPrivate(descriptor: _descriptorInstance!);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -555,23 +546,22 @@ class Descriptor {
   ///Return the public version of the output descriptor.
   Future<String> asString() async {
     try {
-      final res = await AgentDartFFI.impl
-          .asStringStaticMethodApi(descriptor: _descriptorInstance!);
+      final res = await Api.asString(descriptor: _descriptorInstance!);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   Future<AddressInfo> deriveAddressAt(int index, Network network) async {
     try {
-      final res = await AgentDartFFI.impl.deriveAddressAtStaticMethodApi(
+      final res = await Api.deriveAddressAt(
         descriptor: _descriptorInstance!,
         index: index,
         network: network,
       );
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -591,11 +581,11 @@ class DescriptorPublicKey {
   ///Derive a public descriptor at a given path.
   Future<String> masterFingerprint() async {
     try {
-      final res = await AgentDartFFI.impl.masterFinterprintStaticMethodApi(
+      final res = await Api.masterFinterprint(
         xpub: _descriptorPublicKey!,
       );
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -603,13 +593,13 @@ class DescriptorPublicKey {
   ///Derive a public descriptor at a given path.
   Future<DescriptorPublicKey> derive(DerivationPath derivationPath) async {
     try {
-      final res = await AgentDartFFI.impl.createDescriptorPublicStaticMethodApi(
+      final res = await Api.createDescriptorPublic(
         xpub: _descriptorPublicKey,
         path: derivationPath.path.toString(),
         derive: true,
       );
       return DescriptorPublicKey._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -617,13 +607,13 @@ class DescriptorPublicKey {
   ///Extend the public descriptor with a custom path.
   Future<DescriptorPublicKey> extend(DerivationPath derivationPath) async {
     try {
-      final res = await AgentDartFFI.impl.createDescriptorPublicStaticMethodApi(
+      final res = await Api.createDescriptorPublic(
         xpub: _descriptorPublicKey,
         path: derivationPath.path.toString(),
         derive: false,
       );
       return DescriptorPublicKey._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -631,10 +621,9 @@ class DescriptorPublicKey {
   /// [DescriptorPublicKey] constructor
   static Future<DescriptorPublicKey> fromString(String publicKey) async {
     try {
-      final res = await AgentDartFFI.impl
-          .descriptorPublicFromStringStaticMethodApi(publicKey: publicKey);
+      final res = await Api.descriptorPublicFromString(publicKey: publicKey);
       return DescriptorPublicKey._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -658,10 +647,9 @@ class DescriptorSecretKey {
   /// If the key is an “XPrv”, the hardened derivation steps will be applied before converting it to a public key.
   Future<DescriptorPublicKey> asPublic() async {
     try {
-      final xpub = await AgentDartFFI.impl
-          .asPublicStaticMethodApi(secret: _descriptorSecretKey);
+      final xpub = await Api.asPublic(secret: _descriptorSecretKey);
       return DescriptorPublicKey._(xpub);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -678,13 +666,13 @@ class DescriptorSecretKey {
     String? password,
   }) async {
     try {
-      final res = await AgentDartFFI.impl.createDescriptorSecretStaticMethodApi(
+      final res = await Api.createDescriptorSecret(
         network: network,
         mnemonic: mnemonic.asString(),
         password: password,
       );
       return DescriptorSecretKey._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -697,14 +685,14 @@ class DescriptorSecretKey {
   // }) async {
   //   try {
   //     final res = await AgentDartFFI.impl
-  //         .createDerivedDescriptorSecretStaticMethodApi(
+  //         .Api.createDerivedDescriptorSecret(
   //             network: network,
   //             mnemonic: mnemonic.asString(),
   //             path: path,
   //             password: password);
   //     print(res);
   //     return DescriptorSecretKey._(res);
-  //   } on FfiException catch (e, s) {
+  //   } on AnyhowException catch (e, s) {
   //     Error.throwWithStackTrace(configException(e.message), s);
   //   }
   // }
@@ -715,14 +703,14 @@ class DescriptorSecretKey {
       derivationPath = await DerivationPath.create(
         path: '${derivedPathPrefix!}/$index',
       );
-      final res = await AgentDartFFI.impl.deriveDescriptorSecretStaticMethodApi(
+      final res = await Api.deriveDescriptorSecret(
         secret: _descriptorSecretKey,
         path: derivationPath!.path.toString(),
       );
       final r = DescriptorSecretKey._(res);
       r.derivationPath = derivationPath;
       return r;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -730,14 +718,14 @@ class DescriptorSecretKey {
   /// Derived the `XPrv` using the derivation path
   Future<DescriptorSecretKey> derive(DerivationPath derivationPath) async {
     try {
-      final res = await AgentDartFFI.impl.deriveDescriptorSecretStaticMethodApi(
+      final res = await Api.deriveDescriptorSecret(
         secret: _descriptorSecretKey,
         path: derivationPath.path.toString(),
       );
       final r = DescriptorSecretKey._(res);
       r.derivationPath = derivationPath;
       return r;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -745,14 +733,14 @@ class DescriptorSecretKey {
   /// Extends the “XPrv” using the derivation path
   Future<DescriptorSecretKey> extend(DerivationPath derivationPath) async {
     try {
-      final res = await AgentDartFFI.impl.extendDescriptorSecretStaticMethodApi(
+      final res = await Api.extendDescriptorSecret(
         secret: _descriptorSecretKey,
         path: derivationPath.path.toString(),
       );
       final r = DescriptorSecretKey._(res);
       r.derivationPath = derivationPath;
       return r;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -760,10 +748,9 @@ class DescriptorSecretKey {
   /// [DescriptorSecretKey] constructor
   static Future<DescriptorSecretKey> fromString(String secretKey) async {
     try {
-      final res = await AgentDartFFI.impl
-          .descriptorSecretFromStringStaticMethodApi(secret: secretKey);
+      final res = await Api.descriptorSecretFromString(secret: secretKey);
       return DescriptorSecretKey._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -771,10 +758,9 @@ class DescriptorSecretKey {
   /// Get the private key as bytes.
   Future<Uint8List> secretBytes() async {
     try {
-      final res = await AgentDartFFI.impl
-          .asSecretBytesStaticMethodApi(secret: _descriptorSecretKey);
+      final res = await Api.asSecretBytes(secret: _descriptorSecretKey);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -782,10 +768,9 @@ class DescriptorSecretKey {
   /// Get the private key as bytes.
   Future<String> getPubFromBytes(Uint8List bytes) async {
     try {
-      final res = await AgentDartFFI.impl
-          .getPubFromSecretBytesStaticMethodApi(bytes: bytes);
+      final res = await Api.getPubFromSecretBytes(bytes: bytes);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -818,10 +803,9 @@ class Mnemonic {
   /// [Mnemonic] constructor
   static Future<Mnemonic> create(WordCount wordCount) async {
     try {
-      final res = await AgentDartFFI.impl
-          .generateSeedFromWordCountStaticMethodApi(wordCount: wordCount);
+      final res = await Api.generateSeedFromWordCount(wordCount: wordCount);
       return Mnemonic._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -837,10 +821,9 @@ class Mnemonic {
   /// [Mnemonic] constructor
   static Future<Mnemonic> fromEntropy(typed_data.Uint8List entropy) async {
     try {
-      final res = await AgentDartFFI.impl
-          .generateSeedFromEntropyStaticMethodApi(entropy: entropy);
+      final res = await Api.generateSeedFromEntropy(entropy: entropy);
       return Mnemonic._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -850,10 +833,9 @@ class Mnemonic {
   /// [Mnemonic] constructor
   static Future<Mnemonic> fromString(String mnemonic) async {
     try {
-      final res = await AgentDartFFI.impl
-          .generateSeedFromStringStaticMethodApi(mnemonic: mnemonic);
+      final res = await Api.generateSeedFromString(mnemonic: mnemonic);
       return Mnemonic._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -886,12 +868,12 @@ class PartiallySignedTransaction {
     PartiallySignedTransaction other,
   ) async {
     try {
-      final res = await AgentDartFFI.impl.combinePsbtStaticMethodApi(
+      final res = await Api.combinePsbt(
         psbtStr: psbtBase64,
         other: other.psbtBase64,
       );
       return PartiallySignedTransaction(psbtBase64: res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -899,21 +881,19 @@ class PartiallySignedTransaction {
   /// Return the transaction as bytes.
   Future<Transaction> extractTx() async {
     try {
-      final res =
-          await AgentDartFFI.impl.extractTxStaticMethodApi(psbtStr: psbtBase64);
+      final res = await Api.extractTx(psbtStr: psbtBase64);
       return Transaction._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   /// Return feeAmount
-  Future<int?> feeAmount() async {
+  Future<BigInt?> feeAmount() async {
     try {
-      final res = await AgentDartFFI.impl
-          .psbtFeeAmountStaticMethodApi(psbtStr: psbtBase64);
+      final res = await Api.psbtFeeAmount(psbtStr: psbtBase64);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -921,11 +901,10 @@ class PartiallySignedTransaction {
   /// Return Fee Rate
   Future<FeeRate?> feeRate() async {
     try {
-      final res = await AgentDartFFI.impl
-          .psbtFeeRateStaticMethodApi(psbtStr: psbtBase64);
+      final res = await Api.psbtFeeRate(psbtStr: psbtBase64);
       if (res == null) return null;
       return FeeRate._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -933,30 +912,27 @@ class PartiallySignedTransaction {
   /// Return txid as string
   Future<String> serialize() async {
     try {
-      final res = await AgentDartFFI.impl
-          .serializePsbtStaticMethodApi(psbtStr: psbtBase64);
+      final res = await Api.serializePsbt(psbtStr: psbtBase64);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   Future<List<TxOut>> getPsbtInputs() async {
     try {
-      final res =
-          await AgentDartFFI.impl.getInputsStaticMethodApi(psbtStr: psbtBase64);
+      final res = await Api.getInputs(psbtStr: psbtBase64);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   Future<String> jsonSerialize() async {
     try {
-      final res = await AgentDartFFI.impl
-          .jsonSerializeStaticMethodApi(psbtStr: psbtBase64);
+      final res = await Api.jsonSerialize(psbtStr: psbtBase64);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -969,10 +945,9 @@ class PartiallySignedTransaction {
   /// Returns the [PartiallySignedTransaction] transaction id
   Future<String> txId() async {
     try {
-      final res =
-          await AgentDartFFI.impl.psbtTxidStaticMethodApi(psbtStr: psbtBase64);
+      final res = await Api.psbtTxid(psbtStr: psbtBase64);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -991,10 +966,9 @@ class Script extends bridge.Script {
     typed_data.Uint8List rawOutputScript,
   ) async {
     try {
-      final res = await AgentDartFFI.impl
-          .createScriptStaticMethodApi(rawOutputScript: rawOutputScript);
+      final res = await Api.createScript(rawOutputScript: rawOutputScript);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -1011,10 +985,9 @@ class Transaction {
     required Uint8List transactionBytes,
   }) async {
     try {
-      final res = await AgentDartFFI.impl
-          .createTransactionStaticMethodApi(tx: transactionBytes);
+      final res = await Api.createTransaction(tx: transactionBytes);
       return Transaction._(res);
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -1022,110 +995,108 @@ class Transaction {
   ///Return the transaction bytes, bitcoin consensus encoded.
   Future<Uint8List> serialize() async {
     try {
-      final res = await AgentDartFFI.impl.serializeTxStaticMethodApi(tx: _tx!);
+      final res = await Api.serializeTx(tx: _tx!);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   Future<String> txid() async {
     try {
-      final res = await AgentDartFFI.impl.txTxidStaticMethodApi(tx: _tx!);
+      final res = await Api.txTxid(tx: _tx!);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
-  Future<int> weight() async {
+  Future<BigInt> weight() async {
     try {
-      final res = await AgentDartFFI.impl.weightStaticMethodApi(tx: _tx!);
+      final res = await Api.weight(tx: _tx!);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
-  Future<int> size() async {
+  Future<BigInt> size() async {
     try {
-      final res = await AgentDartFFI.impl.sizeStaticMethodApi(tx: _tx!);
+      final res = await Api.size(tx: _tx!);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
-  Future<int> vsize() async {
+  Future<BigInt> vsize() async {
     try {
-      final res = await AgentDartFFI.impl.vsizeStaticMethodApi(tx: _tx!);
+      final res = await Api.vsize(tx: _tx!);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   Future<bool> isCoinBase() async {
     try {
-      final res = await AgentDartFFI.impl.isCoinBaseStaticMethodApi(tx: _tx!);
+      final res = await Api.isCoinBase(tx: _tx!);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   Future<bool> isExplicitlyRbf() async {
     try {
-      final res =
-          await AgentDartFFI.impl.isExplicitlyRbfStaticMethodApi(tx: _tx!);
+      final res = await Api.isExplicitlyRbf(tx: _tx!);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   Future<bool> isLockTimeEnabled() async {
     try {
-      final res =
-          await AgentDartFFI.impl.isLockTimeEnabledStaticMethodApi(tx: _tx!);
+      final res = await Api.isLockTimeEnabled(tx: _tx!);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   Future<int> version() async {
     try {
-      final res = await AgentDartFFI.impl.versionStaticMethodApi(tx: _tx!);
+      final res = await Api.version(tx: _tx!);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   Future<int> lockTime() async {
     try {
-      final res = await AgentDartFFI.impl.lockTimeStaticMethodApi(tx: _tx!);
+      final res = await Api.lockTime(tx: _tx!);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   Future<List<TxIn>> input() async {
     try {
-      final res = await AgentDartFFI.impl.inputStaticMethodApi(tx: _tx!);
+      final res = await Api.input(tx: _tx!);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
   Future<List<TxOut>> output() async {
     try {
-      final res = await AgentDartFFI.impl.outputStaticMethodApi(tx: _tx!);
+      final res = await Api.output(tx: _tx!);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -1143,7 +1114,7 @@ class Transaction {
 class TxBuilder {
   final List<ScriptAmount> _recipients = [];
   final List<OutPoint> _utxos = [];
-  final List<ForeignUtxo> _foreign_utxos = [];
+  final List<ForeignUtxo> _foreignUtxos = [];
   final List<OutPoint> _unSpendable = [];
   final List<OutPointExt> _txInputs = [];
   final List<OutPointExt> _txOutputs = [];
@@ -1151,8 +1122,8 @@ class TxBuilder {
 
   bool _manuallySelectedOnly = false;
   double? _feeRate;
-  ChangeSpendPolicy _changeSpendPolicy = ChangeSpendPolicy.ChangeAllowed;
-  int? _feeAbsolute;
+  ChangeSpendPolicy _changeSpendPolicy = ChangeSpendPolicy.changeAllowed;
+  BigInt? _feeAbsolute;
   bool _drainWallet = false;
   bool _shuffleUtxos = false;
   bridge.Script? _drainTo;
@@ -1169,7 +1140,7 @@ class TxBuilder {
   }
 
   ///Add a recipient to the internal list
-  TxBuilder addRecipient(bridge.Script script, int amount) {
+  TxBuilder addRecipient(bridge.Script script, BigInt amount) {
     _recipients.add(ScriptAmount(script: script, amount: amount));
     return this;
   }
@@ -1214,7 +1185,7 @@ class TxBuilder {
   ///
   /// These have priority over the “unspendable” utxos, meaning that if a utxo is present both in the “utxos” and the “unspendable” list, it will be spent.
   TxBuilder addForeignUtxo(OutPointExt ext) {
-    _foreign_utxos.add(
+    _foreignUtxos.add(
       ForeignUtxo(
         outpoint: OutPoint(txid: ext.txid, vout: ext.vout),
         txout: TxOutForeign(
@@ -1261,7 +1232,7 @@ class TxBuilder {
   ///
   /// This effectively adds all the change outputs to the “unspendable” list. See TxBuilder().addUtxos
   TxBuilder doNotSpendChange() {
-    _changeSpendPolicy = ChangeSpendPolicy.ChangeForbidden;
+    _changeSpendPolicy = ChangeSpendPolicy.changeForbidden;
     return this;
   }
 
@@ -1310,7 +1281,7 @@ class TxBuilder {
   }
 
   ///Set an absolute fee
-  TxBuilder feeAbsolute(int feeAmount) {
+  TxBuilder feeAbsolute(BigInt feeAmount) {
     _feeAbsolute = feeAmount;
     return this;
   }
@@ -1350,20 +1321,20 @@ class TxBuilder {
   ///
   /// This effectively adds all the non-change outputs to the “unspendable” list.
   TxBuilder onlySpendChange() {
-    _changeSpendPolicy = ChangeSpendPolicy.OnlyChange;
+    _changeSpendPolicy = ChangeSpendPolicy.onlyChange;
     return this;
   }
 
-  Future<int?> calNetworkFee(Wallet wallet) async {
+  Future<BigInt?> calNetworkFee(Wallet wallet) async {
     final res = await finish(wallet);
     return res.psbt.feeAmount();
   }
 
-  Future<int> calFee(Wallet wallet) async {
-    final res = await AgentDartFFI.impl.txCalFeeFinishStaticMethodApi(
+  Future<BigInt> calFee(Wallet wallet) async {
+    final res = await Api.txCalFeeFinish(
       wallet: wallet._wallet,
       recipients: _recipients,
-      foreignUtxos: _foreign_utxos,
+      foreignUtxos: _foreignUtxos,
       txs: _txs,
       unspendable: _unSpendable,
       manuallySelectedOnly: _manuallySelectedOnly,
@@ -1379,23 +1350,23 @@ class TxBuilder {
     return res;
   }
 
-  int getTotalOutput() {
-    var total = 0;
+  BigInt getTotalOutput() {
+    BigInt total = BigInt.zero;
     for (final e in _txOutputs) {
       total += e.value;
     }
     return total;
   }
 
-  int getTotalInput() {
-    var total = 0;
+  BigInt getTotalInput() {
+    BigInt total = BigInt.zero;
     for (final e in _txInputs) {
       total += e.value;
     }
     return total;
   }
 
-  int getUnspend() {
+  BigInt getUnspend() {
     return getTotalInput() - getTotalOutput();
   }
 
@@ -1417,10 +1388,10 @@ class TxBuilder {
       );
     }
     try {
-      final res = await AgentDartFFI.impl.txBuilderFinishStaticMethodApi(
+      final res = await Api.txBuilderFinish(
         wallet: wallet._wallet,
         recipients: _recipients,
-        foreignUtxos: _foreign_utxos,
+        foreignUtxos: _foreignUtxos,
         unspendable: _unSpendable,
         manuallySelectedOnly: _manuallySelectedOnly,
         drainWallet: _drainWallet,
@@ -1433,9 +1404,7 @@ class TxBuilder {
         shuffleUtxo: _shuffleUtxos,
         txs: _txs,
       );
-
-      final psbt = await PartiallySignedTransaction(psbtBase64: res.field0);
-
+      final psbt = PartiallySignedTransaction(psbtBase64: res.field0);
       return TxBuilderResult(
         psbt: psbt,
         txDetails: res.field1,
@@ -1443,7 +1412,7 @@ class TxBuilder {
         txInputs: _txInputs,
         txOutputs: _txOutputs,
       );
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -1456,7 +1425,7 @@ class InscriptionValue {
   });
 
   final String inscriptionId;
-  final int outputValue;
+  final BigInt outputValue;
 }
 
 class OutPointExt extends OutPoint {
@@ -1472,7 +1441,7 @@ class OutPointExt extends OutPoint {
     required this.scriptPk,
   }) : super(txid: '', vout: 0);
 
-  final int value;
+  final BigInt value;
   final String scriptPk;
 
   String get uniqueKey => '$txid:$vout';
@@ -1548,18 +1517,12 @@ class TxBuilderResult {
 
   bool? signed;
 
-  int getTotalInput() {
-    return _txInputs.fold(
-      0,
-      (pre, cur) => pre + cur.value,
-    );
+  BigInt getTotalInput() {
+    return _txInputs.fold(BigInt.zero, (p, v) => p + v.value);
   }
 
-  int getTotalOutput() {
-    return _txOutputs.fold(
-      0,
-      (pre, cur) => pre + cur.value,
-    );
+  BigInt getTotalOutput() {
+    return _txOutputs.fold(BigInt.zero, (p, v) => p + v.value);
   }
 
   Future<void> dumpTx({
@@ -1573,7 +1536,7 @@ class TxBuilderResult {
     final outputs = await tx.output();
 
     final inputStrings = <String>[];
-    var totalInput = 0;
+    BigInt totalInput = BigInt.zero;
     for (int i = 0; i < _txInputs.length; i += 1) {
       final input = _txInputs[i];
       final found = inputs.firstWhereOrNull((e) {
@@ -1583,7 +1546,7 @@ class TxBuilderResult {
       if (found != null) {
         totalInput += input.value;
         inputStrings.add('''
-  #${i} ${input.value}
+  #$i ${input.value}
   lock-size: ${input.scriptPk.toU8a().length}
   via ${input.txid} [${input.vout}]
 ''');
@@ -1594,35 +1557,32 @@ class TxBuilderResult {
     for (int i = 0; i < outputs.length; i += 1) {
       final output = outputs[i];
       outputString.add('''
-  #${i} ${output.scriptPubkey.internal.toHex()} ${output.value}
+  #$i ${output.scriptPubkey.internal.toHex()} ${output.value}
 ''');
     }
 
-    final totalOutput = outputs.fold(
-      0,
-      (previousValue, element) => previousValue + element.value,
-    );
+    final totalOutput = outputs.fold(BigInt.zero, (p, v) => p + v.value);
 
     logPrint?.call('''
 ==============================================================================================
 Transaction Detail
   txid:     ${await tx.txid()}
-  Size:     ${size}
-  Fee Paid: ${feePaid}
-  Fee Rate: ${feeRate} sat/B
+  Size:     $size
+  Fee Paid: $feePaid
+  Fee Rate: $feeRate sat/B
   Detail:   ${inputs.length} Inputs, ${outputs.length} Outputs
 ----------------------------------------------------------------------------------------------
 Inputs in Sats
 ${inputStrings.join('\n')}
-  total: ${totalInput}          
+  total: $totalInput          
 ----------------------------------------------------------------------------------------------
 Outputs in Sats
 ${outputString.join("\n")}
-  total:  ${totalOutput}
+  total:  $totalOutput
 ----------------------------------------------------------------------------------------------
 Summary in Sats
-  Inputs:   + ${totalInput}
-  Outputs:  - ${totalOutput}
+  Inputs:   + $totalInput
+  Outputs:  - $totalOutput
   fee:      - ${feePaid!}
   Remain:   ${totalOutput - feePaid}
 ==============================================================================================
@@ -1662,7 +1622,7 @@ class Wallet {
     required DatabaseConfig databaseConfig,
   }) async {
     try {
-      final res = await AgentDartFFI.impl.createWalletStaticMethodApi(
+      final res = await Api.createWallet(
         descriptor: descriptor._descriptorInstance!,
         changeDescriptor: changeDescriptor?._descriptorInstance,
         network: network,
@@ -1674,7 +1634,7 @@ class Wallet {
         changeDescriptor: changeDescriptor,
         network: network,
       );
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -1699,12 +1659,12 @@ class Wallet {
   /// If none of the keys in the descriptor are derivable (i.e. does not end with /*) then the same address will always be returned for any AddressIndex.
   Future<AddressInfo> getAddress({required AddressIndex addressIndex}) async {
     try {
-      final res = await AgentDartFFI.impl.getAddressStaticMethodApi(
+      final res = await Api.getAddress(
         wallet: _wallet,
         addressIndex: addressIndex,
       );
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -1720,12 +1680,12 @@ class Wallet {
     required AddressIndex addressIndex,
   }) async {
     try {
-      final res = await AgentDartFFI.impl.getInternalAddressStaticMethodApi(
+      final res = await Api.getInternalAddress(
         wallet: _wallet,
         addressIndex: addressIndex,
       );
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -1735,10 +1695,9 @@ class Wallet {
   ///Note that this method only operates on the internal database, which first needs to be Wallet().sync manually.
   Future<Balance> getBalance() async {
     try {
-      final res =
-          await AgentDartFFI.impl.getBalanceStaticMethodApi(wallet: _wallet);
+      final res = await Api.getBalance(wallet: _wallet);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -1747,9 +1706,9 @@ class Wallet {
   // Future<Network> getNetwork() async {
   //   try {
   //     final res =
-  //         await AgentDartFFI.impl.walletNetworkStaticMethodApi(wallet: _wallet);
+  //         await Api.walletNetwork(wallet: _wallet);
   //     return res;
-  //   } on FfiException catch (e, s) {
+  //   } on AnyhowException catch (e, s) {
   //     Error.throwWithStackTrace(configException(e.message), s);
   //   }
   // }
@@ -1759,35 +1718,34 @@ class Wallet {
   /// Note that this method only operates on the internal database, which first needs to be Wallet().sync manually.
   Future<List<LocalUtxo>> listUnspent() async {
     try {
-      final res = await AgentDartFFI.impl
-          .listUnspentOutputsStaticMethodApi(wallet: _wallet);
+      final res = await Api.listUnspentOutputs(wallet: _wallet);
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
 
-  ///Sync the internal database with the [Blockchain]
-  Future<void> sync(Blockchain blockchain) async {
-    try {
-      await AgentDartFFI.impl.syncWalletStaticMethodApi(
-        wallet: _wallet,
-        blockchain: blockchain._blockchain,
-      );
-    } on FfiException catch (e, s) {
-      Error.throwWithStackTrace(configException(e.message), s);
-    }
-  }
+  // ///Sync the internal database with the [Blockchain]
+  // Future<void> sync(Blockchain blockchain) async {
+  //   try {
+  //     await Api.syncWallet(
+  //       wallet: _wallet,
+  //       blockchain: blockchain._blockchain,
+  //     );
+  //   } on AnyhowException catch (e, s) {
+  //     Error.throwWithStackTrace(configException(e.message), s);
+  //   }
+  // }
 
   ///Return an unsorted list of transactions made and received by the wallet
   Future<List<TransactionDetails>> listTransactions(bool includeRaw) async {
     try {
-      final res = await AgentDartFFI.impl.getTransactionsStaticMethodApi(
+      final res = await Api.getTransactions(
         wallet: _wallet,
         includeRaw: includeRaw,
       );
       return res;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -1799,7 +1757,7 @@ class Wallet {
     required PartiallySignedTransaction psbt,
     SignOptions? signOptions,
   }) async {
-    final sbt = await AgentDartFFI.impl.signStaticMethodApi(
+    final sbt = await Api.sign(
       signOptions: signOptions,
       psbtStr: psbt.psbtBase64,
       wallet: _wallet,
@@ -1815,7 +1773,7 @@ class Wallet {
     SignOptions? signOptions,
   }) async {
     final psbt = PartiallySignedTransaction.parse(psbtHex);
-    final sbt = await AgentDartFFI.impl.signStaticMethodApi(
+    final sbt = await Api.sign(
       signOptions: signOptions,
       psbtStr: psbt.psbtBase64,
       wallet: _wallet,
@@ -1897,12 +1855,12 @@ class Wallet {
     } else {
       String? res;
       if (addressType == AddressType.P2TR) {
-        res = await AgentDartFFI.impl.bip322SignTaprootStaticMethodApi(
+        res = await Api.bip322SignTaproot(
           secret: kBytes,
           message: message,
         );
       } else {
-        res = await AgentDartFFI.impl.bip322SignSegwitStaticMethodApi(
+        res = await Api.bip322SignSegwit(
           secret: kBytes,
           message: message,
         );
@@ -1917,17 +1875,14 @@ class Wallet {
   }
 
   Uint8List messageHandler(String message) {
-    final MAGIC_BYTES = 'Bitcoin Signed Message:\n'.plainToU8a();
-
-    final prefix1 = BufferWriter.varintBufNum(MAGIC_BYTES.toU8a().byteLength)
+    final magicBytes = 'Bitcoin Signed Message:\n'.plainToU8a();
+    final prefix1 = BufferWriter.varintBufNum(magicBytes.toU8a().byteLength)
         .buffer
         .asUint8List();
     final messageBuffer = message.plainToU8a();
     final prefix2 =
         BufferWriter.varintBufNum(messageBuffer.length).buffer.asUint8List();
-
-    final buf = u8aConcat([prefix1, MAGIC_BYTES, prefix2, messageBuffer]);
-
+    final buf = u8aConcat([prefix1, magicBytes, prefix2, messageBuffer]);
     return sha256Hash(buf.buffer);
   }
 
@@ -1939,7 +1894,7 @@ class Wallet {
       final psbt = PartiallySignedTransaction.parse(psbtHex);
       final res = await sign(psbt: psbt, signOptions: options);
       return base64Decode(res.psbtBase64).toHex();
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }
@@ -1983,7 +1938,7 @@ class Wallet {
           index: i,
           address: addr,
           value: element.value,
-          isMine: addr == address ? true : false,
+          isMine: addr.address == address,
           isChange: false,
         ),
       );
@@ -2000,7 +1955,7 @@ class Wallet {
           index: i,
           address: addr,
           value: element.value,
-          isMine: addr == address ? true : false,
+          isMine: addr.address == address,
           isChange: i == outputs.length - 1 ? true : false,
         ),
       );
@@ -2018,8 +1973,8 @@ class Wallet {
       fee: feePaid!,
       feeRate: feeRate,
       size: size,
-      totalInputValue: inputsExt.fold(0, (v, i) => i.value + v),
-      totalOutputValue: outputsExt.fold(0, (v, i) => i.value + v),
+      totalInputValue: inputsExt.fold(BigInt.zero, (v, i) => i.value + v),
+      totalOutputValue: outputsExt.fold(BigInt.zero, (v, i) => i.value + v),
       psbt: psbt,
     );
   }
@@ -2036,10 +1991,9 @@ class Wallet {
   Future<bool> cacheAddresses({required int cacheSize}) async {
     try {
       // final utxos = await ordService!.getUtxo(_selectedSigner.address);
-      final ins = await AgentDartFFI.impl
-          .cacheAddressStaticMethodApi(wallet: _wallet, cacheSize: cacheSize);
+      final ins = await Api.cacheAddress(wallet: _wallet, cacheSize: cacheSize);
       return ins;
-    } on FfiException catch (e, s) {
+    } on AnyhowException catch (e, s) {
       Error.throwWithStackTrace(configException(e.message), s);
     }
   }

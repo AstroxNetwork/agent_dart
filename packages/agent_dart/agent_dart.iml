@@ -21,6 +21,9 @@
       <excludeFolder url="file://$MODULE_DIR$/example/macos/Flutter" />
       <excludeFolder url="file://$MODULE_DIR$/example/macos/Pods" />
       <excludeFolder url="file://$MODULE_DIR$/example/macos/.symlinks" />
+      <excludeFolder url="file://$MODULE_DIR$/cargokit/build_tool/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/cargokit/build_tool/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/cargokit/build_tool/build" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dart SDK" level="project" />

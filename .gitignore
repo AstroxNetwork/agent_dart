@@ -9,7 +9,7 @@
 build/
 
 .env
-pubspec.lock
+**/pubspec.lock
 
 rust/target
 rust/Cargo.lock
@@ -30,7 +30,6 @@ _main.dart
 *.log
 *.pyc
 *.swp
-.DS_Store
 .atom/
 .buildlog/
 .history
@@ -39,7 +38,6 @@ _main.dart
 # IntelliJ related
 *.ipr
 *.iws
-.idea/
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
@@ -47,14 +45,9 @@ _main.dart
 #.vscode/
 
 # Flutter/Dart/Pub related
-pubspec.lock
 pubspec_overrides.yaml
 **/doc/api/
-.dart_tool/
-.packages
-build/
 .pub-cache/
-.pub/
 .flutter-plugins
 .flutter-plugins-dependencies
 

@@ -6,21 +6,22 @@ part of 'utxo.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Utxo _$$_UtxoFromJson(Map<String, dynamic> json) => _$_Utxo(
+_$UtxoImpl _$$UtxoImplFromJson(Map<String, dynamic> json) => _$UtxoImpl(
       txId: json['txId'] as String,
-      outputIndex: json['outputIndex'] as int,
-      satoshis: json['satoshis'] as int,
+      outputIndex: (json['outputIndex'] as num).toInt(),
+      satoshis: BigInt.parse(json['satoshis'] as String),
       scriptPk: json['scriptPk'] as String,
-      addressType: json['addressType'] as int,
+      addressType: (json['addressType'] as num).toInt(),
       inscriptions: (json['inscriptions'] as List<dynamic>)
           .map((e) => Inscription.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$$_UtxoToJson(_$_Utxo instance) => <String, dynamic>{
+Map<String, dynamic> _$$UtxoImplToJson(_$UtxoImpl instance) =>
+    <String, dynamic>{
       'txId': instance.txId,
       'outputIndex': instance.outputIndex,
-      'satoshis': instance.satoshis,
+      'satoshis': instance.satoshis.toString(),
       'scriptPk': instance.scriptPk,
       'addressType': instance.addressType,
       'inscriptions': instance.inscriptions,

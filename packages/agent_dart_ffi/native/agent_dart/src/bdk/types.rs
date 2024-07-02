@@ -13,12 +13,10 @@ use bdk_lite::bitcoin::util::address::{
 use bdk_lite::bitcoin::{
     Address as BdkAddress, AddressType as BdkAddressType, OutPoint as BdkOutPoint, Txid,
 };
-use bdk_lite::blockchain::Progress as BdkProgress;
 
 use bdk_lite::bitcoin::hashes::hex::FromHex;
 use bdk_lite::{Balance as BdkBalance, Error as BdkError};
 use serde::{Deserialize, Serialize};
-use std::fmt;
 use std::fmt::Debug;
 use std::str::FromStr;
 
@@ -29,7 +27,6 @@ pub struct TxIn {
     pub sequence: u32,
     pub witness: Vec<String>,
 }
-
 impl From<&BdkTxIn> for TxIn {
     fn from(x: &BdkTxIn) -> Self {
         TxIn {
@@ -41,7 +38,7 @@ impl From<&BdkTxIn> for TxIn {
     }
 }
 
-///A transaction output, which defines new coins to be created from old ones.
+/// A transaction output, which defines new coins to be created from old ones.
 pub struct TxOut {
     /// The value of the output, in satoshis.
     pub value: u64,
@@ -89,7 +86,6 @@ pub struct ForeignUtxo {
     ///Transaction output
     pub txout: TxOutForeign,
 }
-
 impl From<&ForeignUtxo> for BdkForeignUtxo {
     fn from(x: &ForeignUtxo) -> BdkForeignUtxo {
         BdkForeignUtxo {
@@ -104,7 +100,6 @@ impl From<&ForeignUtxo> for BdkForeignUtxo {
         }
     }
 }
-
 impl From<BdkForeignUtxo> for ForeignUtxo {
     fn from(x: BdkForeignUtxo) -> ForeignUtxo {
         ForeignUtxo {
@@ -125,7 +120,6 @@ pub struct TxBytes {
     /// The script which must be satisfied for the output to be spent.
     pub bytes: Vec<u8>,
 }
-
 impl TxBytes {
     pub fn to_transaction(&self) -> Result<Transaction, bdk_lite::Error> {
         Transaction::new(self.bytes.clone())
@@ -206,7 +200,8 @@ impl From<AddressIndex> for bdk_lite::wallet::AddressIndex {
     }
 }
 
-///A derived address and the index it was found at For convenience this automatically derefs to Address
+/// A derived address and the index it was found at for convenience this automatically
+/// derefs to [Address].
 pub struct AddressInfo {
     ///Child index of this address
     pub index: u32,
@@ -223,7 +218,7 @@ impl From<bdk_lite::wallet::AddressInfo> for AddressInfo {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize)]
-///A wallet transaction
+/// A wallet transaction
 pub struct TransactionDetails {
     pub serialized_tx: Option<String>,
     /// Transaction id.
@@ -303,39 +298,40 @@ pub enum RbfValue {
 /// transaction details.
 pub struct BdkTxBuilderResult(pub String, pub TransactionDetails);
 
-///Types of keychains
+/// Types of keychains
 pub enum KeychainKind {
-    External,
-    ///Internal, usually used for change outputs
-    Internal,
+    Extern,
+
+    /// Internal, usually used for change outputs
+    Intern,
 }
 impl From<bdk_lite::KeychainKind> for KeychainKind {
     fn from(e: bdk_lite::KeychainKind) -> Self {
         match e {
-            bdk_lite::KeychainKind::External => KeychainKind::External,
-            bdk_lite::KeychainKind::Internal => KeychainKind::Internal,
+            bdk_lite::KeychainKind::External => KeychainKind::Extern,
+            bdk_lite::KeychainKind::Internal => KeychainKind::Intern,
         }
     }
 }
 impl From<KeychainKind> for bdk_lite::KeychainKind {
     fn from(kind: KeychainKind) -> Self {
         match kind {
-            KeychainKind::External => bdk_lite::KeychainKind::External,
-            KeychainKind::Internal => bdk_lite::KeychainKind::Internal,
+            KeychainKind::Extern => bdk_lite::KeychainKind::External,
+            KeychainKind::Intern => bdk_lite::KeychainKind::Internal,
         }
     }
 }
 
 #[derive(Clone)]
-///The cryptocurrency to act on
+/// The cryptocurrency to act on
 pub enum Network {
-    ///Bitcoin’s testnet
+    /// Bitcoin’s testnet
     Testnet,
-    ///Bitcoin’s regtest
+    /// Bitcoin’s regtest
     Regtest,
-    ///Classic Bitcoin
+    /// Classic Bitcoin
     Bitcoin,
-    ///Bitcoin’s signet
+    /// Bitcoin’s signet
     Signet,
 }
 impl Default for Network {
@@ -343,26 +339,27 @@ impl Default for Network {
         Network::Testnet
     }
 }
-impl From<Network> for bdk_lite::bitcoin::Network {
+impl From<Network> for bitcoin::Network {
     fn from(network: Network) -> Self {
         match network {
-            Network::Signet => bdk_lite::bitcoin::Network::Signet,
-            Network::Testnet => bdk_lite::bitcoin::Network::Testnet,
-            Network::Regtest => bdk_lite::bitcoin::Network::Regtest,
-            Network::Bitcoin => bdk_lite::bitcoin::Network::Bitcoin,
+            Network::Signet => bitcoin::Network::Signet,
+            Network::Testnet => bitcoin::Network::Testnet,
+            Network::Regtest => bitcoin::Network::Regtest,
+            Network::Bitcoin => bitcoin::Network::Bitcoin,
         }
     }
 }
-impl From<bdk_lite::bitcoin::Network> for Network {
-    fn from(network: bdk_lite::bitcoin::Network) -> Self {
+impl From<bitcoin::Network> for Network {
+    fn from(network: bitcoin::Network) -> Self {
         match network {
-            bdk_lite::bitcoin::Network::Signet => Network::Signet,
-            bdk_lite::bitcoin::Network::Testnet => Network::Testnet,
-            bdk_lite::bitcoin::Network::Regtest => Network::Regtest,
-            bdk_lite::bitcoin::Network::Bitcoin => Network::Bitcoin,
+            bitcoin::Network::Signet => Network::Signet,
+            bitcoin::Network::Testnet => Network::Testnet,
+            bitcoin::Network::Regtest => Network::Regtest,
+            bitcoin::Network::Bitcoin => Network::Bitcoin,
         }
     }
 }
+
 #[derive(Clone)]
 ///The address type mapping
 pub enum AddressType {
@@ -380,7 +377,6 @@ pub enum AddressType {
     ///
     Unknown,
 }
-
 impl From<BdkAddressType> for AddressType {
     fn from(address_type: BdkAddressType) -> Self {
         match address_type {
@@ -393,7 +389,6 @@ impl From<BdkAddressType> for AddressType {
         }
     }
 }
-
 impl From<String> for AddressType {
     fn from(address_type_string: String) -> Self {
         match address_type_string.to_lowercase().as_str() {
@@ -408,7 +403,6 @@ impl From<String> for AddressType {
         }
     }
 }
-
 impl AddressType {
     pub fn to_string(&self) -> Result<String, BdkError> {
         match self {
@@ -441,6 +435,7 @@ impl From<WordCount> for bdk_lite::keys::bip39::WordCount {
         }
     }
 }
+
 pub struct Address {
     pub address: BdkAddress,
 }
@@ -491,10 +486,11 @@ impl Address {
         self.address.network.into()
     }
 
-    pub fn script_pubkey(&self) -> bdk_lite::bitcoin::Script {
+    pub fn script_pubkey(&self) -> bitcoin::Script {
         self.address.script_pubkey()
     }
 }
+
 /// A Bitcoin script.
 #[derive(Clone, Default, Debug)]
 pub struct Script {
@@ -502,21 +498,20 @@ pub struct Script {
 }
 impl Script {
     pub fn new(raw_output_script: Vec<u8>) -> Result<Script, Error> {
-        let script = bdk_lite::bitcoin::Script::from_hex(&hex::encode(raw_output_script))
+        let script = bitcoin::Script::from_hex(&hex::encode(raw_output_script))
             .expect("Invalid script");
         Ok(Script {
             internal: script.into_bytes(),
         })
     }
 }
-
-impl From<Script> for bdk_lite::bitcoin::Script {
+impl From<Script> for bitcoin::Script {
     fn from(value: Script) -> Self {
-        bdk_lite::bitcoin::Script::from_hex(&hex::encode(value.internal)).expect("Invalid script")
+        bitcoin::Script::from_hex(&hex::encode(value.internal)).expect("Invalid script")
     }
 }
-impl From<bdk_lite::bitcoin::Script> for Script {
-    fn from(value: bdk_lite::bitcoin::Script) -> Self {
+impl From<bitcoin::Script> for Script {
+    fn from(value: bitcoin::Script) -> Self {
         Script {
             internal: value.into_bytes(),
         }
@@ -583,6 +578,7 @@ impl From<BdkWitnessVersion> for WitnessVersion {
         }
     }
 }
+
 /// The method used to produce an address.
 #[derive(Debug)]
 pub enum Payload {
@@ -606,22 +602,6 @@ pub trait Progress: Send + Sync + 'static {
     fn update(&self, progress: f32, message: Option<String>);
 }
 
-pub struct ProgressHolder {
-    pub progress: Box<dyn Progress>,
-}
-
-impl BdkProgress for ProgressHolder {
-    fn update(&self, progress: f32, message: Option<String>) -> Result<(), BdkError> {
-        self.progress.update(progress, message);
-        Ok(())
-    }
-}
-
-impl Debug for ProgressHolder {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("ProgressHolder").finish_non_exhaustive()
-    }
-}
 pub enum ChangeSpendPolicy {
     ChangeAllowed,
     OnlyChange,
