@@ -21,18 +21,11 @@ Utxo _$UtxoFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Utxo {
   String get txId => throw _privateConstructorUsedError;
-  set txId(String value) => throw _privateConstructorUsedError;
   int get outputIndex => throw _privateConstructorUsedError;
-  set outputIndex(int value) => throw _privateConstructorUsedError;
-  BigInt get satoshis => throw _privateConstructorUsedError;
-  set satoshis(BigInt value) => throw _privateConstructorUsedError;
+  int get satoshis => throw _privateConstructorUsedError;
   String get scriptPk => throw _privateConstructorUsedError;
-  set scriptPk(String value) => throw _privateConstructorUsedError;
   int get addressType => throw _privateConstructorUsedError;
-  set addressType(int value) => throw _privateConstructorUsedError;
   List<Inscription> get inscriptions => throw _privateConstructorUsedError;
-  set inscriptions(List<Inscription> value) =>
-      throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -47,7 +40,7 @@ abstract class $UtxoCopyWith<$Res> {
   $Res call(
       {String txId,
       int outputIndex,
-      BigInt satoshis,
+      int satoshis,
       String scriptPk,
       int addressType,
       List<Inscription> inscriptions});
@@ -85,7 +78,7 @@ class _$UtxoCopyWithImpl<$Res, $Val extends Utxo>
       satoshis: null == satoshis
           ? _value.satoshis
           : satoshis // ignore: cast_nullable_to_non_nullable
-              as BigInt,
+              as int,
       scriptPk: null == scriptPk
           ? _value.scriptPk
           : scriptPk // ignore: cast_nullable_to_non_nullable
@@ -112,7 +105,7 @@ abstract class _$$UtxoImplCopyWith<$Res> implements $UtxoCopyWith<$Res> {
   $Res call(
       {String txId,
       int outputIndex,
-      BigInt satoshis,
+      int satoshis,
       String scriptPk,
       int addressType,
       List<Inscription> inscriptions});
@@ -147,7 +140,7 @@ class __$$UtxoImplCopyWithImpl<$Res>
       satoshis: null == satoshis
           ? _value.satoshis
           : satoshis // ignore: cast_nullable_to_non_nullable
-              as BigInt,
+              as int,
       scriptPk: null == scriptPk
           ? _value.scriptPk
           : scriptPk // ignore: cast_nullable_to_non_nullable
@@ -157,7 +150,7 @@ class __$$UtxoImplCopyWithImpl<$Res>
           : addressType // ignore: cast_nullable_to_non_nullable
               as int,
       inscriptions: null == inscriptions
-          ? _value.inscriptions
+          ? _value._inscriptions
           : inscriptions // ignore: cast_nullable_to_non_nullable
               as List<Inscription>,
     ));
@@ -167,34 +160,69 @@ class __$$UtxoImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$UtxoImpl implements _Utxo {
-  _$UtxoImpl(
+  const _$UtxoImpl(
       {required this.txId,
       required this.outputIndex,
       required this.satoshis,
       required this.scriptPk,
       required this.addressType,
-      required this.inscriptions});
+      required final List<Inscription> inscriptions})
+      : _inscriptions = inscriptions;
 
   factory _$UtxoImpl.fromJson(Map<String, dynamic> json) =>
       _$$UtxoImplFromJson(json);
 
   @override
-  String txId;
+  final String txId;
   @override
-  int outputIndex;
+  final int outputIndex;
   @override
-  BigInt satoshis;
+  final int satoshis;
   @override
-  String scriptPk;
+  final String scriptPk;
   @override
-  int addressType;
+  final int addressType;
+  final List<Inscription> _inscriptions;
   @override
-  List<Inscription> inscriptions;
+  List<Inscription> get inscriptions {
+    if (_inscriptions is EqualUnmodifiableListView) return _inscriptions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_inscriptions);
+  }
 
   @override
   String toString() {
     return 'Utxo(txId: $txId, outputIndex: $outputIndex, satoshis: $satoshis, scriptPk: $scriptPk, addressType: $addressType, inscriptions: $inscriptions)';
   }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UtxoImpl &&
+            (identical(other.txId, txId) || other.txId == txId) &&
+            (identical(other.outputIndex, outputIndex) ||
+                other.outputIndex == outputIndex) &&
+            (identical(other.satoshis, satoshis) ||
+                other.satoshis == satoshis) &&
+            (identical(other.scriptPk, scriptPk) ||
+                other.scriptPk == scriptPk) &&
+            (identical(other.addressType, addressType) ||
+                other.addressType == addressType) &&
+            const DeepCollectionEquality()
+                .equals(other._inscriptions, _inscriptions));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      txId,
+      outputIndex,
+      satoshis,
+      scriptPk,
+      addressType,
+      const DeepCollectionEquality().hash(_inscriptions));
 
   @JsonKey(ignore: true)
   @override
@@ -211,34 +239,28 @@ class _$UtxoImpl implements _Utxo {
 }
 
 abstract class _Utxo implements Utxo {
-  factory _Utxo(
-      {required String txId,
-      required int outputIndex,
-      required BigInt satoshis,
-      required String scriptPk,
-      required int addressType,
-      required List<Inscription> inscriptions}) = _$UtxoImpl;
+  const factory _Utxo(
+      {required final String txId,
+      required final int outputIndex,
+      required final int satoshis,
+      required final String scriptPk,
+      required final int addressType,
+      required final List<Inscription> inscriptions}) = _$UtxoImpl;
 
   factory _Utxo.fromJson(Map<String, dynamic> json) = _$UtxoImpl.fromJson;
 
   @override
   String get txId;
-  set txId(String value);
   @override
   int get outputIndex;
-  set outputIndex(int value);
   @override
-  BigInt get satoshis;
-  set satoshis(BigInt value);
+  int get satoshis;
   @override
   String get scriptPk;
-  set scriptPk(String value);
   @override
   int get addressType;
-  set addressType(int value);
   @override
   List<Inscription> get inscriptions;
-  set inscriptions(List<Inscription> value);
   @override
   @JsonKey(ignore: true)
   _$$UtxoImplCopyWith<_$UtxoImpl> get copyWith =>

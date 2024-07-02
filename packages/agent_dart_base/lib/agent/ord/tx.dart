@@ -19,9 +19,9 @@ import 'address_utxo.dart';
 part 'tx.freezed.dart';
 part 'tx.g.dart';
 
-@unfreezed
+@freezed
 class Tx with _$Tx {
-  factory Tx({
+  const factory Tx({
     required String txid,
     required int version,
     required int locktime,
@@ -36,7 +36,7 @@ class Tx with _$Tx {
   factory Tx.fromJson(Map<String, dynamic> json) => _$TxFromJson(json);
 }
 
-@unfreezed
+@freezed
 class Vin with _$Vin {
   const factory Vin({
     @JsonKey(name: 'txid') required String txid,
@@ -54,7 +54,7 @@ class Vin with _$Vin {
 
 @freezed
 class Vout with _$Vout {
-  factory Vout({
+  const factory Vout({
     @JsonKey(name: 'scriptpubkey') required String scriptPubkey,
     @JsonKey(name: 'scriptpubkey_asm') required String scriptpubkeyAsm,
     @JsonKey(name: 'scriptpubkey_type') required String scriptpubkeyType,
