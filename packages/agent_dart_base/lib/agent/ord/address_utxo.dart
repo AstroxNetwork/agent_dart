@@ -29,7 +29,7 @@ part 'address_utxo.g.dart';
 
 @freezed
 class AddressUtxo with _$AddressUtxo {
-  factory AddressUtxo({
+  const factory AddressUtxo({
     required String txid,
     required int vout,
     required int value,
@@ -40,13 +40,13 @@ class AddressUtxo with _$AddressUtxo {
       _$AddressUtxoFromJson(json);
 }
 
-@unfreezed
+@freezed
 class TxStatus with _$TxStatus {
   const factory TxStatus({
     required bool confirmed,
-    @JsonKey(name: 'block_height') int? blockHeight,
-    @JsonKey(name: 'block_hash') String? blockHash,
-    @JsonKey(name: 'block_time') int? blockTime,
+    @JsonKey(name: 'block_height') required int? blockHeight,
+    @JsonKey(name: 'block_hash') required String? blockHash,
+    @JsonKey(name: 'block_time') required int? blockTime,
   }) = _TxStatus;
 
   factory TxStatus.fromJson(Map<String, dynamic> json) =>

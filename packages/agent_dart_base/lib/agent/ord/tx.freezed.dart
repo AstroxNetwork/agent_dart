@@ -21,23 +21,14 @@ Tx _$TxFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Tx {
   String get txid => throw _privateConstructorUsedError;
-  set txid(String value) => throw _privateConstructorUsedError;
   int get version => throw _privateConstructorUsedError;
-  set version(int value) => throw _privateConstructorUsedError;
   int get locktime => throw _privateConstructorUsedError;
-  set locktime(int value) => throw _privateConstructorUsedError;
   List<Vin> get vin => throw _privateConstructorUsedError;
-  set vin(List<Vin> value) => throw _privateConstructorUsedError;
   List<Vout> get vout => throw _privateConstructorUsedError;
-  set vout(List<Vout> value) => throw _privateConstructorUsedError;
   int get size => throw _privateConstructorUsedError;
-  set size(int value) => throw _privateConstructorUsedError;
   int get weight => throw _privateConstructorUsedError;
-  set weight(int value) => throw _privateConstructorUsedError;
   int get fee => throw _privateConstructorUsedError;
-  set fee(int value) => throw _privateConstructorUsedError;
   TxStatus get status => throw _privateConstructorUsedError;
-  set status(TxStatus value) => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -188,11 +179,11 @@ class __$$TxImplCopyWithImpl<$Res> extends _$TxCopyWithImpl<$Res, _$TxImpl>
           : locktime // ignore: cast_nullable_to_non_nullable
               as int,
       vin: null == vin
-          ? _value.vin
+          ? _value._vin
           : vin // ignore: cast_nullable_to_non_nullable
               as List<Vin>,
       vout: null == vout
-          ? _value.vout
+          ? _value._vout
           : vout // ignore: cast_nullable_to_non_nullable
               as List<Vout>,
       size: null == size
@@ -218,43 +209,88 @@ class __$$TxImplCopyWithImpl<$Res> extends _$TxCopyWithImpl<$Res, _$TxImpl>
 /// @nodoc
 @JsonSerializable()
 class _$TxImpl implements _Tx {
-  _$TxImpl(
+  const _$TxImpl(
       {required this.txid,
       required this.version,
       required this.locktime,
-      required this.vin,
-      required this.vout,
+      required final List<Vin> vin,
+      required final List<Vout> vout,
       required this.size,
       required this.weight,
       required this.fee,
-      required this.status});
+      required this.status})
+      : _vin = vin,
+        _vout = vout;
 
   factory _$TxImpl.fromJson(Map<String, dynamic> json) =>
       _$$TxImplFromJson(json);
 
   @override
-  String txid;
+  final String txid;
   @override
-  int version;
+  final int version;
   @override
-  int locktime;
+  final int locktime;
+  final List<Vin> _vin;
   @override
-  List<Vin> vin;
+  List<Vin> get vin {
+    if (_vin is EqualUnmodifiableListView) return _vin;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_vin);
+  }
+
+  final List<Vout> _vout;
   @override
-  List<Vout> vout;
+  List<Vout> get vout {
+    if (_vout is EqualUnmodifiableListView) return _vout;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_vout);
+  }
+
   @override
-  int size;
+  final int size;
   @override
-  int weight;
+  final int weight;
   @override
-  int fee;
+  final int fee;
   @override
-  TxStatus status;
+  final TxStatus status;
 
   @override
   String toString() {
     return 'Tx(txid: $txid, version: $version, locktime: $locktime, vin: $vin, vout: $vout, size: $size, weight: $weight, fee: $fee, status: $status)';
   }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TxImpl &&
+            (identical(other.txid, txid) || other.txid == txid) &&
+            (identical(other.version, version) || other.version == version) &&
+            (identical(other.locktime, locktime) ||
+                other.locktime == locktime) &&
+            const DeepCollectionEquality().equals(other._vin, _vin) &&
+            const DeepCollectionEquality().equals(other._vout, _vout) &&
+            (identical(other.size, size) || other.size == size) &&
+            (identical(other.weight, weight) || other.weight == weight) &&
+            (identical(other.fee, fee) || other.fee == fee) &&
+            (identical(other.status, status) || other.status == status));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      txid,
+      version,
+      locktime,
+      const DeepCollectionEquality().hash(_vin),
+      const DeepCollectionEquality().hash(_vout),
+      size,
+      weight,
+      fee,
+      status);
 
   @JsonKey(ignore: true)
   @override
@@ -271,46 +307,37 @@ class _$TxImpl implements _Tx {
 }
 
 abstract class _Tx implements Tx {
-  factory _Tx(
-      {required String txid,
-      required int version,
-      required int locktime,
-      required List<Vin> vin,
-      required List<Vout> vout,
-      required int size,
-      required int weight,
-      required int fee,
-      required TxStatus status}) = _$TxImpl;
+  const factory _Tx(
+      {required final String txid,
+      required final int version,
+      required final int locktime,
+      required final List<Vin> vin,
+      required final List<Vout> vout,
+      required final int size,
+      required final int weight,
+      required final int fee,
+      required final TxStatus status}) = _$TxImpl;
 
   factory _Tx.fromJson(Map<String, dynamic> json) = _$TxImpl.fromJson;
 
   @override
   String get txid;
-  set txid(String value);
   @override
   int get version;
-  set version(int value);
   @override
   int get locktime;
-  set locktime(int value);
   @override
   List<Vin> get vin;
-  set vin(List<Vin> value);
   @override
   List<Vout> get vout;
-  set vout(List<Vout> value);
   @override
   int get size;
-  set size(int value);
   @override
   int get weight;
-  set weight(int value);
   @override
   int get fee;
-  set fee(int value);
   @override
   TxStatus get status;
-  set status(TxStatus value);
   @override
   @JsonKey(ignore: true)
   _$$TxImplCopyWith<_$TxImpl> get copyWith =>
@@ -325,36 +352,20 @@ Vin _$VinFromJson(Map<String, dynamic> json) {
 mixin _$Vin {
   @JsonKey(name: 'txid')
   String get txid => throw _privateConstructorUsedError;
-  @JsonKey(name: 'txid')
-  set txid(String value) => throw _privateConstructorUsedError;
   @JsonKey(name: 'vout')
   int get vout => throw _privateConstructorUsedError;
-  @JsonKey(name: 'vout')
-  set vout(int value) => throw _privateConstructorUsedError;
   @JsonKey(name: 'prevout')
   Vout get prevout => throw _privateConstructorUsedError;
-  @JsonKey(name: 'prevout')
-  set prevout(Vout value) => throw _privateConstructorUsedError;
   @JsonKey(name: 'scriptsig')
   String get scriptSig => throw _privateConstructorUsedError;
-  @JsonKey(name: 'scriptsig')
-  set scriptSig(String value) => throw _privateConstructorUsedError;
   @JsonKey(name: 'scriptsig_asm')
   String get scriptsigAsm => throw _privateConstructorUsedError;
-  @JsonKey(name: 'scriptsig_asm')
-  set scriptsigAsm(String value) => throw _privateConstructorUsedError;
   @JsonKey(name: 'witness')
   List<String> get witness => throw _privateConstructorUsedError;
-  @JsonKey(name: 'witness')
-  set witness(List<String> value) => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_coinbase')
   bool get isCoinbase => throw _privateConstructorUsedError;
-  @JsonKey(name: 'is_coinbase')
-  set isCoinbase(bool value) => throw _privateConstructorUsedError;
   @JsonKey(name: 'sequence')
   int get sequence => throw _privateConstructorUsedError;
-  @JsonKey(name: 'sequence')
-  set sequence(int value) => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -505,7 +516,7 @@ class __$$VinImplCopyWithImpl<$Res> extends _$VinCopyWithImpl<$Res, _$VinImpl>
           : scriptsigAsm // ignore: cast_nullable_to_non_nullable
               as String,
       witness: null == witness
-          ? _value.witness
+          ? _value._witness
           : witness // ignore: cast_nullable_to_non_nullable
               as List<String>,
       isCoinbase: null == isCoinbase
@@ -529,42 +540,81 @@ class _$VinImpl implements _Vin {
       @JsonKey(name: 'prevout') required this.prevout,
       @JsonKey(name: 'scriptsig') required this.scriptSig,
       @JsonKey(name: 'scriptsig_asm') required this.scriptsigAsm,
-      @JsonKey(name: 'witness') required this.witness,
+      @JsonKey(name: 'witness') required final List<String> witness,
       @JsonKey(name: 'is_coinbase') required this.isCoinbase,
-      @JsonKey(name: 'sequence') required this.sequence});
+      @JsonKey(name: 'sequence') required this.sequence})
+      : _witness = witness;
 
   factory _$VinImpl.fromJson(Map<String, dynamic> json) =>
       _$$VinImplFromJson(json);
 
   @override
   @JsonKey(name: 'txid')
-  String txid;
+  final String txid;
   @override
   @JsonKey(name: 'vout')
-  int vout;
+  final int vout;
   @override
   @JsonKey(name: 'prevout')
-  Vout prevout;
+  final Vout prevout;
   @override
   @JsonKey(name: 'scriptsig')
-  String scriptSig;
+  final String scriptSig;
   @override
   @JsonKey(name: 'scriptsig_asm')
-  String scriptsigAsm;
+  final String scriptsigAsm;
+  final List<String> _witness;
   @override
   @JsonKey(name: 'witness')
-  List<String> witness;
+  List<String> get witness {
+    if (_witness is EqualUnmodifiableListView) return _witness;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_witness);
+  }
+
   @override
   @JsonKey(name: 'is_coinbase')
-  bool isCoinbase;
+  final bool isCoinbase;
   @override
   @JsonKey(name: 'sequence')
-  int sequence;
+  final int sequence;
 
   @override
   String toString() {
     return 'Vin(txid: $txid, vout: $vout, prevout: $prevout, scriptSig: $scriptSig, scriptsigAsm: $scriptsigAsm, witness: $witness, isCoinbase: $isCoinbase, sequence: $sequence)';
   }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$VinImpl &&
+            (identical(other.txid, txid) || other.txid == txid) &&
+            (identical(other.vout, vout) || other.vout == vout) &&
+            (identical(other.prevout, prevout) || other.prevout == prevout) &&
+            (identical(other.scriptSig, scriptSig) ||
+                other.scriptSig == scriptSig) &&
+            (identical(other.scriptsigAsm, scriptsigAsm) ||
+                other.scriptsigAsm == scriptsigAsm) &&
+            const DeepCollectionEquality().equals(other._witness, _witness) &&
+            (identical(other.isCoinbase, isCoinbase) ||
+                other.isCoinbase == isCoinbase) &&
+            (identical(other.sequence, sequence) ||
+                other.sequence == sequence));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      txid,
+      vout,
+      prevout,
+      scriptSig,
+      scriptsigAsm,
+      const DeepCollectionEquality().hash(_witness),
+      isCoinbase,
+      sequence);
 
   @JsonKey(ignore: true)
   @override
@@ -582,57 +632,41 @@ class _$VinImpl implements _Vin {
 
 abstract class _Vin implements Vin {
   const factory _Vin(
-      {@JsonKey(name: 'txid') required String txid,
-      @JsonKey(name: 'vout') required int vout,
-      @JsonKey(name: 'prevout') required Vout prevout,
-      @JsonKey(name: 'scriptsig') required String scriptSig,
-      @JsonKey(name: 'scriptsig_asm') required String scriptsigAsm,
-      @JsonKey(name: 'witness') required List<String> witness,
-      @JsonKey(name: 'is_coinbase') required bool isCoinbase,
-      @JsonKey(name: 'sequence') required int sequence}) = _$VinImpl;
+      {@JsonKey(name: 'txid') required final String txid,
+      @JsonKey(name: 'vout') required final int vout,
+      @JsonKey(name: 'prevout') required final Vout prevout,
+      @JsonKey(name: 'scriptsig') required final String scriptSig,
+      @JsonKey(name: 'scriptsig_asm') required final String scriptsigAsm,
+      @JsonKey(name: 'witness') required final List<String> witness,
+      @JsonKey(name: 'is_coinbase') required final bool isCoinbase,
+      @JsonKey(name: 'sequence') required final int sequence}) = _$VinImpl;
 
   factory _Vin.fromJson(Map<String, dynamic> json) = _$VinImpl.fromJson;
 
   @override
   @JsonKey(name: 'txid')
   String get txid;
-  @JsonKey(name: 'txid')
-  set txid(String value);
   @override
   @JsonKey(name: 'vout')
   int get vout;
-  @JsonKey(name: 'vout')
-  set vout(int value);
   @override
   @JsonKey(name: 'prevout')
   Vout get prevout;
-  @JsonKey(name: 'prevout')
-  set prevout(Vout value);
   @override
   @JsonKey(name: 'scriptsig')
   String get scriptSig;
-  @JsonKey(name: 'scriptsig')
-  set scriptSig(String value);
   @override
   @JsonKey(name: 'scriptsig_asm')
   String get scriptsigAsm;
-  @JsonKey(name: 'scriptsig_asm')
-  set scriptsigAsm(String value);
   @override
   @JsonKey(name: 'witness')
   List<String> get witness;
-  @JsonKey(name: 'witness')
-  set witness(List<String> value);
   @override
   @JsonKey(name: 'is_coinbase')
   bool get isCoinbase;
-  @JsonKey(name: 'is_coinbase')
-  set isCoinbase(bool value);
   @override
   @JsonKey(name: 'sequence')
   int get sequence;
-  @JsonKey(name: 'sequence')
-  set sequence(int value);
   @override
   @JsonKey(ignore: true)
   _$$VinImplCopyWith<_$VinImpl> get copyWith =>
@@ -777,7 +811,7 @@ class __$$VoutImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$VoutImpl implements _Vout {
-  _$VoutImpl(
+  const _$VoutImpl(
       {@JsonKey(name: 'scriptpubkey') required this.scriptPubkey,
       @JsonKey(name: 'scriptpubkey_asm') required this.scriptpubkeyAsm,
       @JsonKey(name: 'scriptpubkey_type') required this.scriptpubkeyType,
@@ -844,7 +878,7 @@ class _$VoutImpl implements _Vout {
 }
 
 abstract class _Vout implements Vout {
-  factory _Vout(
+  const factory _Vout(
       {@JsonKey(name: 'scriptpubkey') required final String scriptPubkey,
       @JsonKey(name: 'scriptpubkey_asm') required final String scriptpubkeyAsm,
       @JsonKey(name: 'scriptpubkey_type')

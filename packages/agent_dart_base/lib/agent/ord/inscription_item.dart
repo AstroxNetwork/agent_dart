@@ -31,8 +31,8 @@ class InscriptionItem with _$InscriptionItem {
   const factory InscriptionItem({
     required String id,
     required InscriptionDetail detail,
-    int? number,
-    int? num,
+    required int? number,
+    required int? num,
   }) = _InscriptionItem;
 
   factory InscriptionItem.fromJson(Map<String, dynamic> json) =>

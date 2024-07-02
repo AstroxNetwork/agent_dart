@@ -21,15 +21,10 @@ AddressStats _$AddressStatsFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$AddressStats {
   String get address => throw _privateConstructorUsedError;
-  set address(String value) => throw _privateConstructorUsedError;
   @JsonKey(name: 'chain_stats')
   StatsItem get chainStats => throw _privateConstructorUsedError;
-  @JsonKey(name: 'chain_stats')
-  set chainStats(StatsItem value) => throw _privateConstructorUsedError;
   @JsonKey(name: 'mempool_stats')
   StatsItem get mempoolStats => throw _privateConstructorUsedError;
-  @JsonKey(name: 'mempool_stats')
-  set mempoolStats(StatsItem value) => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -156,7 +151,7 @@ class __$$AddressStatsImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$AddressStatsImpl implements _AddressStats {
-  _$AddressStatsImpl(
+  const _$AddressStatsImpl(
       {required this.address,
       @JsonKey(name: 'chain_stats') required this.chainStats,
       @JsonKey(name: 'mempool_stats') required this.mempoolStats});
@@ -165,18 +160,35 @@ class _$AddressStatsImpl implements _AddressStats {
       _$$AddressStatsImplFromJson(json);
 
   @override
-  String address;
+  final String address;
   @override
   @JsonKey(name: 'chain_stats')
-  StatsItem chainStats;
+  final StatsItem chainStats;
   @override
   @JsonKey(name: 'mempool_stats')
-  StatsItem mempoolStats;
+  final StatsItem mempoolStats;
 
   @override
   String toString() {
     return 'AddressStats(address: $address, chainStats: $chainStats, mempoolStats: $mempoolStats)';
   }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$AddressStatsImpl &&
+            (identical(other.address, address) || other.address == address) &&
+            (identical(other.chainStats, chainStats) ||
+                other.chainStats == chainStats) &&
+            (identical(other.mempoolStats, mempoolStats) ||
+                other.mempoolStats == mempoolStats));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, address, chainStats, mempoolStats);
 
   @JsonKey(ignore: true)
   @override
@@ -193,28 +205,23 @@ class _$AddressStatsImpl implements _AddressStats {
 }
 
 abstract class _AddressStats implements AddressStats {
-  factory _AddressStats(
-          {required String address,
-          @JsonKey(name: 'chain_stats') required StatsItem chainStats,
-          @JsonKey(name: 'mempool_stats') required StatsItem mempoolStats}) =
-      _$AddressStatsImpl;
+  const factory _AddressStats(
+      {required final String address,
+      @JsonKey(name: 'chain_stats') required final StatsItem chainStats,
+      @JsonKey(name: 'mempool_stats')
+      required final StatsItem mempoolStats}) = _$AddressStatsImpl;
 
   factory _AddressStats.fromJson(Map<String, dynamic> json) =
       _$AddressStatsImpl.fromJson;
 
   @override
   String get address;
-  set address(String value);
   @override
   @JsonKey(name: 'chain_stats')
   StatsItem get chainStats;
-  @JsonKey(name: 'chain_stats')
-  set chainStats(StatsItem value);
   @override
   @JsonKey(name: 'mempool_stats')
   StatsItem get mempoolStats;
-  @JsonKey(name: 'mempool_stats')
-  set mempoolStats(StatsItem value);
   @override
   @JsonKey(ignore: true)
   _$$AddressStatsImplCopyWith<_$AddressStatsImpl> get copyWith =>
@@ -362,7 +369,7 @@ class __$$StatsItemImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$StatsItemImpl implements _StatsItem {
-  _$StatsItemImpl(
+  const _$StatsItemImpl(
       {@JsonKey(name: 'funded_utxo_count') required this.fundedUtxoCount,
       @JsonKey(name: 'funded_utxo_sum') required this.fundedUtxoSum,
       @JsonKey(name: 'spent_utxo_count') required this.spentUtxoCount,
@@ -429,7 +436,7 @@ class _$StatsItemImpl implements _StatsItem {
 }
 
 abstract class _StatsItem implements StatsItem {
-  factory _StatsItem(
+  const factory _StatsItem(
       {@JsonKey(name: 'funded_utxo_count') required final int fundedUtxoCount,
       @JsonKey(name: 'funded_utxo_sum') required final int fundedUtxoSum,
       @JsonKey(name: 'spent_utxo_count') required final int spentUtxoCount,

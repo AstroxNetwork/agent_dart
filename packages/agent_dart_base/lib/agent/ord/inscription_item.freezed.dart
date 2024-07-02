@@ -144,7 +144,10 @@ class __$$InscriptionItemImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$InscriptionItemImpl implements _InscriptionItem {
   const _$InscriptionItemImpl(
-      {required this.id, required this.detail, this.number, this.num});
+      {required this.id,
+      required this.detail,
+      required this.number,
+      required this.num});
 
   factory _$InscriptionItemImpl.fromJson(Map<String, dynamic> json) =>
       _$$InscriptionItemImplFromJson(json);
@@ -197,8 +200,8 @@ abstract class _InscriptionItem implements InscriptionItem {
   const factory _InscriptionItem(
       {required final String id,
       required final InscriptionDetail detail,
-      final int? number,
-      final int? num}) = _$InscriptionItemImpl;
+      required final int? number,
+      required final int? num}) = _$InscriptionItemImpl;
 
   factory _InscriptionItem.fromJson(Map<String, dynamic> json) =
       _$InscriptionItemImpl.fromJson;
