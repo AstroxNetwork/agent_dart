@@ -1,7 +1,7 @@
 // The Android Gradle Plugin builds the native code with the Android NDK.
 
 group 'com.astrox.agent_dart'
-version '1.0-SNAPSHOT'
+version '1.0.0-SNAPSHOT'
 
 buildscript {
     repositories {
