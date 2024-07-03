@@ -28,7 +28,7 @@ class ErrorMessageMatcher<T extends Error> extends TypeMatcher<T> {
 }
 
 Future<void> ffiInit() {
-  return RustLib.init();
+  return AgentDart.init();
 }
 
 // void matchFFI() {

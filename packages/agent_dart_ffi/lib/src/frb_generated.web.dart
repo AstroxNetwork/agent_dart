@@ -20,8 +20,8 @@ import 'schnorr.dart';
 import 'secp256k1.dart';
 import 'types.dart';
 
-abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
-  RustLibApiImplPlatform({
+abstract class AgentDartApiImplPlatform extends BaseApiImpl<AgentDartWire> {
+  AgentDartApiImplPlatform({
     required super.handler,
     required super.wire,
     required super.generalizedFrbRustBinding,
@@ -1488,8 +1488,8 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
 // Section: wire_class
 
-class RustLibWire implements BaseWire {
-  RustLibWire.fromExternalLibrary(ExternalLibrary lib);
+class AgentDartWire implements BaseWire {
+  AgentDartWire.fromExternalLibrary(ExternalLibrary lib);
 
   void rust_arc_increment_strong_count_RustOpaque_BdkDescriptor(int ptr) =>
       wasmModule.rust_arc_increment_strong_count_RustOpaque_BdkDescriptor(ptr);
@@ -1513,11 +1513,11 @@ class RustLibWire implements BaseWire {
 }
 
 @JS('wasm_bindgen')
-external RustLibWasmModule get wasmModule;
+external AgentDartWasmModule get wasmModule;
 
 @JS()
 @anonymous
-extension type RustLibWasmModule._(JSObject _) implements JSObject {
+extension type AgentDartWasmModule._(JSObject _) implements JSObject {
   external void rust_arc_increment_strong_count_RustOpaque_BdkDescriptor(
       int ptr);
 
