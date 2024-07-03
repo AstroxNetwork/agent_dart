@@ -20,15 +20,16 @@ import 'secp256k1.dart';
 import 'types.dart';
 
 /// Main entrypoint of the Rust API
-class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
+class AgentDart
+    extends BaseEntrypoint<AgentDartApi, AgentDartApiImpl, AgentDartWire> {
   @internal
-  static final instance = RustLib._();
+  static final instance = AgentDart._();
 
-  RustLib._();
+  AgentDart._();
 
   /// Initialize flutter_rust_bridge
   static Future<void> init({
-    RustLibApi? api,
+    AgentDartApi? api,
     BaseHandler? handler,
     ExternalLibrary? externalLibrary,
   }) async {
@@ -46,12 +47,12 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   static void dispose() => instance.disposeImpl();
 
   @override
-  ApiImplConstructor<RustLibApiImpl, RustLibWire> get apiImplConstructor =>
-      RustLibApiImpl.new;
+  ApiImplConstructor<AgentDartApiImpl, AgentDartWire> get apiImplConstructor =>
+      AgentDartApiImpl.new;
 
   @override
-  WireConstructor<RustLibWire> get wireConstructor =>
-      RustLibWire.fromExternalLibrary;
+  WireConstructor<AgentDartWire> get wireConstructor =>
+      AgentDartWire.fromExternalLibrary;
 
   @override
   Future<void> executeRustInitializers() async {}
@@ -74,7 +75,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   );
 }
 
-abstract class RustLibApi extends BaseApi {
+abstract class AgentDartApi extends BaseApi {
   Future<Uint8List> crateApiAes128CtrDecrypt({required AesDecryptReq req});
 
   Future<Uint8List> crateApiAes128CtrEncrypt({required AesEncryptReq req});
@@ -447,8 +448,9 @@ abstract class RustLibApi extends BaseApi {
       get rust_arc_decrement_strong_count_WalletInstancePtr;
 }
 
-class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
-  RustLibApiImpl({
+class AgentDartApiImpl extends AgentDartApiImplPlatform
+    implements AgentDartApi {
+  AgentDartApiImpl({
     required super.handler,
     required super.wire,
     required super.generalizedFrbRustBinding,
@@ -7286,11 +7288,11 @@ class BdkDescriptorImpl extends RustOpaque implements BdkDescriptor {
 
   static final _kStaticData = RustArcStaticData(
     rustArcIncrementStrongCount:
-        RustLib.instance.api.rust_arc_increment_strong_count_BdkDescriptor,
+        AgentDart.instance.api.rust_arc_increment_strong_count_BdkDescriptor,
     rustArcDecrementStrongCount:
-        RustLib.instance.api.rust_arc_decrement_strong_count_BdkDescriptor,
+        AgentDart.instance.api.rust_arc_decrement_strong_count_BdkDescriptor,
     rustArcDecrementStrongCountPtr:
-        RustLib.instance.api.rust_arc_decrement_strong_count_BdkDescriptorPtr,
+        AgentDart.instance.api.rust_arc_decrement_strong_count_BdkDescriptorPtr,
   );
 }
 
@@ -7306,11 +7308,11 @@ class BlockchainInstanceImpl extends RustOpaque implements BlockchainInstance {
       : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
 
   static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount:
-        RustLib.instance.api.rust_arc_increment_strong_count_BlockchainInstance,
-    rustArcDecrementStrongCount:
-        RustLib.instance.api.rust_arc_decrement_strong_count_BlockchainInstance,
-    rustArcDecrementStrongCountPtr: RustLib
+    rustArcIncrementStrongCount: AgentDart
+        .instance.api.rust_arc_increment_strong_count_BlockchainInstance,
+    rustArcDecrementStrongCount: AgentDart
+        .instance.api.rust_arc_decrement_strong_count_BlockchainInstance,
+    rustArcDecrementStrongCountPtr: AgentDart
         .instance.api.rust_arc_decrement_strong_count_BlockchainInstancePtr,
   );
 }
@@ -7327,10 +7329,10 @@ class WalletInstanceImpl extends RustOpaque implements WalletInstance {
 
   static final _kStaticData = RustArcStaticData(
     rustArcIncrementStrongCount:
-        RustLib.instance.api.rust_arc_increment_strong_count_WalletInstance,
+        AgentDart.instance.api.rust_arc_increment_strong_count_WalletInstance,
     rustArcDecrementStrongCount:
-        RustLib.instance.api.rust_arc_decrement_strong_count_WalletInstance,
-    rustArcDecrementStrongCountPtr:
-        RustLib.instance.api.rust_arc_decrement_strong_count_WalletInstancePtr,
+        AgentDart.instance.api.rust_arc_decrement_strong_count_WalletInstance,
+    rustArcDecrementStrongCountPtr: AgentDart
+        .instance.api.rust_arc_decrement_strong_count_WalletInstancePtr,
   );
 }

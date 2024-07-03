@@ -25,27 +25,27 @@ import 'types.dart';
 /// phrase_to_seed
 /// seed_to_key
 Future<Uint8List> mnemonicPhraseToSeed({required PhraseToSeedReq req}) =>
-    RustLib.instance.api.crateApiMnemonicPhraseToSeed(req: req);
+    AgentDart.instance.api.crateApiMnemonicPhraseToSeed(req: req);
 
 Future<Uint8List> mnemonicSeedToKey({required SeedToKeyReq req}) =>
-    RustLib.instance.api.crateApiMnemonicSeedToKey(req: req);
+    AgentDart.instance.api.crateApiMnemonicSeedToKey(req: req);
 
 /// --------------------
 /// WIF
 /// --------------------
 /// hex_bytes_to_wif
 Future<String> hexBytesToWif({required String hex, required Network network}) =>
-    RustLib.instance.api.crateApiHexBytesToWif(hex: hex, network: network);
+    AgentDart.instance.api.crateApiHexBytesToWif(hex: hex, network: network);
 
 /// --------------------
 /// bls
 /// --------------------
 /// bls_init
 /// bls_verify
-Future<bool> blsInit() => RustLib.instance.api.crateApiBlsInit();
+Future<bool> blsInit() => AgentDart.instance.api.crateApiBlsInit();
 
 Future<bool> blsVerify({required BLSVerifyReq req}) =>
-    RustLib.instance.api.crateApiBlsVerify(req: req);
+    AgentDart.instance.api.crateApiBlsVerify(req: req);
 
 /// --------------
 /// ed25519
@@ -54,96 +54,96 @@ Future<bool> blsVerify({required BLSVerifyReq req}) =>
 /// ed25519_sign
 /// ed25519_verify
 Future<ED25519Res> ed25519FromSeed({required ED25519FromSeedReq req}) =>
-    RustLib.instance.api.crateApiEd25519FromSeed(req: req);
+    AgentDart.instance.api.crateApiEd25519FromSeed(req: req);
 
 Future<Uint8List> ed25519Sign({required ED25519SignReq req}) =>
-    RustLib.instance.api.crateApiEd25519Sign(req: req);
+    AgentDart.instance.api.crateApiEd25519Sign(req: req);
 
 Future<bool> ed25519Verify({required ED25519VerifyReq req}) =>
-    RustLib.instance.api.crateApiEd25519Verify(req: req);
+    AgentDart.instance.api.crateApiEd25519Verify(req: req);
 
 /// ---------------------
 /// secp256k1
 /// ---------------------
 Future<Secp256k1IdentityExport> secp256K1FromSeed(
         {required Secp256k1FromSeedReq req}) =>
-    RustLib.instance.api.crateApiSecp256K1FromSeed(req: req);
+    AgentDart.instance.api.crateApiSecp256K1FromSeed(req: req);
 
 Future<SignatureFFI> secp256K1Sign({required Secp256k1SignWithSeedReq req}) =>
-    RustLib.instance.api.crateApiSecp256K1Sign(req: req);
+    AgentDart.instance.api.crateApiSecp256K1Sign(req: req);
 
 Future<SignatureFFI> secp256K1SignWithRng(
         {required Secp256k1SignWithRngReq req}) =>
-    RustLib.instance.api.crateApiSecp256K1SignWithRng(req: req);
+    AgentDart.instance.api.crateApiSecp256K1SignWithRng(req: req);
 
 Future<SignatureFFI> secp256K1SignRecoverable(
         {required Secp256k1SignWithSeedReq req}) =>
-    RustLib.instance.api.crateApiSecp256K1SignRecoverable(req: req);
+    AgentDart.instance.api.crateApiSecp256K1SignRecoverable(req: req);
 
 Future<bool> secp256K1Verify({required Secp256k1VerifyReq req}) =>
-    RustLib.instance.api.crateApiSecp256K1Verify(req: req);
+    AgentDart.instance.api.crateApiSecp256K1Verify(req: req);
 
 Future<Uint8List> secp256K1GetSharedSecret(
         {required Secp256k1ShareSecretReq req}) =>
-    RustLib.instance.api.crateApiSecp256K1GetSharedSecret(req: req);
+    AgentDart.instance.api.crateApiSecp256K1GetSharedSecret(req: req);
 
 Future<Uint8List> secp256K1Recover({required Secp256k1RecoverReq req}) =>
-    RustLib.instance.api.crateApiSecp256K1Recover(req: req);
+    AgentDart.instance.api.crateApiSecp256K1Recover(req: req);
 
 /// ---------------------
 /// secp256k1
 /// ---------------------
 Future<P256IdentityExport> p256FromSeed({required P256FromSeedReq req}) =>
-    RustLib.instance.api.crateApiP256FromSeed(req: req);
+    AgentDart.instance.api.crateApiP256FromSeed(req: req);
 
 Future<SignatureFFI> p256Sign({required P256SignWithSeedReq req}) =>
-    RustLib.instance.api.crateApiP256Sign(req: req);
+    AgentDart.instance.api.crateApiP256Sign(req: req);
 
 Future<bool> p256Verify({required P256VerifyReq req}) =>
-    RustLib.instance.api.crateApiP256Verify(req: req);
+    AgentDart.instance.api.crateApiP256Verify(req: req);
 
 Future<Uint8List> p256GetSharedSecret({required P256ShareSecretReq req}) =>
-    RustLib.instance.api.crateApiP256GetSharedSecret(req: req);
+    AgentDart.instance.api.crateApiP256GetSharedSecret(req: req);
 
 /// ---------------------
 /// schnorr
 /// ---------------------
 Future<SchnorrIdentityExport> schnorrFromSeed(
         {required SchnorrFromSeedReq req}) =>
-    RustLib.instance.api.crateApiSchnorrFromSeed(req: req);
+    AgentDart.instance.api.crateApiSchnorrFromSeed(req: req);
 
 Future<SignatureFFI> schnorrSign({required SchnorrSignWithSeedReq req}) =>
-    RustLib.instance.api.crateApiSchnorrSign(req: req);
+    AgentDart.instance.api.crateApiSchnorrSign(req: req);
 
 Future<bool> schnorrVerify({required SchnorrVerifyReq req}) =>
-    RustLib.instance.api.crateApiSchnorrVerify(req: req);
+    AgentDart.instance.api.crateApiSchnorrVerify(req: req);
 
 /// ---------------------
 /// aes
 /// ---------------------
 Future<Uint8List> aes128CtrEncrypt({required AesEncryptReq req}) =>
-    RustLib.instance.api.crateApiAes128CtrEncrypt(req: req);
+    AgentDart.instance.api.crateApiAes128CtrEncrypt(req: req);
 
 Future<Uint8List> aes128CtrDecrypt({required AesDecryptReq req}) =>
-    RustLib.instance.api.crateApiAes128CtrDecrypt(req: req);
+    AgentDart.instance.api.crateApiAes128CtrDecrypt(req: req);
 
 Future<Uint8List> aes256CbcEncrypt({required AesEncryptReq req}) =>
-    RustLib.instance.api.crateApiAes256CbcEncrypt(req: req);
+    AgentDart.instance.api.crateApiAes256CbcEncrypt(req: req);
 
 Future<Uint8List> aes256CbcDecrypt({required AesDecryptReq req}) =>
-    RustLib.instance.api.crateApiAes256CbcDecrypt(req: req);
+    AgentDart.instance.api.crateApiAes256CbcDecrypt(req: req);
 
 Future<Uint8List> aes256GcmEncrypt({required AesEncryptReq req}) =>
-    RustLib.instance.api.crateApiAes256GcmEncrypt(req: req);
+    AgentDart.instance.api.crateApiAes256GcmEncrypt(req: req);
 
 Future<Uint8List> aes256GcmDecrypt({required AesDecryptReq req}) =>
-    RustLib.instance.api.crateApiAes256GcmDecrypt(req: req);
+    AgentDart.instance.api.crateApiAes256GcmDecrypt(req: req);
 
 Future<KeyDerivedRes> pbkdf2DeriveKey({required PBKDFDeriveReq req}) =>
-    RustLib.instance.api.crateApiPbkdf2DeriveKey(req: req);
+    AgentDart.instance.api.crateApiPbkdf2DeriveKey(req: req);
 
 Future<KeyDerivedRes> scryptDeriveKey({required ScriptDeriveReq req}) =>
-    RustLib.instance.api.crateApiScryptDeriveKey(req: req);
+    AgentDart.instance.api.crateApiScryptDeriveKey(req: req);
 
 // Rust type: RustOpaqueMoi<BdkDescriptor>
 abstract class BdkDescriptor implements RustOpaqueInterface {}
@@ -156,40 +156,41 @@ class Api {
 
   static Future<String> addressFromScript(
           {required Script script, required Network network}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiAddressFromScript(script: script, network: network);
 
   static Future<Network> addressNetwork({required String address}) =>
-      RustLib.instance.api.crateApiApiAddressNetwork(address: address);
+      AgentDart.instance.api.crateApiApiAddressNetwork(address: address);
 
   static Future<Script> addressToScriptPubkey({required String address}) =>
-      RustLib.instance.api.crateApiApiAddressToScriptPubkey(address: address);
+      AgentDart.instance.api.crateApiApiAddressToScriptPubkey(address: address);
 
   static Future<String> asPublic({required String secret}) =>
-      RustLib.instance.api.crateApiApiAsPublic(secret: secret);
+      AgentDart.instance.api.crateApiApiAsPublic(secret: secret);
 
   static Future<Uint8List> asSecretBytes({required String secret}) =>
-      RustLib.instance.api.crateApiApiAsSecretBytes(secret: secret);
+      AgentDart.instance.api.crateApiApiAsSecretBytes(secret: secret);
 
   static Future<String> asString({required BdkDescriptor descriptor}) =>
-      RustLib.instance.api.crateApiApiAsString(descriptor: descriptor);
+      AgentDart.instance.api.crateApiApiAsString(descriptor: descriptor);
 
   static Future<String> asStringPrivate({required BdkDescriptor descriptor}) =>
-      RustLib.instance.api.crateApiApiAsStringPrivate(descriptor: descriptor);
+      AgentDart.instance.api.crateApiApiAsStringPrivate(descriptor: descriptor);
 
   static Future<String> bip322SignSegwit(
           {required List<int> secret, required String message}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiBip322SignSegwit(secret: secret, message: message);
 
   static Future<String> bip322SignTaproot(
           {required List<int> secret, required String message}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiBip322SignTaproot(secret: secret, message: message);
 
   static Future<String> broadcast(
           {required String tx, required BlockchainInstance blockchain}) =>
-      RustLib.instance.api.crateApiApiBroadcast(tx: tx, blockchain: blockchain);
+      AgentDart.instance.api
+          .crateApiApiBroadcast(tx: tx, blockchain: blockchain);
 
   static Future<BdkTxBuilderResult> bumpFeeTxBuilderFinish(
           {required String txid,
@@ -199,7 +200,7 @@ class Api {
           required bool enableRbf,
           required bool keepChange,
           int? nSequence}) =>
-      RustLib.instance.api.crateApiApiBumpFeeTxBuilderFinish(
+      AgentDart.instance.api.crateApiApiBumpFeeTxBuilderFinish(
           txid: txid,
           feeRate: feeRate,
           allowShrinking: allowShrinking,
@@ -210,62 +211,62 @@ class Api {
 
   static Future<bool> cacheAddress(
           {required WalletInstance wallet, required int cacheSize}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiCacheAddress(wallet: wallet, cacheSize: cacheSize);
 
   static Future<String> combinePsbt(
           {required String psbtStr, required String other}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiCombinePsbt(psbtStr: psbtStr, other: other);
 
   static Future<String> createAddress({required String address}) =>
-      RustLib.instance.api.crateApiApiCreateAddress(address: address);
+      AgentDart.instance.api.crateApiApiCreateAddress(address: address);
 
   static Future<BlockchainInstance> createBlockchain(
           {required BlockchainConfig config}) =>
-      RustLib.instance.api.crateApiApiCreateBlockchain(config: config);
+      AgentDart.instance.api.crateApiApiCreateBlockchain(config: config);
 
   static Future<String> createDerivationPath({required String path}) =>
-      RustLib.instance.api.crateApiApiCreateDerivationPath(path: path);
+      AgentDart.instance.api.crateApiApiCreateDerivationPath(path: path);
 
   static Future<String> createDerivedDescriptorSecret(
           {required Network network,
           required String mnemonic,
           required String path,
           String? password}) =>
-      RustLib.instance.api.crateApiApiCreateDerivedDescriptorSecret(
+      AgentDart.instance.api.crateApiApiCreateDerivedDescriptorSecret(
           network: network, mnemonic: mnemonic, path: path, password: password);
 
   static Future<BdkDescriptor> createDescriptor(
           {required String descriptor, required Network network}) =>
-      RustLib.instance.api.crateApiApiCreateDescriptor(
+      AgentDart.instance.api.crateApiApiCreateDescriptor(
           descriptor: descriptor, network: network);
 
   static Future<String> createDescriptorPublic(
           {String? xpub, required String path, required bool derive}) =>
-      RustLib.instance.api.crateApiApiCreateDescriptorPublic(
+      AgentDart.instance.api.crateApiApiCreateDescriptorPublic(
           xpub: xpub, path: path, derive: derive);
 
   static Future<String> createDescriptorSecret(
           {required Network network,
           required String mnemonic,
           String? password}) =>
-      RustLib.instance.api.crateApiApiCreateDescriptorSecret(
+      AgentDart.instance.api.crateApiApiCreateDescriptorSecret(
           network: network, mnemonic: mnemonic, password: password);
 
   static Future<Script> createScript({required List<int> rawOutputScript}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiCreateScript(rawOutputScript: rawOutputScript);
 
   static Future<String> createTransaction({required List<int> tx}) =>
-      RustLib.instance.api.crateApiApiCreateTransaction(tx: tx);
+      AgentDart.instance.api.crateApiApiCreateTransaction(tx: tx);
 
   static Future<WalletInstance> createWallet(
           {required BdkDescriptor descriptor,
           BdkDescriptor? changeDescriptor,
           required Network network,
           required DatabaseConfig databaseConfig}) =>
-      RustLib.instance.api.crateApiApiCreateWallet(
+      AgentDart.instance.api.crateApiApiCreateWallet(
           descriptor: descriptor,
           changeDescriptor: changeDescriptor,
           network: network,
@@ -275,131 +276,132 @@ class Api {
           {required BdkDescriptor descriptor,
           required int index,
           required Network network}) =>
-      RustLib.instance.api.crateApiApiDeriveAddressAt(
+      AgentDart.instance.api.crateApiApiDeriveAddressAt(
           descriptor: descriptor, index: index, network: network);
 
   static Future<String> deriveDescriptorSecret(
           {required String secret, required String path}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiDeriveDescriptorSecret(secret: secret, path: path);
 
   static Future<String> descriptorPublicFromString(
           {required String publicKey}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiDescriptorPublicFromString(publicKey: publicKey);
 
   static Future<String> descriptorSecretFromString({required String secret}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiDescriptorSecretFromString(secret: secret);
 
   static Future<double> estimateFee(
           {required BigInt target, required BlockchainInstance blockchain}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiEstimateFee(target: target, blockchain: blockchain);
 
   static Future<String> extendDescriptorSecret(
           {required String secret, required String path}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiExtendDescriptorSecret(secret: secret, path: path);
 
   static Future<String> extractTx({required String psbtStr}) =>
-      RustLib.instance.api.crateApiApiExtractTx(psbtStr: psbtStr);
+      AgentDart.instance.api.crateApiApiExtractTx(psbtStr: psbtStr);
 
   static Future<String> generateSeedFromEntropy({required List<int> entropy}) =>
-      RustLib.instance.api.crateApiApiGenerateSeedFromEntropy(entropy: entropy);
+      AgentDart.instance.api
+          .crateApiApiGenerateSeedFromEntropy(entropy: entropy);
 
   static Future<String> generateSeedFromString({required String mnemonic}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiGenerateSeedFromString(mnemonic: mnemonic);
 
   static Future<String> generateSeedFromWordCount(
           {required WordCount wordCount}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiGenerateSeedFromWordCount(wordCount: wordCount);
 
   static Future<AddressInfo> getAddress(
           {required WalletInstance wallet,
           required AddressIndex addressIndex}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiGetAddress(wallet: wallet, addressIndex: addressIndex);
 
   static Future<String> getAddressType({required String address}) =>
-      RustLib.instance.api.crateApiApiGetAddressType(address: address);
+      AgentDart.instance.api.crateApiApiGetAddressType(address: address);
 
   static Future<Balance> getBalance({required WalletInstance wallet}) =>
-      RustLib.instance.api.crateApiApiGetBalance(wallet: wallet);
+      AgentDart.instance.api.crateApiApiGetBalance(wallet: wallet);
 
   static Future<String> getBlockchainHash(
           {required int blockchainHeight,
           required BlockchainInstance blockchain}) =>
-      RustLib.instance.api.crateApiApiGetBlockchainHash(
+      AgentDart.instance.api.crateApiApiGetBlockchainHash(
           blockchainHeight: blockchainHeight, blockchain: blockchain);
 
   static Future<int> getHeight({required BlockchainInstance blockchain}) =>
-      RustLib.instance.api.crateApiApiGetHeight(blockchain: blockchain);
+      AgentDart.instance.api.crateApiApiGetHeight(blockchain: blockchain);
 
   static Future<List<TxOut>> getInputs({required String psbtStr}) =>
-      RustLib.instance.api.crateApiApiGetInputs(psbtStr: psbtStr);
+      AgentDart.instance.api.crateApiApiGetInputs(psbtStr: psbtStr);
 
   static Future<AddressInfo> getInternalAddress(
           {required WalletInstance wallet,
           required AddressIndex addressIndex}) =>
-      RustLib.instance.api.crateApiApiGetInternalAddress(
+      AgentDart.instance.api.crateApiApiGetInternalAddress(
           wallet: wallet, addressIndex: addressIndex);
 
   static Future<String> getPubFromSecretBytes({required List<int> bytes}) =>
-      RustLib.instance.api.crateApiApiGetPubFromSecretBytes(bytes: bytes);
+      AgentDart.instance.api.crateApiApiGetPubFromSecretBytes(bytes: bytes);
 
   static Future<List<TransactionDetails>> getTransactions(
           {required WalletInstance wallet, required bool includeRaw}) =>
-      RustLib.instance.api
+      AgentDart.instance.api
           .crateApiApiGetTransactions(wallet: wallet, includeRaw: includeRaw);
 
   static Future<String> getTx(
           {required String tx, required BlockchainInstance blockchain}) =>
-      RustLib.instance.api.crateApiApiGetTx(tx: tx, blockchain: blockchain);
+      AgentDart.instance.api.crateApiApiGetTx(tx: tx, blockchain: blockchain);
 
   static Future<BdkDescriptor> importSingleWif(
           {required String wif,
           required String addressType,
           required Network network}) =>
-      RustLib.instance.api.crateApiApiImportSingleWif(
+      AgentDart.instance.api.crateApiApiImportSingleWif(
           wif: wif, addressType: addressType, network: network);
 
   static Future<List<TxIn>> input({required String tx}) =>
-      RustLib.instance.api.crateApiApiInput(tx: tx);
+      AgentDart.instance.api.crateApiApiInput(tx: tx);
 
   static Future<bool> isCoinBase({required String tx}) =>
-      RustLib.instance.api.crateApiApiIsCoinBase(tx: tx);
+      AgentDart.instance.api.crateApiApiIsCoinBase(tx: tx);
 
   static Future<bool> isExplicitlyRbf({required String tx}) =>
-      RustLib.instance.api.crateApiApiIsExplicitlyRbf(tx: tx);
+      AgentDart.instance.api.crateApiApiIsExplicitlyRbf(tx: tx);
 
   static Future<bool> isLockTimeEnabled({required String tx}) =>
-      RustLib.instance.api.crateApiApiIsLockTimeEnabled(tx: tx);
+      AgentDart.instance.api.crateApiApiIsLockTimeEnabled(tx: tx);
 
   static Future<String> jsonSerialize({required String psbtStr}) =>
-      RustLib.instance.api.crateApiApiJsonSerialize(psbtStr: psbtStr);
+      AgentDart.instance.api.crateApiApiJsonSerialize(psbtStr: psbtStr);
 
   static Future<List<LocalUtxo>> listUnspent(
           {required WalletInstance wallet}) =>
-      RustLib.instance.api.crateApiApiListUnspent(wallet: wallet);
+      AgentDart.instance.api.crateApiApiListUnspent(wallet: wallet);
 
   static Future<List<LocalUtxo>> listUnspentOutputs(
           {required WalletInstance wallet}) =>
-      RustLib.instance.api.crateApiApiListUnspentOutputs(wallet: wallet);
+      AgentDart.instance.api.crateApiApiListUnspentOutputs(wallet: wallet);
 
   static Future<int> lockTime({required String tx}) =>
-      RustLib.instance.api.crateApiApiLockTime(tx: tx);
+      AgentDart.instance.api.crateApiApiLockTime(tx: tx);
 
   static Future<String> masterFinterprint({required String xpub}) =>
-      RustLib.instance.api.crateApiApiMasterFinterprint(xpub: xpub);
+      AgentDart.instance.api.crateApiApiMasterFinterprint(xpub: xpub);
 
   static Future<BdkDescriptor> newBip44Descriptor(
           {required KeychainKind keyChainKind,
           required String secretKey,
           required Network network}) =>
-      RustLib.instance.api.crateApiApiNewBip44Descriptor(
+      AgentDart.instance.api.crateApiApiNewBip44Descriptor(
           keyChainKind: keyChainKind, secretKey: secretKey, network: network);
 
   static Future<BdkDescriptor> newBip44Public(
@@ -407,7 +409,7 @@ class Api {
           required String publicKey,
           required Network network,
           required String fingerprint}) =>
-      RustLib.instance.api.crateApiApiNewBip44Public(
+      AgentDart.instance.api.crateApiApiNewBip44Public(
           keyChainKind: keyChainKind,
           publicKey: publicKey,
           network: network,
@@ -417,7 +419,7 @@ class Api {
           {required KeychainKind keyChainKind,
           required String secretKey,
           required Network network}) =>
-      RustLib.instance.api.crateApiApiNewBip44TrDescriptor(
+      AgentDart.instance.api.crateApiApiNewBip44TrDescriptor(
           keyChainKind: keyChainKind, secretKey: secretKey, network: network);
 
   static Future<BdkDescriptor> newBip44TrPublic(
@@ -425,7 +427,7 @@ class Api {
           required String publicKey,
           required Network network,
           required String fingerprint}) =>
-      RustLib.instance.api.crateApiApiNewBip44TrPublic(
+      AgentDart.instance.api.crateApiApiNewBip44TrPublic(
           keyChainKind: keyChainKind,
           publicKey: publicKey,
           network: network,
@@ -435,7 +437,7 @@ class Api {
           {required KeychainKind keyChainKind,
           required String secretKey,
           required Network network}) =>
-      RustLib.instance.api.crateApiApiNewBip49Descriptor(
+      AgentDart.instance.api.crateApiApiNewBip49Descriptor(
           keyChainKind: keyChainKind, secretKey: secretKey, network: network);
 
   static Future<BdkDescriptor> newBip49Public(
@@ -443,7 +445,7 @@ class Api {
           required String publicKey,
           required Network network,
           required String fingerprint}) =>
-      RustLib.instance.api.crateApiApiNewBip49Public(
+      AgentDart.instance.api.crateApiApiNewBip49Public(
           keyChainKind: keyChainKind,
           publicKey: publicKey,
           network: network,
@@ -453,7 +455,7 @@ class Api {
           {required KeychainKind keyChainKind,
           required String secretKey,
           required Network network}) =>
-      RustLib.instance.api.crateApiApiNewBip84Descriptor(
+      AgentDart.instance.api.crateApiApiNewBip84Descriptor(
           keyChainKind: keyChainKind, secretKey: secretKey, network: network);
 
   static Future<BdkDescriptor> newBip84Public(
@@ -461,7 +463,7 @@ class Api {
           required String publicKey,
           required Network network,
           required String fingerprint}) =>
-      RustLib.instance.api.crateApiApiNewBip84Public(
+      AgentDart.instance.api.crateApiApiNewBip84Public(
           keyChainKind: keyChainKind,
           publicKey: publicKey,
           network: network,
@@ -471,7 +473,7 @@ class Api {
           {required KeychainKind keyChainKind,
           required String secretKey,
           required Network network}) =>
-      RustLib.instance.api.crateApiApiNewBip86Descriptor(
+      AgentDart.instance.api.crateApiApiNewBip86Descriptor(
           keyChainKind: keyChainKind, secretKey: secretKey, network: network);
 
   static Future<BdkDescriptor> newBip86Public(
@@ -479,45 +481,45 @@ class Api {
           required String publicKey,
           required Network network,
           required String fingerprint}) =>
-      RustLib.instance.api.crateApiApiNewBip86Public(
+      AgentDart.instance.api.crateApiApiNewBip86Public(
           keyChainKind: keyChainKind,
           publicKey: publicKey,
           network: network,
           fingerprint: fingerprint);
 
   static Future<List<TxOut>> output({required String tx}) =>
-      RustLib.instance.api.crateApiApiOutput(tx: tx);
+      AgentDart.instance.api.crateApiApiOutput(tx: tx);
 
   static Future<Payload> payload({required String address}) =>
-      RustLib.instance.api.crateApiApiPayload(address: address);
+      AgentDart.instance.api.crateApiApiPayload(address: address);
 
   static Future<BigInt?> psbtFeeAmount({required String psbtStr}) =>
-      RustLib.instance.api.crateApiApiPsbtFeeAmount(psbtStr: psbtStr);
+      AgentDart.instance.api.crateApiApiPsbtFeeAmount(psbtStr: psbtStr);
 
   static Future<double?> psbtFeeRate({required String psbtStr}) =>
-      RustLib.instance.api.crateApiApiPsbtFeeRate(psbtStr: psbtStr);
+      AgentDart.instance.api.crateApiApiPsbtFeeRate(psbtStr: psbtStr);
 
   static Future<String> psbtTxid({required String psbtStr}) =>
-      RustLib.instance.api.crateApiApiPsbtTxid(psbtStr: psbtStr);
+      AgentDart.instance.api.crateApiApiPsbtTxid(psbtStr: psbtStr);
 
   static Future<String> serializePsbt({required String psbtStr}) =>
-      RustLib.instance.api.crateApiApiSerializePsbt(psbtStr: psbtStr);
+      AgentDart.instance.api.crateApiApiSerializePsbt(psbtStr: psbtStr);
 
   static Future<Uint8List> serializeTx({required String tx}) =>
-      RustLib.instance.api.crateApiApiSerializeTx(tx: tx);
+      AgentDart.instance.api.crateApiApiSerializeTx(tx: tx);
 
   static Future<String?> sign(
           {required WalletInstance wallet,
           required String psbtStr,
           SignOptions? signOptions}) =>
-      RustLib.instance.api.crateApiApiSign(
+      AgentDart.instance.api.crateApiApiSign(
           wallet: wallet, psbtStr: psbtStr, signOptions: signOptions);
 
   static Future<BigInt> size({required String tx}) =>
-      RustLib.instance.api.crateApiApiSize(tx: tx);
+      AgentDart.instance.api.crateApiApiSize(tx: tx);
 
   static Future<String> toPublicString({required String xpub}) =>
-      RustLib.instance.api.crateApiApiToPublicString(xpub: xpub);
+      AgentDart.instance.api.crateApiApiToPublicString(xpub: xpub);
 
   static Future<BdkTxBuilderResult> txBuilderFinish(
           {required WalletInstance wallet,
@@ -534,7 +536,7 @@ class Api {
           RbfValue? rbf,
           required List<int> data,
           bool? shuffleUtxo}) =>
-      RustLib.instance.api.crateApiApiTxBuilderFinish(
+      AgentDart.instance.api.crateApiApiTxBuilderFinish(
           wallet: wallet,
           recipients: recipients,
           txs: txs,
@@ -565,7 +567,7 @@ class Api {
           RbfValue? rbf,
           required List<int> data,
           bool? shuffleUtxo}) =>
-      RustLib.instance.api.crateApiApiTxCalFeeFinish(
+      AgentDart.instance.api.crateApiApiTxCalFeeFinish(
           wallet: wallet,
           recipients: recipients,
           txs: txs,
@@ -582,19 +584,19 @@ class Api {
           shuffleUtxo: shuffleUtxo);
 
   static Future<String> txTxid({required String tx}) =>
-      RustLib.instance.api.crateApiApiTxTxid(tx: tx);
+      AgentDart.instance.api.crateApiApiTxTxid(tx: tx);
 
   static Future<int> version({required String tx}) =>
-      RustLib.instance.api.crateApiApiVersion(tx: tx);
+      AgentDart.instance.api.crateApiApiVersion(tx: tx);
 
   static Future<BigInt> vsize({required String tx}) =>
-      RustLib.instance.api.crateApiApiVsize(tx: tx);
+      AgentDart.instance.api.crateApiApiVsize(tx: tx);
 
   static Future<Network> walletNetwork({required WalletInstance wallet}) =>
-      RustLib.instance.api.crateApiApiWalletNetwork(wallet: wallet);
+      AgentDart.instance.api.crateApiApiWalletNetwork(wallet: wallet);
 
   static Future<BigInt> weight({required String tx}) =>
-      RustLib.instance.api.crateApiApiWeight(tx: tx);
+      AgentDart.instance.api.crateApiApiWeight(tx: tx);
 
   @override
   int get hashCode => 0;

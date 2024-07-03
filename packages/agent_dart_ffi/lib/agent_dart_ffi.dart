@@ -4,7 +4,7 @@ export 'src/api.dart';
 export 'src/bdk/blockchain.dart';
 export 'src/bdk/types.dart';
 export 'src/bdk/wallet.dart';
-export 'src/frb_generated.dart' show RustLib;
+export 'src/frb_generated.dart' show AgentDart;
 export 'src/lib.dart';
 export 'src/p256.dart';
 export 'src/schnorr.dart';
