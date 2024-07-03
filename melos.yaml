@@ -4,6 +4,9 @@ repository: https://github.com/AstroxNetwork/agent_dart
 packages:
   - packages/**
 
+ignore:
+  - 'packages/agent_dart/cargokit/build_tool'
+
 ide:
   intellij:
     enabled: true
