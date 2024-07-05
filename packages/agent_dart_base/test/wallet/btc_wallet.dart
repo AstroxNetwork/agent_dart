@@ -1,6 +1,6 @@
-import 'package:agent_dart_base/agent/ord/blockstream.dart';
-import 'package:agent_dart_base/agent/ord/client.dart';
-import 'package:agent_dart_base/agent/ord/service.dart';
+// import 'package:agent_dart_base/agent/ord/blockstream.dart';
+// import 'package:agent_dart_base/agent/ord/client.dart';
+// import 'package:agent_dart_base/agent/ord/service.dart';
 import 'package:agent_dart_base/wallet/btc/bdk/bdk.dart';
 import 'package:agent_dart_base/wallet/btc_wallet.dart';
 import 'package:agent_dart_ffi/agent_dart_ffi.dart';
@@ -10,30 +10,29 @@ import '../test_utils.dart';
 
 void main() {
   ffiInit();
-  // matchFFI();
   btcWalletTests();
 }
 
 void btcWalletTests() {
-  final ord = OrdService(
-    host: 'unisat.io/api',
-    override: const OverrideOptions(
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-        'X-Client': 'UniSat Wallet',
-        'X-Version': '1.1.12',
-      },
-    ),
-  );
-
-  final blockstream = BlockStreamApi(
-    host: 'blockstream.info/api',
-    override: const OverrideOptions(
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-    ),
-  );
+  // final ord = OrdService(
+  //   host: 'unisat.io/api',
+  //   override: const OverrideOptions(
+  //     headers: {
+  //       'Content-Type': 'application/json;charset=utf-8',
+  //       'X-Client': 'UniSat Wallet',
+  //       'X-Version': '1.1.12',
+  //     },
+  //   ),
+  // );
+  //
+  // final blockstream = BlockStreamApi(
+  //   host: 'blockstream.info/api',
+  //   override: const OverrideOptions(
+  //     headers: {
+  //       'Content-Type': 'application/json;charset=utf-8',
+  //     },
+  //   ),
+  // );
 
   Future<BitcoinWallet> getWallet() async {
     final wallet = await BitcoinWallet.fromPhrase(

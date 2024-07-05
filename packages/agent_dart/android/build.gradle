@@ -54,6 +54,6 @@ dependencies {
 
 apply from: "../cargokit/gradle/plugin.gradle"
 cargokit {
-    manifestDir = "../../agent_dart_ffi/native/agent_dart"
+    manifestDir = "../native/agent_dart"
     libname = "agent_dart"
 }

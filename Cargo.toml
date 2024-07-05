@@ -4,6 +4,10 @@ members = [
     "packages/agent_dart_ffi/native/bdk_lite",
     "packages/agent_dart_ffi/native/ed_compact",
 ]
+exclude = [
+    "packages/agent_dart/native",
+    "packages/agent_dart_base/native",
+]
 
 [profile.release]
 lto = true

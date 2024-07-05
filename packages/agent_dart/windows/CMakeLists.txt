@@ -9,7 +9,7 @@ set(PROJECT_NAME "agent_dart")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 include("../cargokit/cmake/cargokit.cmake")
-apply_cargokit(${PROJECT_NAME} ../../agent_dart_ffi/native/agent_dart agent_dart "")
+apply_cargokit(${PROJECT_NAME} ../native/agent_dart agent_dart "")
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
