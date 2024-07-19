@@ -1,10 +1,12 @@
 name: agent_dart
-description: A new Flutter FFI plugin project.
 version: 1.0.0
-homepage: https://github.com/AstroxNetwork
+
+description: |
+  An agent library built for Internet Computer,
+  a plugin package for dart and flutter apps.
+  Developers can build ones to interact with Dfinity's blockchain directly.
 repository: https://github.com/AstroxNetwork/agent_dart
 issue_tracker: https://github.com/AstroxNetwork/agent_dart/issues
-publish_to: none
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
