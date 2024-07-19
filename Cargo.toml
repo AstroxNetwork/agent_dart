@@ -1,7 +1,6 @@
 [workspace]
 members = [
     "packages/agent_dart_ffi/native/agent_dart",
-    "packages/agent_dart_ffi/native/bdk_lite",
     "packages/agent_dart_ffi/native/ed_compact",
 ]
 exclude = [
