@@ -79,7 +79,7 @@ void main() {
 
     final p = Phrase.fromString(mne2);
     expect(p.mnemonic, mne2);
-    expect(p.list, stringToList(mne2));
+    expect(p.list, mne2.trim().split(' '));
 
     try {
       Phrase.fromString(mne2.substring(0, mne2.length - 10));

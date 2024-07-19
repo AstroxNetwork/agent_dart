@@ -4,7 +4,7 @@ import 'package:agent_dart_base/wallet/keysmith.dart';
 import 'package:agent_dart_ffi/agent_dart_ffi.dart';
 
 class Phrase {
-  Phrase(this.mnemonic) : _list = stringToList(mnemonic);
+  Phrase(this.mnemonic) : _list = mnemonic.trim().split(' ');
 
   factory Phrase.generate({int length = 24}) {
     assert(length == 12 || length == 24);
@@ -14,7 +14,7 @@ class Phrase {
   }
 
   factory Phrase.fromString(String phrase) {
-    final arr = stringToList(phrase);
+    final arr = phrase.trim().split(' ');
     final invalidWords = <String>[];
     for (final word in arr) {
       if (!_phraseWordsList.any((e) => e == word)) {
@@ -81,12 +81,6 @@ class PhaseException implements Exception {
       return 'PhaseException: $message';
     }
   }
-}
-
-List<String> stringToList(String phrase) {
-  final str = phrase.trimLeft();
-  final last = str.trimRight();
-  return last.split(' ');
 }
 
 const _phraseWordsList = [
