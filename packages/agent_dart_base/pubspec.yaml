@@ -1,13 +1,12 @@
 name: agent_dart_base
-description: A new Flutter FFI plugin project.
 version: 1.0.0
-homepage: https://github.com/AstroxNetwork
+
+description: The Dart plugin that bridges Rust implementation for agent_dart.
 repository: https://github.com/AstroxNetwork/agent_dart
 issue_tracker: https://github.com/AstroxNetwork/agent_dart/issues
-publish_to: none
 
 environment:
-  sdk: ^3.4.0
+  sdk: '>=3.4.0 <4.0.0'
 
 dependencies:
   agent_dart_ffi:
@@ -29,7 +28,7 @@ dependencies:
   crypto: ^3.0.2
   ffi: ^2.0.1
   fixnum: ^1.0.1
-  flutter_rust_bridge: '>=2.0.0 <2.1.0'
+  flutter_rust_bridge: '>=2.1.0 <2.2.0'
   http: ^1.0.0
   js: '>=0.6.4 <0.8.0'
   meta: ^1.7.0
