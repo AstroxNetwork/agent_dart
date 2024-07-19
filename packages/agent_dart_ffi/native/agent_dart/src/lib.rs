@@ -13,7 +13,6 @@ mod schnorr;
 mod secp256k1;
 mod types;
 
-mod bdk;
 #[allow(clippy::all)]
 #[allow(dead_code)]
 mod bls;

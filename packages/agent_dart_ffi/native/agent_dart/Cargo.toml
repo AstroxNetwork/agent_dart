@@ -10,7 +10,7 @@ crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 anyhow = "1.0.57"
-bip32 = "0.4.0"
+bip32 = "=0.4.0"
 bip39 = "2.0.0"
 ed_compact = { path = "../ed_compact" }
 pbkdf2 = "0.11.0"
@@ -30,8 +30,6 @@ serde_bytes = "0.11.5"
 serde_cbor = "0.11.2"
 serde_with = "1.12.0"
 bytebuffer = "0.2.1"
-bitcoin = { version = "0.29.2", default-features = false, features = ["serde", "base64", "rand"] }
-bdk_lite = {path = "../bdk_lite", version = "0.28.0", features = ["all-keys", "use-esplora-ureq", "sqlite-bundled", "rpc", "electrum"]}
 lazy_static = "1.4.0"
 tokio = { version = "1", default-features = false, features = [ "rt-multi-thread", "time", "sync" ] }
 hex = "0.4.3"

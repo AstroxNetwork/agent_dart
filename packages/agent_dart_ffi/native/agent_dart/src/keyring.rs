@@ -7,22 +7,6 @@ use bip39::{Language, Mnemonic};
 pub struct KeyRingFFI {}
 
 impl KeyRingFFI {
-    // pub fn create_phrase(req: CreatePhraseReq) -> String {
-    //     let mut rng = rand::thread_rng();
-    //     let res = Mnemonic::generate_in_with(&mut rng,Language::English,req.length as usize);
-    //     if res.is_empty() {
-    //         panic!(
-    //             "{}",
-    //             ErrorInfo {
-    //                 code: 0 as u32,
-    //                 message: "Empty String".to_string(),
-    //             }
-    //             .to_json()
-    //         )
-    //     }
-    //     res.to_string()
-    // }
-
     pub fn phrase_to_seed(req: PhraseToSeedReq) -> Vec<u8> {
         match Mnemonic::parse_in_normalized(Language::English, req.phrase.as_str()) {
             Ok(r) => r.to_seed(&req.password).to_vec(),
@@ -30,7 +14,7 @@ impl KeyRingFFI {
                 panic!(
                     "{}",
                     ErrorInfo {
-                        code: 0 as u32,
+                        code: 0u32,
                         message: "Phrase To Seed Error".to_string(),
                     }
                     .to_json()
@@ -49,7 +33,7 @@ impl KeyRingFFI {
                     panic!(
                         "{}",
                         ErrorInfo {
-                            code: 0 as u32,
+                            code: 0u32,
                             message: "path is not correct".to_string(),
                         }
                         .to_json()
@@ -61,7 +45,7 @@ impl KeyRingFFI {
             Err(e) => panic!(
                 "{}",
                 ErrorInfo {
-                    code: 0 as u32,
+                    code: 0u32,
                     message: e.to_string(),
                 }
                 .to_json()
