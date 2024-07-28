@@ -10,7 +10,6 @@ import 'wallet/signer.dart' as signer;
 
 void main() async {
   ffiInit();
-  // matchFFI();
   agent.main();
   auth.main();
   candid.main();

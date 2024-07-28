@@ -1,6 +1,7 @@
 // import 'dart:ffi';
 
 import 'package:agent_dart_ffi/agent_dart_ffi.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:test/test.dart';
 
 // import 'package:p4d_rust_binding/utils/utils.dart';
@@ -28,7 +29,9 @@ class ErrorMessageMatcher<T extends Error> extends TypeMatcher<T> {
 }
 
 Future<void> ffiInit() {
-  return AgentDart.init();
+  return AgentDart.init(
+    externalLibrary: ExternalLibrary.open('../../target/debug/agent_dart.dll'),
+  );
 }
 
 // void matchFFI() {

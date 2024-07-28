@@ -5,13 +5,10 @@ import 'package:agent_dart_base/agent/types.dart';
 import 'package:agent_dart_base/identity/ed25519.dart';
 import 'package:agent_dart_base/utils/extension.dart';
 import 'package:test/test.dart';
-import '../test_utils.dart';
 
 // import 'package:agent_dart/utils/extension.dart';
 
 void main() {
-  ffiInit();
-  // matchFFI();
   ed25519Test();
 }
 
