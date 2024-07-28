@@ -18,6 +18,11 @@ rust/Cargo.lock
 
 _main.dart
 
+# build files
+/platform-build/
+/target/
+/test/_dylib/
+
 # Specified to pub.dev
 /.github/
 /rust/
