@@ -7,7 +7,6 @@ import 'package:agent_dart_base/identity/ed25519.dart';
 import 'package:agent_dart_base/principal/principal.dart';
 import 'package:agent_dart_base/utils/extension.dart';
 import 'package:test/test.dart';
-import '../test_utils.dart';
 
 Future<SignIdentity> createIdentity(int seed) {
   final s = Uint8List.fromList([seed, ...List.filled(31, 0)]);
@@ -18,8 +17,6 @@ Future<SignIdentity> createIdentity(int seed) {
 //   return blobFromHex(text.codeUnits.);
 // }
 void main() {
-  ffiInit();
-  // matchFFI();
   delegationTest();
 }
 
