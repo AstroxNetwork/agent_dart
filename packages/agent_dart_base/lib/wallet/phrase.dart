@@ -48,7 +48,7 @@ class Phrase {
     );
   }
 
-  Future<Uint8List> toHdKey({
+  Future<Uint8List> toWIFByCoin({
     String passphrase = '',
     int index = 0,
     int coinType = CoinType.icp,
@@ -59,6 +59,20 @@ class Phrase {
       req: SeedToKeyReq(
         seed: seed,
         path: '$basePath/0/$index',
+      ),
+    );
+  }
+
+  Future<Uint8List> toWIFByPath({
+    String passphrase = '',
+    int index = 0,
+    required String basePath,
+  }) async {
+    final seed = await toSeed(passphrase: passphrase);
+    return mnemonicSeedToKey(
+      req: SeedToKeyReq(
+        seed: seed,
+        path: '$basePath/$index',
       ),
     );
   }
