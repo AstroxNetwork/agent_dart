@@ -4,15 +4,15 @@ import 'dart:typed_data';
 import 'package:agent_dart_base/agent/cbor.dart';
 import 'package:agent_dart_base/agent/request_id.dart';
 import 'package:agent_dart_base/agent/types.dart';
-import 'package:agent_dart_base/ffi/bls.base.dart';
 import 'package:agent_dart_base/utils/extension.dart';
 import 'package:agent_dart_base/utils/u8a.dart';
 import 'package:typed_data/typed_data.dart';
 
 import 'agent/api.dart';
+import 'bls.dart';
 import 'errors.dart';
 
-final BaseBLS _bls = BaseBLS();
+final AgentBLS _bls = AgentBLS();
 
 /// A certificate needs to be verified (using Certificate.prototype.verify)
 /// before it can be used.
