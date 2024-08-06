@@ -49,4 +49,5 @@ dev_dependencies:
   json_serializable: ^6.7.0
 
 false_secrets:
-  - test/fixture/*.pem
+  - 'native/ed_compact/src/pem.rs'
+  - 'test/fixture/*.pem'

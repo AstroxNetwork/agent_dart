@@ -38,3 +38,6 @@ flutter:
         ffiPlugin: true
       windows:
         ffiPlugin: true
+
+false_secrets:
+  - 'native/ed_compact/src/pem.rs'

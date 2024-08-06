@@ -20,4 +20,4 @@ dev_dependencies:
   freezed: ^2.5.2
 
 false_secrets:
-  - native/ed_compact/src/pem.rs
+  - 'native/ed_compact/src/pem.rs'

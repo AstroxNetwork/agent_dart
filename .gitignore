@@ -9,24 +9,7 @@
 build/
 
 .env
-**/pubspec.lock
 
-rust/target
-rust/Cargo.lock
-
-_main.dart
-
-# build files
-/platform-build/
-/target/
-# rust/headers/
-# rust/dylib/
-# macos/cli/
-# macos/libagent_dart.a
-# ios/libagent_dart.a
-# android/src/main/jniLibs/
-# linux/libagent_dart.so
-# windows/agent_dart.dll
 # Miscellaneous
 *.class
 *.log
@@ -41,19 +24,16 @@ _main.dart
 *.ipr
 *.iws
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
 # Flutter/Dart/Pub related
 pubspec_overrides.yaml
 **/doc/api/
 .pub-cache/
 .flutter-plugins
 .flutter-plugins-dependencies
+**/pubspec.lock
 
-# Rust related
+# build files
+/platform-build/
 /target/
 /Cargo.lock
 /platform-build
