@@ -28,7 +28,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - run: flutter pub get
+      - uses: bluefireteam/melos-action@v3
       - run: cargo build --package=agent_dart
       - run: cd packages/agent_dart_base && dart test ./test/agent_dart_base_test.dart
       - name: Publish dry run
