@@ -1,5 +1,7 @@
 // import 'dart:ffi';
 
+import 'dart:ffi';
+
 import 'package:agent_dart_ffi/agent_dart_ffi.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:test/test.dart';
@@ -29,8 +31,15 @@ class ErrorMessageMatcher<T extends Error> extends TypeMatcher<T> {
 }
 
 Future<void> ffiInit() {
+  final [os, arch] = Abi.current().toString().split('_');
+  final libName = switch ((os, arch)) {
+    ('macos', _) || ('linux', 'arm64') => 'libagent_dart.dylib',
+    ('linux', '_') => 'libagent_dart.so',
+    ('windows', '_') => 'agent_dart.dll',
+    _ => throw UnsupportedError('$os $arch is not a supported platform.'),
+  };
   return AgentDart.init(
-    externalLibrary: ExternalLibrary.open('../../target/debug/agent_dart.dll'),
+    externalLibrary: ExternalLibrary.open('../../target/debug/$libName'),
   );
 }
 
