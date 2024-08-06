@@ -29,10 +29,10 @@ jobs:
         with:
           channel: 'stable'
       - uses: bluefireteam/melos-action@v3
+      - name: Replace symlinks
+        run: ./scripts/replace_symlinks_before_publish.sh
       - run: cargo build --package=agent_dart
       - run: cd packages/agent_dart_base && dart test ./test/agent_dart_base_test.dart
-      - name: Replace symlinks before publish
-        run: ./scripts/replace_symlinks_before_publish.sh
       - name: Publish dry run
         run: dart pub publish --dry-run
         if: github.repository == 'AstroxNetwork/agent_dart'
