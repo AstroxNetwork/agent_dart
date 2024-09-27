@@ -17,9 +17,8 @@ const _typeOpaque = 1;
 class Principal {
   const Principal(
     this._arr, {
-    Uint8List? subAccount,
-  })  : assert(subAccount == null || subAccount.length == 32),
-        _subAccount = subAccount;
+    this.subAccount,
+  }) : assert(subAccount == null || subAccount.length == 32);
 
   factory Principal.selfAuthenticating(Uint8List publicKey) {
     final sha = sha224Hash(publicKey.buffer);
@@ -37,7 +36,7 @@ class Principal {
     } else if (other is Map<String, dynamic> && other['_isPrincipal'] == true) {
       return Principal(other['_arr'], subAccount: other['_subAccount']);
     } else if (other is Principal) {
-      return Principal(other._arr, subAccount: other._subAccount);
+      return Principal(other._arr, subAccount: other.subAccount);
     }
     throw UnreachableError();
   }
@@ -128,7 +127,7 @@ class Principal {
   }
 
   final Uint8List _arr;
-  final Uint8List? _subAccount;
+  final Uint8List? subAccount;
 
   bool isAnonymous() {
     return _arr.lengthInBytes == 1 && _arr[0] == _suffixAnonymous;
@@ -150,19 +149,19 @@ class Principal {
       throw StateError('No characters found.');
     }
     final buffer = StringBuffer(matches.map((e) => e.group(0)).join('-'));
-    if (_subAccount != null) {
+    if (subAccount != null) {
       final checksum = base32Encode(
-        _getChecksum(Uint8List.fromList(_arr + _subAccount!).buffer),
+        _getChecksum(Uint8List.fromList(_arr + subAccount!).buffer),
       );
       buffer.write('-$checksum');
       int i = 0;
-      while (_subAccount![i] == 0 && i < _subAccount!.length) {
+      while (subAccount![i] == 0 && i < subAccount!.length) {
         i++;
       }
-      final subAccount = _subAccount!.sublist(i, _subAccount!.length);
-      if (subAccount.isNotEmpty) {
+      final subAccountBuffer = subAccount!.sublist(i, subAccount!.length);
+      if (subAccountBuffer.isNotEmpty) {
         buffer.write('.');
-        buffer.write(subAccount.toHex().replaceFirst('0', ''));
+        buffer.write(subAccountBuffer.toHex().replaceFirst('0', ''));
       }
     }
     return buffer.toString();
@@ -198,11 +197,11 @@ class Principal {
       identical(this, other) ||
       other is Principal &&
           _arr.eq(other._arr) &&
-          (_subAccount?.eq(other._subAccount ?? Uint8List(0)) ??
-              _subAccount == null && other._subAccount == null);
+          (subAccount?.eq(other.subAccount ?? Uint8List(0)) ??
+              subAccount == null && other.subAccount == null);
 
   @override
-  int get hashCode => Object.hash(_arr, _subAccount);
+  int get hashCode => Object.hash(_arr, subAccount);
 }
 
 class CanisterId extends Principal {
