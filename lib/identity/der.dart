@@ -141,7 +141,7 @@ final oidP256 = Uint8List.fromList([
     0x03,
     0x01,
     0x07,
-  ]
+  ],
 ]);
 
 /// Wraps the given [payload] in a DER encoding tagged with the given encoded

@@ -22,7 +22,7 @@ class ActorCallError extends AgentFetchError {
       'Call failed:',
       '  Canister: ${canisterId.toText()}',
       '  Method: $methodName ($type)',
-      ...(props.entries).map((n) => "  '${n.key}': ${jsonEncode(props[n])}"),
+      ...props.entries.map((n) => "  '${n.key}': ${jsonEncode(props[n])}"),
     ].join('\n');
     throw e;
   }
@@ -101,7 +101,7 @@ class CallConfig {
       'agent': agent,
       'pollingStrategyFactory': pollingStrategyFactory,
       'canisterId': canisterId,
-      'effectiveCanisterId': effectiveCanisterId
+      'effectiveCanisterId': effectiveCanisterId,
     };
   }
 }
@@ -149,7 +149,7 @@ class ActorConfig extends CallConfig {
     return {
       ...super.toJson(),
       'callTransform': callTransform,
-      'queryTransform': queryTransform
+      'queryTransform': queryTransform,
     };
   }
 }
@@ -251,7 +251,7 @@ class Actor {
     dynamic result;
     if (func != null) {
       result = await func.call([
-        {'amount': [], 'settings': []}
+        {'amount': [], 'settings': []},
       ]);
     }
     final canisterId = Principal.from(result['canister_id']);
