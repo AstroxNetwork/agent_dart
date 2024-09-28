@@ -167,14 +167,7 @@ class Principal {
     return buffer.toString();
   }
 
-  Uint8List toAccountId({Uint8List? subAccount}) {
-    if (subAccount != null && subAccount.length != 32) {
-      throw ArgumentError.value(
-        subAccount,
-        'subAccount',
-        'Sub-account address must be 32-bytes length',
-      );
-    }
+  Uint8List toAccountId() {
     final hash = SHA224();
     hash.update('\x0Aaccount-id'.plainToU8a());
     hash.update(toUint8List());
