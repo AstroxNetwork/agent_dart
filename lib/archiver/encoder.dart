@@ -159,9 +159,9 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
   }
 
   @override
-  void close() {
+  Future<void> close() {
     _encoder.writeBlock(_output);
     _encoder.endEncode();
-    _output.close();
+    return _output.close();
   }
 }
