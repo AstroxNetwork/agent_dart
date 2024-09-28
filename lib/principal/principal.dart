@@ -161,14 +161,17 @@ class Principal {
         _getChecksum(Uint8List.fromList(principal + subAccount!).buffer),
       );
       buffer.write('-$checksum');
-      int i = 0;
-      while (subAccount![i] == 0 && i < subAccount!.length) {
-        i++;
+      final subAccountHex = subAccount!.toHex();
+      int nonZeroStart = 0;
+      while (nonZeroStart < subAccountHex.length) {
+        if (subAccountHex[nonZeroStart] != '0') {
+          break;
+        }
+        nonZeroStart++;
       }
-      final subAccountBuffer = subAccount!.sublist(i, subAccount!.length);
-      if (subAccountBuffer.isNotEmpty) {
+      if (nonZeroStart != subAccountHex.length) {
         buffer.write('.');
-        buffer.write(subAccountBuffer.toHex().replaceFirst('0', ''));
+        buffer.write(subAccountHex.replaceRange(0, nonZeroStart, ''));
       }
     }
     return buffer.toString();
