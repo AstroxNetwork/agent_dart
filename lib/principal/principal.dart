@@ -16,7 +16,7 @@ const _typeOpaque = 1;
 
 class Principal {
   const Principal(
-    this._arr, {
+    this.principal, {
     this.subAccount,
   }) : assert(subAccount == null || subAccount.length == 32);
 
@@ -36,7 +36,7 @@ class Principal {
     } else if (other is Map<String, dynamic> && other['_isPrincipal'] == true) {
       return Principal(other['_arr'], subAccount: other['_subAccount']);
     } else if (other is Principal) {
-      return Principal(other._arr, subAccount: other.subAccount);
+      return Principal(other.principal, subAccount: other.subAccount);
     }
     throw UnreachableError();
   }
@@ -126,20 +126,27 @@ class Principal {
     return principal;
   }
 
-  final Uint8List _arr;
+  final Uint8List principal;
   final Uint8List? subAccount;
 
-  bool isAnonymous() {
-    return _arr.lengthInBytes == 1 && _arr[0] == _suffixAnonymous;
+  Principal newSubAccount(Uint8List subAccount) {
+    if (this.subAccount == null || !this.subAccount!.eq(subAccount)) {
+      return Principal(principal, subAccount: subAccount);
+    }
+    return this;
   }
 
-  Uint8List toUint8List() => _arr;
+  bool isAnonymous() {
+    return principal.lengthInBytes == 1 && principal[0] == _suffixAnonymous;
+  }
 
-  String toHex() => _toHexString(_arr).toUpperCase();
+  Uint8List toUint8List() => principal;
+
+  String toHex() => _toHexString(principal).toUpperCase();
 
   String toText() {
-    final checksum = _getChecksum(_arr.buffer);
-    final bytes = Uint8List.fromList(_arr);
+    final checksum = _getChecksum(principal.buffer);
+    final bytes = Uint8List.fromList(principal);
     final array = Uint8List.fromList([...checksum, ...bytes]);
     final result = base32Encode(array);
     final reg = RegExp(r'.{1,5}');
@@ -151,7 +158,7 @@ class Principal {
     final buffer = StringBuffer(matches.map((e) => e.group(0)).join('-'));
     if (subAccount != null) {
       final checksum = base32Encode(
-        _getChecksum(Uint8List.fromList(_arr + subAccount!).buffer),
+        _getChecksum(Uint8List.fromList(principal + subAccount!).buffer),
       );
       buffer.write('-$checksum');
       int i = 0;
@@ -189,12 +196,12 @@ class Principal {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Principal &&
-          _arr.eq(other._arr) &&
+          principal.eq(other.principal) &&
           (subAccount?.eq(other.subAccount ?? Uint8List(0)) ??
               subAccount == null && other.subAccount == null);
 
   @override
-  int get hashCode => Object.hash(_arr, subAccount);
+  int get hashCode => Object.hash(principal, subAccount);
 }
 
 class CanisterId extends Principal {
