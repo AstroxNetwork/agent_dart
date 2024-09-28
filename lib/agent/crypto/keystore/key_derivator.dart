@@ -35,7 +35,7 @@ class _PBDKDF2KeyDerivator extends KeyDerivator {
       'c': iterations,
       'dklen': dklen,
       'prf': 'hmac-sha256',
-      'salt': salt.toHex()
+      'salt': salt.toHex(),
     };
   }
 
