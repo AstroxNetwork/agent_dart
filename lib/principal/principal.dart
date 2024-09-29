@@ -129,7 +129,10 @@ class Principal {
   final Uint8List principal;
   final Uint8List? subAccount;
 
-  Principal newSubAccount(Uint8List subAccount) {
+  Principal newSubAccount(Uint8List? subAccount) {
+    if (subAccount == null) {
+      return this;
+    }
     if (this.subAccount == null || !this.subAccount!.eq(subAccount)) {
       return Principal(principal, subAccount: subAccount);
     }
