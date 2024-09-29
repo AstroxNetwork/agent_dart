@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:agent_dart/principal/principal.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -84,6 +86,13 @@ void principalTest() {
       ).toText(),
       'z4s7u-byaaa-aaaao-a3paa-cai-l435n4y'
       '.1de15338bedf41b306d4ef5615d1f94fd7b0474b9255690cbe78d2309f02',
+    );
+    expect(
+      Principal(
+        Uint8List.fromList([0, 0, 0, 0, 0, 224, 17, 26, 1, 1]),
+        subAccount: Uint8List(32),
+      ).toText(),
+      'lrllq-iqaaa-aaaah-acena-cai',
     );
   });
 
