@@ -14,11 +14,16 @@ const _suffixAnonymous = 4;
 const _maxLengthInBytes = 29;
 const _typeOpaque = 1;
 
+final _emptySubAccount = Uint8List(32);
+
 class Principal {
-  const Principal(
+  Principal(
     this.principal, {
-    this.subAccount,
-  }) : assert(subAccount == null || subAccount.length == 32);
+    Uint8List? subAccount,
+  })  : assert(subAccount == null || subAccount.length == 32),
+        subAccount = subAccount != null && subAccount.eq(_emptySubAccount)
+            ? null
+            : subAccount;
 
   factory Principal.selfAuthenticating(Uint8List publicKey) {
     final sha = sha224Hash(publicKey.buffer);
@@ -130,7 +135,7 @@ class Principal {
   final Uint8List? subAccount;
 
   Principal newSubAccount(Uint8List? subAccount) {
-    if (subAccount == null) {
+    if (subAccount == null || subAccount.eq(_emptySubAccount)) {
       return this;
     }
     if (this.subAccount == null || !this.subAccount!.eq(subAccount)) {
@@ -160,10 +165,6 @@ class Principal {
     }
     final buffer = StringBuffer(matches.map((e) => e.group(0)).join('-'));
     if (subAccount != null) {
-      final checksum = base32Encode(
-        _getChecksum(Uint8List.fromList(principal + subAccount!).buffer),
-      );
-      buffer.write('-$checksum');
       final subAccountHex = subAccount!.toHex();
       int nonZeroStart = 0;
       while (nonZeroStart < subAccountHex.length) {
@@ -173,6 +174,10 @@ class Principal {
         nonZeroStart++;
       }
       if (nonZeroStart != subAccountHex.length) {
+        final checksum = base32Encode(
+          _getChecksum(Uint8List.fromList(principal + subAccount!).buffer),
+        );
+        buffer.write('-$checksum');
         buffer.write('.');
         buffer.write(subAccountHex.replaceRange(0, nonZeroStart, ''));
       }
