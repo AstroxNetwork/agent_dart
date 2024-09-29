@@ -93,20 +93,24 @@ void principalTest() {
       () => Principal.fromText('0chl6-4hpzw-vqaaa-aaaaa-c').toHex(),
       throwsA(
         isError<ArgumentError>(
-          'Principal expected to be 2chl6-4hpzw-vqaaa-aaaaa-c but got',
+          'The principal is expected to be 2chl6-4hpzw-vqaaa-aaaaa-c but got',
         ),
       ),
     );
     expect(
       () => Principal.fromText('0aaaa-aa').toHex(),
       throwsA(
-        isError<ArgumentError>('Principal expected to be aaaaa-aa but got'),
+        isError<ArgumentError>(
+          'The principal is expected to be aaaaa-aa but got',
+        ),
       ),
     );
     expect(
       () => Principal.fromText('0vxsx-fae').toHex(),
       throwsA(
-        isError<ArgumentError>('Principal expected to be 2vxsx-fae but got'),
+        isError<ArgumentError>(
+          'The principal is expected to be 2vxsx-fae but got',
+        ),
       ),
     );
   });
