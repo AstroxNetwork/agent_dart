@@ -17,13 +17,11 @@ const _typeOpaque = 1;
 final _emptySubAccount = Uint8List(32);
 
 class Principal {
-  Principal(
-    this.principal, {
+  const Principal(
+    this._principal, {
     Uint8List? subAccount,
   })  : assert(subAccount == null || subAccount.length == 32),
-        subAccount = subAccount != null && subAccount.eq(_emptySubAccount)
-            ? null
-            : subAccount;
+        _subAccount = subAccount;
 
   factory Principal.selfAuthenticating(Uint8List publicKey) {
     final sha = sha224Hash(publicKey.buffer);
@@ -41,7 +39,7 @@ class Principal {
     } else if (other is Map<String, dynamic> && other['_isPrincipal'] == true) {
       return Principal(other['_arr'], subAccount: other['_subAccount']);
     } else if (other is Principal) {
-      return Principal(other.principal, subAccount: other.subAccount);
+      return Principal(other._principal, subAccount: other.subAccount);
     }
     throw UnreachableError();
   }
@@ -131,30 +129,37 @@ class Principal {
     return principal;
   }
 
-  final Uint8List principal;
-  final Uint8List? subAccount;
+  final Uint8List _principal;
+  final Uint8List? _subAccount;
+
+  Uint8List? get subAccount {
+    if (_subAccount case final v when v == null || v.eq(_emptySubAccount)) {
+      return null;
+    }
+    return _subAccount;
+  }
 
   Principal newSubAccount(Uint8List? subAccount) {
     if (subAccount == null || subAccount.eq(_emptySubAccount)) {
       return this;
     }
     if (this.subAccount == null || !this.subAccount!.eq(subAccount)) {
-      return Principal(principal, subAccount: subAccount);
+      return Principal(_principal, subAccount: subAccount);
     }
     return this;
   }
 
   bool isAnonymous() {
-    return principal.lengthInBytes == 1 && principal[0] == _suffixAnonymous;
+    return _principal.lengthInBytes == 1 && _principal[0] == _suffixAnonymous;
   }
 
-  Uint8List toUint8List() => principal;
+  Uint8List toUint8List() => _principal;
 
-  String toHex() => _toHexString(principal).toUpperCase();
+  String toHex() => _toHexString(_principal).toUpperCase();
 
   String toText() {
-    final checksum = _getChecksum(principal.buffer);
-    final bytes = Uint8List.fromList(principal);
+    final checksum = _getChecksum(_principal.buffer);
+    final bytes = Uint8List.fromList(_principal);
     final array = Uint8List.fromList([...checksum, ...bytes]);
     final result = base32Encode(array);
     final reg = RegExp(r'.{1,5}');
@@ -164,8 +169,9 @@ class Principal {
       throw StateError('No characters found.');
     }
     final buffer = StringBuffer(matches.map((e) => e.group(0)).join('-'));
-    if (subAccount != null) {
-      final subAccountHex = subAccount!.toHex();
+    if (_subAccount case final subAccount?
+        when !subAccount.eq(_emptySubAccount)) {
+      final subAccountHex = subAccount.toHex();
       int nonZeroStart = 0;
       while (nonZeroStart < subAccountHex.length) {
         if (subAccountHex[nonZeroStart] != '0') {
@@ -175,7 +181,7 @@ class Principal {
       }
       if (nonZeroStart != subAccountHex.length) {
         final checksum = base32Encode(
-          _getChecksum(Uint8List.fromList(principal + subAccount!).buffer),
+          _getChecksum(Uint8List.fromList(_principal + subAccount).buffer),
         );
         buffer.write('-$checksum');
         buffer.write('.');
@@ -189,7 +195,7 @@ class Principal {
     final hash = SHA224();
     hash.update('\x0Aaccount-id'.plainToU8a());
     hash.update(toUint8List());
-    hash.update(subAccount ?? Uint8List(32));
+    hash.update(subAccount ?? _emptySubAccount);
     final data = hash.digest();
     final view = ByteData(4);
     view.setUint32(0, getCrc32(data.buffer));
@@ -207,12 +213,12 @@ class Principal {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Principal &&
-          principal.eq(other.principal) &&
-          (subAccount?.eq(other.subAccount ?? Uint8List(0)) ??
-              subAccount == null && other.subAccount == null);
+          _principal.eq(other._principal) &&
+          (_subAccount?.eq(other._subAccount ?? _emptySubAccount) ??
+              _subAccount == null && other._subAccount == null);
 
   @override
-  int get hashCode => Object.hash(principal, subAccount);
+  int get hashCode => Object.hash(_principal, subAccount);
 }
 
 class CanisterId extends Principal {
