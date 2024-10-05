@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart/agent/types.dart';
 import 'package:agent_dart/utils/extension.dart';
 
 import '../agent/errors.dart';
@@ -15,8 +14,14 @@ const _suffixAnonymous = 4;
 const _maxLengthInBytes = 29;
 const _typeOpaque = 1;
 
+final _emptySubAccount = Uint8List(32);
+
 class Principal {
-  const Principal(this._arr);
+  const Principal(
+    this._principal, {
+    Uint8List? subAccount,
+  })  : assert(subAccount == null || subAccount.length == 32),
+        _subAccount = subAccount;
 
   factory Principal.selfAuthenticating(Uint8List publicKey) {
     final sha = sha224Hash(publicKey.buffer);
@@ -28,18 +33,18 @@ class Principal {
     return Principal(Uint8List.fromList([_suffixAnonymous]));
   }
 
-  factory Principal.from(dynamic other) {
+  factory Principal.from(Object? other) {
     if (other is String) {
       return Principal.fromText(other);
     } else if (other is Map<String, dynamic> && other['_isPrincipal'] == true) {
-      return Principal(other['_arr']);
+      return Principal(other['_arr'], subAccount: other['_subAccount']);
     } else if (other is Principal) {
-      return Principal(other._arr);
+      return Principal(other._principal, subAccount: other.subAccount);
     }
     throw UnreachableError();
   }
 
-  factory Principal.create(int uSize, Uint8List data) {
+  factory Principal.create(int uSize, Uint8List data, Uint8List? subAccount) {
     if (uSize > data.length) {
       throw RangeError.range(
         uSize,
@@ -49,56 +54,112 @@ class Principal {
         'Size must within the data length',
       );
     }
-    return Principal.fromBlob(data.sublist(0, uSize));
+    return Principal(data.sublist(0, uSize), subAccount: subAccount);
   }
 
-  factory Principal.fromHex(String hex) {
+  factory Principal.fromHex(String hex, {String? subAccountHex}) {
     if (hex.isEmpty) {
       return Principal(Uint8List(0));
     }
-    return Principal(hex.toU8a());
+    if (subAccountHex == null || subAccountHex.isEmpty) {
+      subAccountHex = null;
+    } else if (subAccountHex.startsWith('0')) {
+      throw ArgumentError.value(
+        subAccountHex,
+        'subAccountHex',
+        'The representation is not canonical: '
+            'leading zeros are not allowed in subaccounts.',
+      );
+    }
+    return Principal(
+      hex.toU8a(),
+      subAccount: subAccountHex?.padLeft(64, '0').toU8a(),
+    );
   }
 
   factory Principal.fromText(String text) {
-    final canisterIdNoDash = text.toLowerCase().replaceAll('-', '');
+    if (text.endsWith('.')) {
+      throw ArgumentError(
+        'The representation is not canonical: '
+        'default subaccount should be omitted.',
+      );
+    }
+    final paths = text.split('.');
+    final String? subAccountHex;
+    if (paths.length > 1) {
+      subAccountHex = paths.last;
+    } else {
+      subAccountHex = null;
+    }
+    if (subAccountHex != null && subAccountHex.startsWith('0')) {
+      throw ArgumentError.value(
+        subAccountHex,
+        'subAccount',
+        'The representation is not canonical: '
+            'leading zeros are not allowed in subaccounts.',
+      );
+    }
+    String prePrincipal = paths.first;
+    // Removes the checksum if sub-account is valid.
+    if (subAccountHex != null) {
+      final list = prePrincipal.split('-');
+      final checksum = list.removeLast();
+      // Checksum is 7 digits.
+      if (checksum.length != 7) {
+        throw ArgumentError.value(
+          prePrincipal,
+          'principal',
+          'Missing checksum',
+        );
+      }
+      prePrincipal = list.join('-');
+    }
+    final canisterIdNoDash = prePrincipal.toLowerCase().replaceAll('-', '');
     Uint8List arr = base32Decode(canisterIdNoDash);
     arr = arr.sublist(4, arr.length);
-    final principal = Principal(arr);
+    final subAccount = subAccountHex?.padLeft(64, '0').toU8a();
+    final principal = Principal(arr, subAccount: subAccount);
     if (principal.toText() != text) {
       throw ArgumentError.value(
         text,
-        'Principal',
-        'Principal expected to be ${principal.toText()} but got',
+        'principal',
+        'The principal is expected to be ${principal.toText()} but got',
       );
     }
     return principal;
   }
 
-  factory Principal.fromBlob(BinaryBlob arr) {
-    return Principal.fromUint8Array(arr);
+  final Uint8List _principal;
+  final Uint8List? _subAccount;
+
+  Uint8List? get subAccount {
+    if (_subAccount case final v when v == null || v.eq(_emptySubAccount)) {
+      return null;
+    }
+    return _subAccount;
   }
 
-  factory Principal.fromUint8Array(Uint8List arr) {
-    return Principal(arr);
+  Principal newSubAccount(Uint8List? subAccount) {
+    if (subAccount == null || subAccount.eq(_emptySubAccount)) {
+      return this;
+    }
+    if (this.subAccount == null || !this.subAccount!.eq(subAccount)) {
+      return Principal(_principal, subAccount: subAccount);
+    }
+    return this;
   }
-
-  final Uint8List _arr;
 
   bool isAnonymous() {
-    return _arr.lengthInBytes == 1 && _arr[0] == _suffixAnonymous;
+    return _principal.lengthInBytes == 1 && _principal[0] == _suffixAnonymous;
   }
 
-  Uint8List toUint8List() => _arr;
+  Uint8List toUint8List() => _principal;
 
-  Uint8List toBlob() => toUint8List();
-
-  String toHex() => _toHexString(_arr).toUpperCase();
+  String toHex() => _toHexString(_principal).toUpperCase();
 
   String toText() {
-    final checksumArrayBuf = ByteData(4);
-    checksumArrayBuf.setUint32(0, getCrc32(_arr.buffer));
-    final checksum = checksumArrayBuf.buffer.asUint8List();
-    final bytes = Uint8List.fromList(_arr);
+    final checksum = _getChecksum(_principal.buffer);
+    final bytes = Uint8List.fromList(_principal);
     final array = Uint8List.fromList([...checksum, ...bytes]);
     final result = base32Encode(array);
     final reg = RegExp(r'.{1,5}');
@@ -107,21 +168,34 @@ class Principal {
       // This should only happen if there's no character, which is unreachable.
       throw StateError('No characters found.');
     }
-    return matches.map((e) => e.group(0)).join('-');
+    final buffer = StringBuffer(matches.map((e) => e.group(0)).join('-'));
+    if (_subAccount case final subAccount?
+        when !subAccount.eq(_emptySubAccount)) {
+      final subAccountHex = subAccount.toHex();
+      int nonZeroStart = 0;
+      while (nonZeroStart < subAccountHex.length) {
+        if (subAccountHex[nonZeroStart] != '0') {
+          break;
+        }
+        nonZeroStart++;
+      }
+      if (nonZeroStart != subAccountHex.length) {
+        final checksum = base32Encode(
+          _getChecksum(Uint8List.fromList(_principal + subAccount).buffer),
+        );
+        buffer.write('-$checksum');
+        buffer.write('.');
+        buffer.write(subAccountHex.replaceRange(0, nonZeroStart, ''));
+      }
+    }
+    return buffer.toString();
   }
 
-  Uint8List toAccountId({Uint8List? subAccount}) {
-    if (subAccount != null && subAccount.length != 32) {
-      throw ArgumentError.value(
-        subAccount,
-        'subAccount',
-        'Sub-account address must be 32-bytes length',
-      );
-    }
+  Uint8List toAccountId() {
     final hash = SHA224();
     hash.update('\x0Aaccount-id'.plainToU8a());
-    hash.update(toBlob());
-    hash.update(subAccount ?? Uint8List(32));
+    hash.update(toUint8List());
+    hash.update(subAccount ?? _emptySubAccount);
     final data = hash.digest();
     final view = ByteData(4);
     view.setUint32(0, getCrc32(data.buffer));
@@ -137,14 +211,18 @@ class Principal {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is Principal && _arr.eq(other._arr);
+      identical(this, other) ||
+      other is Principal &&
+          _principal.eq(other._principal) &&
+          (_subAccount?.eq(other._subAccount ?? _emptySubAccount) ??
+              _subAccount == null && other._subAccount == null);
 
   @override
-  int get hashCode => _arr.hashCode;
+  int get hashCode => Object.hash(_principal, subAccount);
 }
 
 class CanisterId extends Principal {
-  CanisterId(Principal pid) : super(pid.toBlob());
+  CanisterId(Principal pid) : super(pid.toUint8List());
 
   factory CanisterId.fromU64(int val) {
     // It is important to use big endian here to ensure that the generated
@@ -164,9 +242,16 @@ class CanisterId extends Principal {
 
     data[blobLength] = _typeOpaque;
     return CanisterId(
-      Principal.create(blobLength + 1, Uint8List.fromList(data)),
+      Principal.create(blobLength + 1, Uint8List.fromList(data), null),
     );
   }
+}
+
+Uint8List _getChecksum(ByteBuffer buffer) {
+  final checksumArrayBuf = ByteData(4);
+  checksumArrayBuf.setUint32(0, getCrc32(buffer));
+  final checksum = checksumArrayBuf.buffer.asUint8List();
+  return checksum;
 }
 
 String _toHexString(Uint8List bytes) {
