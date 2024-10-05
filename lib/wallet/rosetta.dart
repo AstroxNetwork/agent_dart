@@ -609,11 +609,10 @@ Map<String, dynamic> transactionDecoder(String txnHash) {
   final content = envelope['content'] as Map;
   final senderPubkey = envelope['sender_pubkey'];
   final sendArgs = SendRequest.fromBuffer(content['arg']);
-  final senderAddress =
-      Principal.fromBlob(Uint8List.fromList(content['sender']));
+  final senderAddress = Principal(Uint8List.fromList(content['sender']));
   final hash = SHA224()
     ..update(('\x0Aaccount-id').plainToU8a())
-    ..update(senderAddress.toBlob())
+    ..update(senderAddress.toUint8List())
     ..update(Uint8List(32));
   return {
     'from': hash.digest(),
