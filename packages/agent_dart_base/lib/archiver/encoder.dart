@@ -161,6 +161,6 @@ class SingingBlockZipFileEncoder extends ZipFileEncoder {
   Future<void> close() async {
     _encoder.writeBlock(_output);
     _encoder.endEncode();
-    await _output.close();
+    return _output.close();
   }
 }

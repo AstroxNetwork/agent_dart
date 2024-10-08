@@ -12,7 +12,7 @@ dependencies:
   agent_dart_ffi: ^1.0.0
 
   plugin_platform_interface: ^2.0.2
-  archive: ^3.4.9
+  archive: ^3.5.0
   args: ^2.3.1
   basic_utils: ^5.7.0
   bip32: ^2.0.0

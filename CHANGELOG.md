@@ -4,6 +4,11 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.24
+
+- Implement subaccount as `Principal.subAccount`, which also removes the `subAccount` parameter
+  when converting a principal to an Account ID. Some other constructors are also removed due to duplicates.
+
 ## 1.0.0-dev.23
 
 - Fix encoder with deps and format files.

@@ -49,10 +49,8 @@ abstract class SignIdentity implements Identity {
   /// Signs a blob of data, with this identity's private key.
   Future<BinaryBlob> sign(BinaryBlob blob);
 
-  Uint8List getAccountId([Uint8List? subAccount]) {
-    return Principal.selfAuthenticating(
-      getPublicKey().toDer(),
-    ).toAccountId(subAccount: subAccount);
+  Uint8List getAccountId() {
+    return Principal.selfAuthenticating(getPublicKey().toDer()).toAccountId();
   }
 
   /// Get the principal represented by this identity. Normally should be a
