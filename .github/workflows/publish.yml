@@ -13,10 +13,30 @@ jobs:
         uses: actions/checkout@v3
       - name: Replace symlinks before publish
         run: ./scripts/replace_symlinks_before_publish.sh
-      - name: Dart and Flutter Package Publisher
+
+      - name: Publish agent_dart
         uses: k-paxian/dart-package-publisher@master
         with:
           credentialJson: ${{ secrets.CREDENTIAL_JSON }}
           force: true
+          relativePath: packages/agent_dart
+          skipTests: true
+          suppressBuildRunner: true
+
+      - name: Publish agent_dart_base
+        uses: k-paxian/dart-package-publisher@master
+        with:
+          credentialJson: ${{ secrets.CREDENTIAL_JSON }}
+          force: true
+          relativePath: packages/agent_dart_base
+          skipTests: true
+          suppressBuildRunner: true
+
+      - name: Publish agent_dart_ffi
+        uses: k-paxian/dart-package-publisher@master
+        with:
+          credentialJson: ${{ secrets.CREDENTIAL_JSON }}
+          force: true
+          relativePath: packages/agent_dart_ffi
           skipTests: true
           suppressBuildRunner: true
