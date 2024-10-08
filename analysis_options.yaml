@@ -28,4 +28,5 @@ linter:
     sort_constructors_first: true
     sort_unnamed_constructors_first: true
     unnecessary_await_in_return: true
+    unnecessary_library_name: false
     unnecessary_parenthesis: true
