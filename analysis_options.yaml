@@ -1,16 +1,20 @@
 include: package:lints/recommended.yaml
 
 analyzer:
+  errors:
+    invalid_annotation_target: ignore
   exclude:
-    - 'lib/protobuf/**.dart'
-    - 'rust/bridge/ffi/**.dart'
+    - 'packages/**/**.g.dart'
+    - 'packages/**/**.freezed.dart'
+    - 'packages/**/bridge_generated.dart'
+    - 'packages/**/types.pb*.dart'
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
 linter:
   rules:
     avoid_print: false
-    avoid_redundant_argument_values: true
+    avoid_redundant_argument_values: false
     always_declare_return_types: true
     directives_ordering: true
     prefer_const_constructors: true
@@ -20,8 +24,9 @@ linter:
     prefer_final_in_for_each: true
     prefer_final_locals: true
     prefer_single_quotes: true
-    require_trailing_commas: true
+    require_trailing_commas: false
     sort_constructors_first: true
     sort_unnamed_constructors_first: true
     unnecessary_await_in_return: true
+    unnecessary_library_name: false
     unnecessary_parenthesis: true

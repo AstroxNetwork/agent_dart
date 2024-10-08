@@ -5,7 +5,7 @@
 
 An agent library built for Internet Computer for Dart and Flutter apps.
 
-**Join the Discord channel: [![Discord](https://img.shields.io/discord/845497925298815036?color=purple&logo=discord&style=flat-square)](https://discord.gg/aNzRuePmUY)**
+**Join the Discord channel: [![Discord](https://img.shields.io/discord/845497925298815036?color=purple&logo=discord&style=flat-square)](https://discord.gg/xRVJfPnKGd)**
 
 ---
 
@@ -13,7 +13,7 @@ An agent library built for Internet Computer for Dart and Flutter apps.
 
 - [Agent Dart](#agent-dart)
   - [📃 Table of content](#-table-of-content)
-  - [⚡️ Quick start](#️-quick-start)
+  - [⚡️ Quick start](#-quick-start)
     - [For Dart/Flutter app](#for-dartflutter-app)
       - [For iOS projects](#for-ios-projects)
     - [For developing the plugin](#for-developing-the-plugin)
@@ -22,11 +22,11 @@ An agent library built for Internet Computer for Dart and Flutter apps.
     - [📖 Documentation](#-documentation)
     - [🔧 Helpers/Tooling](#-helperstooling)
     - [💡 Examples](#-examples)
-  - [🧘‍♂️ Motivation](#️-motivation)
+  - [🧘‍♂️ Motivation](#-motivation)
   - [🏆 Milestones](#-milestones)
   - [👨‍💻 Contributing](#-contributing)
   - [🔗 Reference and related projects](#-reference-and-related-projects)
-  - [⚠️ FAQ](#️-faq)
+  - [⚠️ FAQ](#-faq)
     - [Build rust libraries for iOS/MacOS](#build-rust-libraries-for-iosmacos)
     - [Network problem in macOS](#network-problem-in-macos)
 
@@ -69,9 +69,7 @@ make sure you've done the following setup the build settings.
 ## 🚦 Prerequisites
 
 - [CMake](https://cmake.org/) v3.2+
-- [Xcode](https://developer.apple.com/xcode/) v13+
 - [Rust](https://www.rust-lang.org/) v1.64+
-- [Node.js](https://nodejs.org/) v16+
 
 ## 🧰 Resources
 
@@ -129,28 +127,20 @@ we will document them as much as possible.
 By contributing to agent_dart, you agree that your contributions will be licensed under its MIT License.
 
 1. Fork this library and add your own branch like `{feat|fix|test|dep}-{detail}`.
-
 2. Follow the [Prerequisites](#-prerequisites).
-
 3. Build rust dependencies for all supported platforms:
-
-```shell
-sh ./scripts/bootstrap
-```
-
+  ```shell
+  sh ./scripts/bootstrap
+  ```
 4. Start the example.
-
-```shell
-cd example
-flutter run
-```
-
+  ```shell
+  cd example
+  flutter run
+  ```
 5. Tests. (Unit Test and Integration Test)
-
-```shell
-flutter test
-```
-
+  ```shell
+  flutter test
+  ```
 6. Commit and make a pull request.
 
 ## 🔗 Reference and related projects

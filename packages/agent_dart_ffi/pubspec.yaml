@@ -1,0 +1,23 @@
+name: agent_dart_ffi
+version: 1.0.0-dev.25
+
+description: The FFI plugin that bridges Rust implementation for agent_dart.
+repository: https://github.com/AstroxNetwork/agent_dart
+issue_tracker: https://github.com/AstroxNetwork/agent_dart/issues
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter_rust_bridge: '>=2.1.0 <2.2.0'
+  freezed_annotation: ^2.2.0
+
+dev_dependencies:
+  lints: # transparent
+  build_runner: ^2.1.11
+  ffi: ^2.1.0
+  ffigen: ^11.0.0
+  freezed: ^2.5.2
+
+false_secrets:
+  - 'native/ed_compact/src/pem.rs'

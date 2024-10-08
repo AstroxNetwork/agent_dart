@@ -1,0 +1,36 @@
+name: agent_dart_workspace
+repository: https://github.com/AstroxNetwork/agent_dart
+
+packages:
+  - packages/**
+
+ignore:
+  - 'packages/agent_dart/cargokit/build_tool'
+
+ide:
+  intellij:
+    enabled: true
+    moduleNamePrefix: ''
+
+command:
+  bootstrap:
+    runPubGetInParallel: false
+
+scripts:
+  analyze:
+    exec: flutter analyze .
+    description: Analyze a specific package in this project.
+
+  check-format:
+    exec: dart format --set-exit-if-changed .
+    description: Check the format of a specific package in this project.
+
+  format:
+    exec: dart format .
+    description: Format a specific package in this project.
+
+  publish-dry-run:
+    description: Publish dry-run all packages
+    exec: dart pub publish --dry-run
+    packageFilters:
+      noPrivate: true
