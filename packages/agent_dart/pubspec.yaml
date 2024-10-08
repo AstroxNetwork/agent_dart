@@ -1,5 +1,5 @@
 name: agent_dart
-version: 1.0.0
+version: 1.0.0-dev.24
 
 description: |
   An agent library built for Internet Computer,
@@ -16,10 +16,10 @@ dependencies:
   flutter:
     sdk: flutter
 
-  agent_dart_base: ^1.0.0
+  agent_dart_base: ^1.0.0-0
 
 dev_dependencies:
-  flutter_lints: ^3.0.0
+  flutter_lints: any
   flutter_test:
     sdk: flutter
   integration_test:
