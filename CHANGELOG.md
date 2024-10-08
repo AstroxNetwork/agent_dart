@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.25
+
+- Prepare for monorepo.
+
 ## 1.0.0-dev.24
 
 - Implement subaccount as `Principal.subAccount`, which also removes the `subAccount` parameter

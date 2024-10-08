@@ -1,0 +1,47 @@
+[package]
+name = "agent_dart"
+version = "1.0.0"
+authors = ["AstroX Dev <dev@astrox.network>"]
+edition = "2018"
+
+[lib]
+name = "agent_dart"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+anyhow = "1.0.57"
+bip32 = "=0.4.0"
+bip39 = "2.0.0"
+ed_compact = { path = "../ed_compact" }
+pbkdf2 = "0.11.0"
+scrypt = "0.10.0"
+sha2 = "0.10.2"
+hmac = "0.12.1"
+block-modes= "0.8.1"
+base64 = "0.21.2"
+aes = { version = "0.7.5", features = [ "ctr" ], default-features = false }
+aes-gcm = "0.10.1"
+k256 = { version = "0.11.4", default-features = false, features = [ "ecdsa", "sha256", "pem", "keccak256", "ecdh", "schnorr", ] }
+p256 = {version="0.11.1", default-features = false, features = ["ecdsa","ecdh","pem"]}
+rand = "0.8.5"
+serde = { version = "1.0.137", features = ["derive"] }
+serde_json = "1.0.79"
+serde_bytes = "0.11.5"
+serde_cbor = "0.11.2"
+serde_with = "1.12.0"
+bytebuffer = "0.2.1"
+lazy_static = "1.4.0"
+tokio = { version = "1", default-features = false, features = [ "rt-multi-thread", "time", "sync" ] }
+hex = "0.4.3"
+ecdsa = { version = "0.14.6", features = ["der"], default-features = false }
+flutter_rust_bridge = "=2.1.0"
+
+[dev-dependencies]
+
+[build-dependencies]
+flutter_rust_bridge_codegen = "=2.1.0"
+
+[profile.release]
+debug = false
+opt-level = "z"
+lto = true
