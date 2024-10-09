@@ -4,8 +4,6 @@ import 'dart:typed_data';
 import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
-// import 'package:agent_dart/utils/extension.dart';
-
 void main() {
   ed25519Test();
 }

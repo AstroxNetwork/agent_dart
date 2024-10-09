@@ -1,5 +1,5 @@
 name: agent_dart_base
-version: 1.0.0-dev.26
+version: 1.0.0-dev.27
 
 description: The Dart plugin that bridges Rust implementation for agent_dart.
 repository: https://github.com/AstroxNetwork/agent_dart
@@ -20,7 +20,6 @@ dependencies:
   convert: ^3.0.1
   crypto: ^3.0.2
   fixnum: ^1.0.1
-  flutter_rust_bridge: '>=2.1.0 <2.2.0'
   http: ^1.0.0
   js: '>=0.6.4 <0.8.0'
   meta: ^1.7.0
