@@ -209,14 +209,29 @@ void hashTest() {
       ),
       'world'.plainToU8a(useDartEncode: true),
     );
-    expect(lookupPath(['aa'.plainToU8a(useDartEncode: true)], tree), null);
-    expect(lookupPath(['ax'.plainToU8a(useDartEncode: true)], tree), null);
-    expect(lookupPath(['b'.plainToU8a(useDartEncode: true)], tree), null);
-    expect(lookupPath(['bb'.plainToU8a(useDartEncode: true)], tree), null);
+    expect(
+      lookupPath(['aa'.plainToU8a(useDartEncode: true)], tree),
+      equals(null),
+    );
+    expect(
+      lookupPath(['ax'.plainToU8a(useDartEncode: true)], tree),
+      equals(null),
+    );
+    expect(
+      lookupPath(['b'.plainToU8a(useDartEncode: true)], tree),
+      equals(null),
+    );
+    expect(
+      lookupPath(['bb'.plainToU8a(useDartEncode: true)], tree),
+      equals(null),
+    );
     expect(
       lookupPath(['d'.plainToU8a(useDartEncode: true)], tree),
       'morning'.plainToU8a(useDartEncode: true),
     );
-    expect(lookupPath(['e'.plainToU8a(useDartEncode: true)], tree), null);
+    expect(
+      lookupPath(['e'.plainToU8a(useDartEncode: true)], tree),
+      equals(null),
+    );
   });
 }
