@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/agent.dart';
 import 'package:archive/archive_io.dart';
+
+import '../agent/agent.dart';
 
 class SigningBlock {
   SigningBlock.create({

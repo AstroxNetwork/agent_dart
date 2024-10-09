@@ -1,4 +1,4 @@
-export 'delegation.dart' hide Delegation;
+export 'delegation.dart';
 export 'der.dart';
 export 'ed25519.dart';
 export 'p256.dart';

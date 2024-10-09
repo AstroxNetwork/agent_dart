@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/cbor.dart';
-import 'package:agent_dart_base/agent/certificate.dart';
-import 'package:agent_dart_base/utils/extension.dart';
+import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
 Uint8List label(String str) {
@@ -211,14 +209,29 @@ void hashTest() {
       ),
       'world'.plainToU8a(useDartEncode: true),
     );
-    expect(lookupPath(['aa'.plainToU8a(useDartEncode: true)], tree), null);
-    expect(lookupPath(['ax'.plainToU8a(useDartEncode: true)], tree), null);
-    expect(lookupPath(['b'.plainToU8a(useDartEncode: true)], tree), null);
-    expect(lookupPath(['bb'.plainToU8a(useDartEncode: true)], tree), null);
+    expect(
+      lookupPath(['aa'.plainToU8a(useDartEncode: true)], tree),
+      equals(null),
+    );
+    expect(
+      lookupPath(['ax'.plainToU8a(useDartEncode: true)], tree),
+      equals(null),
+    );
+    expect(
+      lookupPath(['b'.plainToU8a(useDartEncode: true)], tree),
+      equals(null),
+    );
+    expect(
+      lookupPath(['bb'.plainToU8a(useDartEncode: true)], tree),
+      equals(null),
+    );
     expect(
       lookupPath(['d'.plainToU8a(useDartEncode: true)], tree),
       'morning'.plainToU8a(useDartEncode: true),
     );
-    expect(lookupPath(['e'.plainToU8a(useDartEncode: true)], tree), null);
+    expect(
+      lookupPath(['e'.plainToU8a(useDartEncode: true)], tree),
+      equals(null),
+    );
   });
 }

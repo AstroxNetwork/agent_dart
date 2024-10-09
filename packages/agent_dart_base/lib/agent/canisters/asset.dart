@@ -1,5 +1,4 @@
-import 'package:agent_dart_base/agent/actor.dart';
-
+import '../actor.dart';
 import 'asset_idl.dart';
 
 /// Create a management canister actor.

@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/wallet/keysmith.dart';
 import 'package:agent_dart_ffi/agent_dart_ffi.dart';
+
+import 'keysmith.dart';
 
 class Phrase {
   Phrase(this.mnemonic) : _list = mnemonic.trim().split(' ');

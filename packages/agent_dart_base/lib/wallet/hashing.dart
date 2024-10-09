@@ -1,12 +1,13 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/principal/utils/get_crc.dart';
-import 'package:agent_dart_base/utils/extension.dart';
-import 'package:agent_dart_base/utils/u8a.dart';
 import 'package:crypto/crypto.dart';
 // ignore: implementation_imports
 import 'package:crypto/src/digest_sink.dart';
 import 'package:typed_data/typed_buffers.dart';
+
+import '../principal/utils/get_crc.dart';
+import '../utils/extension.dart';
+import '../utils/u8a.dart';
 
 Uint8List sha256Chunks(List<dynamic> chunks) {
   final ds = DigestSink();

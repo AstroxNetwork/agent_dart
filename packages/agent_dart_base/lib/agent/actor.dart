@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/agent/api.dart';
-import 'package:agent_dart_base/agent/canisters/management.dart';
-import 'package:agent_dart_base/agent/polling/polling.dart';
-import 'package:agent_dart_base/candid/idl.dart';
-import 'package:agent_dart_base/principal/principal.dart';
-
+import '../candid/idl.dart';
+import '../principal/principal.dart';
+import 'agent/api.dart';
+import 'canisters/management.dart';
 import 'errors.dart';
+import 'polling/polling.dart';
 import 'request_id.dart';
 import 'types.dart';
 

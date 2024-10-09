@@ -1,12 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/principal/principal.dart';
-import 'package:agent_dart_base/utils/extension.dart';
-import 'package:agent_dart_base/utils/u8a.dart';
 import 'package:crypto/crypto.dart';
 import 'package:meta/meta.dart';
 import 'package:typed_data/typed_buffers.dart';
 
+import '../../principal/principal.dart';
+import '../../utils/extension.dart';
+import '../../utils/u8a.dart';
 import 'agent/index.dart';
 import 'types.dart';
 import 'utils/leb128.dart';

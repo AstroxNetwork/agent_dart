@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/utils/extension.dart';
 import 'package:validators/validators.dart' as validators;
 
 import '../principal/utils/get_crc.dart';
+import 'extension.dart';
 import 'u8a.dart';
 
 bool isAscii(dynamic value) {

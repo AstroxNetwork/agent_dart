@@ -1,6 +1,6 @@
-import 'package:agent_dart_base/agent/agent.dart';
-import 'package:agent_dart_base/candid/idl.dart';
-import 'package:agent_dart_base/principal/principal.dart';
+import '../../candid/idl.dart';
+import '../../principal/principal.dart';
+import '../agent.dart';
 
 class AgentFactory {
   AgentFactory({

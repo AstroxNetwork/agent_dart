@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:typed_data/typed_data.dart';
 
+import '../principal/principal.dart' show IdentifierType, Principal;
 import 'bn.dart' as bn_util;
 import 'hex.dart' as hex_util;
 import 'is.dart' as is_util;
@@ -27,6 +28,18 @@ extension AgentStringExtension on String {
       hex_util.hexToBn(this, endian: endian, isNegative: isNegative);
 
   String camelCase() => string_util.stringCamelCase(this);
+
+  IdentifierType? get identifierType {
+    if (is_util.isAccountId(this)) {
+      return IdentifierType.accountIdentifier;
+    }
+    try {
+      Principal.fromText(this);
+      return IdentifierType.principal;
+    } catch (_) {
+      return null;
+    }
+  }
 }
 
 extension AgentU8aExtension on Uint8List {
