@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.27
+
+- Support `flutter_rust_bridge` 2.5.
+
 ## 1.0.0-dev.26
 
 - Reorg exports/imports so people can directly import `agent_dart_base/agent_dart_base.dart`
