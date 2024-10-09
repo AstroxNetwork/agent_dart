@@ -4,6 +4,13 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.26
+
+- Reorg exports/imports so people can directly import `agent_dart_base/agent_dart_base.dart`
+  or `agent_dart/agent_dart.dart` without conflicts as much as possible.
+- Improve test equality checks.
+- Remove unnecessary deps.
+
 ## 1.0.0-dev.25
 
 - Prepare for monorepo.
