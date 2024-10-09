@@ -1,9 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/cbor.dart';
-import 'package:agent_dart_base/agent/types.dart';
-import 'package:agent_dart_base/principal/principal.dart';
-import 'package:agent_dart_base/utils/extension.dart';
+import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart';
 

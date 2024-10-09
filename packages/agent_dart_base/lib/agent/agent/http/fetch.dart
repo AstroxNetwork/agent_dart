@@ -3,7 +3,9 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
-import 'index.dart';
+import '../../types.dart';
+
+// import 'index.dart';
 
 const defaultTimeout = Duration(seconds: 30);
 

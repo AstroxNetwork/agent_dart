@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/principal/utils/get_crc.dart';
+import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/auth.dart';
-import 'package:agent_dart_base/agent/types.dart';
-import 'package:agent_dart_base/principal/principal.dart';
 import 'package:meta/meta.dart';
 
+import '../../principal/principal.dart';
+import '../auth.dart';
+import '../types.dart';
 import 'api.dart';
 
 class ProxyMessageKind {

@@ -1,9 +1,6 @@
 import 'dart:convert';
 
-import 'package:agent_dart_base/agent/crypto/index.dart';
-import 'package:agent_dart_base/utils/extension.dart';
-import 'package:agent_dart_base/wallet/phrase.dart';
-import 'package:agent_dart_base/wallet/signer.dart';
+import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
 void main() {

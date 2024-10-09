@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/cbor.dart';
-import 'package:agent_dart_base/agent/certificate.dart';
-import 'package:agent_dart_base/utils/extension.dart';
+import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
 Uint8List label(String str) {

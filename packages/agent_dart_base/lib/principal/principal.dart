@@ -8,6 +8,8 @@ import 'utils/sha224.dart';
 
 export 'utils/utils.dart';
 
+enum IdentifierType { accountIdentifier, principal }
+
 const _suffixSelfAuthenticating = 2;
 const _suffixAnonymous = 4;
 const _maxLengthInBytes = 29;

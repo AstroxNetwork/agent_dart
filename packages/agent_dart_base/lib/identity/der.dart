@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/utils/extension.dart';
 import 'package:tuple/tuple.dart';
+
+import '../utils/extension.dart';
 
 bool bufEquals(ByteBuffer b1, ByteBuffer b2) {
   if (b1.lengthInBytes != b2.lengthInBytes) return false;

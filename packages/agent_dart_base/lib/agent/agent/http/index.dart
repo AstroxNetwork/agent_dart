@@ -1,11 +1,20 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/agent/http/fetch.dart';
-import 'package:agent_dart_base/agent/cbor.dart' as cbor;
-import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:meta/meta.dart';
 import 'package:typed_data/typed_data.dart';
+
+import '../../../principal/principal.dart';
+import '../../../utils/base64.dart';
+import '../../auth.dart';
+import '../../cbor.dart' as cbor;
+import '../../errors.dart';
+import '../../request_id.dart';
+import '../../types.dart';
+import '../api.dart';
+import 'fetch.dart';
+import 'transform.dart';
+import 'types.dart';
 
 const btoa = base64Encode;
 
@@ -27,31 +36,6 @@ Future<T> withRetry<T>(
       }
       await Future.delayed(Duration(milliseconds: times * retryIntervalMills));
     }
-  }
-}
-
-enum FetchMethod {
-  get,
-  head,
-  post,
-  put,
-  delete,
-  connect,
-  options,
-  trace,
-  patch,
-}
-
-enum RequestStatusResponseStatus {
-  received,
-  processing,
-  replied,
-  rejected,
-  unknown,
-  done;
-
-  factory RequestStatusResponseStatus.fromName(String value) {
-    return values.singleWhere((e) => e.name == value);
   }
 }
 

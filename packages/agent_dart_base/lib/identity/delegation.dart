@@ -1,11 +1,16 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/agent.dart';
-import 'package:agent_dart_base/principal/principal.dart';
-import 'package:agent_dart_base/utils/extension.dart';
-import 'package:agent_dart_base/utils/u8a.dart';
 import 'package:cbor/cbor.dart';
+
+import '../agent/agent/http/types.dart';
+import '../agent/auth.dart';
+import '../agent/cbor.dart';
+import '../agent/request_id.dart';
+import '../agent/types.dart';
+import '../principal/principal.dart';
+import '../utils/extension.dart';
+import '../utils/u8a.dart';
 
 final authDelegationDomainSeparator =
     '\x1Aic-request-auth-delegation'.plainToU8a();

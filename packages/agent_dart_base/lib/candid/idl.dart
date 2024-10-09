@@ -1,15 +1,17 @@
 // ignore_for_file: constant_identifier_names, non_constant_identifier_names
+
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/agent.dart';
-import 'package:agent_dart_base/principal/principal.dart' as principal;
-import 'package:agent_dart_base/utils/extension.dart';
-import 'package:agent_dart_base/utils/map.dart';
-import 'package:agent_dart_base/utils/number.dart';
-import 'package:agent_dart_base/utils/u8a.dart';
 import 'package:meta/meta.dart';
+
+import '../agent/agent.dart';
+import '../principal/principal.dart' as principal;
+import '../utils/extension.dart';
+import '../utils/map.dart';
+import '../utils/number.dart';
+import '../utils/u8a.dart';
 
 typedef Pipe<T> = BufferPipe<T>;
 typedef PrincipalId = principal.Principal;

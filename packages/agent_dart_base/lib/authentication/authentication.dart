@@ -1,10 +1,9 @@
-import 'package:agent_dart_base/agent/auth.dart';
-import 'package:agent_dart_base/auth_client/auth_client.dart'
-    show identityProviderDefault;
-import 'package:agent_dart_base/identity/delegation.dart';
-import 'package:agent_dart_base/principal/principal.dart';
-import 'package:agent_dart_base/utils/extension.dart';
-import 'package:agent_dart_base/utils/is.dart';
+import '../agent/auth.dart';
+import '../auth_client/auth_client.dart' show identityProviderDefault;
+import '../identity/delegation.dart';
+import '../principal/principal.dart';
+import '../utils/extension.dart';
+import '../utils/is.dart';
 
 /// Options for createAuthenticationRequestUrl.
 /// All these options may be limited further by the identity provider,

@@ -1,6 +1,4 @@
-import 'package:agent_dart_base/agent/utils/hash.dart';
-// ignore: unused_import
-import 'package:agent_dart_base/utils/extension.dart';
+import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
 void main() {

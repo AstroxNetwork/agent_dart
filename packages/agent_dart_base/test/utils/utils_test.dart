@@ -1,4 +1,4 @@
-import 'package:agent_dart_base/utils/extension.dart';
+import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
 import 'is.dart' as is_test;

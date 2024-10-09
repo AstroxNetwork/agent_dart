@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/agent.dart';
-import 'package:agent_dart_base/utils/extension.dart';
 import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as path;
 
+import '../agent/auth.dart';
+import '../utils/extension.dart';
 import 'signing_block.dart';
 
 class ZipSigningBlock {

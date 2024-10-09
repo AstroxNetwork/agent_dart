@@ -1,7 +1,13 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent_dart_base.dart';
+import 'package:agent_dart_ffi/agent_dart_ffi.dart';
+
+import '../agent/auth.dart';
+import '../agent/types.dart';
+import '../utils/extension.dart';
+import '../wallet/keysmith.dart';
+import 'der.dart';
 
 class P256KeyPair extends KeyPair {
   const P256KeyPair({required super.publicKey, required super.secretKey});

@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/types.dart';
-import 'package:agent_dart_base/principal/principal.dart';
 import 'package:meta/meta.dart';
 import 'package:typed_data/typed_buffers.dart';
+
+import '../../../principal/principal.dart';
+import '../../types.dart';
 import '../api.dart';
 import 'transform.dart';
 

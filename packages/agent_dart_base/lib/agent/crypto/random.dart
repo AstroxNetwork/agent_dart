@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/utils/extension.dart';
-import 'package:agent_dart_base/utils/hex.dart';
-import 'package:agent_dart_base/utils/number.dart';
-import 'package:agent_dart_base/utils/u8a.dart';
+import '../../utils/extension.dart';
+import '../../utils/hex.dart';
+import '../../utils/number.dart';
+import '../../utils/u8a.dart';
 
 const _defaultLength = 32;
 

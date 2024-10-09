@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/utils/extension.dart';
+import '../../utils/extension.dart';
 
 /// An fetch error when using agent to make HTTP/S requests.
 class AgentFetchError extends Error {

@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/principal/principal.dart';
-import 'package:agent_dart_base/utils/extension.dart';
-import 'package:agent_dart_base/utils/u8a.dart';
 import 'package:meta/meta.dart';
 
+import '../../utils/extension.dart';
+import '../../utils/u8a.dart';
+import '../principal/principal.dart';
 import 'agent/http/types.dart';
 import 'request_id.dart';
 import 'types.dart';

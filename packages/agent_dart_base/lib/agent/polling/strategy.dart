@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:agent_dart_base/agent/agent.dart';
-import 'package:agent_dart_base/principal/principal.dart';
+import '../../principal/principal.dart';
+import '../agent.dart';
 
 typedef PollStrategyFactory = PollStrategy Function();
 typedef PollStrategy = Future<void> Function(
@@ -72,7 +72,7 @@ PollStrategy maxAttempts(int count) {
 /// Throttle polling.
 /// @param throttleMilliseconds
 /// - Amount in millisecond to wait between each polling.
-PollStrategy throttle(int throttleMilliseconds) {
+PollStrategy throttlePolling(int throttleMilliseconds) {
   return (
     Principal canisterId,
     RequestId requestId,

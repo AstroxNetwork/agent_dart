@@ -1,7 +1,6 @@
 import 'dart:convert';
 
-import 'package:agent_dart_base/agent/request_id.dart';
-import 'package:agent_dart_base/agent/types.dart';
+import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
 void main() {

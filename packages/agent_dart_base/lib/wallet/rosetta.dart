@@ -2,10 +2,13 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/agent/http/fetch.dart';
-import 'package:agent_dart_base/agent_dart_base.dart';
-import 'package:agent_dart_base/protobuf/ic_ledger/pb/v1/types.pb.dart';
-
+import '../agent/agent.dart';
+import '../identity/identity.dart';
+import '../principal/principal.dart';
+import '../protobuf/ic_ledger/pb/v1/types.pb.dart';
+import '../utils/extension.dart';
+import 'hashing.dart';
+import 'keysmith.dart';
 import 'types.dart' as rosetta;
 
 // Set useNativeBigInt to true and use BigInt once BigInt is widely supported.
@@ -533,7 +536,7 @@ Future<CombineSignedTransactionResult> ecTransferCombine(
 CombineSignedTransactionResult combine(
   rosetta.ConstructionCombineRequestPart req,
 ) {
-  final signaturesBySigData = <String, rosetta.Signature>{};
+  final signaturesBySigData = <String, rosetta.WalletSignature>{};
   for (final sig in req.signatures) {
     signaturesBySigData.putIfAbsent(sig.signingPayload.hexBytes, () => sig);
   }
