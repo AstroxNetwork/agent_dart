@@ -5,8 +5,6 @@ import 'package:http/http.dart' as http;
 
 import '../../types.dart';
 
-// import 'index.dart';
-
 const defaultTimeout = Duration(seconds: 30);
 
 /// [defaultFetch] is a wrapper of [http.get],
