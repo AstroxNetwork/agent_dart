@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:pinenacl/ed25519.dart';
+import 'dart:typed_data';
 
 import '../agent/agent/factory.dart';
 import '../agent/auth.dart';
