@@ -2,9 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:pointycastle/asn1/object_identifiers.dart';
 import 'package:pointycastle/pointycastle.dart';
+
+import '../identity/ed25519.dart';
+import '../identity/secp256k1.dart';
+import '../utils/extension.dart';
 
 const String _beginECPrivateKey = '-----BEGIN EC PRIVATE KEY-----';
 const String _beginPrivateKey = '-----BEGIN PRIVATE KEY-----';

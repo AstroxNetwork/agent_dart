@@ -686,12 +686,12 @@ typedef Timestamp = int;
 /// encoded in hex. Note that there is no PrivateKey struct as this is
 /// NEVER the concern of an implementation.
 @immutable
-class PublicKey {
+class WalletPublicKey {
   // "secp256k1" | "secp256r1" | "edwards25519" | "tweedle";
-  const PublicKey(this.hexBytes, this.curveType);
+  const WalletPublicKey(this.hexBytes, this.curveType);
 
-  factory PublicKey.fromJson(Map<String, dynamic> map) {
-    return PublicKey(map['hex_bytes'], map['curve_type']);
+  factory WalletPublicKey.fromJson(Map<String, dynamic> map) {
+    return WalletPublicKey(map['hex_bytes'], map['curve_type']);
   }
 
   /// Hex-encoded public key bytes in the format specified by the [CurveType].
@@ -747,31 +747,31 @@ class SigningPayload {
   }
 }
 
-/// [Signature] contains the payload that was signed, the public keys of the
+/// [WalletSignature] contains the payload that was signed, the public keys of the
 /// key-pairs used to produce the signature, the signature (encoded in hex),
 /// and the SignatureType. PublicKey is often times not known during
 /// construction of the signing payloads but may be needed to
 /// combine signatures properly.
 @immutable
-class Signature {
-  const Signature(
+class WalletSignature {
+  const WalletSignature(
     this.signingPayload,
     this.publicKey,
     this.signatureType,
     this.hexBytes,
   );
 
-  factory Signature.fromJson(Map<String, dynamic> map) {
-    return Signature(
+  factory WalletSignature.fromJson(Map<String, dynamic> map) {
+    return WalletSignature(
       SigningPayload.fromJson(map['signing_payload']),
-      PublicKey.fromJson(map['public_key']),
+      WalletPublicKey.fromJson(map['public_key']),
       map['signature_type'],
       map['hex_bytes'],
     );
   }
 
   final SigningPayload signingPayload;
-  final PublicKey publicKey;
+  final WalletPublicKey publicKey;
 
   /// export type SignatureType =
   ///   | "ecdsa"
@@ -1484,7 +1484,7 @@ class NetworkOptionsResponse {
 /// left purposely unstructured to allow flexibility for implementers.
 /// [options] is not required in the case that there is network-wide metadata
 /// of interest. Optionally, the request can also include an array of
-/// [PublicKey]s associated with the [AccountIdentifiers] returned in
+/// [WalletPublicKey]s associated with the [AccountIdentifiers] returned in
 /// [ConstructionPreprocessResponse].
 @immutable
 class ConstructionMetadataRequest {
@@ -1500,7 +1500,7 @@ class ConstructionMetadataRequest {
       map['options'],
       map['public_keys'] != null
           ? (map['public_keys'] as List)
-              .map((e) => PublicKey.fromJson(e))
+              .map((e) => WalletPublicKey.fromJson(e))
               .toList()
           : null,
     );
@@ -1516,7 +1516,7 @@ class ConstructionMetadataRequest {
   /// to only the subset required.
   final Map<String, dynamic>? options;
 
-  final List<PublicKey>? publicKeys;
+  final List<WalletPublicKey>? publicKeys;
 
   Map<String, dynamic> toJson() {
     return {
@@ -1577,14 +1577,14 @@ class ConstructionDeriveRequest {
   factory ConstructionDeriveRequest.fromJson(Map<String, dynamic> map) {
     return ConstructionDeriveRequest(
       NetworkIdentifier.fromJson(map['network_identifier']),
-      PublicKey.fromJson(map['public_key']),
+      WalletPublicKey.fromJson(map['public_key']),
       map['metadata'],
     );
   }
 
   final NetworkIdentifier networkIdentifier;
 
-  final PublicKey publicKey;
+  final WalletPublicKey publicKey;
   final Map<String, dynamic>? metadata;
 
   Map<String, dynamic> toJson() {
@@ -1692,11 +1692,11 @@ class ConstructionPreprocessRequest {
 /// If it is not necessary to make a request to `/construction/metadata`,
 /// `options` should be omitted.
 ///
-/// Some blockchains require the [PublicKey] of
+/// Some blockchains require the [WalletPublicKey] of
 /// particular [AccountIdentifier]s to construct a valid transaction.
-/// To fetch these [PublicKey]s, populate `required_public_keys` with the
-/// [AccountIdentifier]s associated with the desired [PublicKey]s.
-/// If it is not necessary to retrieve any [PublicKey]s for construction,
+/// To fetch these [WalletPublicKey]s, populate `required_public_keys` with the
+/// [AccountIdentifier]s associated with the desired [WalletPublicKey]s.
+/// If it is not necessary to retrieve any [WalletPublicKey]s for construction,
 /// `required_public_keys` should be omitted.
 @immutable
 class ConstructionPreprocessResponse {
@@ -1733,7 +1733,7 @@ class ConstructionPreprocessResponse {
 /// [ConstructionPayloadsRequest] is the request to `/construction/payloads`.
 /// It contains the network, a slice of operations, and arbitrary metadata
 /// that was returned by the call to `/construction/metadata`.
-/// Optionally, the request can also include an array of [PublicKey]s associated
+/// Optionally, the request can also include an array of [WalletPublicKey]s associated
 /// with the [AccountIdentifier]s returned in [ConstructionPreprocessResponse].
 @immutable
 class ConstructionPayloadsRequest {
@@ -1751,7 +1751,7 @@ class ConstructionPayloadsRequest {
       map['metadata'],
       map['public_keys'] != null
           ? (map['public_keys'] as List)
-              .map((e) => PublicKey.fromJson(e))
+              .map((e) => WalletPublicKey.fromJson(e))
               .toList()
           : null,
     );
@@ -1760,7 +1760,7 @@ class ConstructionPayloadsRequest {
   final NetworkIdentifier networkIdentifier;
   final List<Operation> operations;
   final Map<String, dynamic>? metadata;
-  final List<PublicKey>? publicKeys;
+  final List<WalletPublicKey>? publicKeys;
 
   Map<String, dynamic> toJson() {
     return {
@@ -1824,13 +1824,13 @@ class ConstructionCombineRequest {
     return ConstructionCombineRequest(
       NetworkIdentifier.fromJson(map['network_identifier']),
       map['unsigned_transaction'],
-      (map['signatures'] as List).map((e) => Signature.fromJson(e)).toList(),
+      (map['signatures'] as List).map((e) => WalletSignature.fromJson(e)).toList(),
     );
   }
 
   final NetworkIdentifier networkIdentifier;
   final String unsignedTransaction;
-  final List<Signature> signatures;
+  final List<WalletSignature> signatures;
 
   Map<String, dynamic> toJson() {
     return {
@@ -1855,13 +1855,13 @@ class ConstructionCombineRequestPart {
           ? NetworkIdentifier.fromJson(map['network_identifier'])
           : null,
       map['unsigned_transaction'],
-      (map['signatures'] as List).map((e) => Signature.fromJson(e)).toList(),
+      (map['signatures'] as List).map((e) => WalletSignature.fromJson(e)).toList(),
     );
   }
 
   final NetworkIdentifier? networkIdentifier;
   final String unsignedTransaction;
-  final List<Signature> signatures;
+  final List<WalletSignature> signatures;
 
   Map<String, dynamic> toJson() {
     return {

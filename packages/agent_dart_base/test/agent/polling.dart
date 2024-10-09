@@ -1,6 +1,4 @@
-import 'package:agent_dart_base/agent/agent/http/index.dart';
-import 'package:agent_dart_base/agent/polling/polling.dart';
-import 'package:agent_dart_base/principal/principal.dart';
+import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
 void main() {

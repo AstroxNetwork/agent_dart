@@ -1,17 +1,21 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent_dart_base.dart';
-
+import 'package:agent_dart_ffi/agent_dart_ffi.dart';
 import 'package:pointycastle/api.dart' as p_api;
 import 'package:pointycastle/digests/sha256.dart';
-
 import 'package:pointycastle/ecc/api.dart';
 import 'package:pointycastle/macs/hmac.dart';
 import 'package:pointycastle/signers/ecdsa_signer.dart';
-
 // ignore: implementation_imports
 import 'package:pointycastle/src/utils.dart' as p_utils;
+
+import '../agent/auth.dart';
+import '../agent/types.dart';
+import '../utils/extension.dart';
+import '../utils/u8a.dart';
+import '../wallet/keysmith.dart';
+import 'der.dart';
 
 BigInt _bytesToUnsignedInt(Uint8List bytes) {
   return p_utils.decodeBigIntWithSign(1, bytes);

@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/crypto/keystore/key_store.dart';
-import 'package:agent_dart_base/identity/identity.dart';
-import 'package:agent_dart_base/utils/extension.dart';
+import '../agent/crypto/keystore/key_store.dart';
+import '../identity/identity.dart';
+import '../utils/extension.dart';
 
 import 'keysmith.dart';
 import 'rosetta.dart';
@@ -15,7 +15,7 @@ enum SignType { ecdsa, ed25519 }
 
 enum SourceType { ii, plug, keySmith, base }
 
-/// [CurveType] is the type of cryptographic curve associated with a [PublicKey].
+/// [CurveType] is the type of cryptographic curve associated with a [WalletPublicKey].
 ///  * [secp256k1] SEC compressed - `33 bytes` (https://secg.org/sec1-v2.pdf#subsubsection.2.3.3)
 ///  * [ed25519]  `y (255-bits) || x-sign-bit (1-bit)` - `32 bytes` (https://ed25519.cr.yp.to/ed25519-20110926.pdf)
 ///  * [all] both above.

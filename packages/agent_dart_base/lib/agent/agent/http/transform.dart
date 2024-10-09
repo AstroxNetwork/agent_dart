@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/cbor.dart';
-import 'package:agent_dart_base/agent/types.dart';
-import 'package:agent_dart_base/agent/utils/leb128.dart';
 import 'package:cbor/cbor.dart' as cbor;
 import 'package:typed_data/typed_data.dart';
 
+import '../../cbor.dart';
+import '../../types.dart';
+import '../../utils/leb128.dart';
 import 'types.dart';
 
 final _nanoSecondsPerMilliseconds = BigInt.from(1000000);

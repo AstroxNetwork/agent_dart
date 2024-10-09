@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/wallet/hashing.dart';
-
+import '../../wallet/hashing.dart';
 import 'extension.dart';
 
 class TooShortHrp implements Exception {

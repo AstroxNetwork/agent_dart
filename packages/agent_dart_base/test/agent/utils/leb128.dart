@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/utils/buffer_pipe.dart';
-import 'package:agent_dart_base/agent/utils/leb128.dart';
-import 'package:agent_dart_base/utils/extension.dart';
+import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
 void main() {

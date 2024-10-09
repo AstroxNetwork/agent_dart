@@ -1,6 +1,15 @@
 // ignore_for_file: non_constant_identifier_names
-import 'package:agent_dart_base/agent_dart_base.dart';
+
 import 'package:pinenacl/ed25519.dart';
+
+import '../agent/agent/factory.dart';
+import '../agent/auth.dart';
+import '../agent/crypto/random.dart';
+import '../candid/idl.dart';
+import '../principal/principal.dart';
+import '../utils/extension.dart';
+import '../utils/is.dart';
+import '../utils/u8a.dart';
 
 const _accountIdentifier = IDL.Text;
 
