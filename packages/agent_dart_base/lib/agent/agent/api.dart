@@ -1,7 +1,8 @@
-import 'package:agent_dart_base/agent/auth.dart';
-import 'package:agent_dart_base/agent/types.dart';
-import 'package:agent_dart_base/principal/principal.dart';
 import 'package:meta/meta.dart';
+
+import '../../principal/principal.dart';
+import '../auth.dart';
+import '../types.dart';
 
 /// Codes used by the replica for rejecting a message.
 /// See https://sdk.dfinity.org/docs/interface-spec/#reject-codes

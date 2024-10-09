@@ -1,9 +1,6 @@
 import 'dart:convert';
 
-import 'package:agent_dart_base/agent/crypto/index.dart';
-import 'package:agent_dart_base/utils/extension.dart';
-import 'package:agent_dart_base/wallet/phrase.dart';
-import 'package:agent_dart_base/wallet/signer.dart';
+import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -17,22 +14,30 @@ void main() {
     stopwatch
       ..reset()
       ..start();
-    final acc2 = await ICPSigner.fromPhrase(mne2, curveType: CurveType.all);
+    final acc2 = await ICPSigner.fromPhrase(
+      mne2,
+      curveType: CurveType.all,
+    );
     stopwatch.stop();
     final allCurvesDuration = stopwatch.elapsed;
 
     stopwatch
       ..reset()
       ..start();
-    final acc21 = await ICPSigner.fromPhrase(mne2);
+    final acc21 = await ICPSigner.fromPhrase(
+      mne2,
+      curveType: CurveType.ed25519,
+    );
     stopwatch.stop();
     final acc21TimePeriod = stopwatch.elapsed;
 
     stopwatch
       ..reset()
       ..start();
-    final acc22 =
-        await ICPSigner.fromPhrase(mne2, curveType: CurveType.secp256k1);
+    final acc22 = await ICPSigner.fromPhrase(
+      mne2,
+      curveType: CurveType.secp256k1,
+    );
     stopwatch.stop();
     final acc22TimePeriod = stopwatch.elapsed;
 
@@ -40,8 +45,8 @@ void main() {
     expect(acc22TimePeriod < allCurvesDuration, true);
     expect(acc2.account.identity != null, true);
     expect(acc2.account.ecIdentity != null, true);
-    expect(acc21.account.ecIdentity, null);
-    expect(acc22.account.identity, null);
+    expect(acc21.account.ecIdentity, equals(null));
+    expect(acc22.account.identity, equals(null));
 
     expect(
       acc2.account.ecKeys?.accountId!.toHex(),
@@ -54,8 +59,8 @@ void main() {
 
     await acc2.lock('123');
     expect(acc2.isLocked, true);
-    expect(acc2.account.identity, null);
-    expect(acc2.account.ecKeys, null);
+    expect(acc2.account.identity, equals(null));
+    expect(acc2.account.ecKeys, equals(null));
 
     await acc2.unlock('123');
     expect(acc2.isLocked, false);

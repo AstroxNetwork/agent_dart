@@ -1,11 +1,9 @@
-// ignore: unused_import
-import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/utils/buffer_pipe.dart';
-import 'package:agent_dart_base/utils/bn.dart';
-import 'package:agent_dart_base/utils/extension.dart';
-import 'package:agent_dart_base/utils/hex.dart';
+import '../../utils/bn.dart';
+import '../../utils/extension.dart';
+import '../../utils/hex.dart';
+import 'buffer_pipe.dart';
 
 List<T> safeRead<T>(BufferPipe<T> pipe, int ref) {
   if (pipe.length < ref) {

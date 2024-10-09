@@ -2,10 +2,13 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/agent/http/fetch.dart';
-import 'package:agent_dart_base/agent_dart_base.dart';
-import 'package:agent_dart_base/protobuf/ic_ledger/pb/v1/types.pb.dart';
-
+import '../agent/agent.dart';
+import '../identity/identity.dart';
+import '../principal/principal.dart';
+import '../protobuf/ic_ledger/pb/v1/types.pb.dart';
+import '../utils/extension.dart';
+import 'hashing.dart';
+import 'keysmith.dart';
 import 'types.dart' as rosetta;
 
 // Set useNativeBigInt to true and use BigInt once BigInt is widely supported.
@@ -139,7 +142,7 @@ class RosettaApi {
 
   /// Return the ICP account balance of the specified account.
   /// @param {string} accountAddress The account address to get the ICP balance of.
-  /// @returns {Promise<BigNumber|TransactionError>} The ICP account balance of the specified account, or
+  /// @returns {Promise\<BigNumber|TransactionError\>} The ICP account balance of the specified account, or
   /// a TransactionError for error.
   Future<BigInt> getAccountBalance(accountAddress) async {
     final response = await accountBalanceByAddress(accountAddress);
@@ -147,7 +150,7 @@ class RosettaApi {
   }
 
   /// Return the latest block index.
-  /// @returns {Promise<number>} The latest block index, or a TransactionError for error.
+  /// @returns {Promise\<number\>} The latest block index, or a TransactionError for error.
   Future<int> getLastBlockIndex() async {
     final response = await networkStatus();
     return response.currentBlockIdentifier.index;
@@ -191,7 +194,7 @@ class RosettaApi {
   /// @param maxBlockIndex {number} The block index to start at. If not specified, start at current
   /// block.
   /// @param offset {number} The offset from maxBlockIndex to start returning transactions.
-  /// @returns {Promise<Array<Transaction>|null>} An array of Transaction objects, or a TransactionError
+  /// @returns {Promise\<Array\<Transaction\>|null\>} An array of Transaction objects, or a TransactionError
   /// for error.
   Future<List<RosettaTransaction>> getTransactions(
     int limit,
@@ -223,7 +226,7 @@ class RosettaApi {
   /// Return an array of Transaction objects based on the specified parameters, or an empty array if
   /// none found.
   /// @param {string} accountAddress The account address to get the transactions of.
-  /// @returns {Promise<Array<Transaction>|null>} An array of Transaction objects, or a TransactionError
+  /// @returns {Promise\<Array\<Transaction\>|null\>} An array of Transaction objects, or a TransactionError
   /// for error.
   Future<List<RosettaTransaction>> getTransactionsByAccount(
     String accountAddress,
@@ -256,7 +259,7 @@ class RosettaApi {
   /// Perform the specified http request and return the response data.
   /// @param {string} url The server URL that will be used for the request.
   /// @param {object} data The data to be sent as the request body.
-  /// @returns {Promise<any>} The response body that was provided by the server.
+  /// @returns {Promise\<any\>} The response body that was provided by the server.
   /// @private
   Future<Map<String, dynamic>> request(String url, dynamic data) async {
     final res = await defaultFetch(
@@ -282,7 +285,7 @@ class RosettaApi {
 
   /// Return the /network/list response, containing a list of NetworkIdentifiers that the Rosetta
   /// server supports.
-  /// @returns {Promise<any>} The response body that was provided by the server.
+  /// @returns {Promise\<any\>} The response body that was provided by the server.
   /// @private
   Future<rosetta.NetworkListResponse> networksList() async {
     final result = await request('/network/list', {'metadata': {}});
@@ -306,7 +309,7 @@ class RosettaApi {
   }
 
   /// Return /network/status response, describing the current status of the network.
-  /// @returns {Promise<any>} The response body that was provided by the server.
+  /// @returns {Promise\<any\>} The response body that was provided by the server.
   /// @private
   Future<rosetta.NetworkStatusResponse> networkStatus() async {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier.');
@@ -321,7 +324,7 @@ class RosettaApi {
 
   /// Return the /account/balance response for the specified account.
   /// @param {string} accountAddress The account address to get the balance of.
-  /// @returns {Promise<any>} The response body that was provided by the server.
+  /// @returns {Promise\<any\>} The response body that was provided by the server.
   /// @private
   Future<rosetta.AccountBalanceResponse> accountBalanceByAddress(
     String accountAddress,
@@ -337,7 +340,7 @@ class RosettaApi {
   /// Return the /block response for the block corresponding to the specified block index (i.e.,
   /// block height).
   /// @param {number} blockIndex The index of the block to return.
-  /// @returns {Promise<any>} The response body that was provided by the server.
+  /// @returns {Promise\<any\>} The response body that was provided by the server.
   /// @private
   Future<rosetta.BlockResponse> blockByIndex(int blockIndex) async {
     assert(networkIdentifier != null, 'Cannot get networkIdentifier.');
@@ -351,7 +354,7 @@ class RosettaApi {
   /// Return the /search/transactions response for transactions containing an operation that affects
   /// the specified account.
   /// @param {string} accountAddress The account address to get the transactions of.
-  /// @returns {Promise<any>} The response body that was provided by the server.
+  /// @returns {Promise\<any\>} The response body that was provided by the server.
   /// @private
   Future<rosetta.SearchTransactionsResponse> transactionsByAccount(
     String accountAddress,
@@ -366,7 +369,7 @@ class RosettaApi {
 
   /// Return the /search/transactions response for transactions (only one) with the specified hash.
   /// @param {string} transactionHash The hash of the transaction to return.
-  /// @returns {Promise<any>} The response body that was provided by the server.
+  /// @returns {Promise\<any\>} The response body that was provided by the server.
   /// @private
   Future<rosetta.SearchTransactionsResponse> transactionsByHash(
     String transactionHash,
@@ -381,7 +384,7 @@ class RosettaApi {
 
   /// Return the /search/transactions response for transactions (only one) with the specified hash.
   /// @param {string} transactionHash The hash of the transaction to return.
-  /// @returns {Promise<any>} The response body that was provided by the server.
+  /// @returns {Promise\<any\>} The response body that was provided by the server.
   /// @private
   Future<rosetta.SearchTransactionsResponse> transactions(
     rosetta.SearchTransactionsRequest req,
@@ -533,7 +536,7 @@ Future<CombineSignedTransactionResult> ecTransferCombine(
 CombineSignedTransactionResult combine(
   rosetta.ConstructionCombineRequestPart req,
 ) {
-  final signaturesBySigData = <String, rosetta.Signature>{};
+  final signaturesBySigData = <String, rosetta.WalletSignature>{};
   for (final sig in req.signatures) {
     signaturesBySigData.putIfAbsent(sig.signingPayload.hexBytes, () => sig);
   }

@@ -1,6 +1,5 @@
-import 'package:agent_dart_base/agent/actor.dart';
-import 'package:agent_dart_base/principal/principal.dart';
-
+import '../../principal/principal.dart';
+import '../actor.dart';
 import 'management_idl.dart';
 
 // : ActorSubclass<ManagementCanisterRecord>

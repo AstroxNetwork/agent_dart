@@ -1,10 +1,35 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/utils/extension.dart';
 import 'package:meta/meta.dart';
 
+import '../../utils/extension.dart';
 import 'utils/leb128.dart';
+
+enum FetchMethod {
+  get,
+  head,
+  post,
+  put,
+  delete,
+  connect,
+  options,
+  trace,
+  patch,
+}
+
+enum RequestStatusResponseStatus {
+  received,
+  processing,
+  replied,
+  rejected,
+  unknown,
+  done;
+
+  factory RequestStatusResponseStatus.fromName(String value) {
+    return values.singleWhere((e) => e.name == value);
+  }
+}
 
 enum BlobType { binary, der, nonce, requestId }
 

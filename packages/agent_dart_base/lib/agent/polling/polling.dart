@@ -1,6 +1,11 @@
-import 'package:agent_dart_base/agent/agent.dart';
-import 'package:agent_dart_base/principal/principal.dart';
-import 'package:agent_dart_base/utils/extension.dart';
+import '../../../principal/principal.dart';
+import '../../../utils/extension.dart';
+import '../agent/api.dart';
+import '../agent/http/index.dart';
+import '../certificate.dart';
+import '../request_id.dart';
+import '../types.dart';
+import 'strategy.dart';
 
 export 'strategy.dart';
 

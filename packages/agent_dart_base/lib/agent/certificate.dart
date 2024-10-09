@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/cbor.dart';
-import 'package:agent_dart_base/agent/request_id.dart';
-import 'package:agent_dart_base/agent/types.dart';
-import 'package:agent_dart_base/utils/extension.dart';
-import 'package:agent_dart_base/utils/u8a.dart';
 import 'package:typed_data/typed_data.dart';
 
+import '../../utils/extension.dart';
+import '../../utils/u8a.dart';
 import 'agent/api.dart';
 import 'bls.dart';
+import 'cbor.dart';
 import 'errors.dart';
+import 'request_id.dart';
+import 'types.dart';
 
 final AgentBLS _bls = AgentBLS();
 
@@ -52,7 +52,7 @@ class Cert {
   factory Cert.fromJson(Map json) {
     return Cert(
       delegation: json['delegation'] != null
-          ? Delegation.fromJson(Map<String, dynamic>.from(json['delegation']))
+          ? CertDelegation.fromJson(Map<String, dynamic>.from(json['delegation']))
           : null,
       signature: json['signature'] != null
           ? (json['signature'] as Uint8Buffer).buffer.asUint8List()
@@ -63,7 +63,7 @@ class Cert {
 
   final List? tree;
   final Uint8List? signature;
-  final Delegation? delegation;
+  final CertDelegation? delegation;
 
   Map<String, dynamic> toJson() {
     return {
@@ -99,14 +99,14 @@ String hashTreeToString(List tree) {
   }
 }
 
-class Delegation extends ReadStateResponse {
-  const Delegation(
+class CertDelegation extends ReadStateResponse {
+  const CertDelegation(
     this.subnetId,
     BinaryBlob certificate,
   ) : super(certificate: certificate);
 
-  factory Delegation.fromJson(Map<String, dynamic> json) {
-    return Delegation(
+  factory CertDelegation.fromJson(Map<String, dynamic> json) {
+    return CertDelegation(
       Uint8List.fromList(json['subnet_id'] as List<int>),
       json['certificate'] is Uint8List || json['certificate'] is Uint8Buffer
           ? Uint8List.fromList(json['certificate'])
@@ -159,7 +159,7 @@ class Certificate {
     }
   }
 
-  Future<Uint8List> _checkDelegation(Delegation? d) async {
+  Future<Uint8List> _checkDelegation(CertDelegation? d) async {
     if (d == null) {
       if (_rootKey == null) {
         if (_agent.rootKey != null) {

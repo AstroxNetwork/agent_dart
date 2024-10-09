@@ -1,10 +1,15 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/auth.dart' as auth;
-import 'package:agent_dart_base/agent_dart_base.dart';
+import 'package:agent_dart_ffi/agent_dart_ffi.dart';
 import 'package:crypto/crypto.dart';
 import 'package:meta/meta.dart';
+
+import '../agent/auth.dart' as auth;
+import '../agent/crypto/random.dart';
+import '../agent/types.dart';
+import '../utils/extension.dart';
+import 'der.dart';
 
 @immutable
 class Ed25519KeyPair extends auth.KeyPair {

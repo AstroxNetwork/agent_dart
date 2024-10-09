@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/actor.dart';
-import 'package:agent_dart_base/candid/idl.dart';
+import '../../candid/idl.dart';
+import '../actor.dart';
 
 Service assetIDL() {
   return IDL.Service({

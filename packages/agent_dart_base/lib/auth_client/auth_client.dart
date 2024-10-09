@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/auth.dart';
-import 'package:agent_dart_base/agent/cbor.dart';
-import 'package:agent_dart_base/authentication/authentication.dart';
-import 'package:agent_dart_base/identity/delegation.dart';
-import 'package:agent_dart_base/identity/identity.dart';
-import 'package:agent_dart_base/utils/extension.dart';
 import 'package:meta/meta.dart';
+
+import '../../utils/extension.dart';
+import '../agent/auth.dart';
+import '../agent/cbor.dart';
+import '../authentication/authentication.dart';
+import '../identity/identity.dart';
 
 const keyLocalStorageKey = 'identity';
 const keyLocalStorageDelegation = 'delegation';

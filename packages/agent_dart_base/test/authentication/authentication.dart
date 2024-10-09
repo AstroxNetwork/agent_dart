@@ -1,9 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/auth.dart';
-import 'package:agent_dart_base/authentication/authentication.dart';
-import 'package:agent_dart_base/identity/delegation.dart';
-import 'package:agent_dart_base/identity/ed25519.dart';
+import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
 Future<SignIdentity> createIdentity(int seed) async {

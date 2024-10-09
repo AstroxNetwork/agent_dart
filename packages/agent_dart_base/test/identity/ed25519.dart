@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/agent/types.dart';
-import 'package:agent_dart_base/identity/ed25519.dart';
-import 'package:agent_dart_base/utils/extension.dart';
+import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
 // import 'package:agent_dart/utils/extension.dart';

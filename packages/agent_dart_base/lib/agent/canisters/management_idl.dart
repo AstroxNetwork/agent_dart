@@ -1,4 +1,4 @@
-import 'package:agent_dart_base/candid/idl.dart';
+import '../../candid/idl.dart';
 
 Service managementIDL() {
   const canisterId = IDL.Principal;

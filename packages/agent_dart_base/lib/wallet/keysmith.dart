@@ -1,13 +1,14 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_base/identity/identity.dart';
-import 'package:agent_dart_base/principal/principal.dart';
-import 'package:agent_dart_base/utils/extension.dart';
 import 'package:agent_dart_ffi/agent_dart_ffi.dart';
 import 'package:bip32/bip32.dart' as bip32;
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:pointycastle/ecc/api.dart';
 import 'package:pointycastle/ecc/curves/secp256k1.dart';
+
+import '../../identity/identity.dart';
+import '../../principal/principal.dart';
+import '../../utils/extension.dart';
 
 final ECCurve_secp256k1 secp256k1Params = ECCurve_secp256k1();
 
