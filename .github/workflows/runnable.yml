@@ -35,4 +35,4 @@ jobs:
       - run: cd packages/agent_dart_base && dart test ./test/agent_dart_base_test.dart
       - name: Publish dry run
         run: melos run publish-dry-run
-        if: github.repository == 'AstroxNetwork/agent_dart'
+        if: ${{ github.repository == 'AstroxNetwork/agent_dart' && matrix.os == 'ubuntu-latest' }}
