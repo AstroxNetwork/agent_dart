@@ -1,9 +1,11 @@
 import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
+import '../test_utils.dart';
 import 'is.dart' as is_test;
 
 void main() {
+  ffiInit();
   is_test.main();
 
   test('Hex string to u8', () {
