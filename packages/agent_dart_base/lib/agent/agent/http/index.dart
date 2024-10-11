@@ -220,6 +220,7 @@ class HttpAgent implements Agent {
     final ecid = fields.effectiveCanisterId != null
         ? Principal.from(fields.effectiveCanisterId)
         : canister;
+    final callSync = fields.callSync;
     final sender = id != null ? id.getPrincipal() : Principal.anonymous();
 
     final CallRequest submit = CallRequest(
@@ -241,17 +242,38 @@ class HttpAgent implements Agent {
       body: submit,
     );
     final transformedRequest = await _transform(rsRequest);
-
     final newTransformed = await id!.transformRequest(transformedRequest);
     final body = cbor.cborEncode(newTransformed['body']);
-    final response = await withRetry(
-      () => _fetch!(
-        endpoint: '/api/v2/canister/${ecid.toText()}/call',
+
+    Future<Map<String, dynamic>> callV3() {
+      return _fetch!(
+        endpoint: '/api/v3/canister/${ecid.toText()}/call',
         method: FetchMethod.post,
         headers: newTransformed['request']['headers'],
         body: body,
-      ),
-    );
+      );
+    }
+
+    Future<Map<String, dynamic>> callV2() {
+      return withRetry(
+        () => _fetch!(
+          endpoint: '/api/v2/canister/${ecid.toText()}/call',
+          method: FetchMethod.post,
+          headers: newTransformed['request']['headers'],
+          body: body,
+        ),
+      );
+    }
+
+    Map<String, dynamic> response;
+    if (callSync) {
+      response = await callV3();
+      if (response['statusCode'] == 404) {
+        response = await callV2();
+      }
+    } else {
+      response = await callV2();
+    }
     final requestId = requestIdOf(submit.toJson());
 
     if (!(response['ok'] as bool)) {
