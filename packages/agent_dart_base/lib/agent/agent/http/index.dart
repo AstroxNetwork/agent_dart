@@ -388,10 +388,10 @@ class HttpAgent implements Agent {
     }
 
     final buffer = response['arrayBuffer'] as Uint8List;
-
+    final decoded = cbor.cborDecode<Map>(buffer);
     return ReadStateResponseResult(
       certificate: blobFromBuffer(
-        (cbor.cborDecode<Map>(buffer)['certificate'] as Uint8Buffer).buffer,
+        (decoded['certificate'] as Uint8Buffer).buffer,
       ),
     );
   }
