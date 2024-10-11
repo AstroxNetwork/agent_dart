@@ -4,23 +4,20 @@ import 'dart:typed_data';
 import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
-Future<SignIdentity> createIdentity(int seed) {
-  final s = Uint8List.fromList([seed, ...List.filled(31, 0)]);
-  return Ed25519KeyIdentity.generate(s);
-}
-
-// BinaryBlob h(String text) {
-//   return blobFromHex(text.codeUnits.);
-// }
 void main() {
   delegationTest();
 }
 
+Future<SignIdentity> _createIdentity(int seed) {
+  final s = Uint8List.fromList([seed, ...List.filled(31, 0)]);
+  return Ed25519KeyIdentity.generate(s);
+}
+
 void delegationTest() {
   test('delegation signs with proper keys (3)', () async {
-    final root = await createIdentity(2);
-    final middle = await createIdentity(1);
-    final bottom = await createIdentity(0);
+    final root = await _createIdentity(2);
+    final middle = await _createIdentity(1);
+    final bottom = await _createIdentity(0);
 
     final rootToMiddle = await DelegationChain.create(
       root,
@@ -66,9 +63,9 @@ void delegationTest() {
     expect(middleToBottom.toJson(), result);
   });
   test('DelegationChain can be serialized to and from JSON', () async {
-    final root = await createIdentity(2);
-    final middle = await createIdentity(1);
-    final bottom = await createIdentity(0);
+    final root = await _createIdentity(2);
+    final middle = await _createIdentity(1);
+    final bottom = await _createIdentity(0);
 
     final rootToMiddle = await DelegationChain.create(
       root,

@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
+import '../test_utils.dart';
+
 Future<SignIdentity> createIdentity(int seed) async {
   final seed1 = List.filled(32, 0);
   seed1[0] = seed;
@@ -10,6 +12,7 @@ Future<SignIdentity> createIdentity(int seed) async {
 }
 
 void main() {
+  ffiInit();
   authenticationTest();
 }
 
