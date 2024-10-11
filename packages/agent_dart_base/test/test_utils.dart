@@ -30,8 +30,8 @@ Future<void> ffiInit() {
   final [os, arch] = Abi.current().toString().split('_');
   final libName = switch ((os, arch)) {
     ('macos', _) || ('linux', 'arm64') => 'libagent_dart.dylib',
-    ('linux', '_') => 'libagent_dart.so',
-    ('windows', '_') => 'agent_dart.dll',
+    ('linux', _) => 'libagent_dart.so',
+    ('windows', _) => 'agent_dart.dll',
     _ => throw UnsupportedError('$os $arch is not a supported platform.'),
   };
   return AgentDart.init(
