@@ -42,14 +42,12 @@ void httpTest() {
         });
       });
 
-      // ignore: unused_local_variable
-      final res = await agent.call(
+      final res = await agent.callRequest(
         canisterId,
         CallOptions(arg: arg, methodName: methodName),
         null,
       );
-
-      // print((res as CallResponseBody).toJson());
+      print(res.toJson());
 
       final mockPartialRequest = {
         'request_type': SubmitRequestType.call,
@@ -64,16 +62,15 @@ void httpTest() {
       };
 
       final mockPartialsRequestId = requestIdOf(mockPartialRequest);
-
       final expectedRequest = {
         'content': mockPartialRequest,
       };
-
-      final expectedRequestId =
-          requestIdOf(expectedRequest['content'] as Map<String, dynamic>);
-
+      final expectedRequestId = requestIdOf(
+        expectedRequest['content'] as Map<String, dynamic>,
+      );
       expect(expectedRequestId, mockPartialsRequestId);
     });
   });
+
   group('description 2 ', () {});
 }

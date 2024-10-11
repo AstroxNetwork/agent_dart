@@ -280,7 +280,7 @@ class ProxyStubAgent {
   final void Function(ProxyMessage msg) _frontend;
   final Agent _agent;
 
-  void onmessage(ProxyMessage msg) {
+  void onMessage(ProxyMessage msg) {
     switch (msg.type) {
       case ProxyMessageKind.getPrincipal:
         _agent.getPrincipal().then((response) {
@@ -305,7 +305,7 @@ class ProxyStubAgent {
         });
         break;
       case ProxyMessageKind.call:
-        _agent.call(msg.args?[0], msg.args?[1], msg.args?[2]).then((response) {
+        _agent.callRequest(msg.args?[0], msg.args?[1], msg.args?[2]).then((response) {
           _frontend(
             ProxyMessageCallResponse.fromJson({
               'id': msg.id,
@@ -356,7 +356,7 @@ class ProxyAgent implements Agent {
   @override
   BinaryBlob? rootKey;
 
-  void onmessage(ProxyMessage msg) {
+  void onMessage(ProxyMessage msg) {
     final id = msg.id;
 
     final maybePromise = _pendingCalls[id];
@@ -417,7 +417,7 @@ class ProxyAgent implements Agent {
   }
 
   @override
-  Future<SubmitResponse> call(
+  Future<SubmitResponse> callRequest(
     Principal canisterId,
     CallOptions fields,
     Identity? identity,
