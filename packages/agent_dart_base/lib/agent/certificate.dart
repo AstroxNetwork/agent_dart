@@ -52,7 +52,9 @@ class Cert {
   factory Cert.fromJson(Map json) {
     return Cert(
       delegation: json['delegation'] != null
-          ? CertDelegation.fromJson(Map<String, dynamic>.from(json['delegation']))
+          ? CertDelegation.fromJson(
+              Map<String, dynamic>.from(json['delegation']),
+            )
           : null,
       signature: json['signature'] != null
           ? (json['signature'] as Uint8Buffer).buffer.asUint8List()
@@ -123,9 +125,9 @@ class CertDelegation extends ReadStateResponse {
 
 class Certificate {
   Certificate(
-    ReadStateResponse response,
+    BinaryBlob certificate,
     this._agent,
-  ) : cert = Cert.fromJson(cborDecode(response.certificate));
+  ) : cert = Cert.fromJson(cborDecode(certificate));
 
   final Agent _agent;
   final Cert cert;
@@ -172,7 +174,7 @@ class Certificate {
       }
       return Future.value(_rootKey);
     }
-    final Certificate cert = Certificate(d, _agent);
+    final Certificate cert = Certificate(d.certificate, _agent);
     if (!(await cert.verify())) {
       throw StateError('Fail to verify certificate.');
     }

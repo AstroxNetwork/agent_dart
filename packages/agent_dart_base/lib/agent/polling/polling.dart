@@ -28,11 +28,12 @@ Future<BinaryBlob> pollForResponse(
     ReadStateOptions(paths: [path]),
     null,
   );
-  final cert = Certificate(state, agent);
+  final cert = Certificate(state.certificate, agent);
   final verified = await cert.verify();
   if (!verified) {
     throw StateError('Fail to verify certificate.');
   }
+
   final maybeBuf = cert.lookup([...path, blobFromText('status').buffer]);
   final RequestStatusResponseStatus status;
   if (maybeBuf == null) {
