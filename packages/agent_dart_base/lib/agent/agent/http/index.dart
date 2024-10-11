@@ -210,7 +210,7 @@ class HttpAgent implements Agent {
   }
 
   @override
-  Future<SubmitResponse> call(
+  Future<CallResponseBody> callRequest(
     Principal canisterId,
     CallOptions fields,
     Identity? identity,

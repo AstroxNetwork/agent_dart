@@ -411,8 +411,9 @@ ActorMethod _createActorMethod(Actor actor, String methodName, Func func) {
       final ecid = effectiveCanisterId != null
           ? Principal.from(effectiveCanisterId)
           : cid;
-      // final { requestId, response } =
-      final result = await agent!.call(
+      final callSync = actor.metadata.config?.callSync ?? newOptions.callSync;
+
+      final result = await agent!.callRequest(
         cid,
         CallOptions(
           methodName: methodName,

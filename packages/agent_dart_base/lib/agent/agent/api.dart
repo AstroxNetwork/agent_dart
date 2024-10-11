@@ -157,7 +157,7 @@ abstract class Agent {
     Identity? identity,
   );
 
-  Future<SubmitResponse> call(
+  Future<SubmitResponse> callRequest(
     Principal canisterId,
     CallOptions fields,
     Identity? identity,
