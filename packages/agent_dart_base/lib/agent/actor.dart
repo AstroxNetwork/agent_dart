@@ -1,10 +1,14 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:typed_data/typed_data.dart';
+
 import '../candid/idl.dart';
 import '../principal/principal.dart';
 import 'agent/api.dart';
+import 'agent/http/types.dart';
 import 'canisters/management.dart';
+import 'cbor.dart' as cbor;
 import 'errors.dart';
 import 'polling/polling.dart';
 import 'request_id.dart';
@@ -72,6 +76,7 @@ class CallConfig {
     this.pollingStrategyFactory,
     this.canisterId,
     this.effectiveCanisterId,
+    this.callSync = true,
   });
 
   factory CallConfig.fromJson(Map<String, dynamic> map) {
@@ -80,6 +85,7 @@ class CallConfig {
       pollingStrategyFactory: map['pollingStrategyFactory'],
       canisterId: map['canisterId'],
       effectiveCanisterId: map['effectiveCanisterId'],
+      callSync: map['callSync'] ?? true,
     );
   }
 
@@ -97,12 +103,16 @@ class CallConfig {
   /// The effective canister ID. This should almost always be ignored.
   final Principal? effectiveCanisterId;
 
+  /// Whether to call the endpoint synchronously.
+  final bool callSync;
+
   Map<String, dynamic> toJson() {
     return {
       'agent': agent,
       'pollingStrategyFactory': pollingStrategyFactory,
       'canisterId': canisterId,
       'effectiveCanisterId': effectiveCanisterId,
+      'callSync': callSync,
     };
   }
 }
@@ -114,6 +124,7 @@ class ActorConfig extends CallConfig {
     super.pollingStrategyFactory,
     super.canisterId,
     super.effectiveCanisterId,
+    super.callSync,
     this.callTransform,
     this.queryTransform,
   });
@@ -126,6 +137,7 @@ class ActorConfig extends CallConfig {
       pollingStrategyFactory: map['pollingStrategyFactory'],
       canisterId: map['canisterId'],
       effectiveCanisterId: map['effectiveCanisterId'],
+      callSync: map['callSync'] ?? true,
     );
   }
 
@@ -419,6 +431,7 @@ ActorMethod _createActorMethod(Actor actor, String methodName, Func func) {
           methodName: methodName,
           arg: arg,
           effectiveCanisterId: ecid,
+          callSync: callSync,
         ),
         null,
       );
@@ -429,6 +442,17 @@ ActorMethod _createActorMethod(Actor actor, String methodName, Func func) {
         throw UpdateCallRejectedError(cid, methodName, result, requestId);
       }
 
+      BinaryBlob? certificate;
+      // Fall back to polling if we receive an "Accepted" response code,
+      // otherwise decode the certificate instantly.
+      if (result is CallResponseBody && result.response?.status != 202) {
+        final buffer = (result.response as HttpResponseBody).arrayBuffer!;
+        final decoded = cbor.cborDecode<Map>(buffer);
+        certificate = blobFromBuffer(
+          (decoded['certificate'] as Uint8Buffer).buffer,
+        );
+      }
+
       final pollStrategy = pollingStrategyFactory();
       final responseBytes = await pollForResponse(
         agent,
@@ -436,6 +460,7 @@ ActorMethod _createActorMethod(Actor actor, String methodName, Func func) {
         requestId,
         pollStrategy,
         methodName,
+        overrideCertificate: certificate,
       );
 
       if (responseBytes.isNotEmpty) {
