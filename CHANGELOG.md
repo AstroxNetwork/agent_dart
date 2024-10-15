@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.29
+
+- Implements certificate's time and canister ranges checks.
+
 ## 1.0.0-dev.28
 
 - Implements v3 synchronized call API in agent and actor.
