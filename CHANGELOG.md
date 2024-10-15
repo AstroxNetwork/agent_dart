@@ -4,6 +4,12 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.28
+
+- Implements v3 synchronized call API in agent and actor.
+  - `pollForResponse` can override the certificate result.
+  - v3 calls will return to v2 if 202/404 status is returned.
+
 ## 1.0.0-dev.27
 
 - Support `flutter_rust_bridge` 2.5.

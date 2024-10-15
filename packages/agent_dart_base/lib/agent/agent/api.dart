@@ -98,6 +98,7 @@ class CallOptions {
     required this.methodName,
     required this.arg,
     this.effectiveCanisterId,
+    this.callSync = true,
   });
 
   /// The method name to call.
@@ -109,6 +110,9 @@ class CallOptions {
   /// An effective canister ID, used for routing. This should only be mentioned
   /// if it's different from the canister ID.
   final Principal? effectiveCanisterId;
+
+  /// Whether to call the endpoint synchronously.
+  final bool callSync;
 }
 
 @immutable
@@ -157,7 +161,7 @@ abstract class Agent {
     Identity? identity,
   );
 
-  Future<SubmitResponse> call(
+  Future<SubmitResponse> callRequest(
     Principal canisterId,
     CallOptions fields,
     Identity? identity,

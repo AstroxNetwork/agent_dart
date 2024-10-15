@@ -1,10 +1,11 @@
+import '../test_utils.dart';
 import 'principal.dart' as principal;
 import 'utils/base32.dart' as base32;
-// ignore: library_prefixes
-import 'utils/get_crc.dart' as getCrc;
+import 'utils/get_crc.dart' as get_crc;
 
 void main() {
-  base32.main();
-  getCrc.main();
+  ffiInit();
   principal.main();
+  base32.main();
+  get_crc.main();
 }

@@ -14,25 +14,33 @@ Future<BinaryBlob> pollForResponse(
   Principal canisterId,
   RequestId requestId,
   PollStrategy strategy,
-  String method,
-) async {
+  String method, {
+  BinaryBlob? overrideCertificate,
+}) async {
   final Principal? caller;
   if (agent is HttpAgent) {
     caller = agent.identity?.getPrincipal();
   } else {
     caller = null;
   }
+
   final path = [blobFromText('request_status'), requestId];
-  final state = await agent.readState(
-    canisterId,
-    ReadStateOptions(paths: [path]),
-    null,
-  );
-  final cert = Certificate(state, agent);
+  final Certificate cert;
+  if (overrideCertificate != null) {
+    cert = Certificate(overrideCertificate, agent);
+  } else {
+    final state = await agent.readState(
+      canisterId,
+      ReadStateOptions(paths: [path]),
+      null,
+    );
+    cert = Certificate(state.certificate, agent);
+  }
   final verified = await cert.verify();
   if (!verified) {
     throw StateError('Fail to verify certificate.');
   }
+
   final maybeBuf = cert.lookup([...path, blobFromText('status').buffer]);
   final RequestStatusResponseStatus status;
   if (maybeBuf == null) {
@@ -50,6 +58,7 @@ Future<BinaryBlob> pollForResponse(
     case RequestStatusResponseStatus.processing:
       // Execute the polling strategy, then retry.
       await strategy(canisterId, requestId, status);
+      // Passing the override certificate will cause infinite stacks.
       return pollForResponse(agent, canisterId, requestId, strategy, method);
     case RequestStatusResponseStatus.rejected:
       final rejectCode = cert.lookup(

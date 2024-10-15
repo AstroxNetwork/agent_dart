@@ -4,9 +4,9 @@ import 'package:agent_dart_base/agent_dart_base.dart';
 import 'package:test/test.dart';
 
 import '../test_utils.dart';
-// ignore: library_prefixes
 
 void main() {
+  ffiInit();
   idlTest();
 }
 
