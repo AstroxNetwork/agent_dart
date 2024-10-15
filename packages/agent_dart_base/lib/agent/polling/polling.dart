@@ -36,7 +36,7 @@ Future<BinaryBlob> pollForResponse(
     );
     cert = Certificate(state.certificate, agent);
   }
-  final verified = await cert.verify();
+  final verified = await cert.verify(canisterId);
   if (!verified) {
     throw StateError('Fail to verify certificate.');
   }

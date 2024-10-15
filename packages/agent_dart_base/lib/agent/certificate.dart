@@ -5,6 +5,7 @@ import 'package:typed_data/typed_data.dart';
 
 import '../../utils/extension.dart';
 import '../../utils/u8a.dart';
+import '../principal/principal.dart';
 import 'agent/api.dart';
 import 'bls.dart';
 import 'cbor.dart';
@@ -103,23 +104,26 @@ String hashTreeToString(List tree) {
 
 class CertDelegation extends ReadStateResponse {
   const CertDelegation(
-    this.subnetId,
     BinaryBlob certificate,
+    this.subnetId,
   ) : super(certificate: certificate);
 
   factory CertDelegation.fromJson(Map<String, dynamic> json) {
     return CertDelegation(
-      Uint8List.fromList(json['subnet_id'] as List<int>),
       json['certificate'] is Uint8List || json['certificate'] is Uint8Buffer
           ? Uint8List.fromList(json['certificate'])
           : Uint8List.fromList([]),
+      Uint8List.fromList(json['subnet_id'] as List<int>),
     );
   }
 
-  final Uint8List? subnetId;
+  final Uint8List subnetId;
 
   Map<String, dynamic> toJson() {
-    return {'subnet_id': subnetId, 'certificate': certificate};
+    return {
+      'certificate': certificate,
+      'subnet_id': subnetId,
+    };
   }
 }
 
@@ -144,9 +148,9 @@ class Certificate {
     return lookupPath(path, cert.tree!);
   }
 
-  Future<bool> verify() async {
+  Future<bool> verify(Principal canisterId) async {
     final rootHash = await reconstruct(cert.tree!);
-    final derKey = await _checkDelegation(cert.delegation);
+    final derKey = await _checkDelegation(cert.delegation, canisterId);
     final sig = cert.signature;
     final key = extractDER(derKey);
     final msg = u8aConcat([domainSep('ic-state-root'), rootHash]);
@@ -161,7 +165,10 @@ class Certificate {
     }
   }
 
-  Future<Uint8List> _checkDelegation(CertDelegation? d) async {
+  Future<Uint8List> _checkDelegation(
+    CertDelegation? d,
+    Principal canisterId,
+  ) async {
     if (d == null) {
       if (_rootKey == null) {
         if (_agent.rootKey != null) {
@@ -175,15 +182,34 @@ class Certificate {
       return Future.value(_rootKey);
     }
     final Certificate cert = Certificate(d.certificate, _agent);
-    if (!(await cert.verify())) {
+    if (!(await cert.verify(canisterId))) {
       throw StateError('Fail to verify certificate.');
     }
 
-    final lookup = cert.lookupEx(['subnet', d.subnetId, 'public_key']);
-    if (lookup == null) {
-      throw StateError('Cannot find subnet key for 0x${d.subnetId!.toHex()}.');
+    final canisterRangesLookup = cert.lookupEx(
+      ['subnet', d.subnetId, 'canister_ranges'],
+    );
+    if (canisterRangesLookup == null) {
+      throw StateError(
+        'Cannot find canister ranges for subnet 0x${d.subnetId.toHex()}.',
+      );
     }
-    return lookup;
+    final canisterRanges = cborDecode<List>(canisterRangesLookup).map((e) {
+      final list = (e as List).cast<Uint8Buffer>();
+      return (Principal(list.first.toU8a()), Principal(list.last.toU8a()));
+    }).toList();
+    if (!canisterRanges
+        .any((range) => range.$1 <= canisterId && canisterId <= range.$2)) {
+      throw StateError('Certificate is not authorized.');
+    }
+
+    final publicKeyLookup = cert.lookupEx(
+      ['subnet', d.subnetId, 'public_key'],
+    );
+    if (publicKeyLookup == null) {
+      throw StateError('Cannot find subnet key for 0x${d.subnetId.toHex()}.');
+    }
+    return publicKeyLookup;
   }
 }
 
