@@ -19,7 +19,7 @@ PollStrategy defaultStrategy() {
   return chain([
     conditionalDelay(once(), 1000),
     backoff(1000, 1.2),
-    timeout(5 * 60 * 1000),
+    timeout(defaultExpireInDuration),
   ]);
 }
 
@@ -84,19 +84,19 @@ PollStrategy throttlePolling(int throttleMilliseconds) {
   };
 }
 
-PollStrategy timeout(int milliseconds) {
-  final end = DateTime.now().millisecondsSinceEpoch + milliseconds;
+PollStrategy timeout(Duration duration) {
+  final end = DateTime.now().add(duration);
   return (
     Principal canisterId,
     RequestId requestId,
     RequestStatusResponseStatus status,
   ) async {
-    if (DateTime.now().millisecondsSinceEpoch > end) {
+    if (DateTime.now().isAfter(end)) {
       throw TimeoutException(
-        'Request timed out after $milliseconds milliseconds:\n'
+        'Request timed out after $duration:\n'
         '  Request ID: ${requestIdToHex(requestId)}\n'
         '  Request status: $status\n',
-        Duration(milliseconds: milliseconds),
+        duration,
       );
     }
   };

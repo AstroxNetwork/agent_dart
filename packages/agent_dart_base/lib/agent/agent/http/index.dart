@@ -39,8 +39,13 @@ Future<T> withRetry<T>(
   }
 }
 
+/// Most of the timeouts will happen in 5 minutes.
+const defaultExpireInMinutes = 5;
+const defaultExpireInDuration = Duration(minutes: defaultExpireInMinutes);
+
 /// Default delta for ingress expiry is 5 minutes.
-const _defaultIngressExpiryDeltaInMilliseconds = 5 * 60 * 1000;
+const _defaultIngressExpiryDeltaInMilliseconds =
+    defaultExpireInMinutes * 60 * 1000;
 
 /// Root public key for the IC, encoded as hex
 const _icRootKey = '308182301d060d2b0601040182dc7c0503010201060c2b0601040182dc7'
