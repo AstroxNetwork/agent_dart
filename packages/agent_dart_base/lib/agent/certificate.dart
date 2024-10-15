@@ -12,6 +12,8 @@ import 'cbor.dart';
 import 'errors.dart';
 import 'request_id.dart';
 import 'types.dart';
+import 'utils/buffer_pipe.dart';
+import 'utils/leb128.dart';
 
 final AgentBLS _bls = AgentBLS();
 
@@ -136,13 +138,13 @@ class Certificate {
     required this.canisterId,
     this.rootKey,
     this.maxAgeInMinutes = 5,
-  })  : assert(maxAgeInMinutes <= 5),
+  })  : assert(maxAgeInMinutes == null || maxAgeInMinutes <= 5),
         cert = Cert.fromJson(cborDecode(cert));
 
   final Cert cert;
   final Principal canisterId;
   final BinaryBlob? rootKey;
-  final int maxAgeInMinutes;
+  final int? maxAgeInMinutes;
 
   bool verified = false;
 
@@ -155,6 +157,7 @@ class Certificate {
   }
 
   Future<bool> verify() async {
+    _verifyCertTime();
     final rootHash = await reconstruct(cert.tree);
     final derKey = await _checkDelegation(cert.delegation);
     final key = extractDER(derKey);
@@ -171,6 +174,35 @@ class Certificate {
     }
   }
 
+  void _verifyCertTime() {
+    final timeLookup = lookupEx(['time']);
+    if (timeLookup == null) {
+      throw UnverifiedCertificateError('Certificate does not contain a time.');
+    }
+    final now = DateTime.now();
+    final lebDecodedTime = lebDecode(BufferPipe(timeLookup));
+    final time = DateTime.fromMicrosecondsSinceEpoch(
+      (lebDecodedTime / BigInt.from(1000)).toInt(),
+    );
+    // Signed time is after 5 minutes from now.
+    if (time.isAfter(now.add(const Duration(minutes: 5)))) {
+      throw UnverifiedCertificateError(
+        'Certificate is signed more than 5 minutes in the future.\n'
+        '|-- Certificate time: ${time.toIso8601String()}\n'
+        '|-- Current time: ${now.toIso8601String()}',
+      );
+    }
+    // Signed time is before [maxAgeInMinutes] minutes.
+    if (maxAgeInMinutes != null &&
+        time.isBefore(now.subtract(Duration(minutes: maxAgeInMinutes!)))) {
+      throw UnverifiedCertificateError(
+        'Certificate is signed more than $maxAgeInMinutes minutes in the past.\n'
+        '|-- Certificate time: ${time.toIso8601String()}\n'
+        '|-- Current time: ${now.toIso8601String()}',
+      );
+    }
+  }
+
   Future<Uint8List> _checkDelegation(CertDelegation? d) async {
     if (d == null) {
       if (rootKey == null) {
@@ -184,6 +216,7 @@ class Certificate {
       cert: d.certificate,
       canisterId: canisterId,
       rootKey: rootKey,
+      maxAgeInMinutes: null, // Do not check max age for delegation certificates
     );
     if (!(await cert.verify())) {
       throw UnverifiedCertificateError('Fail to verify certificate.');
