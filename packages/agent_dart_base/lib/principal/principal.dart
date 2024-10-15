@@ -17,7 +17,7 @@ const _typeOpaque = 1;
 
 final _emptySubAccount = Uint8List(32);
 
-class Principal {
+class Principal implements Comparable<Principal> {
   const Principal(
     this._principal, {
     Uint8List? subAccount,
@@ -220,6 +220,20 @@ class Principal {
 
   @override
   int get hashCode => Object.hash(_principal, subAccount);
+
+  @override
+  int compareTo(Principal other) {
+    for (int i = 0; i < _principal.length && i < other._principal.length; i++) {
+      if (_principal[i] != other._principal[i]) {
+        return _principal[i].compareTo(other._principal[i]);
+      }
+    }
+    return _principal.length.compareTo(other._principal.length);
+  }
+
+  bool operator <=(Principal other) => compareTo(other) <= 0;
+
+  bool operator >=(Principal other) => compareTo(other) >= 0;
 }
 
 class CanisterId extends Principal {
