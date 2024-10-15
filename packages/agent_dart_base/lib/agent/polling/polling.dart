@@ -27,18 +27,26 @@ Future<BinaryBlob> pollForResponse(
   final path = [blobFromText('request_status'), requestId];
   final Certificate cert;
   if (overrideCertificate != null) {
-    cert = Certificate(overrideCertificate, agent);
+    cert = Certificate(
+      cert: overrideCertificate,
+      canisterId: canisterId,
+      rootKey: agent.rootKey,
+    );
   } else {
     final state = await agent.readState(
       canisterId,
       ReadStateOptions(paths: [path]),
       null,
     );
-    cert = Certificate(state.certificate, agent);
+    cert = Certificate(
+      cert: state.certificate,
+      canisterId: canisterId,
+      rootKey: agent.rootKey,
+    );
   }
   final verified = await cert.verify();
   if (!verified) {
-    throw StateError('Fail to verify certificate.');
+    throw UnverifiedCertificateError();
   }
 
   final maybeBuf = cert.lookup([...path, blobFromText('status').buffer]);

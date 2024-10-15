@@ -164,9 +164,7 @@ class DelegationChain {
     DelegationChain? previous,
     List<Principal>? targets,
   }) async {
-    expiration ??= DateTime.fromMillisecondsSinceEpoch(
-      DateTime.now().millisecondsSinceEpoch + 15 * 60 * 1000,
-    );
+    expiration ??= DateTime.now().add(const Duration(minutes: 15));
     final delegation = await _createSingleDelegation(
       from,
       to,
