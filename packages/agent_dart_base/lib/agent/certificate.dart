@@ -18,11 +18,12 @@ final AgentBLS _bls = AgentBLS();
 /// A certificate needs to be verified (using Certificate.prototype.verify)
 /// before it can be used.
 class UnverifiedCertificateError extends AgentFetchError {
-  UnverifiedCertificateError();
+  UnverifiedCertificateError([this.reason = 'Certificate is not verified.']);
+
+  final String reason;
 
   @override
-  String toString() => 'Cannot lookup unverified certificate. '
-      "Try to call 'verify()' again.";
+  String toString() => reason;
 }
 
 /// type HashTree =
@@ -48,24 +49,26 @@ enum NodeId {
 }
 
 class Cert {
-  const Cert({this.tree, this.signature, this.delegation});
+  const Cert({
+    required this.tree,
+    required this.signature,
+    required this.delegation,
+  });
 
   factory Cert.fromJson(Map json) {
     return Cert(
+      tree: json['tree'],
+      signature: (json['signature'] as Uint8Buffer).buffer.asUint8List(),
       delegation: json['delegation'] != null
           ? CertDelegation.fromJson(
               Map<String, dynamic>.from(json['delegation']),
             )
           : null,
-      signature: json['signature'] != null
-          ? (json['signature'] as Uint8Buffer).buffer.asUint8List()
-          : null,
-      tree: json['tree'],
     );
   }
 
-  final List? tree;
-  final Uint8List? signature;
+  final List tree;
+  final Uint8List signature;
   final CertDelegation? delegation;
 
   Map<String, dynamic> toJson() {
@@ -128,33 +131,36 @@ class CertDelegation extends ReadStateResponse {
 }
 
 class Certificate {
-  Certificate(
-    BinaryBlob certificate,
-    this._agent,
-  ) : cert = Cert.fromJson(cborDecode(certificate));
+  Certificate({
+    required BinaryBlob cert,
+    required this.canisterId,
+    this.rootKey,
+    this.maxAgeInMinutes = 5,
+  })  : assert(maxAgeInMinutes <= 5),
+        cert = Cert.fromJson(cborDecode(cert));
 
-  final Agent _agent;
   final Cert cert;
-  bool verified = false;
-  BinaryBlob? _rootKey;
+  final Principal canisterId;
+  final BinaryBlob? rootKey;
+  final int maxAgeInMinutes;
 
-  Uint8List? lookupEx(List path) {
-    checkState();
-    return lookupPathEx(path, cert.tree!);
-  }
+  bool verified = false;
 
   Uint8List? lookup(List path) {
-    checkState();
-    return lookupPath(path, cert.tree!);
+    return lookupPath(path, cert.tree);
   }
 
-  Future<bool> verify(Principal canisterId) async {
-    final rootHash = await reconstruct(cert.tree!);
-    final derKey = await _checkDelegation(cert.delegation, canisterId);
-    final sig = cert.signature;
+  Uint8List? lookupEx(List path) {
+    return lookupPathEx(path, cert.tree);
+  }
+
+  Future<bool> verify() async {
+    final rootHash = await reconstruct(cert.tree);
+    final derKey = await _checkDelegation(cert.delegation);
     final key = extractDER(derKey);
+    final sig = cert.signature;
     final msg = u8aConcat([domainSep('ic-state-root'), rootHash]);
-    final res = await _bls.blsVerify(key, sig!, msg);
+    final res = await _bls.blsVerify(key, sig, msg);
     verified = res;
     return res;
   }
@@ -165,32 +171,29 @@ class Certificate {
     }
   }
 
-  Future<Uint8List> _checkDelegation(
-    CertDelegation? d,
-    Principal canisterId,
-  ) async {
+  Future<Uint8List> _checkDelegation(CertDelegation? d) async {
     if (d == null) {
-      if (_rootKey == null) {
-        if (_agent.rootKey != null) {
-          _rootKey = _agent.rootKey;
-          return Future.value(_rootKey);
-        }
-        throw StateError(
+      if (rootKey == null) {
+        throw UnverifiedCertificateError(
           'The rootKey is not exist. Try to call `fetchRootKey` again.',
         );
       }
-      return Future.value(_rootKey);
+      return Future.value(rootKey);
     }
-    final Certificate cert = Certificate(d.certificate, _agent);
-    if (!(await cert.verify(canisterId))) {
-      throw StateError('Fail to verify certificate.');
+    final cert = Certificate(
+      cert: d.certificate,
+      canisterId: canisterId,
+      rootKey: rootKey,
+    );
+    if (!(await cert.verify())) {
+      throw UnverifiedCertificateError('Fail to verify certificate.');
     }
 
     final canisterRangesLookup = cert.lookupEx(
       ['subnet', d.subnetId, 'canister_ranges'],
     );
     if (canisterRangesLookup == null) {
-      throw StateError(
+      throw UnverifiedCertificateError(
         'Cannot find canister ranges for subnet 0x${d.subnetId.toHex()}.',
       );
     }
@@ -200,14 +203,16 @@ class Certificate {
     }).toList();
     if (!canisterRanges
         .any((range) => range.$1 <= canisterId && canisterId <= range.$2)) {
-      throw StateError('Certificate is not authorized.');
+      throw UnverifiedCertificateError('Certificate is not authorized.');
     }
 
     final publicKeyLookup = cert.lookupEx(
       ['subnet', d.subnetId, 'public_key'],
     );
     if (publicKeyLookup == null) {
-      throw StateError('Cannot find subnet key for 0x${d.subnetId.toHex()}.');
+      throw UnverifiedCertificateError(
+        'Cannot find subnet key for 0x${d.subnetId.toHex()}.',
+      );
     }
     return publicKeyLookup;
   }
