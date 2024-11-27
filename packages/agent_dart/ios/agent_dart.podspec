@@ -34,7 +34,6 @@ Pod::Spec.new do |s|
     # created by this build step.
     :output_files => ["${BUILT_PRODUCTS_DIR}/libagent_dart.a"],
     :shell_path => '/bin/bash',
-    # First argument is relative path to the `rust` folder, second is name of rust library
     :script => <<-SCRIPT
     [ -f "$HOME/.profile" ] && source "$HOME/.profile"
     [ -f "$HOME/.bash_profile" ] && source "$HOME/.bash_profile"
