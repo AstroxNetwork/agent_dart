@@ -4,6 +4,11 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.30
+
+- Make pod shell respect configured profile on Darwin.
+- Make `build_pod.sh` executable.
+
 ## 1.0.0-dev.29
 
 - Implements certificate's time and canister ranges checks.
