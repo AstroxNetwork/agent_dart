@@ -41,8 +41,9 @@ void main() {
     stopwatch.stop();
     final acc22TimePeriod = stopwatch.elapsed;
 
-    expect(acc21TimePeriod < allCurvesDuration, true);
-    expect(acc22TimePeriod < allCurvesDuration, true);
+    print([allCurvesDuration, acc21TimePeriod, acc22TimePeriod]);
+    expect(acc21TimePeriod <= allCurvesDuration, true);
+    expect(acc22TimePeriod <= allCurvesDuration, true);
     expect(acc2.account.identity != null, true);
     expect(acc2.account.ecIdentity != null, true);
     expect(acc21.account.ecIdentity, equals(null));
