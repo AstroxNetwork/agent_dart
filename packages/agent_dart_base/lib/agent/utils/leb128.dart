@@ -22,7 +22,12 @@ List<T> safeRead<T>(BufferPipe<T> pipe, int ref) {
 /// nearest integer.
 /// @param value The number to encode.
 Uint8List lebEncode(dynamic value) {
-  BigInt bn = value is BigInt ? value : BigInt.from(value);
+  BigInt bn = switch (value) {
+    BigInt() => value,
+    num() => BigInt.from(value),
+    String() => BigInt.parse(value),
+    _ => throw ArgumentError('Invalid big number: $value', 'lebEncode'),
+  };
   if (bn < BigInt.zero) {
     throw StateError('Cannot leb-encode negative values.');
   }
@@ -58,9 +63,13 @@ BigInt lebDecode<T>(BufferPipe<T> pipe) {
 /// Encode a number (or bigint) into a Buffer, with support for negative numbers.
 /// The number will be floored to the nearest integer.
 /// @param value The number to encode.
-Uint8List slebEncode(Comparable value) {
-  BigInt bn = value is BigInt ? value : BigInt.from(value as num);
-
+Uint8List slebEncode(dynamic value) {
+  BigInt bn = switch (value) {
+    BigInt() => value,
+    num() => BigInt.from(value),
+    String() => BigInt.parse(value),
+    _ => throw ArgumentError('Invalid big number: $value', 'slebEncode'),
+  };
   final isNeg = bn < BigInt.zero;
   if (isNeg) {
     bn = -bn - BigInt.one;
