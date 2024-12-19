@@ -263,14 +263,6 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
           curveType: curveType,
         ))
           ..setSourceType(SourceType.base);
-      default:
-        return (await ICPSigner.fromPhrase(
-          phrase,
-          index: hardened,
-          icPath: icDerivationPath,
-          curveType: curveType,
-        ))
-          ..setSourceType(SourceType.ii);
     }
   }
 
