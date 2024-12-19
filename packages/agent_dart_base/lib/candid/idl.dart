@@ -528,7 +528,9 @@ class NatClass extends PrimitiveType {
 
   @override
   bool covariant(x) {
-    return (x is BigInt && x >= BigInt.zero) || (x is int && x >= 0);
+    return (x is BigInt && x >= BigInt.zero) ||
+        (x is int && x >= 0) ||
+        (x is String && BigInt.parse(x) >= BigInt.zero);
   }
 
   @override
