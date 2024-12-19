@@ -4,6 +4,11 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.31
+
+- Treat parsable big number string as a covariant of the `Nat` class.
+- Allow parsable big number string for `lebEncode` and `slebEncode`.
+
 ## 1.0.0-dev.30
 
 - Make pod shell respect configured profile on Darwin.
