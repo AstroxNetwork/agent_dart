@@ -636,6 +636,9 @@ class FixedIntClass extends PrimitiveType {
     } else if (x is int) {
       final v = BigInt.from(x);
       return v >= min && v <= max;
+    } else if (x is String && BigInt.tryParse(x) != null) {
+      final v = BigInt.parse(x);
+      return v >= min && v <= max;
     } else {
       return false;
     }
@@ -695,6 +698,11 @@ class FixedNatClass extends PrimitiveType<dynamic> {
       return x < max;
     } else if (x is int && x >= 0) {
       final v = BigInt.from(x);
+      return v < max;
+    } else if (x is String &&
+        BigInt.tryParse(x) != null &&
+        BigInt.parse(x) >= BigInt.zero) {
+      final v = BigInt.parse(x);
       return v < max;
     } else {
       return false;
