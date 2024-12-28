@@ -4,6 +4,16 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.33
+
+- Use an explicit serialization method rather than `toJson`.
+- Revert #88.
+- Revert part of #87.
+
+## 1.0.0-dev.32
+
+- Make parsable big number string as covariant of Fixed classes.
+
 ## 1.0.0-dev.31
 
 - Treat parsable big number string as a covariant of the `Nat` class.
