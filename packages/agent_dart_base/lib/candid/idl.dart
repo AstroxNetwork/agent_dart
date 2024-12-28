@@ -55,7 +55,12 @@ Uint8List? tryToJson(CType type, dynamic value) {
       // obj may be a map, must be ignore.
       value is! Map) {
     try {
-      return type.encodeValue(value.toJson());
+      try {
+        value = value.toIDLSerializable();
+      } on NoSuchMethodError {
+        value = value.toJson();
+      }
+      return type.encodeValue(value);
     } catch (e) {
       return null;
     }
@@ -904,7 +909,11 @@ class RecordClass extends ConstructType<Map> {
   bool covariant(dynamic x) {
     if (x is! Map) {
       try {
-        x = x.toJson();
+        try {
+          x = x.toIDLSerializable();
+        } on NoSuchMethodError {
+          x = x.toJson();
+        }
       } catch (e) {
         return false;
       }
