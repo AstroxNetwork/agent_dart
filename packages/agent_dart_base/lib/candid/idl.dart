@@ -55,7 +55,12 @@ Uint8List? tryToJson(CType type, dynamic value) {
       // obj may be a map, must be ignore.
       value is! Map) {
     try {
-      return type.encodeValue(value.toJson());
+      try {
+        value = value.toIDLSerializable();
+      } on NoSuchMethodError {
+        value = value.toJson();
+      }
+      return type.encodeValue(value);
     } catch (e) {
       return null;
     }
@@ -528,9 +533,7 @@ class NatClass extends PrimitiveType {
 
   @override
   bool covariant(x) {
-    return (x is BigInt && x >= BigInt.zero) ||
-        (x is int && x >= 0) ||
-        (x is String && BigInt.parse(x) >= BigInt.zero);
+    return (x is BigInt && x >= BigInt.zero) || (x is int && x >= 0);
   }
 
   @override
@@ -636,9 +639,6 @@ class FixedIntClass extends PrimitiveType {
     } else if (x is int) {
       final v = BigInt.from(x);
       return v >= min && v <= max;
-    } else if (x is String && BigInt.tryParse(x) != null) {
-      final v = BigInt.parse(x);
-      return v >= min && v <= max;
     } else {
       return false;
     }
@@ -698,11 +698,6 @@ class FixedNatClass extends PrimitiveType<dynamic> {
       return x < max;
     } else if (x is int && x >= 0) {
       final v = BigInt.from(x);
-      return v < max;
-    } else if (x is String &&
-        BigInt.tryParse(x) != null &&
-        BigInt.parse(x) >= BigInt.zero) {
-      final v = BigInt.parse(x);
       return v < max;
     } else {
       return false;
@@ -904,7 +899,11 @@ class RecordClass extends ConstructType<Map> {
   bool covariant(dynamic x) {
     if (x is! Map) {
       try {
-        x = x.toJson();
+        try {
+          x = x.toIDLSerializable();
+        } on NoSuchMethodError {
+          x = x.toJson();
+        }
       } catch (e) {
         return false;
       }

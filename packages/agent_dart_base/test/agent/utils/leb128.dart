@@ -24,7 +24,6 @@ void leb128Test() {
       lebEncode(BigInt.from(60000000000000000)).toHex(),
       '808098f4e9b5ca6a',
     );
-    expect(lebEncode('1').toHex(), '01');
 
     expect(lebDecode(BufferPipe<int>(Uint8List.fromList([0]))), BigInt.zero);
     expect(lebDecode(BufferPipe<int>(Uint8List.fromList([1]))), BigInt.one);
@@ -60,7 +59,6 @@ void leb128Test() {
       slebEncode(BigInt.parse('60000000000000000')).toHex(),
       '808098f4e9b5caea00',
     );
-    expect(slebEncode('1').toHex(), '01');
 
     expect(
       slebDecode(BufferPipe<int>(Uint8List.fromList([0x7f]))),
