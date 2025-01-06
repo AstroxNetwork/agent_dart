@@ -1,5 +1,5 @@
 name: agent_dart_ffi
-version: 1.0.0-dev.33
+version: 1.0.0-dev.34
 
 description: The FFI plugin that bridges Rust implementation for agent_dart.
 repository: https://github.com/AstroxNetwork/agent_dart

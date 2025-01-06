@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.34
+
+- Handles IDL nested vec class encoding.
+
 ## 1.0.0-dev.33
 
 - Use an explicit serialization method rather than `toJson`.
