@@ -1,12 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:agent_dart_base/agent_dart_base.dart';
+import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 
 import '../test_utils.dart';
 
 void main() {
-  ffiInit();
   idlTest();
 }
 
@@ -399,19 +399,43 @@ void idlTest() {
     );
 
     final foobar = FooBar.fromJson({'foo': '💩', 'bar': BigInt.from(42)});
-    final encode = IDL.encode([
+    final encodedFoobar = IDL.encode([
       IDL.Opt(IDL.Record({'foo': IDL.Text, 'bar': IDL.Int})),
     ], [
       [foobar],
     ]);
-    final decode = IDL.decode(
+    final decodedFooBar = IDL.decode(
       [
         IDL.Opt(IDL.Record({'foo': IDL.Text, 'bar': IDL.Int})),
       ],
-      encode,
+      encodedFoobar,
     );
-    final newFoobar = FooBar.fromJson((decode.first as List).first);
+    final newFoobar = FooBar.fromJson((decodedFooBar.first as List).first);
     expect(foobar, newFoobar);
+
+    const fooArgs = FooArgs(types: FooTypes.values);
+    final encodedFooArgs = IDL.encode(
+      [
+        IDL.Record({
+          'types': OptClass(
+            VecClass(VariantClass({'Type1': IDL.Null, 'Type2': IDL.Null})),
+          )
+        }),
+      ],
+      [fooArgs],
+    );
+    final decodedFooArgs = IDL.decode(
+      [
+        IDL.Record({
+          'types': OptClass(
+            VecClass(VariantClass({'Type1': IDL.Null, 'Type2': IDL.Null})),
+          )
+        }),
+      ],
+      encodedFooArgs,
+    );
+    final newFooArgs = FooArgs.fromJson(decodedFooArgs.first);
+    expect(fooArgs, newFooArgs);
   });
 
   test('IDL decoding (skip fields)', () {
@@ -799,4 +823,57 @@ class FooBar {
 
   @override
   int get hashCode => foo.hashCode ^ bar.hashCode;
+}
+
+enum FooTypes {
+  type1('Type1'),
+  type2('Type2');
+
+  const FooTypes(this.name);
+
+  factory FooTypes.fromJson(Map json) {
+    final key = json.keys.first;
+    return FooTypes.values.firstWhere((e) => e.name == key);
+  }
+
+  final String name;
+
+  Map<String, Null> toJson() {
+    return {name: null};
+  }
+}
+
+class FooArgs {
+  const FooArgs({this.types});
+
+  factory FooArgs.fromJson(Map json) {
+    return FooArgs(
+      types: (json['types'] as List).map((e) {
+        return (e as List?)?.map((e) {
+          return FooTypes.fromJson(e);
+        }).toList();
+      }).firstOrNull,
+    );
+  }
+
+  final List<FooTypes>? types;
+
+  Map<String, dynamic> toJson() {
+    final types = this.types;
+    return {
+      'types': [if (types != null) types],
+    };
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is FooArgs &&
+            const DeepCollectionEquality().equals(other.types, types));
+  }
+
+  @override
+  int get hashCode =>
+      Object.hashAll([runtimeType, const DeepCollectionEquality().hash(types)]);
 }
