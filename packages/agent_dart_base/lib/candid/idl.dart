@@ -49,6 +49,21 @@ List<TR> zipWith<TX, TY, TR>(
 }
 
 Uint8List? tryToJson(CType type, dynamic value) {
+  if (type is VecClass<Map<String, dynamic>> &&
+      value is List<Enum> &&
+      type.covariant(value)) {
+    try {
+      final list = value as List<dynamic>;
+      try {
+        value = list.map((e) => e.toIDLSerializable()).toList(growable: false);
+      } on NoSuchMethodError {
+        value = list.map((e) => e.toJson()).toList(growable: false);
+      }
+      return type.encodeValue(value);
+    } catch (e) {
+      return null;
+    }
+  }
   if ((type is RecordClass ||
           type is VariantClass ||
           (type is TextClass && value is! String)) &&
