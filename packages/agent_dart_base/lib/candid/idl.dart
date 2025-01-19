@@ -1054,9 +1054,7 @@ class TupleClass<T extends List> extends ConstructType<List> {
     // `>=` because tuples can be covariant when encoded.
     return x.length >= _fields.length &&
         _components
-                .asMap()
-                .entries
-                .map((t) => t.value.covariant(x[t.key]) ? 0 : 1)
+                .mapIndexed((index, value) => value.covariant(x[index]) ? 0 : 1)
                 .reduce((value, element) => value + element) ==
             0;
   }
@@ -1103,10 +1101,7 @@ class TupleClass<T extends List> extends ConstructType<List> {
       );
     }
     final res = [];
-    for (final entry in tuple._components.asMap().entries) {
-      // [i, wireType]
-      final i = entry.key;
-      final wireType = entry.value;
+    for (final (i, wireType) in tuple._components.indexed) {
       if (i >= _components.length) {
         // skip value
         wireType.decodeValue(x, wireType);
@@ -1406,7 +1401,7 @@ class FuncClass extends ConstructType<List> {
         'Arity mismatch',
       );
     }
-    return '(${types.asMap().entries.map((e) => e.value.valueToString(v[e.key])).join(', ')})';
+    return '(${types.mapIndexed((i, e) => e.valueToString(v[i])).join(', ')})';
   }
 
   @override
@@ -1866,22 +1861,21 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
     }
   }
 
-  rawTable.asMap().forEach((i, entry) {
-    final t = buildType(entry);
+  for (final (i, e) in rawTable.indexed) {
+    final t = buildType(e);
     table[i].fill(t);
-  });
+  }
 
   final types = rawTypes.map((t) => getType(t)).toList();
 
-  final output = retTypes.asMap().entries.map((entry) {
-    final result = entry.value.decodeValue(b, types[entry.key]);
-    return result;
-  }).toList();
+  final output =
+      retTypes.mapIndexed((i, e) => e.decodeValue(b, types[i])).toList();
 
   // Skip unused values.
   for (int ind = retTypes.length; ind < types.length; ind++) {
     types[ind].decodeValue(b, types[ind]);
   }
+
   if (b.buffer.isNotEmpty) {
     throw StateError('Unexpected left-over bytes.');
   }
