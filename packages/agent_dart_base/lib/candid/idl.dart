@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
 import '../agent/agent.dart';
@@ -1026,16 +1027,19 @@ class RecordClass extends ConstructType<Map> {
 
 class TupleClass<T extends List> extends ConstructType<List> {
   TupleClass(List<CType> components) : _components = components {
-    _fields = Map.from(_makeMap(components)).entries.toList();
-    _fields.sort(
-      (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt(),
-    );
+    _fields = components.mapIndexed(_makeField).sorted(
+          (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt(),
+        );
   }
 
   final List<CType> _components;
 
-  List<MapEntry> get fields => _fields;
-  late final List<MapEntry> _fields;
+  List<MapEntry<String, CType>> get fields => _fields;
+  late final List<MapEntry<String, CType>> _fields;
+
+  MapEntry<String, CType> _makeField(int index, CType component) {
+    return MapEntry('_${index}_', component);
+  }
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -1133,12 +1137,6 @@ class TupleClass<T extends List> extends ConstructType<List> {
   String get name {
     final fields = _fields.map((entry) => '${entry.key}:${entry.value.name}');
     return "record {${fields.join('; ')}}";
-  }
-
-  Map<String, dynamic> _makeMap(List<CType> components) {
-    return {
-      for (final e in components) '_${components.indexOf(e)}_': e,
-    };
   }
 }
 
