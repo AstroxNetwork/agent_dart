@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.35
+
+- Fix the multiple same type in a tuple will lead to incorrect field length.
+
 ## 1.0.0-dev.34
 
 - Handles IDL nested vec class encoding.
