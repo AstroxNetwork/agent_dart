@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
 import '../agent/agent.dart';
@@ -1026,16 +1027,19 @@ class RecordClass extends ConstructType<Map> {
 
 class TupleClass<T extends List> extends ConstructType<List> {
   TupleClass(List<CType> components) : _components = components {
-    _fields = Map.from(_makeMap(components)).entries.toList();
-    _fields.sort(
-      (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt(),
-    );
+    _fields = components.mapIndexed(_makeField).sorted(
+          (a, b) => idlLabelToId(a.key).toInt() - idlLabelToId(b.key).toInt(),
+        );
   }
 
   final List<CType> _components;
 
-  List<MapEntry> get fields => _fields;
-  late final List<MapEntry> _fields;
+  List<MapEntry<String, CType>> get fields => _fields;
+  late final List<MapEntry<String, CType>> _fields;
+
+  MapEntry<String, CType> _makeField(int index, CType component) {
+    return MapEntry('_${index}_', component);
+  }
 
   @override
   R accept<D, R>(Visitor<D, R> v, D d) {
@@ -1050,9 +1054,7 @@ class TupleClass<T extends List> extends ConstructType<List> {
     // `>=` because tuples can be covariant when encoded.
     return x.length >= _fields.length &&
         _components
-                .asMap()
-                .entries
-                .map((t) => t.value.covariant(x[t.key]) ? 0 : 1)
+                .mapIndexed((index, value) => value.covariant(x[index]) ? 0 : 1)
                 .reduce((value, element) => value + element) ==
             0;
   }
@@ -1099,10 +1101,7 @@ class TupleClass<T extends List> extends ConstructType<List> {
       );
     }
     final res = [];
-    for (final entry in tuple._components.asMap().entries) {
-      // [i, wireType]
-      final i = entry.key;
-      final wireType = entry.value;
+    for (final (i, wireType) in tuple._components.indexed) {
       if (i >= _components.length) {
         // skip value
         wireType.decodeValue(x, wireType);
@@ -1133,12 +1132,6 @@ class TupleClass<T extends List> extends ConstructType<List> {
   String get name {
     final fields = _fields.map((entry) => '${entry.key}:${entry.value.name}');
     return "record {${fields.join('; ')}}";
-  }
-
-  Map<String, dynamic> _makeMap(List<CType> components) {
-    return {
-      for (final e in components) '_${components.indexOf(e)}_': e,
-    };
   }
 }
 
@@ -1408,7 +1401,7 @@ class FuncClass extends ConstructType<List> {
         'Arity mismatch',
       );
     }
-    return '(${types.asMap().entries.map((e) => e.value.valueToString(v[e.key])).join(', ')})';
+    return '(${types.mapIndexed((i, e) => e.valueToString(v[i])).join(', ')})';
   }
 
   @override
@@ -1868,22 +1861,21 @@ List idlDecode(List<CType> retTypes, Uint8List bytes) {
     }
   }
 
-  rawTable.asMap().forEach((i, entry) {
-    final t = buildType(entry);
+  for (final (i, e) in rawTable.indexed) {
+    final t = buildType(e);
     table[i].fill(t);
-  });
+  }
 
   final types = rawTypes.map((t) => getType(t)).toList();
 
-  final output = retTypes.asMap().entries.map((entry) {
-    final result = entry.value.decodeValue(b, types[entry.key]);
-    return result;
-  }).toList();
+  final output =
+      retTypes.mapIndexed((i, e) => e.decodeValue(b, types[i])).toList();
 
   // Skip unused values.
   for (int ind = retTypes.length; ind < types.length; ind++) {
     types[ind].decodeValue(b, types[ind]);
   }
+
   if (b.buffer.isNotEmpty) {
     throw StateError('Unexpected left-over bytes.');
   }

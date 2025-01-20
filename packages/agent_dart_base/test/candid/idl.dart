@@ -275,6 +275,19 @@ void idlTest() {
       ]),
       throwsA(isError<ArgumentError>()),
     );
+    expect(
+      IDL.encode(
+        [
+          IDL.Tuple([IDL.Text, IDL.Text])
+        ],
+        [
+          ['a', 'b']
+        ],
+      ),
+      Uint8List.fromList(
+        [68, 73, 68, 76, 1, 108, 2, 0, 113, 1, 113, 1, 0, 1, 97, 1, 98],
+      ),
+    );
   });
 
   test('IDL encoding (arraybuffer)', () {
