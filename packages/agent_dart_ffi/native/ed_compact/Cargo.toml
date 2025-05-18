@@ -15,14 +15,10 @@ std = []
 opt_size = []
 
 [dependencies]
-ct-codecs = { version = "1.1", optional = true }
-getrandom = { version = "0.2", optional = true }
-ed25519 = { version = "1.2", optional = true }
+ct-codecs = { version = "1.1.5", optional = true }
+getrandom = { version = "0.3.3", optional = true }
+ed25519 = { version = "1.5.3", optional = true }
 
 [dev-dependencies]
-getrandom = "0.2"
-ct-codecs = "1.1"
-
-[build-dependencies]
-flutter_rust_bridge_codegen = "~1.82"
-flutter_rust_bridge_macros = "~1.82"
+getrandom = "0.3.3"
+ct-codecs = "1.1.5"

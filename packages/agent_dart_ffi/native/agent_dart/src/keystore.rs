@@ -43,7 +43,7 @@ impl KeystoreFFI {
         let key = GenericArray::from_slice(req.key.as_slice());
         let nonce = GenericArray::from_slice(req.iv.as_slice());
 
-        (ciphertext.as_mut_slice()).copy_from_slice(req.message.as_slice());
+        ciphertext.as_mut_slice().copy_from_slice(req.message.as_slice());
         let cipher = Aes128::new(&key);
         let mut cipher_ctr = Aes128Ctr::from_block_cipher(cipher, &nonce);
         cipher_ctr.apply_keystream(ciphertext.as_mut_slice());
@@ -147,7 +147,9 @@ impl KeystoreFFI {
     pub fn scrypt_derive_key(req: ScriptDeriveReq) -> KeyDerivedRes {
         let log_n = (32 - req.n.leading_zeros() - 1) as u8;
         let mut derived_key = vec![0u8; KEY_LENGTH];
-        let scrypt_params = scrypt::Params::new(log_n, req.r, req.p).expect("Scrypt new failed");
+        let scrypt_params =
+            scrypt::Params::new(log_n, req.r, req.p, scrypt::Params::RECOMMENDED_LEN)
+                .expect("Scrypt new failed");
         scrypt::scrypt(
             req.password.as_slice(),
             req.salt.as_slice(),
@@ -170,7 +172,7 @@ impl KeystoreFFI {
             req.salt.as_slice(),
             req.c,
             &mut derived_key,
-        );
+        ).expect("pbkdf2 new failed");
         let derived_right_bits = &derived_key[0..KEY_LENGTH_AES];
         let derived_left_bits = &derived_key[KEY_LENGTH_AES..KEY_LENGTH];
 

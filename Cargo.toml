@@ -1,4 +1,5 @@
 [workspace]
+resolver = "1"
 members = [
     "packages/agent_dart_ffi/native/agent_dart",
     "packages/agent_dart_ffi/native/ed_compact",
@@ -9,5 +10,6 @@ exclude = [
 ]
 
 [profile.release]
+debug = false
 lto = true
-opt-level = 'z'
+opt-level = "z"
