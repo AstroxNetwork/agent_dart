@@ -28,16 +28,10 @@ dependencies:
   protobuf: ^4.0.0
   fixnum: ^1.0.1
 
-  # Serializations
-  json_annotation: ^4.8.1
-  freezed_annotation: ^2.2.0
-
 dev_dependencies:
   lints: # transparent
   test: ^1.24.0
   build_runner: ^2.4.5
-  freezed: ^2.0.3+1
-  json_serializable: ^6.7.0
 
 false_secrets:
   - 'native/ed_compact/src/pem.rs'

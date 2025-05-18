@@ -9,7 +9,6 @@ environment:
   sdk: '>=3.4.0 <4.0.0'
 
 dependencies:
-  freezed_annotation: ^2.2.0
   flutter_rust_bridge: '>=2.10.0 <2.10.1'
 
 dev_dependencies:
@@ -17,7 +16,6 @@ dev_dependencies:
   build_runner: ^2.1.11
   ffi: ^2.1.0
   ffigen: ^11.0.0
-  freezed: ^2.5.2
 
 false_secrets:
   - 'native/ed_compact/src/pem.rs'
