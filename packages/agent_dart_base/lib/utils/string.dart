@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:convert/convert.dart';
-import 'package:recase/recase.dart';
 
 import 'number.dart';
 
@@ -68,18 +68,6 @@ String hexToPlainText(String hex) {
 /// to a byte sequence.
 List<int> hexToBytes(String hexStr) {
   return hex.decode(strip0xHex(hexStr));
-}
-
-String stringCamelCase(String value) {
-  return value.camelCase;
-}
-
-String stringLowerFirst(String value) {
-  return value[0].toLowerCase() + value.substring(1);
-}
-
-String stringUpperFirst(String value) {
-  return value[0].toUpperCase() + value.substring(1);
 }
 
 String stringShorten(String value, {int prefixLength = 6}) {

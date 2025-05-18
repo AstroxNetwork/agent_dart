@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:tuple/tuple.dart';
-
 import '../utils/extension.dart';
 
 bool bufEquals(ByteBuffer b1, ByteBuffer b2) {
@@ -256,7 +254,7 @@ Uint8List bytesUnwrapDerSignature(Uint8List derEncoded) {
     throw 'Splitter not found';
   }
 
-  Tuple2<int, Uint8List> getBytes(Uint8List remaining) {
+  (int, Uint8List) getBytes(Uint8List remaining) {
     int length = 0;
     Uint8List bytes;
 
@@ -274,18 +272,18 @@ Uint8List bytesUnwrapDerSignature(Uint8List derEncoded) {
       length = remaining[1];
       bytes = remaining.sublist(2, 2 + length);
     }
-    return Tuple2(length, bytes);
+    return (length, bytes);
   }
 
   final rRemaining = buf.sublist(2);
   final rBytes = getBytes(rRemaining);
-  final b2 = rBytes.item1;
-  final r = Uint8List.fromList(rBytes.item2);
+  final b2 = rBytes.$1;
+  final r = Uint8List.fromList(rBytes.$2);
   final sRemaining = rRemaining.sublist(b2 + 2);
 
   final sBytes = getBytes(sRemaining);
   // final b3 = sBytes.item1;
-  final s = Uint8List.fromList(sBytes.item2);
+  final s = Uint8List.fromList(sBytes.$2);
   return Uint8List.fromList([...r, ...s]);
 }
 

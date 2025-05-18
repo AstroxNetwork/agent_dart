@@ -27,8 +27,6 @@ extension AgentStringExtension on String {
   BigInt hexToBn({Endian endian = Endian.big, bool isNegative = false}) =>
       hex_util.hexToBn(this, endian: endian, isNegative: isNegative);
 
-  String camelCase() => string_util.stringCamelCase(this);
-
   IdentifierType? get identifierType {
     if (is_util.isAccountId(this)) {
       return IdentifierType.accountIdentifier;

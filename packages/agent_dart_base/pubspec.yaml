@@ -11,25 +11,24 @@ environment:
 dependencies:
   agent_dart_ffi: ^1.0.0-0
 
-  args: ^2.3.1
   bip32: ^2.0.0
   bip39: ^1.0.6
   cbor: ^4.1.0
   collection: ^1.16.0
   convert: ^3.0.1
   crypto: ^3.0.2
-  fixnum: ^1.0.1
   http: ^1.0.0
-  js: '>=0.6.4 <0.8.0'
   meta: ^1.7.0
-  path: ^1.8.1
-  pointycastle: ^3.6.0
-  protobuf: ^4.0.0
-  recase: ^4.0.0
-  tuple: ^2.0.0
+  pointycastle: ^4.0.0
   typed_data: ^1.3.1
   uuid: '>=3.0.0 <5.0.0'
   validators: ^3.0.0
+
+  # Protocol Buffers
+  protobuf: ^4.0.0
+  fixnum: ^1.0.1
+
+  # Serializations
   json_annotation: ^4.8.1
   freezed_annotation: ^2.2.0
 
