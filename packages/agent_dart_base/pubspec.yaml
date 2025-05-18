@@ -11,7 +11,6 @@ environment:
 dependencies:
   agent_dart_ffi: ^1.0.0-0
 
-  archive: ^3.6.0
   args: ^2.3.1
   bip32: ^2.0.0
   bip39: ^1.0.6
