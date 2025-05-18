@@ -15,7 +15,7 @@ dev_dependencies:
   lints: # transparent
   build_runner: ^2.1.11
   ffi: ^2.1.0
-  ffigen: ^11.0.0
+  ffigen: ^18.0.0
 
 false_secrets:
   - 'native/ed_compact/src/pem.rs'
