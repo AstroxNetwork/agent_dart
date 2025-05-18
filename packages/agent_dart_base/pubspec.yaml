@@ -11,8 +11,8 @@ environment:
 dependencies:
   agent_dart_ffi: ^1.0.0-0
 
-  bip32: ^2.0.0
-  bip39: ^1.0.6
+  bip32_plus: ^1.0.0
+  bip39_mnemonic: ^3.0.9
   cbor: ^4.1.0
   collection: ^1.16.0
   convert: ^3.0.1

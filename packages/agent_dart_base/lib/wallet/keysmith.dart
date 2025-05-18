@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:agent_dart_ffi/agent_dart_ffi.dart';
-import 'package:bip32/bip32.dart' as bip32;
-import 'package:bip39/bip39.dart' as bip39;
+import 'package:bip32_plus/bip32_plus.dart' as bip32;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:pointycastle/ecc/api.dart';
 import 'package:pointycastle/ecc/curves/secp256k1.dart';
 
@@ -50,17 +50,35 @@ String getPathWithCoinType({int coinType = CoinType.icp}) {
   return "m/44'/$coinType'/0'";
 }
 
-String generateMnemonic({int bitLength = 128}) {
-  return bip39.generateMnemonic(strength: bitLength);
+String generateMnemonic({String passphrase = '', int bitLength = 128}) {
+  final mnemonic = bip39.Mnemonic.generate(
+    bip39.Language.english,
+    passphrase: passphrase,
+    entropyLength: bitLength,
+  );
+  return mnemonic.sentence;
 }
 
-bool validateMnemonic(String mnemonic) {
-  return bip39.validateMnemonic(mnemonic);
+bool validateMnemonic(String value) {
+  try {
+    bip39.Mnemonic.fromSentence(
+      value,
+      bip39.Language.english,
+    );
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 Uint8List mnemonicToSeed(String phrase, {String passphrase = ''}) {
   assert(validateMnemonic(phrase), 'Mnemonic phrases is not valid $phrase');
-  return bip39.mnemonicToSeed(phrase, passphrase: passphrase);
+  final mnemonic = bip39.Mnemonic.fromSentence(
+    phrase,
+    passphrase: passphrase,
+    bip39.Language.english,
+  );
+  return Uint8List.fromList(mnemonic.seed);
 }
 
 String getPrincipalFromECPublicKey(Uint8List publicKey) {
