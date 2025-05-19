@@ -5,10 +5,6 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-
 android {
     namespace = 'com.astrox.agent_dart.flutter_agent_dart_example'
     compileSdk = flutter.compileSdkVersion
