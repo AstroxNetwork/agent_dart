@@ -1,20 +1,18 @@
 import 'dart:typed_data';
 
-import 'package:agent_dart_ffi/agent_dart_ffi.dart';
-import 'package:bip32/bip32.dart' as bip32;
-import 'package:bip39/bip39.dart' as bip39;
-import 'package:pointycastle/ecc/api.dart';
-import 'package:pointycastle/ecc/curves/secp256k1.dart';
+import 'package:agent_dart_ffi/agent_dart_ffi.dart' as ffi;
+import 'package:bip32_plus/bip32_plus.dart' as bip32;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:pointycastle/ecc/api.dart' show ECPoint;
+import 'package:pointycastle/ecc/curves/secp256k1.dart' show ECCurve_secp256k1;
 
 import '../../identity/identity.dart';
 import '../../principal/principal.dart';
 import '../../utils/extension.dart';
 
-final ECCurve_secp256k1 secp256k1Params = ECCurve_secp256k1();
+final secp256k1Params = ECCurve_secp256k1();
 
-class CoinType {
-  const CoinType._();
-
+abstract class CoinType {
   static const icp = 223;
   static const eth = 60;
   static const btc = 0;
@@ -46,21 +44,54 @@ class ECKeys {
       ecPublicKey != null ? getPrincipalFromECPublicKey(ecPublicKey!) : null;
 }
 
-String getPathWithCoinType({int coinType = CoinType.icp}) {
+String getPathWithCoinType({
+  int coinType = CoinType.icp,
+}) {
   return "m/44'/$coinType'/0'";
 }
 
-String generateMnemonic({int bitLength = 128}) {
-  return bip39.generateMnemonic(strength: bitLength);
+String generateMnemonic({
+  bip39.Language language = bip39.Language.english,
+  String passphrase = '',
+  int bitLength = 128,
+}) {
+  final mnemonic = bip39.Mnemonic.generate(
+    language,
+    passphrase: passphrase,
+    entropyLength: bitLength,
+  );
+  return mnemonic.sentence;
 }
 
-bool validateMnemonic(String mnemonic) {
-  return bip39.validateMnemonic(mnemonic);
+bool validateMnemonic(
+  String value, {
+  bip39.Language language = bip39.Language.english,
+  String passphrase = '',
+}) {
+  try {
+    bip39.Mnemonic.fromSentence(
+      value,
+      language,
+      passphrase: passphrase,
+    );
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
-Uint8List mnemonicToSeed(String phrase, {String passphrase = ''}) {
+Uint8List mnemonicToSeed(
+  String phrase, {
+  bip39.Language language = bip39.Language.english,
+  String passphrase = '',
+}) {
   assert(validateMnemonic(phrase), 'Mnemonic phrases is not valid $phrase');
-  return bip39.mnemonicToSeed(phrase, passphrase: passphrase);
+  final mnemonic = bip39.Mnemonic.fromSentence(
+    phrase,
+    language,
+    passphrase: passphrase,
+  );
+  return Uint8List.fromList(mnemonic.seed);
 }
 
 String getPrincipalFromECPublicKey(Uint8List publicKey) {
@@ -89,12 +120,20 @@ Uint8List getAccountIdFromPrincipalID(String id) {
 
 ECKeys getECKeys(
   String mnemonic, {
+  bip39.Language language = bip39.Language.english,
   String passphrase = '',
   int index = 0,
   int coinType = CoinType.icp,
 }) {
-  assert(validateMnemonic(mnemonic), 'Mnemonic phrases is not valid $mnemonic');
-  final seed = mnemonicToSeed(mnemonic, passphrase: passphrase);
+  assert(
+    validateMnemonic(mnemonic, language: language, passphrase: passphrase),
+    'Mnemonic phrases is not valid $mnemonic',
+  );
+  final seed = mnemonicToSeed(
+    mnemonic,
+    language: language,
+    passphrase: passphrase,
+  );
   return ecKeysfromSeed(seed, index: index, coinType: coinType);
 }
 
@@ -105,21 +144,21 @@ Future<ECKeys> getECKeysAsync(
   int coinType = CoinType.icp,
 }) async {
   final basePath = getPathWithCoinType(coinType: coinType);
-  final seed = await mnemonicPhraseToSeed(
-    req: PhraseToSeedReq(phrase: phrase, password: passphrase),
+  final seed = await ffi.mnemonicPhraseToSeed(
+    req: ffi.PhraseToSeedReq(phrase: phrase, password: passphrase),
   );
 
-  final prv = await mnemonicSeedToKey(
-    req: SeedToKeyReq(seed: seed, path: '$basePath/0/$index'),
+  final prv = await ffi.mnemonicSeedToKey(
+    req: ffi.SeedToKeyReq(seed: seed, path: '$basePath/0/$index'),
   );
-  final kp = await secp256K1FromSeed(
-    req: Secp256k1FromSeedReq(seed: prv),
+  final kp = await ffi.secp256K1FromSeed(
+    req: ffi.Secp256k1FromSeedReq(seed: prv),
   );
-  final kpSchnorr = await schnorrFromSeed(
-    req: SchnorrFromSeedReq(seed: prv),
+  final kpSchnorr = await ffi.schnorrFromSeed(
+    req: ffi.SchnorrFromSeedReq(seed: prv),
   );
-  final kpP256 = await p256FromSeed(
-    req: P256FromSeedReq(seed: prv),
+  final kpP256 = await ffi.p256FromSeed(
+    req: ffi.P256FromSeedReq(seed: prv),
   );
   return ECKeys(
     ecPrivateKey: prv,
@@ -131,14 +170,14 @@ Future<ECKeys> getECKeysAsync(
 }
 
 Future<ECKeys> getECkeyFromPrivateKey(Uint8List prv) async {
-  final kp = await secp256K1FromSeed(
-    req: Secp256k1FromSeedReq(seed: prv),
+  final kp = await ffi.secp256K1FromSeed(
+    req: ffi.Secp256k1FromSeedReq(seed: prv),
   );
-  final kpSchnorr = await schnorrFromSeed(
-    req: SchnorrFromSeedReq(seed: prv),
+  final kpSchnorr = await ffi.schnorrFromSeed(
+    req: ffi.SchnorrFromSeedReq(seed: prv),
   );
-  final kpP256 = await p256FromSeed(
-    req: P256FromSeedReq(seed: prv),
+  final kpP256 = await ffi.p256FromSeed(
+    req: ffi.P256FromSeedReq(seed: prv),
   );
 
   return ECKeys(
@@ -195,22 +234,22 @@ Uint8List? getPublicFromPrivateKeyBigInt(
 }
 
 Future<Uint8List> getDerFromFFI(Uint8List seed) async {
-  final ffiIdentity = await secp256K1FromSeed(
-    req: Secp256k1FromSeedReq(seed: seed),
+  final ffiIdentity = await ffi.secp256K1FromSeed(
+    req: ffi.Secp256k1FromSeedReq(seed: seed),
   );
   return ffiIdentity.derEncodedPublicKey;
 }
 
 Future<Uint8List> getSchnorrPubFromFFI(Uint8List seed) async {
-  final ffiIdentity = await schnorrFromSeed(
-    req: SchnorrFromSeedReq(seed: seed),
+  final ffiIdentity = await ffi.schnorrFromSeed(
+    req: ffi.SchnorrFromSeedReq(seed: seed),
   );
   return ffiIdentity.publicKeyHash;
 }
 
 Future<Uint8List> getP256DerPubFromFFI(Uint8List seed) async {
-  final ffiIdentity = await p256FromSeed(
-    req: P256FromSeedReq(seed: seed),
+  final ffiIdentity = await ffi.p256FromSeed(
+    req: ffi.P256FromSeedReq(seed: seed),
   );
   return ffiIdentity.derEncodedPublicKey;
 }

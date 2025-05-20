@@ -4,6 +4,16 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.36
+
+- Update `package:flutter_rust_bridge` to `2.10.0`.
+- Upgrade dependencies.
+- Replace `package:bip32` and `package:bip39` with alternatives.
+- IC protocol buffers update.
+- Remove the `archiver` lib.
+- Remove string recase extensions.
+- Remove unused `freezed*` and `json*` deps.
+
 ## 1.0.0-dev.35
 
 - Fix the multiple same type in a tuple will lead to incorrect field length.

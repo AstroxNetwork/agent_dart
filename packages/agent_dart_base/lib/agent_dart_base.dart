@@ -1,8 +1,6 @@
 export 'package:agent_dart_ffi/agent_dart_ffi.dart';
 
 export 'agent/agent.dart';
-// archiver
-export 'archiver/archiver.dart';
 // auth_clinet;
 export 'auth_client/auth_client.dart';
 // authentication

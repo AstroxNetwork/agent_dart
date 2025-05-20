@@ -1,5 +1,6 @@
 PODS:
-  - agent_dart (0.0.1)
+  - agent_dart (1.0.0):
+    - FlutterMacOS
   - FlutterMacOS (1.0.0)
 
 DEPENDENCIES:
@@ -13,9 +14,9 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral
 
 SPEC CHECKSUMS:
-  agent_dart: f6f7a384f1b12a7d99c01090faa48a5e8165afcf
+  agent_dart: c5f3c84df4c0bc1173e4d60ec5e0a3be7cb4c91d
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
 
 PODFILE CHECKSUM: 137ddf7b4dbe5a83427ebf04ae8dea674cfd87fa
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.16.2
