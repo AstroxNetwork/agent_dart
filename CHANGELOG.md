@@ -4,6 +4,10 @@ that can be found in the LICENSE file. -->
 
 # Changelog
 
+## 1.0.0-dev.37
+
+- Update `package:flutter_rust_bridge` to `2.11.1`.
+
 ## 1.0.0-dev.36
 
 - Update `package:flutter_rust_bridge` to `2.10.0`.

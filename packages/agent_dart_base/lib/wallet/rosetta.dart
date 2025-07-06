@@ -614,7 +614,7 @@ Map<String, dynamic> transactionDecoder(String txnHash) {
   final sendArgs = SendRequest.fromBuffer(content['arg']);
   final senderAddress = Principal(Uint8List.fromList(content['sender']));
   final hash = SHA224()
-    ..update(('\x0Aaccount-id').plainToU8a())
+    ..update('\x0Aaccount-id'.plainToU8a())
     ..update(senderAddress.toUint8List())
     ..update(Uint8List(32));
   return {

@@ -1,5 +1,5 @@
 name: agent_dart_ffi
-version: 1.0.0-dev.36
+version: 1.0.0-dev.37
 
 description: The FFI plugin that bridges Rust implementation for agent_dart.
 repository: https://github.com/AstroxNetwork/agent_dart
@@ -9,7 +9,7 @@ environment:
   sdk: '>=3.4.0 <4.0.0'
 
 dependencies:
-  flutter_rust_bridge: '>=2.10.0 <2.10.1'
+  flutter_rust_bridge: ^2.11.1
 
 dev_dependencies:
   lints: # transparent
