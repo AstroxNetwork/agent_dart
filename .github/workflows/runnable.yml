@@ -39,10 +39,11 @@ jobs:
         if: ${{ github.repository == 'AstroxNetwork/agent_dart' && matrix.os == 'ubuntu-latest' }}
       - name: Build example
         working-directory: packages/agent_dart/example
+        shell: bash
         run: |
-          if [[ ${{ matrix.os }} == 'macos-latest' ]]; then
+          if [[ "${{ matrix.os }}" == 'macos-latest' ]]; then
             flutter build ios --debug --no-codesign
-          elif [[ ${{ matrix.os }} == 'ubuntu-latest' ]]; then
+          elif [[ "${{ matrix.os }}" == 'ubuntu-latest' ]]; then
             flutter build apk --debug
           else
             echo "Well, nothing."
