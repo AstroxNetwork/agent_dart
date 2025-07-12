@@ -9,6 +9,7 @@ name = "agent_dart"
 crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
+aes = { version = "0.7.5", default-features = false, features = ["ctr"] }
 bip32 = "=0.4.0"
 bip39 = "2.0.0"
 ed_compact = { path = "../ed_compact" }
@@ -16,17 +17,15 @@ pbkdf2 = "0.12.2"
 scrypt = "0.11.0"
 sha2 = "0.10.2"
 hmac = "0.12.1"
-block-modes= "0.8.1"
+block-modes = "0.8.1"
 aes-gcm = "0.10.1"
 serde_json = "1.0.79"
 lazy_static = "1.4.0"
 
 flutter_rust_bridge = "=2.11.1"
 
-[dependencies.aes]
-version = "0.7.5"
-default-features = false
-features = ["ctr"]
+[dependencies.base64ct]
+version = "=1.6.0"
 
 [dependencies.k256]
 version = "0.11.6"
@@ -36,7 +35,7 @@ features = ["ecdsa", "sha256", "pem", "keccak256", "ecdh", "schnorr"]
 [dependencies.p256]
 version = "0.11.1"
 default-features = false
-features = ["ecdsa","ecdh","pem"]
+features = ["ecdsa", "ecdh", "pem"]
 
 [dependencies.serde]
 version = "1.0.137"
