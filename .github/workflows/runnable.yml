@@ -44,4 +44,5 @@ jobs:
             flutter build ios --debug --no-codesign
           elif [[ ${{ matrix.os }} == 'ubuntu-latest' ]]; then
             flutter build apk --debug
+          else
           fi
