@@ -45,4 +45,5 @@ jobs:
           elif [[ ${{ matrix.os }} == 'ubuntu-latest' ]]; then
             flutter build apk --debug
           else
+            echo "Well, nothing."
           fi
