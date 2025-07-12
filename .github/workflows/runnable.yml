@@ -25,7 +25,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-        uses: flutter-actions/setup-flutter@v4
+      - uses: flutter-actions/setup-flutter@v4
         with:
           channel: stable
           cache: true
