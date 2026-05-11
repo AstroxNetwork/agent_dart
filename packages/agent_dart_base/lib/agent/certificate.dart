@@ -19,7 +19,9 @@ final AgentBLS _bls = AgentBLS();
 
 /// A certificate needs to be verified (using Certificate.prototype.verify)
 /// before it can be used.
+/// Error thrown when certificate data is used before successful verification.
 class UnverifiedCertificateError extends AgentFetchError {
+  /// Creates an unverified certificate error.
   UnverifiedCertificateError([this.reason = 'Certificate is not verified.']);
 
   final String reason;
@@ -34,6 +36,7 @@ class UnverifiedCertificateError extends AgentFetchError {
 ///   | [2, ArrayBuffer, HashTree]
 ///   | [3, ArrayBuffer]
 ///   | [4, ArrayBuffer];
+/// Hash tree node identifiers used by certificate reconstruction.
 enum NodeId {
   empty(0),
   fork(1),
@@ -43,6 +46,7 @@ enum NodeId {
 
   const NodeId(this._value);
 
+  /// Parses a node identifier from its numeric representation.
   factory NodeId.fromValue(int value) {
     return values.singleWhere((e) => e._value == value);
   }
@@ -50,13 +54,16 @@ enum NodeId {
   final int _value;
 }
 
+/// Decoded certificate payload.
 class Cert {
+  /// Creates a decoded certificate payload.
   const Cert({
     required this.tree,
     required this.signature,
     required this.delegation,
   });
 
+  /// Creates a certificate payload from decoded CBOR data.
   factory Cert.fromJson(Map json) {
     return Cert(
       tree: json['tree'],
@@ -107,12 +114,15 @@ String hashTreeToString(List tree) {
   }
 }
 
+/// Certificate delegation to a subnet.
 class CertDelegation extends ReadStateResponse {
+  /// Creates a certificate delegation.
   const CertDelegation(
     BinaryBlob certificate,
     this.subnetId,
   ) : super(certificate: certificate);
 
+  /// Creates a certificate delegation from decoded CBOR data.
   factory CertDelegation.fromJson(Map<String, dynamic> json) {
     return CertDelegation(
       json['certificate'] is Uint8List || json['certificate'] is Uint8Buffer
@@ -132,7 +142,9 @@ class CertDelegation extends ReadStateResponse {
   }
 }
 
+/// Verifiable Internet Computer certificate.
 class Certificate {
+  /// Creates a certificate from encoded certificate bytes.
   Certificate({
     required BinaryBlob cert,
     required this.canisterId,
@@ -148,14 +160,17 @@ class Certificate {
 
   bool verified = false;
 
+  /// Looks up a raw path in the verified certificate tree.
   Uint8List? lookup(List path) {
     return lookupPath(path, cert.tree);
   }
 
+  /// Looks up a path containing string or byte labels in the certificate tree.
   Uint8List? lookupEx(List path) {
     return lookupPathEx(path, cert.tree);
   }
 
+  /// Verifies the certificate signature and delegation chain.
   Future<bool> verify() async {
     _verifyCertTime();
     final rootHash = await reconstruct(cert.tree);
@@ -168,6 +183,7 @@ class Certificate {
     return res;
   }
 
+  /// Throws if this certificate has not been verified.
   void checkState() {
     if (!verified) {
       throw UnverifiedCertificateError();
@@ -257,6 +273,7 @@ final _derPrefix =
 
 const _keyLength = 96;
 
+/// Extracts the raw BLS public key from a DER-encoded key.
 Uint8List extractDER(Uint8List buf) {
   final expectedLength = _derPrefix.length + _keyLength;
   if (buf.length != expectedLength) {
@@ -272,6 +289,7 @@ Uint8List extractDER(Uint8List buf) {
   return buf.sublist(_derPrefix.length);
 }
 
+/// Reconstructs a hash tree root from a decoded certificate tree.
 Future<Uint8List> reconstruct(List t) async {
   final nodeId = NodeId.fromValue(t[0]);
   switch (nodeId) {
@@ -311,11 +329,13 @@ Future<Uint8List> reconstruct(List t) async {
   }
 }
 
+/// Creates a domain separator byte prefix for [s].
 Uint8List domainSep(String s) {
   final buf = Uint8List.fromList(List<int>.filled(1, s.length));
   return u8aConcat([buf, s.plainToU8a(useDartEncode: true)]);
 }
 
+/// Looks up a path using string or byte labels in a hash tree.
 Uint8List? lookupPathEx(List path, List tree) {
   final maybeReturn = lookupPath(
     path.map((p) {
@@ -330,6 +350,7 @@ Uint8List? lookupPathEx(List path, List tree) {
   return maybeReturn;
 }
 
+/// Looks up a raw byte path in a hash tree.
 Uint8List? lookupPath(List path, List tree) {
   if (path.isEmpty) {
     final NodeId nodeId = NodeId.fromValue(tree[0]);
@@ -352,6 +373,7 @@ Uint8List? lookupPath(List path, List tree) {
   return null;
 }
 
+/// Flattens fork nodes into a list of labelled subtrees.
 List<List> flattenForks(List t) {
   final NodeId nodeId = NodeId.fromValue(t[0]);
   switch (nodeId) {
@@ -366,6 +388,7 @@ List<List> flattenForks(List t) {
   }
 }
 
+/// Finds a labelled subtree matching [l].
 List? findLabel(Uint8List l, List<List> trees) {
   if (trees.isEmpty) {
     return null;

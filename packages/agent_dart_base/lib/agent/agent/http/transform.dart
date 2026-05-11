@@ -14,7 +14,9 @@ const _kIsWeb = bool.hasEnvironment('dart.library.js_util')
     ? bool.fromEnvironment('dart.library.js_util')
     : identical(0, 0.0);
 
+/// Ingress expiry timestamp encoded for replica requests.
 class Expiry extends ToCborable {
+  /// Creates an expiry [deltaInMSec] milliseconds from now, minus replica drift.
   Expiry(
     int deltaInMSec,
   ) : _value = (BigInt.from(DateTime.now().millisecondsSinceEpoch) +
@@ -24,8 +26,10 @@ class Expiry extends ToCborable {
 
   final BigInt _value;
 
+  /// Expiry timestamp in nanoseconds.
   BigInt get value => _value;
 
+  /// Returns the LEB128-encoded expiry hash value.
   Uint8List toHash() {
     return lebEncode(_value);
   }
@@ -43,6 +47,7 @@ class Expiry extends ToCborable {
   }
 }
 
+/// Creates a transform that adds a nonce to submit calls.
 HttpAgentRequestTransformFnCall makeNonceTransform([
   NonceFunc nonceFn = makeNonce,
 ]) {
@@ -56,4 +61,5 @@ HttpAgentRequestTransformFnCall makeNonceTransform([
   };
 }
 
+/// Function that creates request nonce bytes.
 typedef NonceFunc = Nonce Function();

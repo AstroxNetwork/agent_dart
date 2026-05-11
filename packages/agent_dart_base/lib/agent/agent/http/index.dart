@@ -16,8 +16,13 @@ import 'fetch.dart';
 import 'transform.dart';
 import 'types.dart';
 
+/// Encodes a string as base64 for HTTP Basic authentication headers.
 const btoa = base64Encode;
 
+/// Runs [action] with simple linear backoff retries.
+///
+/// [retryTimes] is the maximum number of attempts and
+/// [retryIntervalMills] is multiplied by the attempt number before each retry.
 Future<T> withRetry<T>(
   FutureOr<T> Function() action, {
   int retryTimes = 3,
@@ -47,21 +52,28 @@ const defaultExpireInDuration = Duration(minutes: defaultExpireInMinutes);
 const _defaultIngressExpiryDeltaInMilliseconds =
     defaultExpireInMinutes * 60 * 1000;
 
-/// Root public key for the IC, encoded as hex
+/// Root public key for the IC, encoded as hex.
 const _icRootKey = '308182301d060d2b0601040182dc7c0503010201060c2b0601040182dc7'
     'c05030201036100814c0e6ec71fab583b08bd81373c255c3c371b2e84863c98a4f1e08b742'
     '35d14fb5d9c0cd546d9685f913a0c0b2cc5341583bf4b4392e467db96d65b9bb4cb717112f'
     '8472e0d5a4d14505ffd7484b01291091c5f87b98883463f98091a0baaae';
 
+/// HTTP Basic authentication credentials used by [HttpAgent].
 @immutable
 abstract class Credentials {
+  /// Creates credentials from an optional user [name] and [password].
   const Credentials({this.name, this.password});
 
+  /// Username for Basic authentication.
   final String? name;
+
+  /// Password for Basic authentication.
   final String? password;
 }
 
+/// Configuration used to create an [HttpAgent].
 class HttpAgentOptions {
+  /// Creates HTTP agent options.
   const HttpAgentOptions({
     this.source,
     this.fetch,
@@ -70,30 +82,34 @@ class HttpAgentOptions {
     this.credentials,
   });
 
-  // Another HttpAgent to inherit configuration (pipeline and fetch) of.
-  // This is only used at construction.
+  /// Another [HttpAgent] to inherit pipeline and fetch configuration from.
+  ///
+  /// This is only used during construction.
   final HttpAgent? source;
 
-  // A surrogate to the global fetch function. Useful for testing.
+  /// A surrogate fetch hook. Useful for tests and custom transports.
   final void Function()? fetch;
 
-  // The host to use for the client. By default, uses the same host as
-  // the current page.
+  /// Replica host used by the client.
   final String? host;
 
-  // The principal used to send messages. This cannot be empty at the request
-  // time (will throw).
+  /// Identity used to sign requests. Defaults to [AnonymousIdentity].
   final Identity? identity;
 
+  /// Optional Basic authentication credentials.
   final Credentials? credentials;
 }
 
+/// Default HTTP agent options.
 class DefaultHttpAgentOption extends HttpAgentOptions {
+  /// Creates default HTTP agent options.
   const DefaultHttpAgentOption();
 }
 
+/// Shared default HTTP agent options instance.
 const defaultHttpAgentOption = DefaultHttpAgentOption();
 
+/// Transport function used by [HttpAgent] to perform HTTP requests.
 typedef FetchFunction<T> = Future<T> Function({
   required String endpoint,
   String? host,
@@ -102,16 +118,17 @@ typedef FetchFunction<T> = Future<T> Function({
   dynamic body,
 });
 
-// A HTTP agent allows users to interact with a client of the internet computer
-// using the available methods. It exposes an API that closely follows the
-// public view of the internet computer, and is not intended to be exposed
-// directly to the majority of users due to its low-level interface.
-//
-// There is a pipeline to apply transformations to the request before sending
-// it to the client. This is to decouple signature, nonce generation and
-// other computations so that this class can stay as simple as possible while
-// allowing extensions.
+/// Low-level HTTP implementation of [Agent].
+///
+/// `HttpAgent` talks to Internet Computer replica endpoints for status, query,
+/// update, and read-state calls. Most applications should create actors through
+/// [AgentFactory] or [Actor] helpers instead of calling this class directly.
+///
+/// Requests pass through a transform pipeline before they are signed and sent,
+/// which keeps signing, nonce generation, and other request decoration separate
+/// from transport logic.
 class HttpAgent implements Agent {
+  /// Creates an HTTP agent.
   HttpAgent({
     HttpAgentOptions? options,
     this.defaultProtocol = 'https',
@@ -158,6 +175,7 @@ class HttpAgent implements Agent {
     }
   }
 
+  /// Creates an HTTP agent using protocol, host, and port from [uri].
   factory HttpAgent.fromUri(Uri uri, {HttpAgentOptions? options}) {
     return HttpAgent(
       defaultHost: uri.host,
@@ -169,8 +187,13 @@ class HttpAgent implements Agent {
 
   List<HttpAgentRequestTransformFn> _pipeline = [];
 
+  /// Protocol used when [HttpAgentOptions.host] is not fully specified.
   final String defaultProtocol;
+
+  /// Host used when no host option is supplied.
   final String defaultHost;
+
+  /// Port used when no host option is supplied.
   final int defaultPort;
 
   late Identity? _identity;
@@ -184,28 +207,37 @@ class HttpAgent implements Agent {
   @override
   BinaryBlob? rootKey = blobFromHex(_icRootKey);
 
+  /// The identity currently attached to the agent.
   Identity? get identity => _identity;
 
+  /// Replaces the request transform pipeline.
   void setPipeline(List<HttpAgentRequestTransformFn> pl) {
     _pipeline = pl;
   }
 
+  /// Sets the identity used for requests that do not supply one explicitly.
   void setIdentity(Identity? id) {
     _identity = id;
   }
 
+  /// Sets the replica host URL.
   void setHost(String? host) {
     _host = host;
   }
 
+  /// Sets the Basic authentication credential string.
   void setCredentials(String? cred) {
     _credentials = cred;
   }
 
+  /// Sets the transport function used by this agent.
   void setFetch(FetchFunction<Map<String, dynamic>>? fetch) {
     _fetch = fetch ?? _defaultFetch;
   }
 
+  /// Adds a request transform to the pipeline.
+  ///
+  /// Higher-priority transforms run earlier.
   void addTransform(HttpAgentRequestTransformFn fn, [int? priority]) {
     // Keep the pipeline sorted at all time, by priority.
     priority ??= fn.priority ?? 0;
@@ -478,7 +510,9 @@ class HttpAgent implements Agent {
   }
 }
 
+/// Read-state HTTP request wrapper.
 class HttpAgentReadStateRequest extends HttpAgentQueryRequest {
+  /// Creates a read-state request wrapper.
   const HttpAgentReadStateRequest({
     required super.request,
     required super.body,
@@ -486,6 +520,8 @@ class HttpAgentReadStateRequest extends HttpAgentQueryRequest {
   });
 }
 
+/// Read-state response containing a replica certificate.
 class ReadStateResponseResult extends ReadStateResponse {
+  /// Creates a read-state response result.
   const ReadStateResponseResult({required super.certificate});
 }

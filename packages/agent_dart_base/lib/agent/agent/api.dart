@@ -9,18 +9,29 @@ import '../types.dart';
 /// for the interface spec.
 @immutable
 class ReplicaRejectCode {
+  /// Creates a namespace for replica reject code constants.
   const ReplicaRejectCode._();
 
+  /// System fatal reject code.
   static const sysFatal = 1;
+
+  /// System transient reject code.
   static const sysTransient = 2;
+
+  /// Destination invalid reject code.
   static const destinationInvalid = 3;
+
+  /// Canister reject code.
   static const canisterReject = 4;
+
+  /// Canister error reject code.
   static const canisterError = 5;
 }
 
 /// Options when doing a [Agent.readState] call.
 @immutable
 class ReadStateOptions {
+  /// Creates read-state options for [paths].
   const ReadStateOptions({required this.paths});
 
   /// A list of paths to read the state of.
@@ -30,21 +41,30 @@ class ReadStateOptions {
 /// type QueryResponse = QueryResponseReplied | QueryResponseRejected;
 @immutable
 class QueryResponseStatus {
+  /// Creates a namespace for query response status constants.
   const QueryResponseStatus._();
 
+  /// Query replied successfully.
   static const replied = 'replied';
+
+  /// Query was rejected by the replica or canister.
   static const rejected = 'rejected';
 }
 
+/// Base type for query responses.
 @immutable
 abstract class QueryResponseBase {
+  /// Creates a query response base value.
   const QueryResponseBase({required this.status});
 
+  /// Query response status.
   final String status;
 }
 
+/// Query response containing either a reply or rejection details.
 @immutable
 abstract class QueryResponse extends QueryResponseBase {
+  /// Creates a query response.
   const QueryResponse({
     this.reply,
     this.rejectCode,
@@ -52,36 +72,52 @@ abstract class QueryResponse extends QueryResponseBase {
     required super.status,
   });
 
+  /// Successful reply payload, when available.
   final Reply? reply;
+
+  /// Replica reject code, when rejected.
   final int? rejectCode;
+
+  /// Human-readable rejection message, when rejected.
   final String? rejectMessage;
 }
 
+/// Successful query reply payload.
 @immutable
 class Reply {
+  /// Creates a reply with raw argument bytes.
   const Reply(this.arg);
 
+  /// Candid-encoded reply argument bytes.
   final BinaryBlob? arg;
 }
 
+/// Query response for a successful reply.
 class QueryResponseReplied extends QueryResponseBase {
+  /// Creates a replied query response.
   const QueryResponseReplied({super.status = QueryResponseStatus.replied});
 }
 
+/// Query response for a rejection.
 class QueryResponseRejected extends QueryResponseBase {
+  /// Creates a rejected query response.
   const QueryResponseRejected({
     this.rejectCode,
     this.rejectMessage,
     super.status = QueryResponseStatus.rejected,
   });
 
+  /// Replica reject code.
   final int? rejectCode;
+
+  /// Human-readable rejection message.
   final String? rejectMessage;
 }
 
 /// Options when doing a [Agent.query] call.
 @immutable
 class QueryFields {
+  /// Creates query call fields.
   const QueryFields({required this.methodName, this.arg});
 
   /// The method name to call.
@@ -94,6 +130,7 @@ class QueryFields {
 /// Options when doing a [Agent.call] call.
 @immutable
 class CallOptions {
+  /// Creates update-call options.
   const CallOptions({
     required this.methodName,
     required this.arg,
@@ -115,34 +152,51 @@ class CallOptions {
   final bool callSync;
 }
 
+/// Certificate response returned by read-state calls.
 @immutable
 abstract class ReadStateResponse {
+  /// Creates a read-state response.
   const ReadStateResponse({required this.certificate});
 
+  /// CBOR-encoded certificate bytes.
   final BinaryBlob certificate;
 }
 
+/// Base HTTP response metadata.
 @immutable
 abstract class ResponseBody {
+  /// Creates response metadata.
   const ResponseBody({this.ok, this.status, this.statusText});
 
+  /// Whether the HTTP request succeeded.
   final bool? ok;
+
+  /// HTTP status code.
   final int? status;
+
+  /// HTTP status text.
   final String? statusText;
 }
 
+/// Response returned after submitting an update call.
 @immutable
 abstract class SubmitResponse {
+  /// Creates a submit response.
   const SubmitResponse({this.requestId, this.response});
 
+  /// Request ID for the submitted call.
   final RequestId? requestId;
+
+  /// HTTP response metadata and body.
   final ResponseBody? response;
 
+  /// Converts this response to a JSON-like map.
   Map<String, dynamic> toJson();
 }
 
 /// An Agent able to make calls and queries to a Replica.
 abstract class Agent {
+  /// Root key used to verify certificate responses.
   BinaryBlob? rootKey;
 
   /// Returns the principal ID associated with this agent (by default). It only shows
@@ -161,6 +215,7 @@ abstract class Agent {
     Identity? identity,
   );
 
+  /// Submits an update call request to a canister.
   Future<SubmitResponse> callRequest(
     Principal canisterId,
     CallOptions fields,

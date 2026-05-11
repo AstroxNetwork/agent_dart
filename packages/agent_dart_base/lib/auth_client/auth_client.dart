@@ -9,19 +9,27 @@ import '../agent/cbor.dart';
 import '../authentication/authentication.dart';
 import '../identity/identity.dart';
 
+/// Storage key used for the serialized identity.
 const keyLocalStorageKey = 'identity';
+/// Storage key used for the serialized delegation chain.
 const keyLocalStorageDelegation = 'delegation';
+/// Default Internet Identity provider URL.
 const identityProviderDefault = 'https://identity.ic0.app';
+/// Default Internet Identity authorization endpoint fragment.
 const identityProviderEndpoint = '#authorize';
 
+/// Options for creating an authentication client.
 class AuthClientCreateOptions {
+  /// Creates authentication client options.
   const AuthClientCreateOptions({this.identity});
 
   /// An identity to use as the base.
   final SignIdentity? identity;
 }
 
+/// Options for starting an authentication login flow.
 class AuthClientLoginOptions {
+  /// Creates authentication login options.
   const AuthClientLoginOptions({
     this.identityProvider,
     this.maxTimeToLive,
@@ -46,14 +54,18 @@ class AuthClientLoginOptions {
   final void Function(String? error)? onError;
 }
 
+/// Payload passed to the platform-specific authentication function.
 class AuthPayload {
+  /// Creates an authentication payload.
   const AuthPayload(this.url, this.scheme);
 
   final String url;
   final String scheme;
 }
 
+/// Delegation paired with its signature.
 class DelegationWithSignature {
+  /// Creates a signed delegation value.
   const DelegationWithSignature({
     required this.delegation,
     required this.signature,
@@ -63,7 +75,9 @@ class DelegationWithSignature {
   final Uint8List signature;
 }
 
+/// Authentication state restored from storage.
 class FromStorageResult {
+  /// Creates a storage restoration result.
   const FromStorageResult({
     this.delegationChain,
     this.signIdentity,
@@ -76,12 +90,15 @@ class FromStorageResult {
 }
 
 @immutable
+/// Base response returned by an authentication provider.
 abstract class AuthResponse {
+  /// Creates an authentication response.
   const AuthResponse({required this.kind});
 
   final String kind;
 }
 
+/// Successful authentication response.
 class AuthResponseSuccess extends AuthResponse {
   const AuthResponseSuccess({
     required this.delegations,
@@ -93,6 +110,7 @@ class AuthResponseSuccess extends AuthResponse {
   final Uint8List userPublicKey;
 }
 
+/// Failed authentication response.
 class AuthResponseFailure extends AuthResponse {
   const AuthResponseFailure({
     required this.text,
@@ -102,9 +120,12 @@ class AuthResponseFailure extends AuthResponse {
   final String text;
 }
 
+/// Function that launches an auth flow and returns a callback URL.
 typedef AuthFunction = Future<String> Function(AuthPayload paylod);
 
+/// Client for Internet Identity-style authentication flows.
 class AuthClient {
+  /// Creates an authentication client.
   AuthClient({
     required this.scheme,
     required this.authFunction,
@@ -115,6 +136,7 @@ class AuthClient {
     Identity? identity,
   }) : identity = identity ?? const AnonymousIdentity();
 
+  /// Restores an authentication client from serialized state.
   factory AuthClient.fromJson(
     String scheme,
     AuthFunction authFunction,
@@ -147,6 +169,7 @@ class AuthClient {
   Identity? identity;
   DelegationChain? chain;
 
+  /// Restores authentication identities and delegations from storage JSON.
   static FromStorageResult fromStorage(String str) {
     final map = Map<String, dynamic>.from(jsonDecode(str));
     final identityString = map[keyLocalStorageKey] as String?;
@@ -170,6 +193,7 @@ class AuthClient {
     );
   }
 
+  /// Handles a successful authentication response.
   void handleSuccess(AuthResponseSuccess message, void Function()? onSuccess) {
     final delegations = message.delegations.map((signedDelegation) {
       return SignedDelegation.fromJson({
@@ -193,6 +217,7 @@ class AuthClient {
     onSuccess?.call();
   }
 
+  /// Handles a failed authentication response.
   void handleFailure(
     String? errorMessage,
     void Function(String? error)? onError,
@@ -200,16 +225,19 @@ class AuthClient {
     onError?.call(errorMessage);
   }
 
+  /// Returns the current authenticated identity, if available.
   Identity? getIdentity() {
     return identity;
   }
 
+  /// Whether the client currently has a non-anonymous authenticated identity.
   Future<bool> isAuthenticated() async {
     return getIdentity() != null &&
         !getIdentity()!.getPrincipal().isAnonymous() &&
         chain != null;
   }
 
+  /// Starts the authentication flow.
   Future<void> login([AuthClientLoginOptions? options]) async {
     key ??= await Ed25519KeyIdentity.generate(null);
     // Create the URL of the IDP. (e.g. https://XXXX/#authorize)
@@ -284,6 +312,7 @@ class AuthClient {
     return AuthPayload(identityProviderUrl.toString(), scheme);
   }
 
+  /// Serializes the current authentication state for storage.
   String toStorage() {
     return jsonEncode(
       {
@@ -297,6 +326,7 @@ class AuthClient {
   }
 }
 
+/// Parses a stringified byte list into bytes.
 Uint8List parseStringToU8a(String str) {
   final s1 = str.replaceAll('[', '');
   final s2 = s1.replaceAll(']', '');

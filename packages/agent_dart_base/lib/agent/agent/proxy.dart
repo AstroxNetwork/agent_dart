@@ -9,7 +9,9 @@ import '../auth.dart';
 import '../types.dart';
 import 'api.dart';
 
+/// Wire message type constants for proxy agent communication.
 class ProxyMessageKind {
+  /// Creates a namespace for proxy message kind constants.
   const ProxyMessageKind._();
 
   static const error = 'err';
@@ -26,14 +28,18 @@ class ProxyMessageKind {
 }
 
 @immutable
+/// Base metadata shared by proxy messages.
 abstract class ProxyMessageBase {
+  /// Creates proxy message metadata.
   const ProxyMessageBase({this.id, this.type});
 
   final int? id;
   final String? type;
 }
 
+/// Generic proxy message containing args, response, or error payloads.
 class ProxyMessage<T> extends ProxyMessageBase {
+  /// Creates a proxy message.
   const ProxyMessage({
     this.error,
     this.response,
@@ -46,6 +52,7 @@ class ProxyMessage<T> extends ProxyMessageBase {
   final T? response;
   final List<dynamic>? args;
 
+  /// Converts this message to a JSON-like map.
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -57,6 +64,7 @@ class ProxyMessage<T> extends ProxyMessageBase {
   }
 }
 
+/// Proxy message for propagated backend errors.
 class ProxyMessageError<T> extends ProxyMessage<T> {
   const ProxyMessageError({
     super.error,
@@ -77,6 +85,7 @@ class ProxyMessageError<T> extends ProxyMessage<T> {
   }
 }
 
+/// Proxy request for the agent principal.
 class ProxyMessageGetPrincipal extends ProxyMessage {
   const ProxyMessageGetPrincipal({
     super.error,
@@ -97,6 +106,7 @@ class ProxyMessageGetPrincipal extends ProxyMessage {
   }
 }
 
+/// Proxy response containing the agent principal text.
 class ProxyMessageGetPrincipalResponse extends ProxyMessage<String> {
   const ProxyMessageGetPrincipalResponse({
     super.response,
@@ -113,6 +123,7 @@ class ProxyMessageGetPrincipalResponse extends ProxyMessage<String> {
   }
 }
 
+/// Proxy request for a canister query call.
 class ProxyMessageQuery extends ProxyMessage {
   //: [string, QueryFields];
   const ProxyMessageQuery({
@@ -134,6 +145,7 @@ class ProxyMessageQuery extends ProxyMessage {
   }
 }
 
+/// Proxy response containing a query result.
 class ProxyMessageQueryResponse extends ProxyMessage<QueryResponse> {
   const ProxyMessageQueryResponse({
     super.error,
@@ -154,6 +166,7 @@ class ProxyMessageQueryResponse extends ProxyMessage<QueryResponse> {
   }
 }
 
+/// Proxy request for an update call.
 class ProxyMessageCall extends ProxyMessage {
   const ProxyMessageCall({
     super.error,
@@ -174,6 +187,7 @@ class ProxyMessageCall extends ProxyMessage {
   }
 }
 
+/// Proxy response containing an update-call result.
 class ProxyMessageCallResponse extends ProxyMessage<SubmitResponse> {
   const ProxyMessageCallResponse({
     super.error,
@@ -194,6 +208,7 @@ class ProxyMessageCallResponse extends ProxyMessage<SubmitResponse> {
   }
 }
 
+/// Proxy request for a read-state call.
 class ProxyMessageReadState extends ProxyMessage {
   const ProxyMessageReadState({
     super.error,
@@ -214,6 +229,7 @@ class ProxyMessageReadState extends ProxyMessage {
   }
 }
 
+/// Proxy response containing a read-state result.
 class ProxyMessageReadStateResponse extends ProxyMessage<ReadStateResponse> {
   const ProxyMessageReadStateResponse({
     super.error,
@@ -234,6 +250,7 @@ class ProxyMessageReadStateResponse extends ProxyMessage<ReadStateResponse> {
   }
 }
 
+/// Proxy request for replica status.
 class ProxyMessageStatus extends ProxyMessage {
   const ProxyMessageStatus({
     super.error,
@@ -254,6 +271,7 @@ class ProxyMessageStatus extends ProxyMessage {
   }
 }
 
+/// Proxy response containing replica status.
 class ProxyMessageStatusResponse extends ProxyMessage<Map> {
   const ProxyMessageStatusResponse({
     super.error,
@@ -274,12 +292,15 @@ class ProxyMessageStatusResponse extends ProxyMessage<Map> {
   }
 }
 
+/// Backend-side bridge that services proxy agent messages.
 class ProxyStubAgent {
+  /// Creates a proxy stub for forwarding responses to [_frontend].
   const ProxyStubAgent(this._frontend, this._agent);
 
   final void Function(ProxyMessage msg) _frontend;
   final Agent _agent;
 
+  /// Handles an inbound proxy message.
   void onMessage(ProxyMessage msg) {
     switch (msg.type) {
       case ProxyMessageKind.getPrincipal:
@@ -345,7 +366,9 @@ class ProxyStubAgent {
   }
 }
 
+/// Agent implementation that forwards calls through proxy messages.
 class ProxyAgent implements Agent {
+  /// Creates a proxy agent that sends messages to [_backend].
   ProxyAgent(this._backend);
 
   final void Function(ProxyMessage msg) _backend;

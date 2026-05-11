@@ -9,10 +9,13 @@ import 'keysmith.dart';
 import 'rosetta.dart';
 import 'types.dart';
 
+/// Callback invoked with optional signing progress or result data.
 typedef SigningCallback = void Function([dynamic data]);
 
+/// Supported signature schemes for wallet payload signing.
 enum SignType { ecdsa, ed25519 }
 
+/// Source of imported wallet key material.
 enum SourceType { ii, plug, keySmith, base }
 
 /// [CurveType] is the type of cryptographic curve associated with a [WalletPublicKey].
@@ -21,15 +24,21 @@ enum SourceType { ii, plug, keySmith, base }
 ///  * [all] both above.
 enum CurveType { secp256k1, ed25519, all }
 
+/// Base interface for wallet signers.
 abstract class Signer<T extends SignablePayload, R> {
+  /// Creates a signer abstraction.
   const Signer();
 
+  /// Whether the signer is currently locked.
   bool? get isLocked;
 
+  /// Unlocks the signer using [passphrase] and an optional serialized keystore.
   Future<void>? unlock(String passphrase, {String? keystore});
 
+  /// Locks the signer, optionally encrypting key material with [passphrase].
   Future<void>? lock(String? passphrase);
 
+  /// Signs [payload] with the selected [signType].
   Future<R> sign(
     T payload, {
     SignType? signType = SignType.ed25519,
@@ -37,24 +46,34 @@ abstract class Signer<T extends SignablePayload, R> {
   });
 }
 
+/// Base signer tied to a concrete account and signable payload type.
 abstract class BaseSigner<T extends BaseAccount, R extends SignablePayload, E>
     extends Signer<R, E> {
+  /// Creates a base signer abstraction.
   const BaseSigner();
 }
 
+/// Base wallet account abstraction used by signers.
 abstract class BaseAccount {
+  /// Creates a base account abstraction.
   const BaseAccount();
 
+  /// Returns the Ed25519 identity for this account, when available.
   Ed25519KeyIdentity? getIdentity();
 
+  /// Returns the secp256k1 identity for this account, when available.
   Secp256k1KeyIdentity? getEcIdentity();
 
+  /// Serializes this account.
   Map<String, dynamic> toJson();
 
+  /// Returns derived elliptic-curve key material, when available.
   ECKeys? getEcKeys();
 }
 
+/// ICP wallet account backed by mnemonic or seed-derived identities.
 class ICPAccount extends BaseAccount {
+  /// Creates an ICP account container for [curveType].
   ICPAccount({this.curveType = CurveType.ed25519});
 
   bool isLocked = false;
@@ -71,6 +90,7 @@ class ICPAccount extends BaseAccount {
   ECKeys? get ecKeys => _ecKeys;
   ECKeys? _ecKeys;
 
+  /// Creates an account from raw seed bytes.
   static Future<ICPAccount> fromSeed(
     Uint8List seed, {
     int? index,
@@ -93,6 +113,7 @@ class ICPAccount extends BaseAccount {
       .._phrase = '';
   }
 
+  /// Creates an account from a mnemonic phrase.
   static Future<ICPAccount> fromPhrase(
     String phrase, {
     String passphrase = '',
@@ -144,6 +165,7 @@ class ICPAccount extends BaseAccount {
   @override
   ECKeys? getEcKeys() => _ecKeys;
 
+  /// Encrypts and clears in-memory key material.
   Future<void> lock(String? passphrase) async {
     _keystore = await encodePhrase(_phrase!, password: passphrase);
     _phrase = null;
@@ -153,6 +175,7 @@ class ICPAccount extends BaseAccount {
     isLocked = true;
   }
 
+  /// Restores key material from the encrypted keystore.
   Future<void> unlock(String passphrase, {String? keystore}) async {
     try {
       if (_keystore == null) {
@@ -180,16 +203,19 @@ class ICPAccount extends BaseAccount {
   }
 }
 
+/// Signer for ICP Rosetta construction payloads.
 class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
     CombineSignedTransactionResult> {
   ICPSigner._();
 
+  /// Creates a signer with a newly generated mnemonic phrase.
   static Future<ICPSigner> create({
     CurveType curveType = CurveType.ed25519,
   }) {
     return ICPSigner.fromPhrase(generateMnemonic(), curveType: curveType);
   }
 
+  /// Creates a signer from an existing mnemonic phrase.
   static Future<ICPSigner> fromPhrase(
     String phrase, {
     String passphrase = '',
@@ -210,6 +236,7 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
       .._acc = acc;
   }
 
+  /// Creates a signer from raw seed bytes.
   static Future<ICPSigner> fromSeed(
     Uint8List seed, {
     int? index = 0,
@@ -225,6 +252,7 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
       .._acc = acc;
   }
 
+  /// Imports a phrase using the derivation path for [sourceType].
   static Future<ICPSigner> importPhrase(
     String phrase, {
     int index = 0,
@@ -266,6 +294,7 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
     }
   }
 
+  /// Account used by this signer.
   ICPAccount get account => _acc;
   late ICPAccount _acc;
 
@@ -273,26 +302,36 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
   int? _index;
   SourceType? _sourceType;
 
+  /// Source used to derive this signer's account.
   SourceType? get sourceType => _sourceType;
 
+  /// Account index used during derivation.
   int? get index => _index;
 
+  /// Whether this signer represents an HD account.
   bool get isHD => index == null;
 
+  /// Raw Ed25519 public key as hex.
   String? get idPublicKey => account.identity?.getPublicKey().toRaw().toHex();
 
+  /// DER-encoded Ed25519 public key as hex.
   String? get idPublicKeyDer =>
       account.identity?.getPublicKey().toDer().toHex();
 
+  /// ICP account identifier for the Ed25519 identity.
   String? get idAddress => account.identity?.getAccountId().toHex();
 
+  /// Raw secp256k1 public key as hex.
   String? get ecPublicKey => account.ecIdentity?.getPublicKey().toRaw().toHex();
 
+  /// DER-encoded secp256k1 public key as hex.
   String? get ecPublicKeyDer =>
       account.ecIdentity?.getPublicKey().toDer().toHex();
 
+  /// ICP account identifier for the secp256k1 identity.
   String? get ecAddress => account.ecIdentity?.getAccountId().toHex();
 
+  /// Derives an additional HD account from the signer's phrase.
   Future<ICPAccount> hdCreate({
     String passphrase = '',
     int? index = 0,
@@ -308,6 +347,7 @@ class ICPSigner extends BaseSigner<ICPAccount, ConstructionPayloadsResponse,
     );
   }
 
+  /// Sets the phrase import source type.
   void setSourceType(SourceType type) {
     _sourceType = type;
   }

@@ -75,8 +75,11 @@ make sure you've done the following setup the build settings.
 
 ### 📖 Documentation
 
+- [Local docs](docs/index.md)
+- [Getting started](docs/getting-started.md)
+- [API overview](docs/api-overview.md)
+- [Generate API reference](docs/generating-api-reference.md)
 - [Reference on pub.dev](https://pub.dev/documentation/agent_dart/latest/)
-- Docs site, WIP...
 
 ### 🔧 Helpers/Tooling
 

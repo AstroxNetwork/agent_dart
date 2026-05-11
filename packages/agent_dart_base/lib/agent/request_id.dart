@@ -11,30 +11,38 @@ import 'agent/index.dart';
 import 'types.dart';
 import 'utils/leb128.dart';
 
+/// Interface for values that can produce a representation-independent hash.
 @immutable
 abstract class ToHashable {
+  /// Creates a hashable value.
   const ToHashable();
 
+  /// Returns the value to feed into request ID hashing.
   dynamic Function() toHash();
 }
 
+/// Converts a request ID to hex.
 String requestIdToHex(RequestId requestId) {
   return blobToHex(requestId);
 }
 
+/// Computes a SHA-256 hash of [data].
 BinaryBlob hash(Uint8List data) {
   final hashed = sha256.convert(data).bytes;
   return Uint8List.fromList(hashed);
 }
 
+/// Computes a SHA-256 hash of [value] encoded as UTF-8.
 BinaryBlob hashString(String value) {
   return hash(Uint8List.fromList(value.plainToU8a()));
 }
 
+/// Concatenates multiple binary blobs.
 BinaryBlob concat(List<BinaryBlob> bs) {
   return blobFromBuffer(u8aConcat(bs.map((b) => b.buffer).toList()).buffer);
 }
 
+/// Computes the representation-independent hash of a supported value.
 BinaryBlob hashValue(dynamic value) {
   if (value is String) {
     return hashString(value);
@@ -70,6 +78,7 @@ BinaryBlob hashValue(dynamic value) {
   );
 }
 
+/// Compares two lists lexicographically using the elements' natural order.
 int compareLists<T extends Comparable<T>>(List<T> a, List<T> b) {
   final aLength = a.length;
   final bLength = b.length;
@@ -81,6 +90,7 @@ int compareLists<T extends Comparable<T>>(List<T> a, List<T> b) {
   return aLength - bLength;
 }
 
+/// Compares two lists lexicographically using a custom comparator.
 int compareListsBy<T>(List<T> a, List<T> b, int Function(T a, T b) compare) {
   final aLength = a.length;
   final bLength = b.length;
@@ -92,12 +102,16 @@ int compareListsBy<T>(List<T> a, List<T> b, int Function(T a, T b) compare) {
   return aLength - bLength;
 }
 
+/// Adds lexicographic comparison with a custom comparator to lists.
 extension CompareListExtension<T> on List<T> {
+  /// Compares this list to [other] using [compare].
   int compare(List<T> other, int Function(T a, T b) compare) =>
       compareListsBy<T>(this, other, compare);
 }
 
+/// Adds lexicographic comparison to lists of comparable values.
 extension CompareListComparableExtension<T extends Comparable<T>> on List<T> {
+  /// Compares this list to [other] using natural ordering or [compare].
   int compare(List<T> other, [int Function(T a, T b)? compare]) =>
       compareListsBy<T>(this, other, compare!);
 }

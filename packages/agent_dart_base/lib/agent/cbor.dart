@@ -13,7 +13,9 @@ const _kIsWeb = bool.hasEnvironment('dart.library.js_util')
     : identical(0, 0.0);
 
 @immutable
+/// Encoder extension point for values not handled by the base CBOR encoder.
 abstract class ExtraEncoder<T> {
+  /// Creates an extra encoder named [name].
   const ExtraEncoder({required this.name});
 
   final String name;
@@ -23,7 +25,9 @@ abstract class ExtraEncoder<T> {
   void write(cbor.Encoder encoder, T value);
 }
 
+/// CBOR encoder that writes the self-describing CBOR tag by default.
 class SelfDescribeEncoder extends cbor.Encoder {
+  /// Creates a self-describing encoder backed by [_out].
   SelfDescribeEncoder(this._out) : super(_out) {
     final valBuff = Uint8Buffer();
     final hList = Uint8List.fromList([0xd9, 0xd9, 0xf7]);
@@ -31,19 +35,23 @@ class SelfDescribeEncoder extends cbor.Encoder {
     addBuilderOutput(valBuff);
   }
 
+  /// Creates an encoder without writing the self-describing CBOR tag.
   SelfDescribeEncoder.noHead(this._out) : super(_out);
 
   late final cbor.Output _out;
   final Set<ExtraEncoder> _encoders = {};
 
+  /// Registers an extra encoder.
   void addEncoder<T>(ExtraEncoder encoder) {
     _encoders.add(encoder);
   }
 
+  /// Removes an extra encoder by name.
   void removeEncoder<T>(String encoderName) {
     _encoders.removeWhere((element) => element.name == encoderName);
   }
 
+  /// Returns the first extra encoder that can handle [value].
   ExtraEncoder? getEncoderFor<T>(dynamic value) {
     for (final encoder in _encoders) {
       if (encoder.match(value)) {
@@ -53,6 +61,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
     return null;
   }
 
+  /// Serializes [val] into the underlying CBOR output.
   void serialize(dynamic val) {
     if (val is Map) {
       serializeMap(val);
@@ -191,6 +200,7 @@ class SelfDescribeEncoder extends cbor.Encoder {
   }
 }
 
+/// Extra CBOR encoder for principals.
 class PrincipalEncoder extends ExtraEncoder<Principal> {
   const PrincipalEncoder() : super(name: 'Principal');
 
@@ -205,6 +215,7 @@ class PrincipalEncoder extends ExtraEncoder<Principal> {
   }
 }
 
+/// Extra CBOR encoder for binary blobs.
 class BufferEncoder extends ExtraEncoder<BinaryBlob> {
   const BufferEncoder() : super(name: 'Buffer');
 
@@ -219,6 +230,7 @@ class BufferEncoder extends ExtraEncoder<BinaryBlob> {
   }
 }
 
+/// Extra CBOR encoder for byte buffers.
 class ByteBufferEncoder extends ExtraEncoder<ByteBuffer> {
   const ByteBufferEncoder() : super(name: 'ByteBuffer');
 
@@ -233,6 +245,7 @@ class ByteBufferEncoder extends ExtraEncoder<ByteBuffer> {
   }
 }
 
+/// Extra CBOR encoder for big integers.
 class BigIntEncoder extends ExtraEncoder<BigInt> {
   const BigIntEncoder() : super(name: 'BigInt');
 
@@ -246,12 +259,15 @@ class BigIntEncoder extends ExtraEncoder<BigInt> {
 }
 
 @immutable
+/// Interface for values that write themselves to a CBOR encoder.
 abstract class ToCborable {
+  /// Creates a CBOR-writable value.
   const ToCborable();
 
   void write(cbor.Encoder encoder);
 }
 
+/// Creates a CBOR serializer with default extra encoders and a header.
 SelfDescribeEncoder initCborSerializer() {
   cbor.init();
   final output = cbor.OutputStandard();
@@ -267,6 +283,7 @@ SelfDescribeEncoder initCborSerializer() {
     ..addEncoder(byteBufferEncoder);
 }
 
+/// Creates a CBOR serializer with default extra encoders and no header.
 SelfDescribeEncoder initCborSerializerNoHead() {
   cbor.init();
   final output = cbor.OutputStandard();
@@ -282,12 +299,14 @@ SelfDescribeEncoder initCborSerializerNoHead() {
     ..addEncoder(byteBufferEncoder);
 }
 
+/// Encodes [value] to CBOR bytes.
 Uint8List cborEncode(dynamic value, {SelfDescribeEncoder? withSerializer}) {
   final serializer = withSerializer ?? initCborSerializer();
   serializer.serialize(value);
   return Uint8List.fromList(serializer._out.getData());
 }
 
+/// Decodes CBOR [value] into a Dart object.
 T cborDecode<T>(List<int> value) {
   final buffer = value is Uint8Buffer ? value : Uint8Buffer()
     ..addAll(value);
@@ -302,6 +321,7 @@ T cborDecode<T>(List<int> value) {
   return walked![0] as T;
 }
 
+/// Serializes a numeric CBOR value from its hexadecimal representation.
 ByteBuffer serializeValue(int major, int minor, String val) {
   // Remove everything that's not an hexadecimal character. These are not
   // considered errors since the value was already validated and they might

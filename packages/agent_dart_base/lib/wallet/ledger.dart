@@ -13,9 +13,12 @@ import '../utils/u8a.dart';
 
 const _accountIdentifier = IDL.Text;
 
+/// Duration value used by ledger canister payloads.
 class PayloadDuration {
+  /// Creates a duration from seconds and nanoseconds.
   const PayloadDuration({required this.secs, required this.nanos});
 
+  /// Creates a duration from Candid JSON-like data.
   factory PayloadDuration.fromJson(Map map) {
     return PayloadDuration(secs: map['secs'], nanos: map['nanos']);
   }
@@ -31,13 +34,16 @@ class PayloadDuration {
   }
 }
 
+/// Archive canister options for ledger initialization.
 class ArchiveOptions {
+  /// Creates archive options.
   const ArchiveOptions({
     required this.controllerId,
     this.maxMessageSizeBytes,
     this.nodeMaxMemorySizeBytes,
   });
 
+  /// Creates archive options from Candid JSON-like data.
   factory ArchiveOptions.fromJson(Map map) {
     return ArchiveOptions(
       controllerId: map['controller_id'],
@@ -65,9 +71,12 @@ class ArchiveOptions {
   }
 }
 
+/// ICP token amount represented in e8s.
 class ICPTs {
+  /// Creates an ICP amount from e8s.
   const ICPTs({required this.e8s});
 
+  /// Creates an ICP amount from Candid JSON-like data.
   factory ICPTs.fromJson(Map map) {
     return ICPTs(e8s: map['e8s']);
   }
@@ -81,6 +90,7 @@ class ICPTs {
   }
 }
 
+/// Initialization payload for the ledger canister.
 class LedgerCanisterInitPayload {
   const LedgerCanisterInitPayload({
     required this.sendWhitelist,
@@ -147,6 +157,7 @@ class LedgerCanisterInitPayload {
   }
 }
 
+/// Arguments for the legacy ledger account balance endpoint.
 class AccountBalanceArgs {
   const AccountBalanceArgs({required this.account});
 
@@ -163,10 +174,12 @@ class AccountBalanceArgs {
   }
 }
 
+/// Candid type for a ledger subaccount.
 final SubAccount = IDL.Vec(IDL.Nat8);
 
 const _blockHeight = IDL.Nat64;
 
+/// Arguments for notifying a canister about a ledger payment.
 class NotifyCanisterArgs {
   const NotifyCanisterArgs({
     this.toSubAccount,
@@ -213,6 +226,7 @@ class NotifyCanisterArgs {
 
 const _memo = IDL.Nat64;
 
+/// Ledger timestamp represented in nanoseconds.
 class TimeStamp {
   const TimeStamp({required this.timestampNanos});
 
@@ -233,6 +247,7 @@ class TimeStamp {
   }
 }
 
+/// Arguments for the legacy ledger send endpoint.
 class SendArgs {
   const SendArgs({
     required this.to,
@@ -286,8 +301,10 @@ class SendArgs {
   }
 }
 
+/// Candid type for the modern binary account identifier.
 final AccountIdentifierNew = IDL.Vec(IDL.Nat8);
 
+/// Arguments for the modern ledger account balance endpoint.
 class AccountBalanceArgsNew {
   const AccountBalanceArgsNew({required this.account});
 
@@ -304,6 +321,7 @@ class AccountBalanceArgsNew {
   }
 }
 
+/// Ledger token amount represented in e8s.
 class Tokens {
   const Tokens({required this.e8s});
 
@@ -320,6 +338,7 @@ class Tokens {
   }
 }
 
+/// Arguments for the modern ledger transfer endpoint.
 class TransferArgs {
   const TransferArgs({
     required this.to,
@@ -379,6 +398,7 @@ class TransferArgs {
 
 const _blockIndex = IDL.Nat64;
 
+/// Error returned by the ledger transfer endpoint.
 class TransferError {
   const TransferError({
     this.txTooOld,
@@ -430,6 +450,7 @@ class TransferError {
   }
 }
 
+/// Result returned by the ledger transfer endpoint.
 class TransferResult {
   const TransferResult({this.ok, this.err});
 
@@ -454,6 +475,7 @@ class TransferResult {
   }
 }
 
+/// Candid service definition for the ICP ledger canister.
 final Service ledgerIdl = IDL.Service({
   'account_balance': IDL.Func(
     [AccountBalanceArgsNew.idl],
@@ -470,6 +492,7 @@ final Service ledgerIdl = IDL.Service({
   'transfer': IDL.Func([TransferArgs.idl], [TransferResult.idl], []),
 });
 
+/// Method names exposed by the ICP ledger canister.
 class LedgerMethods {
   const LedgerMethods._();
 
@@ -480,6 +503,7 @@ class LedgerMethods {
   static const transfer = 'transfer';
 }
 
+/// Optional values used when sending or transferring ICP.
 class SendOpts {
   const SendOpts({
     this.fee,
@@ -496,25 +520,31 @@ class SendOpts {
   int? get createAt => createAtTime?.millisecondsSinceEpoch;
 }
 
+/// Convenience wrapper around ICP ledger canister calls.
 class Ledger {
+  /// Creates an unattached ledger wrapper.
   Ledger();
 
+  /// Creates a ledger wrapper attached to an [AgentFactory].
   factory Ledger.hook(AgentFactory agent) {
     return Ledger()..setAgent(agent);
   }
 
   late AgentFactory agent;
 
+  /// Sets the agent used for ledger calls.
   void setAgent(AgentFactory agent) {
     this.agent = agent;
   }
 
+  /// Sets the signing identity on the underlying agent.
   void setIdentity(SignIdentity? id) {
     if (id != null) {
       agent.getAgent().setIdentity(id);
     }
   }
 
+  /// Returns a legacy ICP balance for [accountId].
   static Future<ICPTs> getBalance({
     required AgentFactory agent,
     required String accountId,
@@ -530,6 +560,7 @@ class Ledger {
     throw StateError('Request failed with the result: $res.');
   }
 
+  /// Returns an ICP balance for an account identifier or principal.
   static Future<Tokens> accountBalance({
     required AgentFactory agent,
     required String accountIdOrPrincipal,
@@ -549,6 +580,7 @@ class Ledger {
     throw StateError('Request failed with the result: $res.');
   }
 
+  /// Sends ICP using the legacy ledger `send_dfx` method.
   static Future<BigInt> send({
     required AgentFactory agent,
     required String to,
@@ -584,6 +616,7 @@ class Ledger {
     throw StateError('Request failed with the result: $res.');
   }
 
+  /// Transfers ICP using the modern ledger `transfer` method.
   static Future<TransferResult> transfer({
     required AgentFactory agent,
     required String to,

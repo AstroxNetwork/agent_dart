@@ -11,33 +11,46 @@ import '../agent/types.dart';
 import '../utils/extension.dart';
 import 'der.dart';
 
+/// An Ed25519 key pair containing DER-capable public key and raw secret key.
 @immutable
 class Ed25519KeyPair extends auth.KeyPair {
+  /// Creates an Ed25519 key pair.
   const Ed25519KeyPair({required super.publicKey, required super.secretKey});
 
+  /// Serializes the key pair as `[publicKeyDerHex, secretKeyHex]`.
   List<String> toJson() {
     return [publicKey.toDer().toHex(), secretKey.toHex()];
   }
 }
 
+/// An Ed25519 public key used by [Ed25519KeyIdentity].
+///
+/// The key can be constructed from raw 32-byte key material or DER-encoded
+/// bytes and can serialize itself back to DER for IC signatures.
 class Ed25519PublicKey implements auth.PublicKey {
   /// [Ed25519PublicKey.fromRaw] and [Ed25519PublicKey.fromDer] should not be
   /// used for instantiation in this constructor.
   Ed25519PublicKey(this.rawKey);
 
+  /// Creates an Ed25519 key by re-decoding another public key's DER encoding.
   factory Ed25519PublicKey.from(auth.PublicKey key) {
     return Ed25519PublicKey.fromDer(key.toDer());
   }
 
+  /// Creates a public key from raw 32-byte Ed25519 key material.
   factory Ed25519PublicKey.fromRaw(BinaryBlob rawKey) {
     return Ed25519PublicKey(rawKey);
   }
 
+  /// Creates a public key from DER-encoded Ed25519 key bytes.
   factory Ed25519PublicKey.fromDer(BinaryBlob derKey) {
     return Ed25519PublicKey(Ed25519PublicKey.derDecode(derKey));
   }
 
+  /// The raw 32-byte Ed25519 public key.
   final BinaryBlob rawKey;
+
+  /// The DER-encoded form of [rawKey].
   late final DerEncodedBlob derKey = Ed25519PublicKey.derEncode(rawKey);
 
   /// The length of Ed25519 public keys is always 32 bytes.
@@ -55,10 +68,12 @@ class Ed25519PublicKey implements auth.PublicKey {
     ...[0], // 'no padding'
   ]);
 
+  /// DER-encodes a raw Ed25519 [publicKey].
   static DerEncodedBlob derEncode(BinaryBlob publicKey) {
     return bytesWrapDer(publicKey, oidEd25519);
   }
 
+  /// Unwraps a DER-encoded Ed25519 public [key] into raw key bytes.
   static BinaryBlob derDecode(BinaryBlob key) {
     final unwrapped = bytesUnwrapDer(key, oidEd25519);
     if (unwrapped.length != rawKeyLength) {
@@ -71,12 +86,19 @@ class Ed25519PublicKey implements auth.PublicKey {
     return unwrapped;
   }
 
+  /// Returns the DER encoding of this public key.
   @override
   DerEncodedBlob toDer() => derKey;
 
+  /// Returns the raw 32-byte Ed25519 public key.
   BinaryBlob toRaw() => rawKey;
 }
 
+/// A signing identity backed by an Ed25519 seed.
+///
+/// This identity can sign ingress messages, export/import the legacy JSON key
+/// format used by agent-js compatible tooling, and recover Internet Identity
+/// seed-phrase based identities.
 class Ed25519KeyIdentity extends auth.SignIdentity {
   /// [Ed25519PublicKey.fromRaw] and [Ed25519PublicKey.fromDer] should not be
   /// used for instantiation in this constructor.
@@ -85,6 +107,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     this._seed,
   ) : _publicKey = Ed25519PublicKey.from(publicKey);
 
+  /// Creates an identity from raw public and private key bytes.
   factory Ed25519KeyIdentity.fromKeyPair(
     BinaryBlob publicKey,
     BinaryBlob privateKey,
@@ -92,6 +115,10 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     return Ed25519KeyIdentity(Ed25519PublicKey.fromRaw(publicKey), privateKey);
   }
 
+  /// Restores an identity from a JSON string.
+  ///
+  /// Accepts both the `[publicKeyDerHex, secretKeyHex]` tuple format and the
+  /// object shape used by older agent-js exports.
   factory Ed25519KeyIdentity.fromJSON(String json) {
     final parsed = jsonDecode(json);
     if (parsed is List) {
@@ -131,6 +158,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     throw ArgumentError.value(jsonEncode(json), 'json', 'Invalid json');
   }
 
+  /// Restores an identity from a parsed `[publicKeyDerHex, secretKeyHex]` list.
   factory Ed25519KeyIdentity.fromParsedJson(List<String> obj) {
     return Ed25519KeyIdentity(
       Ed25519PublicKey.fromDer(blobFromHex(obj[0])),
@@ -138,6 +166,10 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     );
   }
 
+  /// Generates an Ed25519 identity.
+  ///
+  /// When [seed] is provided it must be 32 bytes; otherwise a random seed is
+  /// generated.
   static Future<Ed25519KeyIdentity> generate(Uint8List? seed) async {
     if (seed != null && seed.length != 32) {
       throw RangeError.value(seed.length, 'Expected 32-bytes long but got');
@@ -153,6 +185,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     return Ed25519KeyIdentity(Ed25519PublicKey.fromRaw(publicKey), secretKey);
   }
 
+  /// Recovers an identity from an Internet Identity seed phrase.
   static Future<Ed25519KeyIdentityRecoveredFromII> recoverFromIISeedPhrase(
     String phrase,
   ) async {
@@ -197,6 +230,7 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
     );
   }
 
+  /// Verifies [signature] against [message] using this identity's public key.
   Future<bool> verify(Uint8List signature, Uint8List message) {
     return ed25519Verify(
       req: ED25519VerifyReq(
@@ -208,13 +242,18 @@ class Ed25519KeyIdentity extends auth.SignIdentity {
   }
 }
 
+/// Result of recovering an Ed25519 identity from an Internet Identity phrase.
 class Ed25519KeyIdentityRecoveredFromII {
+  /// Creates a recovered Internet Identity key result.
   const Ed25519KeyIdentityRecoveredFromII({
     required this.identity,
     this.userNumber,
   });
 
+  /// The optional Internet Identity user number embedded in the phrase.
   final BigInt? userNumber;
+
+  /// The recovered Ed25519 signing identity.
   final Ed25519KeyIdentity identity;
 }
 

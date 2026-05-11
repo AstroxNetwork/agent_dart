@@ -14,6 +14,7 @@ import 'polling/polling.dart';
 import 'request_id.dart';
 import 'types.dart';
 
+/// Error thrown when an actor query or update call fails.
 class ActorCallError extends AgentFetchError {
   ActorCallError(
     Principal canisterId,
@@ -33,6 +34,7 @@ class ActorCallError extends AgentFetchError {
   }
 }
 
+/// Error thrown when a canister query returns a rejected response.
 class QueryCallRejectedError extends ActorCallError {
   QueryCallRejectedError(
     Principal canisterId,
@@ -52,6 +54,7 @@ class QueryCallRejectedError extends ActorCallError {
         );
 }
 
+/// Error thrown when an update call is rejected by the replica.
 class UpdateCallRejectedError extends ActorCallError {
   UpdateCallRejectedError(
     Principal canisterId,
@@ -70,6 +73,10 @@ class UpdateCallRejectedError extends ActorCallError {
         );
 }
 
+/// Runtime options for a single actor method call.
+///
+/// A [CallConfig] can override the actor's default agent, canister routing,
+/// polling strategy, and synchronous-call behavior for one invocation.
 class CallConfig {
   const CallConfig({
     this.agent,
@@ -79,6 +86,7 @@ class CallConfig {
     this.callSync = true,
   });
 
+  /// Builds a call configuration from a JSON-like map.
   factory CallConfig.fromJson(Map<String, dynamic> map) {
     return CallConfig(
       agent: map['agent'],
@@ -106,6 +114,7 @@ class CallConfig {
   /// Whether to call the endpoint synchronously.
   final bool callSync;
 
+  /// Converts this configuration to a JSON-like map.
   Map<String, dynamic> toJson() {
     return {
       'agent': agent,
@@ -181,6 +190,7 @@ class ActorConfig extends CallConfig {
 //   withOptions(options: CallConfig): (...args: Args) => Promise<Ret>;
 // }
 
+/// Installation modes accepted by the IC management canister.
 enum CanisterInstallMode { install, reinstall, upgrade }
 
 /// Internal metadata for actors. It's an enhanced version of [ActorConfig] with
@@ -194,17 +204,26 @@ class ActorMetadata {
   final ActorConfig? config;
 }
 
+/// Options used when installing WASM code into a canister.
 class FieldOptions {
+  /// Creates install-code field options with a WASM [module].
   const FieldOptions(this.module, {this.mode, this.arg});
 
+  /// Builds field options from a JSON-like map.
   factory FieldOptions.fromJson(Map<String, dynamic> map) {
     return FieldOptions(map['module'], mode: map['mode'], arg: map['arg']);
   }
 
+  /// The WASM module bytes to install.
   final BinaryBlob module;
+
+  /// The install mode, usually one of [CanisterInstallMode]'s names.
   final String? mode;
+
+  /// Optional Candid-encoded initialization or upgrade argument.
   final BinaryBlob? arg;
 
+  /// Converts these options to a JSON-like map.
   Map<String, dynamic> toJson() {
     return {'module': module, 'mode': mode, 'arg': arg};
   }
@@ -232,10 +251,12 @@ class Actor {
     return actor.metadata.service;
   }
 
+  /// Returns the canister ID configured on [actor].
   static Principal canisterIdOf(Actor actor) {
     return Principal.from(actor.metadata.config!.canisterId);
   }
 
+  /// Installs, reinstalls, or upgrades code on a canister via the management canister.
   static Future<void> install(FieldOptions fields, ActorConfig config) async {
     final String mode = fields.mode ?? CanisterInstallMode.install.name;
     // Need to transform the arg into a number array.
@@ -256,6 +277,7 @@ class Actor {
     ]);
   }
 
+  /// Creates a new canister and returns its principal.
   static Future<Principal> createCanister(CallConfig? config) async {
     final canister = getManagementCanister(config ?? const CallConfig());
     final ActorMethod? func = canister.getFunc(
@@ -271,6 +293,7 @@ class Actor {
     return canisterId;
   }
 
+  /// Creates a canister, installs [fields.module], and returns an actor for it.
   static Future<CanisterActor> createAndInstallCanister(
     Service interfaceFactory,
     FieldOptions fields,
@@ -289,10 +312,12 @@ class Actor {
     return createActor(interfaceFactory, newConfig);
   }
 
+  /// Creates an actor constructor bound to a Candid [interfaceFactory].
   static ActorConstructor createActorClass(Service interfaceFactory) {
     return CanisterActor.withService(interfaceFactory);
   }
 
+  /// Creates a canister actor from a Candid service and actor configuration.
   static CanisterActor createActor(
     Service interfaceFactory,
     ActorConfig configuration,
@@ -303,12 +328,14 @@ class Actor {
   static const String metadataSymbol = 'ic-agent-metadata';
 }
 
+/// Factory signature used to create callable actor methods.
 typedef CreateActorMethod = ActorMethod Function(
   Actor actor,
   String methodName,
   Func func,
 );
 
+/// An [Actor] backed by a Candid service definition.
 class CanisterActor extends Actor {
   CanisterActor(
     ActorConfig config,
@@ -327,16 +354,19 @@ class CanisterActor extends Actor {
   // [x: string]: ActorMethod;
   final Map<String, ActorMethod> methodMap = <String, ActorMethod>{};
 
+  /// Returns the actor method named [method], or `null` if it is not defined.
   ActorMethod? getFunc(String method) {
     return methodMap[method];
   }
 
+  /// Creates a [CanisterActor] constructor for [service].
   static CanisterActor Function(ActorConfig config) withService(
     Service service,
   ) =>
       (ActorConfig config) => CanisterActor(config, service);
 }
 
+/// Decodes Candid response bytes into the Dart return value expected by callers.
 dynamic decodeReturnValue(List<CType> types, BinaryBlob msg) {
   final returnValues = IDL.decode(types, msg);
   switch (returnValues.length) {
@@ -349,6 +379,7 @@ dynamic decodeReturnValue(List<CType> types, BinaryBlob msg) {
   }
 }
 
+/// Low-level actor method caller signature.
 typedef MethodCaller = Future Function(CallConfig options, List args);
 
 ActorMethod _createActorMethod(Actor actor, String methodName, Func func) {
@@ -477,11 +508,15 @@ ActorMethod _createActorMethod(Actor actor, String methodName, Func func) {
   return ActorMethod(caller);
 }
 
+/// A callable canister method generated from a Candid function definition.
 class ActorMethod {
+  /// Creates an actor method backed by [caller].
   const ActorMethod(this.caller);
 
+  /// The function that performs the query or update call.
   final MethodCaller caller;
 
+  /// Invokes [caller] with optional per-call options.
   static Future<dynamic> handlerCall(
     MethodCaller caller,
     List<dynamic> args,
@@ -490,10 +525,12 @@ class ActorMethod {
     return caller(withOptions ?? const CallConfig(), args);
   }
 
+  /// Calls the method with default options.
   Future<dynamic> call(List<dynamic>? args) {
     return caller(const CallConfig(), args ?? []);
   }
 
+  /// Calls the method with [withOptions] merged into the actor configuration.
   Future<dynamic> withOptions(
     CallConfig withOptions,
     List<dynamic>? args,
@@ -502,4 +539,5 @@ class ActorMethod {
   }
 }
 
+/// Constructor signature for canister actors.
 typedef ActorConstructor = CanisterActor Function(ActorConfig config);

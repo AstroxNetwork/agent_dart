@@ -8,6 +8,7 @@ import 'utils/sha224.dart';
 
 export 'utils/utils.dart';
 
+/// The supported textual identifier formats used by agent_dart.
 enum IdentifierType { accountIdentifier, principal }
 
 const _suffixSelfAuthenticating = 2;
@@ -17,23 +18,40 @@ const _typeOpaque = 1;
 
 final _emptySubAccount = Uint8List(32);
 
+/// An Internet Computer principal identifier.
+///
+/// Principals identify canisters, users, and other IC entities. A principal can
+/// be converted between its binary representation, canonical textual form, and
+/// account identifier form. Optionally, a principal may also carry a 32-byte
+/// subaccount for account-id derivation.
 class Principal implements Comparable<Principal> {
+  /// Creates a principal from its raw bytes and optional 32-byte [subAccount].
   const Principal(
     this._principal, {
     Uint8List? subAccount,
   })  : assert(subAccount == null || subAccount.length == 32),
         _subAccount = subAccount;
 
+  /// Creates a self-authenticating principal from a public key.
+  ///
+  /// The public key is SHA-224 hashed and suffixed with the IC
+  /// self-authenticating principal type byte.
   factory Principal.selfAuthenticating(Uint8List publicKey) {
     final sha = sha224Hash(publicKey.buffer);
     final u8a = Uint8List.fromList([...sha, _suffixSelfAuthenticating]);
     return Principal(u8a);
   }
 
+  /// Creates the anonymous principal.
   factory Principal.anonymous() {
     return Principal(Uint8List.fromList([_suffixAnonymous]));
   }
 
+  /// Converts [other] into a [Principal].
+  ///
+  /// Accepts canonical principal text, another [Principal], or the serialized
+  /// map shape produced by older agent_dart APIs. Throws [UnreachableError] for
+  /// unsupported values.
   factory Principal.from(Object? other) {
     if (other is String) {
       return Principal.fromText(other);
@@ -45,6 +63,9 @@ class Principal implements Comparable<Principal> {
     throw UnreachableError();
   }
 
+  /// Creates a principal from the first [uSize] bytes of [data].
+  ///
+  /// Throws [RangeError] when [uSize] is larger than the supplied data length.
   factory Principal.create(int uSize, Uint8List data, Uint8List? subAccount) {
     if (uSize > data.length) {
       throw RangeError.range(
@@ -58,6 +79,11 @@ class Principal implements Comparable<Principal> {
     return Principal(data.sublist(0, uSize), subAccount: subAccount);
   }
 
+  /// Parses a principal from hexadecimal bytes and an optional subaccount hex.
+  ///
+  /// [subAccountHex] is left-padded to 32 bytes when supplied. Leading zeros in
+  /// the subaccount are rejected because the textual subaccount representation
+  /// must be canonical.
   factory Principal.fromHex(String hex, {String? subAccountHex}) {
     if (hex.isEmpty) {
       return Principal(Uint8List(0));
@@ -78,6 +104,10 @@ class Principal implements Comparable<Principal> {
     );
   }
 
+  /// Parses a principal from its canonical textual representation.
+  ///
+  /// The parser validates the checksum and canonical formatting, including
+  /// optional subaccount notation.
   factory Principal.fromText(String text) {
     if (text.endsWith('.')) {
       throw ArgumentError(
@@ -133,6 +163,7 @@ class Principal implements Comparable<Principal> {
   final Uint8List _principal;
   final Uint8List? _subAccount;
 
+  /// The principal subaccount, or `null` when it is absent or all zeros.
   Uint8List? get subAccount {
     if (_subAccount case final v when v == null || v.eq(_emptySubAccount)) {
       return null;
@@ -140,6 +171,9 @@ class Principal implements Comparable<Principal> {
     return _subAccount;
   }
 
+  /// Returns this principal with [subAccount] attached.
+  ///
+  /// Passing `null` or an all-zero subaccount returns the current principal.
   Principal newSubAccount(Uint8List? subAccount) {
     if (subAccount == null || subAccount.eq(_emptySubAccount)) {
       return this;
@@ -150,14 +184,18 @@ class Principal implements Comparable<Principal> {
     return this;
   }
 
+  /// Whether this principal is the anonymous principal.
   bool isAnonymous() {
     return _principal.lengthInBytes == 1 && _principal[0] == _suffixAnonymous;
   }
 
+  /// Returns the raw principal bytes.
   Uint8List toUint8List() => _principal;
 
+  /// Returns the raw principal bytes as uppercase hexadecimal.
   String toHex() => _toHexString(_principal).toUpperCase();
 
+  /// Returns the canonical textual representation of this principal.
   String toText() {
     final checksum = _getChecksum(_principal.buffer);
     final bytes = Uint8List.fromList(_principal);
@@ -192,6 +230,7 @@ class Principal implements Comparable<Principal> {
     return buffer.toString();
   }
 
+  /// Derives the 32-byte account identifier for this principal and subaccount.
   Uint8List toAccountId() {
     final hash = SHA224();
     hash.update('\x0Aaccount-id'.plainToU8a());
@@ -236,6 +275,7 @@ class Principal implements Comparable<Principal> {
   bool operator >=(Principal other) => compareTo(other) >= 0;
 }
 
+/// A principal that represents a canister identifier.
 class CanisterId extends Principal {
   CanisterId(Principal pid) : super(pid.toUint8List());
 

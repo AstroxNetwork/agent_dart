@@ -9,6 +9,7 @@ import '../../types.dart';
 import '../api.dart';
 import 'transform.dart';
 
+/// Replica read request type constants.
 class ReadRequestType {
   const ReadRequestType._();
 
@@ -16,12 +17,14 @@ class ReadRequestType {
   static const readState = 'read_state';
 }
 
+/// Replica submit request type constants.
 class SubmitRequestType {
   const SubmitRequestType._();
 
   static const call = 'call';
 }
 
+/// Replica endpoint path identifiers used by HTTP agent requests.
 class Endpoint {
   const Endpoint._();
 
@@ -30,25 +33,37 @@ class Endpoint {
   static const call = 'call';
 }
 
+/// Interface for values that can be serialized into agent request JSON maps.
 mixin WithToJson {
+  /// Converts this value to a JSON-like map.
   Map<String, dynamic> toJson();
 }
 
+/// Base request value for agent HTTP messages.
 abstract class BaseRequest with WithToJson {
+  /// Creates a base request.
   const BaseRequest();
 }
 
+/// Request body for `/read_state` calls.
 class ReadStateRequest extends BaseRequest {
+  /// Creates a read-state request body.
   const ReadStateRequest({
     this.paths,
     this.sender,
     this.ingressExpiry,
   });
 
+  /// Certificate paths to read.
   final List<List<BinaryBlob>>? paths;
+
+  /// Principal or raw bytes for the request sender.
   final Object? sender; //: Uint8Array | Principal;
+
+  /// Ingress expiry timestamp.
   final Expiry? ingressExpiry;
 
+  /// Replica request type.
   String get requestType => ReadRequestType.readState;
 
   @override
@@ -62,7 +77,9 @@ class ReadStateRequest extends BaseRequest {
   }
 }
 
+/// Request body for update calls.
 class CallRequest extends ReadStateRequest {
+  /// Creates an update-call request body.
   CallRequest({
     required this.canisterId,
     required this.methodName,
@@ -72,9 +89,16 @@ class CallRequest extends ReadStateRequest {
     super.ingressExpiry,
   });
 
+  /// Target canister principal.
   final Principal canisterId;
+
+  /// Canister method name.
   final String methodName;
+
+  /// Candid-encoded argument bytes.
   final BinaryBlob arg;
+
+  /// Optional request nonce.
   dynamic nonce;
 
   @override
@@ -94,7 +118,9 @@ class CallRequest extends ReadStateRequest {
   }
 }
 
+/// Request body for canister query calls.
 class QueryRequest extends BaseRequest {
+  /// Creates a query request body.
   const QueryRequest({
     required this.canisterId,
     required this.methodName,
@@ -103,12 +129,22 @@ class QueryRequest extends BaseRequest {
     required this.ingressExpiry,
   });
 
+  /// Target canister principal.
   final Principal canisterId;
+
+  /// Canister method name.
   final String methodName;
+
+  /// Candid-encoded argument bytes.
   final BinaryBlob arg;
+
+  /// Principal or raw bytes for the request sender.
   final dynamic sender; //: Uint8Array | Principal;
+
+  /// Ingress expiry timestamp.
   final Expiry ingressExpiry;
 
+  /// Replica request type.
   String get requestType => ReadRequestType.typeQuery;
 
   @override
@@ -124,18 +160,26 @@ class QueryRequest extends BaseRequest {
   }
 }
 
+/// Alias for read request bodies.
 typedef ReadRequest = ReadStateRequest;
 
+/// HTTP request wrapper used by the agent transform pipeline.
 @immutable
 abstract class HttpAgentBaseRequest<T extends WithToJson> extends BaseRequest {
+  /// Creates an HTTP agent request wrapper.
   const HttpAgentBaseRequest({
     required this.request,
     required this.body,
     this.endpoint,
   });
 
+  /// HTTP request metadata such as method and headers.
   final Map<String, dynamic> request;
+
+  /// Request body payload.
   final T body;
+
+  /// Agent endpoint identifier.
   final String? endpoint;
 
   @override
@@ -148,9 +192,11 @@ abstract class HttpAgentBaseRequest<T extends WithToJson> extends BaseRequest {
   }
 }
 
+/// HTTP wrapper for submit/update requests.
 @immutable
 abstract class HttpAgentSubmitRequest
     extends HttpAgentBaseRequest<CallRequest> {
+  /// Creates a submit request wrapper.
   const HttpAgentSubmitRequest({
     required super.request,
     required super.body,
@@ -158,7 +204,9 @@ abstract class HttpAgentSubmitRequest
   });
 }
 
+/// HTTP wrapper for canister update-call requests.
 class HttpAgentCallRequest extends HttpAgentSubmitRequest {
+  /// Creates a call request wrapper.
   const HttpAgentCallRequest({
     required super.request,
     required super.body,
@@ -166,7 +214,9 @@ class HttpAgentCallRequest extends HttpAgentSubmitRequest {
   });
 }
 
+/// HTTP wrapper for query and read-state requests.
 class HttpAgentQueryRequest extends HttpAgentBaseRequest<BaseRequest> {
+  /// Creates a query request wrapper.
   const HttpAgentQueryRequest({
     required super.request,
     required super.body,
@@ -174,41 +224,59 @@ class HttpAgentQueryRequest extends HttpAgentBaseRequest<BaseRequest> {
   });
 }
 
+/// Unsigned envelope content.
 @immutable
 abstract class UnSigned<T> {
+  /// Creates an unsigned envelope.
   const UnSigned({required this.content});
 
+  /// Envelope payload.
   final T content;
 }
 
+/// Signed envelope content with sender key and signature bytes.
 @immutable
 abstract class Signed<T> extends UnSigned<T> {
+  /// Creates a signed envelope.
   const Signed({
     required super.content,
     required this.senderPublicKey,
     required this.senderSignature,
   });
 
+  /// Sender public key bytes.
   final BinaryBlob senderPublicKey;
+
+  /// Sender signature bytes.
   final BinaryBlob senderSignature;
 }
 
+/// Agent request envelope type.
 typedef Envelope<T> = UnSigned<T>;
 
+/// Agent request type used by transform functions.
 typedef HttpAgentRequest = HttpAgentBaseRequest;
 
+/// Request transform function with an optional priority.
 class HttpAgentRequestTransformFn {
+  /// Creates a request transform.
   HttpAgentRequestTransformFn({required this.call, this.priority});
 
+  /// Transform callback.
   final HttpAgentRequestTransformFnCall call;
+
+  /// Transform priority. Higher-priority transforms run earlier.
   int? priority;
 }
 
+/// Signature for request transform callbacks.
 typedef HttpAgentRequestTransformFnCall = Future<HttpAgentRequest?> Function(
   HttpAgentRequest args,
 );
 
+/// HTTP response body returned by the transport layer.
 class HttpResponseBody extends ResponseBody {
+  /// Creates an HTTP response body.
   const HttpResponseBody({
     super.ok,
     super.status,
@@ -217,6 +285,7 @@ class HttpResponseBody extends ResponseBody {
     this.arrayBuffer,
   });
 
+  /// Creates an HTTP response body from a JSON-like map.
   factory HttpResponseBody.fromJson(Map<String, dynamic> map) {
     return HttpResponseBody(
       arrayBuffer: map['arrayBuffer'],
@@ -227,7 +296,10 @@ class HttpResponseBody extends ResponseBody {
     );
   }
 
+  /// Response body as text, when available.
   final String? body;
+
+  /// Response body as raw bytes, when available.
   final Uint8List? arrayBuffer;
 
   @override
@@ -235,6 +307,7 @@ class HttpResponseBody extends ResponseBody {
     return jsonEncode(toJson());
   }
 
+  /// Converts this response to a JSON-like map.
   Map<String, dynamic> toJson() {
     return {
       'ok': ok,
@@ -246,7 +319,9 @@ class HttpResponseBody extends ResponseBody {
   }
 }
 
+/// Submit response returned by update-call requests.
 class CallResponseBody extends SubmitResponse {
+  /// Creates a call response body.
   CallResponseBody({
     bool? ok,
     int? status,
@@ -264,6 +339,7 @@ class CallResponseBody extends SubmitResponse {
           ),
         );
 
+  /// Creates a call response body from a JSON-like map.
   factory CallResponseBody.fromJson(Map<String, dynamic> map) {
     return CallResponseBody(
       arrayBuffer: map['arrayBuffer'],
@@ -289,7 +365,9 @@ class CallResponseBody extends SubmitResponse {
   }
 }
 
+/// Query response decoded from replica CBOR payloads.
 class QueryResponseWithStatus extends QueryResponse {
+  /// Creates a query response with status.
   const QueryResponseWithStatus({
     super.reply,
     super.rejectCode,
@@ -297,6 +375,7 @@ class QueryResponseWithStatus extends QueryResponse {
     required super.status,
   });
 
+  /// Creates a query response from a decoded CBOR map.
   factory QueryResponseWithStatus.fromJson(Map map) {
     Reply? reply;
     if (map['reply'] != null) {
@@ -314,6 +393,7 @@ class QueryResponseWithStatus extends QueryResponse {
     );
   }
 
+  /// Converts this query response to a JSON-like map.
   Map<String, dynamic> toJson() {
     return {
       'status': status,

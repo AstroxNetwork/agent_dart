@@ -9,32 +9,44 @@ import '../utils/extension.dart';
 import '../wallet/keysmith.dart';
 import 'der.dart';
 
+/// A Schnorr key pair containing public and private key material.
 class SchnorrKeyPair extends KeyPair {
+  /// Creates a Schnorr key pair.
   const SchnorrKeyPair({required super.publicKey, required super.secretKey});
 
+  /// Serializes the key pair as `[publicKeyDerHex, secretKeyHex]`.
   List<String> toJson() {
     return [publicKey.toDer().toHex(), secretKey.toHex()];
   }
 }
 
+/// A BIP340-style Schnorr public key.
 class SchnorrPublicKey implements PublicKey {
+  /// Creates a Schnorr public key from raw key bytes.
   SchnorrPublicKey(this.rawKey);
 
+  /// Creates a Schnorr public key from raw key bytes.
   factory SchnorrPublicKey.fromRaw(BinaryBlob rawKey) {
     return SchnorrPublicKey(rawKey);
   }
 
+  /// Creates a Schnorr public key from DER-encoded key bytes.
   factory SchnorrPublicKey.fromDer(BinaryBlob derKey) {
     return SchnorrPublicKey(SchnorrPublicKey.derDecode(derKey));
   }
 
+  /// Creates a Schnorr public key from another [PublicKey].
   factory SchnorrPublicKey.from(PublicKey key) {
     return SchnorrPublicKey.fromDer(key.toDer());
   }
 
+  /// Raw Schnorr public key bytes.
   final BinaryBlob rawKey;
+
+  /// DER-encoded form of [rawKey].
   late final derKey = SchnorrPublicKey.derEncode(rawKey);
 
+  /// DER-encodes a raw Schnorr [publicKey].
   static Uint8List derEncode(BinaryBlob publicKey) {
     // BIP340 Schnorr scheme doesn't apply to ASN.1 standard, although other
     // form of oid existed, we just borrow secp256k1 as ref.
@@ -43,22 +55,28 @@ class SchnorrPublicKey implements PublicKey {
     return bytesWrapDer(publicKey, oidSecp256k1);
   }
 
+  /// Decodes a DER-encoded Schnorr [publicKey].
   static Uint8List derDecode(BinaryBlob publicKey) {
     return bytesUnwrapDer(publicKey, oidSecp256k1);
   }
 
+  /// Returns the DER encoding of this public key.
   @override
   Uint8List toDer() => derKey;
 
+  /// Returns the raw Schnorr public key bytes.
   Uint8List toRaw() => rawKey;
 }
 
+/// A signing identity backed by a Schnorr private key.
 class SchnorrIdentity extends SignIdentity {
+  /// Creates a Schnorr identity from a public key and private key bytes.
   SchnorrIdentity(
     PublicKey publicKey,
     this._privateKey,
   ) : _publicKey = SchnorrPublicKey.from(publicKey);
 
+  /// Restores an identity from a parsed `[publicKeyHex, privateKeyHex]` list.
   factory SchnorrIdentity.fromParsedJson(List<String> obj) {
     return SchnorrIdentity(
       SchnorrPublicKey.fromRaw(blobFromHex(obj[0])),
@@ -66,6 +84,7 @@ class SchnorrIdentity extends SignIdentity {
     );
   }
 
+  /// Restores a Schnorr identity from JSON.
   factory SchnorrIdentity.fromJSON(String json) {
     final parsed = jsonDecode(json);
     if (parsed is List) {
@@ -99,6 +118,7 @@ class SchnorrIdentity extends SignIdentity {
     throw ArgumentError.value(jsonEncode(json), 'json', 'Invalid json');
   }
 
+  /// Creates an identity from raw public and private key bytes.
   factory SchnorrIdentity.fromKeyPair(
     BinaryBlob publicKey,
     BinaryBlob privateKey,
@@ -112,6 +132,7 @@ class SchnorrIdentity extends SignIdentity {
   final SchnorrPublicKey _publicKey;
   final BinaryBlob _privateKey;
 
+  /// Derives a Schnorr identity from a raw [secretKey].
   static Future<SchnorrIdentity> fromSecretKey(Uint8List secretKey) async {
     final kp = await getECkeyFromPrivateKey(secretKey);
     final identity = SchnorrIdentity.fromKeyPair(
@@ -143,6 +164,7 @@ class SchnorrIdentity extends SignIdentity {
     return signSchnorrAsync(blob, _privateKey);
   }
 
+  /// Verifies [signature] against [message].
   Future<bool> verify(Uint8List signature, Uint8List message) {
     return verifySchnorrAsync(
       message,
@@ -152,6 +174,7 @@ class SchnorrIdentity extends SignIdentity {
   }
 }
 
+/// Signs [blob] with a Schnorr private [seed].
 Future<Uint8List> signSchnorrAsync(
   Uint8List blob,
   Uint8List seed, {
@@ -163,6 +186,7 @@ Future<Uint8List> signSchnorrAsync(
   return result.signature!;
 }
 
+/// Verifies a Schnorr [signature] for [blob] and [publicKey].
 Future<bool> verifySchnorrAsync(
   Uint8List blob,
   Uint8List signature,

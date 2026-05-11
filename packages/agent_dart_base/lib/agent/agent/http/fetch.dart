@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../../types.dart';
 
+/// Default timeout used by the HTTP transport.
 const defaultTimeout = Duration(seconds: 30);
 
 /// [defaultFetch] is a wrapper of [http.get],
@@ -88,7 +89,9 @@ Future<Map<String, dynamic>> defaultFetch({
   }
 }
 
+/// Normalized response returned by HTTP fetch functions.
 class FetchResponse {
+  /// Creates a normalized fetch response.
   const FetchResponse(
     this.body,
     this.ok,
@@ -97,6 +100,7 @@ class FetchResponse {
     this.arrayBuffer,
   );
 
+  /// Creates a response from a JSON-like map.
   factory FetchResponse.fromJson(Map<String, dynamic> map) {
     return FetchResponse(
       map['body'],
@@ -107,12 +111,22 @@ class FetchResponse {
     );
   }
 
+  /// Response body as text.
   final String body;
+
+  /// Whether the HTTP status code represents success.
   final bool ok;
+
+  /// HTTP status code.
   final int statusCode;
+
+  /// HTTP status text.
   final String statusText;
+
+  /// Response body as raw bytes.
   final Uint8List arrayBuffer;
 
+  /// Converts this response to a JSON-like map.
   Map<String, dynamic> toJson() {
     return {
       'body': body,

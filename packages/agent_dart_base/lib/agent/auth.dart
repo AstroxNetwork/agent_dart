@@ -12,21 +12,32 @@ import 'types.dart';
 /// A Key Pair, containing a secret and public key.
 @immutable
 abstract class KeyPair {
+  /// Creates a key pair from a [secretKey] and [publicKey].
   const KeyPair({required this.secretKey, required this.publicKey});
 
+  /// Private key material used by the corresponding identity.
   final BinaryBlob secretKey;
+
+  /// Public key associated with [secretKey].
   final PublicKey publicKey;
 }
 
+/// Public key material that can be serialized for IC requests.
 @immutable
 abstract class PublicKey {
+  /// Creates a public key abstraction.
   const PublicKey();
 
-  // Get the public key bytes encoded with DER.
+  /// Returns the public key bytes encoded with DER.
   DerEncodedBlob toDer();
 }
 
+/// An entity that can identify itself to the Internet Computer.
+///
+/// Identities provide a [Principal] and can transform outgoing HTTP agent
+/// requests into authenticated or anonymous request envelopes.
 abstract class Identity {
+  /// Creates an identity abstraction.
   const Identity();
 
   /// Get the principal represented by this identity. Normally should be a
@@ -49,6 +60,7 @@ abstract class SignIdentity implements Identity {
   /// Signs a blob of data, with this identity's private key.
   Future<BinaryBlob> sign(BinaryBlob blob);
 
+  /// Returns the IC ledger account identifier for this identity's principal.
   Uint8List getAccountId() {
     return Principal.selfAuthenticating(getPublicKey().toDer()).toAccountId();
   }
@@ -85,8 +97,13 @@ abstract class SignIdentity implements Identity {
   }
 }
 
+/// An identity for anonymous IC requests.
+///
+/// Anonymous identities attach the anonymous principal and do not sign request
+/// envelopes.
 @immutable
 class AnonymousIdentity implements Identity {
+  /// Creates an anonymous identity.
   const AnonymousIdentity();
 
   @override

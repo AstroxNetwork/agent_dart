@@ -4,9 +4,12 @@ import 'package:agent_dart_ffi/agent_dart_ffi.dart';
 
 import 'keysmith.dart';
 
+/// BIP-39 mnemonic phrase helper.
 class Phrase {
+  /// Creates a phrase from a validated mnemonic string.
   Phrase(this.mnemonic) : _list = mnemonic.trim().split(' ');
 
+  /// Generates a new 12- or 24-word mnemonic phrase.
   factory Phrase.generate({int length = 24}) {
     assert(length == 12 || length == 24);
     return Phrase.fromString(
@@ -14,6 +17,7 @@ class Phrase {
     );
   }
 
+  /// Validates and creates a phrase from [phrase].
   factory Phrase.fromString(String phrase) {
     final arr = phrase.trim().split(' ');
     final invalidWords = <String>[];
@@ -33,13 +37,17 @@ class Phrase {
     return Phrase(phrase);
   }
 
+  /// Raw mnemonic phrase.
   final String mnemonic;
   final List<String> _list;
 
+  /// Number of words in the phrase.
   int get length => _list.length;
 
+  /// Phrase words as a list.
   List<String> get list => _list;
 
+  /// Converts the phrase to seed bytes using an optional [passphrase].
   Future<Uint8List> toSeed({String passphrase = ''}) {
     return mnemonicPhraseToSeed(
       req: PhraseToSeedReq(
@@ -49,6 +57,7 @@ class Phrase {
     );
   }
 
+  /// Derives private key bytes for a BIP-44 [coinType] and [index].
   Future<Uint8List> toWIFByCoin({
     String passphrase = '',
     int index = 0,
@@ -64,6 +73,7 @@ class Phrase {
     );
   }
 
+  /// Derives private key bytes from a custom [basePath] and [index].
   Future<Uint8List> toWIFByPath({
     String passphrase = '',
     int index = 0,
@@ -79,13 +89,18 @@ class Phrase {
   }
 }
 
+/// Exception thrown when a mnemonic phrase is invalid.
 class PhaseException implements Exception {
+  /// Creates a phrase validation exception.
   const PhaseException({
     required this.message,
     this.wordList,
   });
 
+  /// Validation error message.
   final String message;
+
+  /// Invalid words, when validation failed because of unknown mnemonic words.
   final List<String>? wordList;
 
   @override

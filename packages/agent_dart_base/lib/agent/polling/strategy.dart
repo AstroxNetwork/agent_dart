@@ -3,18 +3,25 @@ import 'dart:async';
 import '../../principal/principal.dart';
 import '../agent.dart';
 
+/// Creates a polling strategy for update-call response polling.
 typedef PollStrategyFactory = PollStrategy Function();
+
+/// Strategy invoked between read-state polling attempts.
 typedef PollStrategy = Future<void> Function(
   Principal canisterId,
   RequestId requestId,
   RequestStatusResponseStatus status,
 );
+/// Predicate used by conditional polling strategies.
 typedef PollPredicate<T> = Future<T> Function(
   Principal canisterId,
   RequestId requestId,
   RequestStatusResponseStatus status,
 );
 
+/// Default polling strategy used for update calls.
+///
+/// It waits once, then applies a small backoff until the default timeout.
 PollStrategy defaultStrategy() {
   return chain([
     conditionalDelay(once(), 1000),
@@ -23,6 +30,7 @@ PollStrategy defaultStrategy() {
   ]);
 }
 
+/// Returns true only for the first invocation.
 PollPredicate<bool> once() {
   bool first = true;
   return (
@@ -38,6 +46,7 @@ PollPredicate<bool> once() {
   };
 }
 
+/// Delays polling by [timeInMsec] when [condition] returns true.
 PollStrategy conditionalDelay(PollPredicate<bool> condition, int timeInMsec) {
   return (
     Principal canisterId,
@@ -52,6 +61,7 @@ PollStrategy conditionalDelay(PollPredicate<bool> condition, int timeInMsec) {
   };
 }
 
+/// Fails polling after [count] attempts.
 PollStrategy maxAttempts(int count) {
   int attempts = count;
   return (
@@ -84,6 +94,7 @@ PollStrategy throttlePolling(int throttleMilliseconds) {
   };
 }
 
+/// Fails polling after [duration] has elapsed.
 PollStrategy timeout(Duration duration) {
   final end = DateTime.now().add(duration);
   return (
@@ -102,6 +113,7 @@ PollStrategy timeout(Duration duration) {
   };
 }
 
+/// Delays polling with multiplicative backoff.
 PollStrategy backoff(num startingThrottleInMsec, num backoffFactor) {
   return (
     Principal canisterId,
@@ -117,6 +129,7 @@ PollStrategy backoff(num startingThrottleInMsec, num backoffFactor) {
   };
 }
 
+/// Runs [strategies] in sequence for each polling attempt.
 PollStrategy chain(List<PollStrategy> strategies) {
   return (
     Principal canisterId,

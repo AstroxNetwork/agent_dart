@@ -12,15 +12,22 @@ import '../utils/extension.dart';
 const String _beginECPrivateKey = '-----BEGIN EC PRIVATE KEY-----';
 const String _beginPrivateKey = '-----BEGIN PRIVATE KEY-----';
 
+/// Supported PEM private key types.
 enum KeyType { ed25519, secp265k1 }
 
+/// Parsed PEM file content and detected key type.
 class PemFile {
+  /// Creates a parsed PEM file value.
   const PemFile(this.rawString, this.keyType);
 
+  /// PEM body without the leading header marker.
   final String rawString;
+
+  /// Detected key type.
   final KeyType keyType;
 }
 
+/// Reads a PEM file from [path] and detects its private key type.
 Future<PemFile> getPemFile(String path) async {
   final pem = await File(path).readAsString();
   if (pem.split(_beginPrivateKey).length > 1) {
@@ -37,6 +44,7 @@ Future<PemFile> getPemFile(String path) async {
   throw UnsupportedError('$path does not have a supported PEM type.');
 }
 
+/// Creates an Ed25519 identity from a PEM private key body.
 Future<Ed25519KeyIdentity> ed25519KeyIdentityFromPem(String pem) async {
   final privateKeyPem = pem
       .replaceAll('-----END PRIVATE KEY-----', '')
@@ -53,6 +61,7 @@ Future<Ed25519KeyIdentity> ed25519KeyIdentityFromPem(String pem) async {
   return Ed25519KeyIdentity.generate(res);
 }
 
+/// Creates a secp256k1 identity from a PEM private key body.
 Future<Secp256k1KeyIdentity> secp256k1KeyIdentityFromPem(String pem) async {
   final pem2 = _beginECPrivateKey + pem;
   final key = _ecPrivateKeyFromPem(pem2).d;

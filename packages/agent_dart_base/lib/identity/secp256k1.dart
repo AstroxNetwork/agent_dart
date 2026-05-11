@@ -24,14 +24,18 @@ BigInt _bytesToUnsignedInt(Uint8List bytes) {
 // final ECDomainParameters params = ECCurve_secp256k1();
 final BigInt _halfCurveOrder = secp256k1Params.n >> 1;
 
+/// A secp256k1 key pair containing public and private key material.
 class Secp256k1KeyPair extends KeyPair {
+  /// Creates a secp256k1 key pair.
   const Secp256k1KeyPair({required super.publicKey, required super.secretKey});
 
+  /// Serializes the key pair as `[publicKeyDerHex, secretKeyHex]`.
   List<String> toJson() {
     return [publicKey.toDer().toHex(), secretKey.toHex()];
   }
 }
 
+/// A signing identity backed by a secp256k1 private key.
 class Secp256k1KeyIdentity extends SignIdentity {
   /// [Secp256k1KeyIdentity.fromRaw] and [Secp256k1KeyIdentity.fromDer]
   /// should not be used for instantiation in this constructor.
@@ -40,6 +44,7 @@ class Secp256k1KeyIdentity extends SignIdentity {
     this._privateKey,
   ) : _publicKey = Secp256k1PublicKey.from(publicKey);
 
+  /// Restores an identity from a parsed `[publicKeyHex, privateKeyHex]` list.
   factory Secp256k1KeyIdentity.fromParsedJson(List<String> obj) {
     return Secp256k1KeyIdentity(
       Secp256k1PublicKey.fromRaw(blobFromHex(obj[0])),
@@ -47,6 +52,7 @@ class Secp256k1KeyIdentity extends SignIdentity {
     );
   }
 
+  /// Restores a secp256k1 identity from JSON.
   factory Secp256k1KeyIdentity.fromJSON(String json) {
     final parsed = jsonDecode(json);
     if (parsed is List) {
@@ -80,6 +86,7 @@ class Secp256k1KeyIdentity extends SignIdentity {
     throw ArgumentError.value(jsonEncode(json), 'json', 'Invalid json');
   }
 
+  /// Creates an identity from raw public and private key bytes.
   factory Secp256k1KeyIdentity.fromKeyPair(
     BinaryBlob publicKey,
     BinaryBlob privateKey,
@@ -93,6 +100,7 @@ class Secp256k1KeyIdentity extends SignIdentity {
   final Secp256k1PublicKey _publicKey;
   final BinaryBlob _privateKey;
 
+  /// Derives a secp256k1 identity from a raw [secretKey].
   static Future<Secp256k1KeyIdentity> fromSecretKey(Uint8List secretKey) async {
     final kp = await getECkeyFromPrivateKey(secretKey);
     final identity = Secp256k1KeyIdentity.fromKeyPair(
@@ -125,38 +133,51 @@ class Secp256k1KeyIdentity extends SignIdentity {
   }
 }
 
+/// A secp256k1 public key that can be encoded for IC request signing.
 class Secp256k1PublicKey implements PublicKey {
+  /// Creates a public key from raw secp256k1 key bytes.
   Secp256k1PublicKey(this.rawKey);
 
+  /// Creates a public key from raw secp256k1 key bytes.
   factory Secp256k1PublicKey.fromRaw(BinaryBlob rawKey) {
     return Secp256k1PublicKey(rawKey);
   }
 
+  /// Creates a public key from DER-encoded secp256k1 key bytes.
   factory Secp256k1PublicKey.fromDer(BinaryBlob derKey) {
     return Secp256k1PublicKey(Secp256k1PublicKey.derDecode(derKey));
   }
 
+  /// Creates a secp256k1 public key from another [PublicKey].
   factory Secp256k1PublicKey.from(PublicKey key) {
     return Secp256k1PublicKey.fromDer(key.toDer());
   }
 
+  /// Raw secp256k1 public key bytes.
   final BinaryBlob rawKey;
+
+  /// DER-encoded form of [rawKey].
   late final derKey = Secp256k1PublicKey.derEncode(rawKey);
 
+  /// DER-encodes a raw secp256k1 [publicKey].
   static Uint8List derEncode(BinaryBlob publicKey) {
     return bytesWrapDer(publicKey, oidSecp256k1);
   }
 
+  /// Decodes a DER-encoded secp256k1 [publicKey].
   static Uint8List derDecode(BinaryBlob publicKey) {
     return bytesUnwrapDer(publicKey, oidSecp256k1);
   }
 
+  /// Returns the DER encoding of this public key.
   @override
   Uint8List toDer() => derKey;
 
+  /// Returns the raw secp256k1 public key bytes.
   Uint8List toRaw() => rawKey;
 }
 
+/// Signs [message] with [secretKey] using deterministic ECDSA over secp256k1.
 Uint8List signSecp256k1(String message, BinaryBlob secretKey) {
   final blob = message.plainToU8a(useDartEncode: true);
   final digest = SHA256Digest();
@@ -183,6 +204,7 @@ Uint8List signSecp256k1(String message, BinaryBlob secretKey) {
   return u8aConcat([rU8a, sU8a]);
 }
 
+/// Signs [blob] with a secp256k1 private [seed].
 Future<Uint8List> signSecp256k1Async(Uint8List blob, Uint8List seed) async {
   final result = await secp256K1Sign(
     req: Secp256k1SignWithSeedReq(seed: seed, msg: blob),
@@ -190,6 +212,7 @@ Future<Uint8List> signSecp256k1Async(Uint8List blob, Uint8List seed) async {
   return result.signature!;
 }
 
+/// Creates a recoverable secp256k1 signature for [blob].
 Future<Uint8List> signSecp256k1Recoverable(
   Uint8List blob,
   Uint8List seed,
@@ -200,6 +223,7 @@ Future<Uint8List> signSecp256k1Recoverable(
   return result.signature!;
 }
 
+/// Signs [blob] with secp256k1 using RNG-backed signing.
 Future<Uint8List> signSecp256k1WithRNG(Uint8List blob, Uint8List bytes) async {
   final result = await secp256K1SignWithRng(
     req: Secp256k1SignWithRngReq(privateBytes: bytes, msg: blob),
@@ -208,6 +232,7 @@ Future<Uint8List> signSecp256k1WithRNG(Uint8List blob, Uint8List bytes) async {
   return result.signature!;
 }
 
+/// Verifies a secp256k1 [signature] for [message] and [publicKey].
 bool verifySecp256k1(
   String message,
   Uint8List signature,
@@ -226,6 +251,7 @@ bool verifySecp256k1(
   return signer.verifySignature(blob, sig);
 }
 
+/// Verifies a secp256k1 [signature] for precomputed message bytes.
 bool verifySecp256k1Blob(
   Uint8List blob,
   Uint8List signature,
@@ -243,6 +269,7 @@ bool verifySecp256k1Blob(
   return signer.verifySignature(blob, sig);
 }
 
+/// Recovers a secp256k1 public key from a prehashed message and signature.
 Future<Uint8List> recoverSecp256k1PubKey(
   Uint8List preHashedMessage,
   Uint8List signature,
@@ -256,6 +283,7 @@ Future<Uint8List> recoverSecp256k1PubKey(
   return result;
 }
 
+/// Computes a secp256k1 ECDH shared secret.
 Future<Uint8List> getECShareSecret(
   Uint8List privateKey,
   Uint8List rawPublicKey,
@@ -269,6 +297,7 @@ Future<Uint8List> getECShareSecret(
   return result;
 }
 
+/// Computes a P-256 ECDH shared secret.
 Future<Uint8List> getP256ShareSecret(
   Uint8List privateKey,
   Uint8List rawPublicKey,

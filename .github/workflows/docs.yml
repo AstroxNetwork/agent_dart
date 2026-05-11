@@ -1,0 +1,79 @@
+name: Documentation
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'packages/**/lib/**'
+      - 'packages/**/pubspec.yaml'
+      - 'README.md'
+      - '.github/workflows/docs.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install root dependencies
+        run: dart pub get
+      - name: Install base package dependencies
+        run: dart pub get
+        working-directory: packages/agent_dart_base
+      - name: Generate base API reference
+        run: dart doc --output ../../site/api/agent_dart_base .
+        working-directory: packages/agent_dart_base
+      - name: Install plugin dependencies
+        run: flutter pub get
+        working-directory: packages/agent_dart
+      - name: Generate plugin API reference
+        run: dart doc --output ../../site/api/agent_dart .
+        working-directory: packages/agent_dart
+      - name: Copy guide docs
+        run: |
+          mkdir -p site/guides
+          cp -R docs/. site/guides/
+          cat > site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head><meta charset="utf-8"><title>agent_dart docs</title></head>
+            <body>
+              <h1>agent_dart documentation</h1>
+              <ul>
+                <li><a href="guides/">Guides</a></li>
+                <li><a href="api/agent_dart/">agent_dart API reference</a></li>
+                <li><a href="api/agent_dart_base/">agent_dart_base API reference</a></li>
+              </ul>
+            </body>
+          </html>
+          HTML
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

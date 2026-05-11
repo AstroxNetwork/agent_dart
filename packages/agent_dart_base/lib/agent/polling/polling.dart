@@ -9,6 +9,11 @@ import 'strategy.dart';
 
 export 'strategy.dart';
 
+/// Polls read-state until an update call returns a reply or terminal state.
+///
+/// [strategy] controls the delay, timeout, and retry behavior between polling
+/// attempts. When [overrideCertificate] is supplied, it is used for the first
+/// response check instead of fetching a certificate from the replica.
 Future<BinaryBlob> pollForResponse(
   Agent agent,
   Principal canisterId,
@@ -97,7 +102,9 @@ Future<BinaryBlob> pollForResponse(
   }
 }
 
+/// Base exception for update-call polling failures.
 class PollingResponseException implements Exception {
+  /// Creates a polling exception with request context.
   const PollingResponseException({
     required this.canisterId,
     required this.requestId,
@@ -106,10 +113,19 @@ class PollingResponseException implements Exception {
     this.caller,
   });
 
+  /// Canister that handled the update call.
   final Principal canisterId;
+
+  /// Hex-encoded request ID.
   final String requestId;
+
+  /// Terminal or current request status.
   final RequestStatusResponseStatus status;
+
+  /// Canister method name being polled.
   final String method;
+
+  /// Caller principal when it is available from the agent.
   final Principal? caller;
 
   @override
@@ -122,7 +138,9 @@ class PollingResponseException implements Exception {
   }
 }
 
+/// Thrown when a request reaches `done` without a reply payload.
 class PollingResponseNoReplyException extends PollingResponseException {
+  /// Creates a no-reply polling exception.
   const PollingResponseNoReplyException({
     required super.canisterId,
     required super.requestId,
@@ -141,7 +159,9 @@ class PollingResponseNoReplyException extends PollingResponseException {
   }
 }
 
+/// Thrown when the replica reports a rejected update-call status.
 class PollingResponseRejectedException extends PollingResponseException {
+  /// Creates a rejected polling exception.
   const PollingResponseRejectedException({
     required super.canisterId,
     required super.requestId,
@@ -152,7 +172,10 @@ class PollingResponseRejectedException extends PollingResponseException {
     super.caller,
   });
 
+  /// Replica reject code.
   final BigInt rejectCode;
+
+  /// Replica reject message.
   final String rejectMessage;
 
   @override
