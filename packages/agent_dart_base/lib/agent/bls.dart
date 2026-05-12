@@ -1,3 +1,4 @@
+/// Documents packages/agent_dart_base/lib/agent/bls.dart module purpose, public surface, and usage context
 import 'dart:typed_data';
 
 import 'package:agent_dart_ffi/agent_dart_ffi.dart' as ffi;
