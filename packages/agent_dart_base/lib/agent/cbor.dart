@@ -1,3 +1,4 @@
+/// Documents packages/agent_dart_base/lib/agent/cbor.dart module purpose, public surface, and usage context
 import 'dart:math' as math;
 import 'dart:typed_data';
 
