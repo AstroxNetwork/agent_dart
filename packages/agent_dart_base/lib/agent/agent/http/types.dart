@@ -1,3 +1,4 @@
+/// Documents packages/agent_dart_base/lib/agent/agent/http/types.dart module purpose, public surface, and usage context
 import 'dart:convert';
 import 'dart:typed_data';
 
