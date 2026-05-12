@@ -1,3 +1,4 @@
+/// Documents packages/agent_dart_base/lib/agent/agent/factory.dart module purpose, public surface, and usage context
 import '../../candid/idl.dart';
 import '../../principal/principal.dart';
 import '../agent.dart';
