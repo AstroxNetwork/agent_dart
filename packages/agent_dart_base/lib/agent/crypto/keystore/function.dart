@@ -1,3 +1,4 @@
+/// Documents packages/agent_dart_base/lib/agent/crypto/keystore/function.dart module purpose, public surface, and usage context
 part of 'key_store.dart';
 
 const String _algoIdentifier = 'aes-128-ctr';
