@@ -1,3 +1,4 @@
+<!-- Documents packages/agent_dart/example/README.md module purpose and usage context -->
 # flutter_agent_dart_example
 
 Demonstrates how to use the flutter_agent_dart plugin.
