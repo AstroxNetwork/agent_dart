@@ -1,3 +1,4 @@
+<!-- Documents packages/agent_dart_ffi/native/agent_dart/src/bls/README.md module purpose and usage context -->
 This is a convenience copy of the code in https://github.com/miracl/core
 produced from revision f9de005e0168f59a56afe177498b19f4d43f054f with these steps:
 
