@@ -1,3 +1,4 @@
+/// Documents packages/agent_dart_base/lib/agent/agent.dart module purpose, public surface, and usage context
 export './agent/index.dart';
 export './canisters/index.dart';
 export './crypto/index.dart';
