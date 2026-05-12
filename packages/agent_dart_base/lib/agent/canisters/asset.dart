@@ -1,3 +1,4 @@
+/// Documents packages/agent_dart_base/lib/agent/canisters/asset.dart module purpose, public surface, and usage context
 import '../actor.dart';
 import 'asset_idl.dart';
 
