@@ -1,3 +1,4 @@
+/// Documents packages/agent_dart_base/lib/agent/agent/index.dart module purpose, public surface, and usage context
 export 'api.dart';
 export 'factory.dart';
 export 'http/fetch.dart';
