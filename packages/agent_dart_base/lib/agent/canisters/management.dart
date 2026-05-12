@@ -1,3 +1,4 @@
+/// Documents packages/agent_dart_base/lib/agent/canisters/management.dart module purpose, public surface, and usage context
 import '../../principal/principal.dart';
 import '../actor.dart';
 import 'management_idl.dart';
