@@ -1,3 +1,4 @@
+/// Documents packages/agent_dart_base/lib/agent/canisters/management_idl.dart module purpose, public surface, and usage context
 import '../../candid/idl.dart';
 
 Service managementIDL() {
