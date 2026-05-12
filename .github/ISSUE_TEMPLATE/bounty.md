@@ -1,3 +1,4 @@
+<!-- Documents .github/ISSUE_TEMPLATE/bounty.md module purpose and usage context -->
 ---
 name: Bounty
 about: Bounty Spec
