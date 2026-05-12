@@ -1,3 +1,4 @@
+<!-- Documents README.md module purpose and usage context -->
 # Agent Dart
 
 [![Pub](https://img.shields.io/pub/v/agent_dart?color=42a012&include_prereleases&logo=dart&style=flat-square)](https://pub.dev/packages/agent_dart)
