@@ -1,3 +1,4 @@
+/// Documents packages/agent_dart_base/lib/agent/agent/api.dart module purpose, public surface, and usage context
 import 'package:meta/meta.dart';
 
 import '../../principal/principal.dart';
