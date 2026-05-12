@@ -1,3 +1,4 @@
+/// Documents packages/agent_dart_base/lib/agent/auth.dart module purpose, public surface, and usage context
 import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
