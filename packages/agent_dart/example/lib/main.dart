@@ -1,3 +1,4 @@
+/// Documents packages/agent_dart/example/lib/main.dart module purpose, public surface, and usage context
 import 'package:agent_dart/agent_dart.dart';
 import 'package:flutter/material.dart';
 
